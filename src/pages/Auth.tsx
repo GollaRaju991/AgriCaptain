@@ -51,18 +51,60 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login form submitted', loginForm);
-    toast({
-      title: "Login form submitted",
-      description: `Email: ${loginForm.email}, Password: ${loginForm.password}`,
-    });
+    
+    if (!loginForm.email || !loginForm.password) {
+      toast({
+        title: "Please fill all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginForm.email,
+        password: loginForm.password
+      });
+
+      if (error) {
+        toast({
+          title: "Login Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to AgriCaptain!"
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Login Failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log('Signup form submitted', signupForm);
+    
+    if (!signupForm.name || !signupForm.email || !signupForm.password || !signupForm.confirmPassword) {
+      toast({
+        title: "Please fill all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (signupForm.password !== signupForm.confirmPassword) {
       toast({
         title: "Passwords do not match",
@@ -70,10 +112,59 @@ const Auth = () => {
       });
       return;
     }
-    toast({
-      title: "Signup form submitted",
-      description: `Name: ${signupForm.name}, Email: ${signupForm.email}`,
-    });
+
+    if (signupForm.password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { supabase } = await import('@/integrations/supabase/client');
+      const redirectUrl = `${window.location.origin}/`;
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: signupForm.email,
+        password: signupForm.password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            name: signupForm.name
+          }
+        }
+      });
+
+      if (error) {
+        toast({
+          title: "Signup Failed",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      toast({
+        title: "Signup Successful",
+        description: "Please check your email to verify your account. For testing, you may need to disable 'Confirm email' in Supabase settings.",
+      });
+
+      // Clear form
+      setSignupForm({ name: '', email: '', password: '', confirmPassword: '' });
+    } catch (error) {
+      console.error('Signup error:', error);
+      toast({
+        title: "Signup Failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyOTP = async (e: React.FormEvent) => {
@@ -291,6 +382,7 @@ const Auth = () => {
                         value={loginForm.email}
                         onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                         className="text-sm"
+                        required
                       />
                     </div>
                     <div>
@@ -302,10 +394,22 @@ const Auth = () => {
                         value={loginForm.password}
                         onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                         className="text-sm"
+                        required
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3">
-                      Login
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Logging in...
+                        </>
+                      ) : (
+                        'Login'
+                      )}
                     </Button>
                   </form>
                 </TabsContent>
@@ -321,6 +425,7 @@ const Auth = () => {
                         value={signupForm.name}
                         onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
                         className="text-sm"
+                        required
                       />
                     </div>
                     <div>
@@ -332,6 +437,7 @@ const Auth = () => {
                         value={signupForm.email}
                         onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
                         className="text-sm"
+                        required
                       />
                     </div>
                     <div>
@@ -339,10 +445,12 @@ const Auth = () => {
                       <Input
                         id="signup-password"
                         type="password"
-                        placeholder="Enter your password"
+                        placeholder="At least 6 characters"
                         value={signupForm.password}
                         onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
                         className="text-sm"
+                        required
+                        minLength={6}
                       />
                     </div>
                     <div>
@@ -354,10 +462,22 @@ const Auth = () => {
                         value={signupForm.confirmPassword}
                         onChange={(e) => setSignupForm({ ...signupForm, confirmPassword: e.target.value })}
                         className="text-sm"
+                        required
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3">
-                      Sign Up
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating account...
+                        </>
+                      ) : (
+                        'Sign Up'
+                      )}
                     </Button>
                   </form>
                 </TabsContent>
