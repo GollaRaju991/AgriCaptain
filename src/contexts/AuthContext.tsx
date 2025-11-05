@@ -65,14 +65,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const formattedPhone = phone.startsWith('+') ? phone : '+91' + phone;
       
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: formattedPhone,
+      // Call our custom edge function for real-time OTP
+      const { data, error } = await supabase.functions.invoke('send-otp', {
+        body: { phone: formattedPhone }
       });
 
       if (error) {
         console.error('Send OTP error:', error);
-        console.log('Real OTP failed, using test OTP:', error.message);
-        return { success: true }; // Allow test flow
+        return { success: false, error: error.message || 'Failed to send OTP' };
+      }
+
+      if (data?.otp) {
+        console.log('Development mode - OTP:', data.otp);
       }
 
       return { success: true };
@@ -88,15 +92,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const formattedPhone = phone.startsWith('+') ? phone : '+91' + phone;
       
-      const { error } = await supabase.auth.verifyOtp({
-        phone: formattedPhone,
-        token: otp,
-        type: 'sms'
+      // Call our custom edge function for real-time OTP verification
+      const { data, error } = await supabase.functions.invoke('verify-otp', {
+        body: { phone: formattedPhone, otp: otp }
       });
 
       if (error) {
         console.error('Verify OTP error:', error);
-        return { success: false, error: error.message };
+        return { success: false, error: error.message || 'Failed to verify OTP' };
+      }
+
+      if (!data?.success) {
+        return { success: false, error: data?.error || 'Invalid OTP' };
+      }
+
+      // Set session if returned
+      if (data.session) {
+        setSession(data.session);
+        setUser(data.user as AuthUser);
       }
 
       return { success: true };
