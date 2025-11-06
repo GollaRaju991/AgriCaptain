@@ -476,7 +476,10 @@ const Header = () => {
       </header>
 
       {/* Language Selector Dialog */}
-      <LanguagePopupController />
+      <LanguageSelector
+        open={languageDialogOpen}
+        onOpenChange={setLanguageDialogOpen}
+      />
 
       {/* Farm Worker Dialog */}
       <FarmWorkerDialog
