@@ -405,17 +405,19 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="pincode">Pincode *</Label>
-                  <Input
-                    id="pincode"
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleInputChange}
-                    placeholder="Enter pincode"
-                    required
-                  />
-                </div>
+              <div>
+                <Label htmlFor="pincode">Pincode *</Label>
+                <Input
+                  id="pincode"
+                  name="pincode"
+                  type="text"
+                  value={formData.pincode}
+                  onChange={handleInputChange}
+                  placeholder="Enter pincode"
+                  maxLength={6}
+                  required
+                />
+              </div>
                 <div>
                   <Label htmlFor="city">City *</Label>
                   <Input
@@ -455,7 +457,9 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
               </div>
 
               <div className="mb-4">
-                <LocationDetector onLocationDetected={handleLocationDetected} />
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <LocationDetector onLocationDetected={handleLocationDetected} />
+                </div>
               </div>
 
               <div className="flex space-x-3 pt-2">

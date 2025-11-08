@@ -45,6 +45,21 @@ const AddressSection: React.FC<AddressSectionProps> = ({
     setShowAddressManager(false);
   };
 
+  // If showing address manager, render it fullscreen
+  if (showAddressManager) {
+    return (
+      <Card className="border border-gray-200">
+        <CardContent className="p-3 md:p-4">
+          <AddressManager 
+            onAddressSelect={handleAddressAdded}
+            selectedAddressId={selectedAddress?.id}
+            onClose={() => setShowAddressManager(false)}
+          />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="border border-gray-200">
       <CardHeader className="bg-blue-50 border-b p-3 md:p-4">
@@ -121,15 +136,6 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           </div>
         )}
 
-        {showAddressManager && (
-          <div className="mt-4 md:mt-6">
-            <AddressManager 
-              onAddressSelect={handleAddressAdded}
-              selectedAddressId={selectedAddress?.id}
-              onClose={() => setShowAddressManager(false)}
-            />
-          </div>
-        )}
       </CardContent>
     </Card>
   );

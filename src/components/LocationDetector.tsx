@@ -16,63 +16,48 @@ interface LocationDetectorProps {
 const LocationDetector: React.FC<LocationDetectorProps> = ({ enabled = false, onLocationDetected }) => {
   const [isDetecting, setIsDetecting] = useState(false);
 
-  useEffect(() => {
-    // Auto-detect location on mount (always enabled for farm worker and rent vehicles)
-    const detectLocation = async () => {
-      setIsDetecting(true);
-      
-      try {
-        // First try to get location using browser geolocation
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords;
+  const detectLocation = async () => {
+    setIsDetecting(true);
+    
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            try {
+              // Mock location data for India
+              const mockLocationData: LocationData = {
+                country: 'India',
+                state: 'Telangana',
+                district: 'Hyderabad',
+                division: 'Secunderabad',
+                mandal: 'Begumpet'
+              };
               
-              try {
-                // Use a reverse geocoding service to get location details
-                // For demo purposes, we'll use a mock response for India/Telangana
-                const mockLocationData: LocationData = {
-                  country: 'India',
-                  state: 'Telangana',
-                  district: 'Hyderabad',
-                  division: 'Secunderabad',
-                  mandal: 'Begumpet'
-                };
-                
-                onLocationDetected(mockLocationData);
-              } catch (error) {
-                console.error('Error in reverse geocoding:', error);
-                // Fallback to default location
-                onLocationDetected({
-                  country: 'India',
-                  state: 'Telangana',
-                  district: 'Hyderabad'
-                });
-              }
-              setIsDetecting(false);
-            },
-            (error) => {
-              console.error('Geolocation error:', error);
-              // Fallback to IP-based location detection or default
+              console.log('Location detected:', mockLocationData);
+              onLocationDetected(mockLocationData);
+            } catch (error) {
+              console.error('Error in reverse geocoding:', error);
               onLocationDetected({
                 country: 'India',
                 state: 'Telangana',
                 district: 'Hyderabad'
               });
-              setIsDetecting(false);
             }
-          );
-        } else {
-          // Geolocation not supported, use default
-          onLocationDetected({
-            country: 'India',
-            state: 'Telangana',
-            district: 'Hyderabad'
-          });
-          setIsDetecting(false);
-        }
-      } catch (error) {
-        console.error('Location detection error:', error);
+            setIsDetecting(false);
+          },
+          (error) => {
+            console.error('Geolocation error:', error);
+            onLocationDetected({
+              country: 'India',
+              state: 'Telangana',
+              district: 'Hyderabad'
+            });
+            setIsDetecting(false);
+          }
+        );
+      } else {
         onLocationDetected({
           country: 'India',
           state: 'Telangana',
@@ -80,25 +65,26 @@ const LocationDetector: React.FC<LocationDetectorProps> = ({ enabled = false, on
         });
         setIsDetecting(false);
       }
-    };
-
-    detectLocation();
-  }, [onLocationDetected]);
-
-  // Rest of the old useEffect logic removed since we're auto-detecting now
-  const oldDetectLogic = () => {
-    if (!enabled) return;
-
+    } catch (error) {
+      console.error('Location detection error:', error);
+      onLocationDetected({
+        country: 'India',
+        state: 'Telangana',
+        district: 'Hyderabad'
+      });
+      setIsDetecting(false);
+    }
   };
 
-  if (!enabled || !isDetecting) {
-    return null;
-  }
-
   return (
-    <div className="text-xs text-gray-500">
-      📍 Detecting location...
-    </div>
+    <button
+      type="button"
+      onClick={detectLocation}
+      disabled={isDetecting}
+      className="text-sm text-blue-600 hover:text-blue-700 underline disabled:opacity-50"
+    >
+      {isDetecting ? '📍 Detecting...' : '📍 Use My Location'}
+    </button>
   );
 };
 
