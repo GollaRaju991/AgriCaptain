@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, Beef, Milk, Zap, Truck, Syringe, Heart, Wheat, Users } from 'lucide-react';
+import { ChevronDown, Beef, Milk, Zap, Truck, Syringe, Heart, Wheat, Users, Leaf } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 
@@ -78,9 +78,9 @@ const AnimalHusbandryMenu = () => {
         onMouseLeave={() => setIsOpen(false)}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <Users className="h-5 w-5" />
+        <Leaf className="h-5 w-5" />
         <span className="text-sm font-medium">
-          {currentLang === 'te' ? 'పశుపాలన' : 'Animal Husbandry'}
+          {currentLang === 'te' ? 'పంటలు & మొక్కలు' : 'Crops & Plants'}
         </span>
         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
