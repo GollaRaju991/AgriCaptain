@@ -348,13 +348,24 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
 
       {/* Address Form */}
       {showForm && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">
-              {editingAddress ? 'Edit Address' : 'Add New Address'}
+        <Card className="border-2 border-blue-500">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>{editingAddress ? 'Edit Address' : 'Add New Address'}</span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowForm(false);
+                  resetForm();
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             <form onSubmit={handleSaveAddress} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -447,13 +458,20 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
                 <LocationDetector onLocationDetected={handleLocationDetected} />
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex space-x-3 pt-2">
                 <Button 
                   type="submit" 
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                   disabled={saving}
                 >
-                  {saving ? 'Saving...' : (editingAddress ? 'Update Address' : 'Save Address')}
+                  {saving ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    editingAddress ? 'Update Address' : 'Save Address'
+                  )}
                 </Button>
                 <Button
                   type="button"
@@ -462,6 +480,7 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
                     setShowForm(false);
                     resetForm();
                   }}
+                  disabled={saving}
                 >
                   Cancel
                 </Button>

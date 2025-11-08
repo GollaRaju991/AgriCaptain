@@ -261,7 +261,6 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const handleSetLanguage = (lang: string) => {
     setLanguage(lang);
     localStorage.setItem('agricaptain_language', lang);
-    // Also set the flag that language has been selected
     localStorage.setItem('agricaptain_language_selected', 'true');
   };
 

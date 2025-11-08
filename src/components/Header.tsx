@@ -156,11 +156,17 @@ const Header = () => {
   ];
 
   useEffect(() => {
-    const hasSelectedLanguage = localStorage.getItem('Agrizin_language_selected');
-    if (!hasSelectedLanguage) {
-      setLanguageDialogOpen(true);
+    // Only show language popup on first login (when user is authenticated but hasn't selected language)
+    if (user) {
+      const hasSelectedLanguage = localStorage.getItem('agricaptain_language_selected');
+      const hasShownForUser = localStorage.getItem(`language_shown_${user.id}`);
+      
+      if (!hasSelectedLanguage && !hasShownForUser) {
+        setLanguageDialogOpen(true);
+        localStorage.setItem(`language_shown_${user.id}`, 'true');
+      }
     }
-  }, []);
+  }, [user]);
 
   const userMenuItems = [
     { name: 'My Profile', icon: User, href: '/profile' },
