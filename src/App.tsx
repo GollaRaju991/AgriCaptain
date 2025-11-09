@@ -22,6 +22,7 @@ import VehicleRent from "./pages/VehicleRent";
 import BecomeSeller from "./pages/BecomeSeller";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import Wishlist from "./pages/Wishlist";
+import GiftCards from "./pages/GiftCards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => (
                   <Route path="/become-seller" element={<BecomeSeller />} />
                   <Route path="/order-confirmation" element={<OrderConfirmation />} />
                   <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/gift-cards" element={<GiftCards />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
