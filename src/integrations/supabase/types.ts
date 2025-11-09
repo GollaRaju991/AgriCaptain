@@ -59,6 +59,90 @@ export type Database = {
         }
         Relationships: []
       }
+      gift_card_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          gift_card_id: string
+          id: string
+          order_id: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          gift_card_id: string
+          id?: string
+          order_id?: string | null
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          gift_card_id?: string
+          id?: string
+          order_id?: string | null
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gift_card_transactions_gift_card_id_fkey"
+            columns: ["gift_card_id"]
+            isOneToOne: false
+            referencedRelation: "gift_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gift_card_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gift_cards: {
+        Row: {
+          balance: number
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          initial_amount: number
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          initial_amount: number
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          initial_amount?: number
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -164,6 +248,7 @@ export type Database = {
     }
     Functions: {
       cleanup_expired_otps: { Args: never; Returns: undefined }
+      generate_gift_card_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
