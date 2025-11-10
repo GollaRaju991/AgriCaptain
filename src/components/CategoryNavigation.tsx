@@ -15,8 +15,11 @@ const CategoryNavigation = () => {
     { name: 'Brands', icon: Award, path: '/products?category=brands' }
   ];
 
+  const middleCategories = [
+    { name: translations.market_details, icon: TrendingUp, path: '/market-details' }
+  ];
+
   const rightCategories = [
-    { name: translations.market_details, icon: TrendingUp, path: '/market-details' },
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
     { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
     { name: 'Loans', icon: CreditCard, path: '/loans' }
@@ -43,6 +46,21 @@ const CategoryNavigation = () => {
             
             {/* Animal Husbandry Menu */}
             <AnimalHusbandryMenu />
+            
+            {/* Market Details */}
+            {middleCategories.map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <Link
+                  key={`middle-${index}`}
+                  to={category.path}
+                  className="flex items-center space-x-2 text-white hover:bg-green-700 px-4 py-2 rounded-md transition-colors whitespace-nowrap min-w-fit"
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-sm font-medium">{category.name}</span>
+                </Link>
+              );
+            })}
             
             {rightCategories.map((category, index) => {
               const Icon = category.icon;
