@@ -15,9 +15,6 @@ const CategoryNavigation = () => {
     { name: 'Brands', icon: Award, path: '/products?category=brands' }
   ];
 
-  const middleCategories = [
-    { name: translations.market_details, icon: TrendingUp, path: '/market-details' }
-  ];
 
   const rightCategories = [
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
