@@ -1,19 +1,22 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard } from 'lucide-react';
+import { Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp } from 'lucide-react';
 import AnimalHusbandryMenu from './AnimalHusbandryMenu';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const CategoryNavigation = () => {
+  const { translations } = useLanguage();
+  
   const categories = [
     { name: 'Seeds', icon: Sprout, path: '/products?category=seeds' },
     { name: 'Fertilizers', icon: Droplet, path: '/products?category=fertilizers' },
     { name: 'Agriculture Products', icon: Wrench, path: '/products?category=agriculture' },
     { name: 'Brands', icon: Award, path: '/products?category=brands' }
-
   ];
 
   const rightCategories = [
+    { name: translations.market_details, icon: TrendingUp, path: '/market-details' },
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
     { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
     { name: 'Loans', icon: CreditCard, path: '/loans' }
@@ -38,7 +41,7 @@ const CategoryNavigation = () => {
               );
             })}
             
-            {/* Animal Husbandry Menu - positioned between Brands and Farm Worker */}
+            {/* Animal Husbandry Menu */}
             <AnimalHusbandryMenu />
             
             {rightCategories.map((category, index) => {

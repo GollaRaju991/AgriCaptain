@@ -22,6 +22,17 @@ const translations = {
     'cart': 'Cart',
     'profile': 'Profile',
     
+    // Market Details
+    'market_details': 'Market Details',
+    'market_details_description': 'Current agricultural commodity prices and market rates',
+    'sno': 'S.No',
+    'agriculture_product': 'Agriculture Product',
+    'avg_rate_2024_2025': '2024-2025 Avg Rate (₹/quintal)',
+    'avg_rate_2025_2026': '2025-2026 Avg Rate (₹/quintal)',
+    'yesterday_rate': 'Yesterday Rate (₹/quintal)',
+    'today_rate': 'Today Rate (₹/quintal)',
+    'newly_added_today': 'Newly Added Today',
+    
     // Main Page
     'welcome_to_agrizin': 'Welcome to Agrizin',
     'your_farming_partner': 'Your Ultimate Farming Partner',
@@ -98,6 +109,17 @@ const translations = {
     'cart': 'కార్ట్',
     'profile': 'ప్రొఫైల్',
     
+    // Market Details
+    'market_details': 'మార్కెట్ వివరాలు',
+    'market_details_description': 'ప్రస్తుత వ్యవసాయ వస్తువుల ధరలు మరియు మార్కెట్ రేట్లు',
+    'sno': 'క్ర.సం',
+    'agriculture_product': 'వ్యవసాయ ఉత్పత్తి',
+    'avg_rate_2024_2025': '2024-2025 సగటు ధర (₹/క్వింటాల్)',
+    'avg_rate_2025_2026': '2025-2026 సగటు ధర (₹/క్వింటాల్)',
+    'yesterday_rate': 'నిన్న ధర (₹/క్వింటాల్)',
+    'today_rate': 'నేటి ధర (₹/క్వింటాల్)',
+    'newly_added_today': 'ఈరోజు కొత్తగా జోడించబడింది',
+    
     // Main Page
     'welcome_to_agricaptain': 'అగ్రికాప్టెన్‌కు స్వాగతం',
     'your_farming_partner': 'మీ అంతిమ వ్యవసాయ భాగస్వామి',
@@ -173,6 +195,17 @@ const translations = {
     'login': 'लॉगिन',
     'cart': 'कार्ट',
     'profile': 'प्रोफाइल',
+    
+    // Market Details
+    'market_details': 'बाजार विवरण',
+    'market_details_description': 'वर्तमान कृषि वस्तुओं की कीमतें और बाजार दरें',
+    'sno': 'क्र.सं.',
+    'agriculture_product': 'कृषि उत्पाद',
+    'avg_rate_2024_2025': '2024-2025 औसत दर (₹/क्विंटल)',
+    'avg_rate_2025_2026': '2025-2026 औसत दर (₹/क्विंटल)',
+    'yesterday_rate': 'कल की दर (₹/क्विंटल)',
+    'today_rate': 'आज की दर (₹/क्विंटल)',
+    'newly_added_today': 'आज नया जोड़ा गया',
     
     // Main Page
     'welcome_to_agricaptain': 'एग्रीकैप्टन में आपका स्वागत है',
