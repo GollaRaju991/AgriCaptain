@@ -84,18 +84,20 @@
   body {
     @apply bg-background text-foreground;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-size: 13px;
     overflow-x: hidden;
   }
 
   /* Mobile-first responsive design */
   html {
     scroll-behavior: smooth;
+    font-size: 13px;
   }
 
   /* Ensure proper mobile viewport */
   @media (max-width: 768px) {
     body {
-      font-size: 14px;
+      font-size: 12px;
       line-height: 1.5;
     }
     
@@ -127,10 +129,18 @@
 
   /* Improve readability on small screens */
   @media (max-width: 640px) {
-    h1 { font-size: 1.875rem; }
-    h2 { font-size: 1.5rem; }
-    h3 { font-size: 1.25rem; }
+    h1 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    h3 { font-size: 1.125rem; }
   }
+  
+  /* Global heading sizes */
+  h1 { font-size: 1.875rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+  h4 { font-size: 1.125rem; }
+  h5 { font-size: 1rem; }
+  h6 { font-size: 0.875rem; }
 }
 
 /* Mobile-specific utilities */
