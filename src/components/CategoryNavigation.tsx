@@ -17,6 +17,7 @@ const CategoryNavigation = () => {
 
 
   const rightCategories = [
+    { name: 'market_details', icon: Users, icon: TrendingUp, path: '/market-details' },
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
     { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
     { name: 'Loans', icon: CreditCard, path: '/loans' }
