@@ -11,10 +11,10 @@ const CategoryNavigation = () => {
     { name: 'Fertilizers', icon: Droplet, path: '/products?category=fertilizers' },
     { name: 'Agriculture Products', icon: Wrench, path: '/products?category=agriculture' },
     { name: 'Brands', icon: Award, path: '/products?category=brands' },
+    { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
   ];
 
   const rightCategories = [
-    { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
     { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
     { name: 'Loans', icon: CreditCard, path: '/loans' },
