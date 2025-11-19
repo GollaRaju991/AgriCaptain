@@ -38,7 +38,7 @@ const BrandsSection = () => {
   const displayedBrands = showAll ? brands : brands.slice(0, 8);
 
   return (
-    <section className="py-8 md:py-12 bg-gray-50">
+    <section className="py-8 md:py-12 bg-blue-50/20">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
           <div>
