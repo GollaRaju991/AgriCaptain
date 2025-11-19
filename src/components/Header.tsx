@@ -121,6 +121,12 @@ const Header = () => {
       ]
     },
     {
+      name: translations.market_details,
+      href: '/market-details',
+      icon: Tractor,
+      submenu: []
+    },
+    {
       name: translations.Animal_husbandry,
       href: '/products?category=Animal',
       icon: Sprout,
