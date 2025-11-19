@@ -118,27 +118,29 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       if (signInError) {
-        // Try to update password and sign in again
-        const { error: adminError } = await supabase.auth.admin.updateUserById(
-          signUpData?.user?.id || '',
-          { password: testPassword }
-        );
-        
-        if (!adminError) {
-          const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
-            email: testEmail,
-            password: testPassword
+        const userId = signInData?.user?.id;
+
+        if (userId) {
+          const { error: adminError } = await supabase.auth.admin.updateUserById(userId, {
+            password: testPassword,
           });
-          
-          if (!retryError && retrySignIn.session) {
-            return new Response(
-              JSON.stringify({ 
-                success: true,
-                session: retrySignIn.session,
-                user: retrySignIn.user
-              }),
-              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-            );
+
+          if (!adminError) {
+            const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
+              email: testEmail,
+              password: testPassword,
+            });
+
+            if (!retryError && retrySignIn.session) {
+              return new Response(
+                JSON.stringify({
+                  success: true,
+                  session: retrySignIn.session,
+                  user: retrySignIn.user,
+                }),
+                { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+              );
+            }
           }
         }
       }
