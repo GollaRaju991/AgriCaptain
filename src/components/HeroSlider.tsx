@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -71,81 +70,83 @@ const HeroSlider = () => {
   };
 
   return (
-    <div className="relative w-full h-[280px] sm:h-[320px] md:h-[400px] lg:h-[500px] overflow-hidden bg-gray-100">
+    <div className="relative w-full 
+      h-[180px] sm:h-[220px] md:h-[260px] lg:h-[320px]
+      overflow-hidden bg-gray-100 rounded-md">
+
       {slides.map((slide, index) => (
         <div
           key={slide.id}
           className={`absolute inset-0 transition-transform duration-700 ease-in-out ${
-            index === currentSlide ? 'translate-x-0' : index < currentSlide ? '-translate-x-full' : 'translate-x-full'
+            index === currentSlide ? 'translate-x-0' :
+            index < currentSlide ? '-translate-x-full' : 'translate-x-full'
           }`}
         >
-          <div className="relative w-full h-full flex items-center">
-            {/* Content Section - Left Side */}
-            <div className="relative z-20 w-1/2 h-full flex items-center bg-gradient-to-r from-gray-900/80 to-transparent">
-              <div className="container mx-auto px-4 lg:px-8">
-                <div className="max-w-2xl text-white">
-                  <h3 className="text-sm md:text-base font-medium mb-2 text-yellow-300 animate-fade-in">
-                    {slide.subtitle}
-                  </h3>
-                  <h1 className="text-xl md:text-3xl lg:text-4xl font-bold mb-4 leading-tight animate-fade-in">
-                    {slide.title}
-                  </h1>
-                  <p className="text-xs md:text-sm mb-6 max-w-lg leading-relaxed animate-fade-in">
-                    {slide.description}
-                  </p>
-                  <Button 
-                    size="lg" 
-                    className="bg-white text-gray-900 hover:bg-gray-100 font-semibold px-4 md:px-6 py-2 md:py-3 animate-fade-in"
-                  >
-                    {slide.cta}
-                  </Button>
-                </div>
+          <div className="relative w-full h-full flex">
+
+            {/* Text Section */}
+            <div className="relative z-20 w-1/2 h-full flex items-center bg-gradient-to-r from-black/60 to-transparent">
+              <div className="px-4 md:px-8">
+                <h3 className="text-xs md:text-sm text-yellow-300 font-medium mb-1">
+                  {slide.subtitle}
+                </h3>
+                <h1 className="text-lg md:text-2xl font-bold text-white">
+                  {slide.title}
+                </h1>
+                <p className="text-[10px] md:text-sm text-gray-200 mt-2">
+                  {slide.description}
+                </p>
+                <Button className="mt-3 bg-white text-gray-900 text-xs px-3 py-1 rounded-md">
+                  {slide.cta}
+                </Button>
               </div>
             </div>
-            
-            {/* Image Section - Right Side */}
+
+            {/* Image Section */}
             <div className="absolute inset-0 w-full h-full z-10">
               <img
                 src={slide.image}
                 alt={slide.title}
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
             </div>
+
           </div>
         </div>
       ))}
 
-      {/* Navigation Arrows */}
+      {/* Left Arrow */}
       <Button
         variant="ghost"
-        size="sm"
-        className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white border-0 h-10 w-10 rounded-full z-20"
+        size="icon"
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/30 text-white h-8 w-8 rounded-full z-20"
         onClick={prevSlide}
       >
-        <ChevronLeft className="h-5 w-5" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white border-0 h-10 w-10 rounded-full z-20"
-        onClick={nextSlide}
-      >
-        <ChevronRight className="h-5 w-5" />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
 
-      {/* Dot Indicators (Flipkart Style) */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-30">
+      {/* Right Arrow */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/20 hover:bg-black/30 text-white h-8 w-8 rounded-full z-20"
+        onClick={nextSlide}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </Button>
+
+      {/* Small Flipkart-style dots */}
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1.5 z-30">
         {slides.map((_, index) => (
           <button
             key={index}
-            className={`h-2 w-2 rounded-full transition-all duration-300 ${
-              index === currentSlide 
-                ? 'bg-white scale-110' 
-                : 'bg-white/50 hover:bg-white/70'
-            }`}
             onClick={() => setCurrentSlide(index)}
-            aria-label={`Go to slide ${index + 1}`}
+            className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+              index === currentSlide
+                ? 'bg-white scale-125'
+                : 'bg-white/40 hover:bg-white/70'
+            }`}
           />
         ))}
       </div>
@@ -154,3 +155,4 @@ const HeroSlider = () => {
 };
 
 export default HeroSlider;
+
