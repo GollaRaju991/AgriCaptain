@@ -99,7 +99,7 @@ const Index = () => {
 
         {/* LEFT IMAGE  – hidden on mobile */}
         <img
-          src="https://i.postimg.cc/sgvJfGLS/pesticide-banner-left.webp"
+          src="https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png"
           alt="Left Banner"
           className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
         />
@@ -111,7 +111,7 @@ const Index = () => {
 
         {/* RIGHT IMAGE – hidden on mobile */}
         <img
-          src="https://i.postimg.cc/XYR0Wm8p/pesticide-banner-right.webp"
+          src="https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png"
           alt="Right Banner"
           className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
         />
