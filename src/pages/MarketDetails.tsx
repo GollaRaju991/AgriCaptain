@@ -47,6 +47,16 @@ const MarketDetails = () => {
     "Mahbubnagar",
     "Rangareddy",
     "Hyderabad"
+    "Guntur",
+"Vijayawada",
+"Kurnool",
+"Nellore",
+"Tirupati",
+"Anantapur",
+"Rajahmundry",
+"Ongole",
+"Kadapa",
+"Chittoor"
   ];
 
   const [selectedDistrict, setSelectedDistrict] = React.useState("Select District");
