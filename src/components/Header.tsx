@@ -126,18 +126,7 @@ const Header = () => {
       icon: Tractor,
       submenu: []
     },
-    {
-      name: translations.Animal_husbandry,
-      href: '/products?category=Animal',
-      icon: Sprout,
-      submenu: [
-        'CATTLE',
-        'POULTRY',
-        'OTHERS',
-        'POPULAR BRANDS',
-        'BASF'
-      ]
-    },
+    
     {
       name: translations.farm_worker,
       icon: Users,
@@ -369,7 +358,7 @@ const Header = () => {
             <div className="flex bg-gradient-to-r from-green-600 via-green-700 to-green-600 shadow-lg">
               {menuItems.map((item, index) => {
                 const IconComponent = item.icon;
-                const hasSubmenu = item.submenu && (item.name === translations.seeds || item.name === translations.fertilizers || item.name === translations.agriculture_products || item.name === translations.brands || item.name === translations.Animal_husbandry || item.name === translations.loans);
+                const hasSubmenu = item.submenu && (item.name === translations.seeds || item.name === translations.fertilizers || item.name === translations.agriculture_products || item.name === translations.brands || item.name === translations.loans);
                 
                 return (
                   <div
@@ -440,7 +429,7 @@ const Header = () => {
             <div className="px-4 py-2 space-y-2">
               {menuItems.map((item, index) => {
                 const IconComponent = item.icon;
-                const hasSubmenu = item.submenu && (item.name === translations.seeds || item.name === translations.fertilizers || item.name === translations.agriculture_products || item.name === translations.brands || item.name === translations.Animal_husbandry || item.name === translations.loans);
+                const hasSubmenu = item.submenu && (item.name === translations.seeds || item.name === translations.fertilizers || item.name === translations.agriculture_products || item.name === translations.brands || item.name === translations.loans);
                 
                 return (
                   <div key={index}>
