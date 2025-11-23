@@ -4,9 +4,6 @@ import Footer from '@/components/Footer';
 import HeroSlider from '@/components/HeroSlider';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Star, Users, Share2, Gift } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProductCategories from '@/components/ProductCategories';
@@ -14,7 +11,6 @@ import BrandsSection from '@/components/BrandsSection';
 
 const Index = () => {
   const { translations } = useLanguage();
-
 
   const products = [
     {
@@ -88,77 +84,38 @@ const Index = () => {
       inStock: false,
       description: "Organic bio-fertilizer for sustainable farming and soil health",
       reviews: 145
-    },
-    {
-      id: "7",
-      name: "Organic Pesticide Spray",
-      price: 349,
-      originalPrice: 449,
-      image: "https://i.postimg.cc/nVmfVH9j/topper-77-file-11270.jpg",
-      rating: 4.5,
-      discount: 22,
-      inStock: true,
-      description: "Natural pest control solution safe for organic farming",
-      reviews: 98
-    },
-    {
-      id: "8",
-      name: "Cotton Seeds Hybrid",
-      price: 520,
-      originalPrice: 620,
-      image: "https://i.postimg.cc/Qd0RYCwP/katyayani-activated-humic-acid-fulvic-acid-plants-fertilizer-bio-enhancer-with-silicon-wetting-agent.png",
-      rating: 4.6,
-      discount: 16,
-      inStock: true,
-      description: "Premium hybrid cotton seeds for high fiber quality and yield",
-      reviews: 234
-    },
-    {
-      id: "9",
-      name: "Organic Pesticide ",
-      price: 349,
-      originalPrice :500 ,
-      image: "https://i.postimg.cc/vBXn9XrQ/katyayani-trichoderma-harzianum-bio-fungicide-powder-file-20375.jpg",
-      rating: 4.5,
-      discount: 22,
-      inStock: true,
-      description: "Natural pest control solution safe for organic farming",
-      reviews: 98
-    },
-    {
-      id: "10",
-      name: "exylon ",
-      price: 400,
-      originalPrice :650 ,
-      image: "https://i.postimg.cc/Qx7tZ0FH/exylon-dronex-insecticide-file-20820.png",
-      rating: 4.5,
-      discount: 22,
-      inStock: true,
-      description: "Natural pest control solution safe for organic farming",
-      reviews: 98
     }
-    
-  ];
-
-  const socialMediaLinks = [
-    { name: 'Facebook', url: 'https://facebook.com/agricaptain', color: 'bg-blue-600' },
-    { name: 'WhatsApp', url: 'https://wa.me/9912365550', color: 'bg-green-500' },
-    { name: 'Instagram', url: 'https://instagram.com/agricaptain', color: 'bg-pink-500' },
-    { name: 'Twitter', url: 'https://twitter.com/agricaptain', color: 'bg-blue-400' },
-    { name: 'Snapchat', url: 'https://snapchat.com/add/agricaptain', color: 'bg-yellow-400' }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       <Header />
-      
-      {/* Hero Section */}
-      <div className="w-full">
-        <HeroSlider />
-      </div>
 
-      {/* Product Categories */}
-      <ProductCategories />
+      {/* Hero Slider */}
+      <HeroSlider />
+
+      {/* ---- LEFT + RIGHT IMAGES AROUND CATEGORY SECTION ---- */}
+      <div className="flex justify-center items-start gap-4 px-4 py-10">
+
+        {/* LEFT IMAGE  – hidden on mobile */}
+        <img
+          src="https://i.postimg.cc/sgvJfGLS/pesticide-banner-left.webp"
+          alt="Left Banner"
+          className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
+        />
+
+        {/* CENTER CATEGORY SECTION */}
+        <div className="w-full max-w-4xl mx-auto">
+          <ProductCategories />
+        </div>
+
+        {/* RIGHT IMAGE – hidden on mobile */}
+        <img
+          src="https://i.postimg.cc/XYR0Wm8p/pesticide-banner-right.webp"
+          alt="Right Banner"
+          className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
+        />
+      </div>
 
       {/* Brands Section */}
       <BrandsSection />
@@ -166,31 +123,29 @@ const Index = () => {
       {/* Featured Products */}
       <section className="py-8 md:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-4">{translations.featured_products || "Featured Products"}</h2>
-            <p className="text-sm md:text-base text-gray-600">{translations.discover_products || "Discover our top-quality agricultural products"}</p>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold">{translations.featured_products}</h2>
+            <p className="text-gray-600">{translations.discover_products}</p>
           </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-          
-          <div className="text-center mt-8 md:mt-12">
+
+          <div className="text-center mt-12">
             <Link to="/products">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 px-6 md:px-8 py-3 md:py-4"
-                onClick={() => window.scrollTo(0, 0)}
+              <Button
+                size="lg"
+                className="bg-green-600 hover:bg-green-700 px-8 py-4 text-white"
               >
-                {translations.view_all_products || "View All Products"}
+                {translations.view_all_products}
               </Button>
             </Link>
           </div>
         </div>
       </section>
-
 
       <Footer />
     </div>
