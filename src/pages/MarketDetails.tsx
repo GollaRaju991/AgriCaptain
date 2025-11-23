@@ -33,6 +33,27 @@ interface MarketData {
 const MarketDetails = () => {
   const { language, translations } = useLanguage();
 
+  // ---------------------------------------
+  // ✅ Telangana Old Districts Dropdown Data
+  // ---------------------------------------
+  const districts = [
+    "Adilabad",
+    "Nizamabad",
+    "Karimnagar",
+    "Medak",
+    "Warangal",
+    "Khammam",
+    "Nalgonda",
+    "Mahbubnagar",
+    "Rangareddy",
+    "Hyderabad"
+  ];
+
+  const [selectedDistrict, setSelectedDistrict] = React.useState("Select District");
+
+  // ---------------------------------------
+  // Existing Market Data (unchanged)
+  // ---------------------------------------
   const marketData: MarketData[] = [
     {
       sno: 1,
@@ -96,7 +117,7 @@ const MarketDetails = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
         <Card>
           <CardHeader>
@@ -105,6 +126,26 @@ const MarketDetails = () => {
               {translations.market_details_description}
             </CardDescription>
           </CardHeader>
+
+          {/* -----------------------------------------
+              ✅ Telangana District Dropdown (Added)
+              ----------------------------------------- */}
+          <div className="mb-4 px-6">
+            <label className="font-medium mr-3">Select District:</label>
+            <select
+              className="border px-4 py-2 rounded-md"
+              value={selectedDistrict}
+              onChange={(e) => setSelectedDistrict(e.target.value)}
+            >
+              <option value="Select District">Select District</option>
+              {districts.map((dist) => (
+                <option key={dist} value={dist}>
+                  {dist}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <CardContent>
             <div className="overflow-x-auto">
               <Table>
@@ -119,6 +160,7 @@ const MarketDetails = () => {
                     <TableHead className="text-center">{translations.newly_added_today}</TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {marketData.map((item) => (
                     <TableRow key={item.sno}>
@@ -128,7 +170,9 @@ const MarketDetails = () => {
                       <TableCell className="text-right">₹{item.avg2025_2026}</TableCell>
                       <TableCell className="text-right">₹{item.yesterday}</TableCell>
                       <TableCell className="text-right">₹{item.today}</TableCell>
-                      <TableCell className="text-center">{getNewlyAddedText(item.newlyAdded)}</TableCell>
+                      <TableCell className="text-center">
+                        {getNewlyAddedText(item.newlyAdded)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
