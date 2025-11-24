@@ -206,6 +206,7 @@ const Cart = () => {
           </div>
         </div>
       </div>
+<MobileBottomNav />
 
       <Footer />
     </div>
