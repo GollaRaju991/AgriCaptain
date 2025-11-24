@@ -467,7 +467,8 @@ const MarketDetails = () => {
           </CardContent>
         </Card>
       </main>
-      <div className="h-20 lg:hidden"></div
+      <div className="h-20 lg:hidden"></div>
+
 <MobileBottomNav />
       <Footer />
     </div>
