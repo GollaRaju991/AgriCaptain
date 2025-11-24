@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProductCategories from '@/components/ProductCategories';
 import BrandsSection from '@/components/BrandsSection';
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const Index = () => {
   const { translations } = useLanguage();
@@ -146,6 +147,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
 
       <Footer />
     </div>
