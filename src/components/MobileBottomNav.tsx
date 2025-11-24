@@ -1,28 +1,28 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, ShoppingCart, Heart, User } from "lucide-react";
+import { Home, Layers, ShoppingCart, Heart, User } from "lucide-react";
 
 const MobileBottomNav = () => {
   const { pathname } = useLocation();
 
-  // Check active route
+  // Active route highlighter
   const isActive = (route: string) =>
     pathname === route ? "text-green-600 font-semibold" : "text-gray-500";
 
   return (
     <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t shadow-lg z-50">
       <div className="flex justify-between items-center px-6 py-2">
-        
+
         {/* Home */}
         <Link to="/" className="flex flex-col items-center">
           <Home className={`h-6 w-6 ${isActive("/")}`} />
           <span className="text-xs">Home</span>
         </Link>
 
-        {/* Search */}
-        <Link to="/search" className="flex flex-col items-center">
-          <Search className={`h-6 w-6 ${isActive("/search")}`} />
-          <span className="text-xs">Search</span>
+        {/* Categories */}
+        <Link to="/products" className="flex flex-col items-center">
+          <Layers className={`h-6 w-6 ${isActive("/products")}`} />
+          <span className="text-xs">Categories</span>
         </Link>
 
         {/* Cart */}
