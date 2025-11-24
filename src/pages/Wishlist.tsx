@@ -88,6 +88,8 @@ const Wishlist = () => {
           )}
         </div>
       </main>
+      <div className="h-20 lg:hidden"></div>
+
 
       <MobileBottomNav />   {/* ✅ Fix: Nav will show now */}
 
