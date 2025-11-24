@@ -519,6 +519,8 @@ const Products = () => {
         </div>
       </div>
 
+      <MobileBottomNav />
+
       <Footer />
     </div>
   );
