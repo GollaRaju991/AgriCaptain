@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +25,9 @@ import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
 import NotFound from "./pages/NotFound";
 
+// ⭐ ADD THIS
+import MobileBottomNav from "@/components/MobileBottomNav";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -34,9 +36,12 @@ const App = () => (
       <LanguageProvider>
         <AuthProvider>
           <CartProvider>
-            <div className="w-full min-h-screen overflow-x-hidden">
+            {/* ⭐ Add bottom padding so content is not hidden */}
+            <div className="w-full min-h-screen overflow-x-hidden pb-24">
+              
               <Toaster />
               <Sonner />
+
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
@@ -58,6 +63,10 @@ const App = () => (
                   <Route path="/market-details" element={<MarketDetails />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
+
+                {/* ⭐ ALWAYS visible on mobile */}
+                <MobileBottomNav />
+
               </BrowserRouter>
             </div>
           </CartProvider>
