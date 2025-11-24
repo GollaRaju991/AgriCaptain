@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+// ✅ IMPORTANT — You forgot this import
+import MobileBottomNav from "@/components/MobileBottomNav";
+
 const Wishlist = () => {
   const { translations } = useLanguage();
   
@@ -13,7 +16,7 @@ const Wishlist = () => {
   const wishlistItems: any[] = [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-24"> {/* space for bottom nav */}
       <Header />
       
       <main className="container mx-auto px-4 py-8">
@@ -35,13 +38,14 @@ const Wishlist = () => {
                   <Heart className="h-12 w-12 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {translations.language === 'te' ? 'మీ ఇష్టపడిన వస్తువుల జాబితా ఖాళీగా ఉంది' : 'Your wishlist is empty'}
+                  {translations.language === 'te' 
+                    ? 'మీ ఇష్టపడిన వస్తువుల జాబితా ఖాళీగా ఉంది' 
+                    : 'Your wishlist is empty'}
                 </h3>
                 <p className="text-gray-600 max-w-md mx-auto">
-                  {translations.language === 'te' 
+                  {translations.language === 'te'
                     ? 'మీకు నచ్చిన ఉత్పత్తులను సేవ్ చేయడానికి హార్ట్ ఐకాన్‌పై క్లిక్ చేయండి'
-                    : 'Save items you like by clicking the heart icon on products'
-                  }
+                    : 'Save items by clicking the heart icon on products'}
                 </p>
                 <Button className="mt-4">
                   <ShoppingCart className="h-4 w-4 mr-2" />
@@ -79,8 +83,11 @@ const Wishlist = () => {
           )}
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation */}
       <MobileBottomNav />
-<Footer />
+
+      <Footer />
     </div>
   );
 };
