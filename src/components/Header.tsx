@@ -6,20 +6,8 @@ import {
   Search,
   Menu,
   X,
-  ChevronDown,
   Languages,
-  Sprout,
-  Beaker,
-  Tractor,
-  Award,
-  Users,
-  Truck,
-  CreditCard,
   UserPlus,
-  Package,
-  Heart,
-  Gift,
-  Bell,
 } from "lucide-react";
 
 import ImageSearch from "./ImageSearch";
@@ -40,7 +28,6 @@ const Header = () => {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
   const [farmWorkerDialogOpen, setFarmWorkerDialogOpen] = useState(false);
@@ -57,15 +44,12 @@ const Header = () => {
     }
   };
 
-  // ----------------------------------------------------------
-  //  MOBILE HEADER = Logo + Search bar + Menu
-  // ----------------------------------------------------------
-
   return (
     <>
+      {/* ---------------------- HEADER WRAPPER ---------------------- */}
       <header className="bg-white shadow-md sticky top-0 z-50 w-full">
 
-        {/* ---------------------- MOBILE HEADER BAR ---------------------- */}
+        {/* ---------------------- MOBILE HEADER ---------------------- */}
         <div className="lg:hidden flex items-center justify-between px-3 py-3 border-b shadow-sm">
 
           {/* Logo */}
@@ -76,7 +60,7 @@ const Header = () => {
             <span className="text-xl font-bold text-green-700">Agrizin</span>
           </Link>
 
-          {/* Mobile Search Bar */}
+          {/* Search */}
           <form
             onSubmit={handleSearch}
             className="flex flex-1 mx-3 bg-gray-100 rounded-lg overflow-hidden"
@@ -88,15 +72,12 @@ const Header = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border-none bg-gray-100 text-sm"
             />
-            <Button
-              type="submit"
-              className="bg-green-600 rounded-none text-white"
-            >
+            <Button type="submit" className="bg-green-600 rounded-none text-white">
               <Search className="h-4 w-4" />
             </Button>
           </form>
 
-          {/* Menu Button */}
+          {/* Menu Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -116,32 +97,24 @@ const Header = () => {
               <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold shadow">
                 A
               </div>
-              <span className="text-3xl font-bold text-green-700">
-                Agrizin
-              </span>
+              <span className="text-3xl font-bold text-green-700">Agrizin</span>
             </Link>
 
-            {/* Desktop Search Bar */}
-            <form
-              onSubmit={handleSearch}
-              className="flex flex-1 mx-8 max-w-xl"
-            >
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="flex flex-1 mx-8 max-w-xl">
               <Input
                 type="text"
-                placeholder={`${translations.search} for seeds, fertilizers, tools…`}
+                placeholder={`${translations.search} for seeds, fertilizers…`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="rounded-r-none border-r-0"
               />
-              <Button
-                type="submit"
-                className="rounded-none bg-green-600 text-white"
-              >
+              <Button type="submit" className="rounded-none bg-green-600 text-white">
                 <Search className="h-4 w-4" />
               </Button>
             </form>
 
-            {/* Desktop Right options */}
+            {/* Right Options */}
             <div className="flex items-center space-x-4">
 
               {/* Language */}
@@ -154,7 +127,7 @@ const Header = () => {
                 Language
               </Button>
 
-              {/* Become Seller */}
+              {/* Seller */}
               <Link to="/become-seller">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white">
                   <UserPlus className="h-4 w-4 mr-1" />
@@ -174,7 +147,7 @@ const Header = () => {
                 )}
               </Link>
 
-              {/* User Login */}
+              {/* LOGIN BUTTON FIXED */}
               <Link to="/auth">
                 <Button className="border border-green-600 text-green-700 hover:bg-green-600 hover:text-white">
                   Login
@@ -184,29 +157,28 @@ const Header = () => {
           </div>
         </div>
 
-        {/* ---------------------- MOBILE MENU PANEL ---------------------- */}
+        {/* ---------------------- MOBILE MENU ---------------------- */}
         {isMenuOpen && (
           <div className="lg:hidden bg-white shadow-md border-t">
-
             <div className="px-4 py-4 space-y-3 text-gray-700">
 
               <Link to="/" className="block py-2">Home</Link>
               <Link to="/products" className="block py-2">Products</Link>
-              <Link to="/become-seller" className="block py-2">Become Seller</Link>
               <Link to="/market-details" className="block py-2">Market Details</Link>
+              <Link to="/become-seller" className="block py-2">Become Seller</Link>
+
               <button
-                className="block py-2 text-left w-full"
                 onClick={() => setLanguageDialogOpen(true)}
+                className="block py-2 w-full text-left"
               >
                 🌐 Language
               </button>
-
             </div>
           </div>
         )}
       </header>
 
-      {/* POPUPS */}
+      {/* ---------------------- POPUP COMPONENTS ---------------------- */}
       <LanguageSelector open={languageDialogOpen} onOpenChange={setLanguageDialogOpen} />
       <FarmWorkerDialog open={farmWorkerDialogOpen} onOpenChange={setFarmWorkerDialogOpen} />
       <RentVehicleDialog open={vehicleRentDialogOpen} onOpenChange={setVehicleRentDialogOpen} />
