@@ -1,4 +1,5 @@
 import React from 'react';
+import MobileBottomNav from "@/components/MobileBottomNav";
 import { useLanguage } from '@/contexts/LanguageContext';
 import {
   Table,
@@ -466,7 +467,7 @@ const MarketDetails = () => {
           </CardContent>
         </Card>
       </main>
-
+<MobileBottomNav />
       <Footer />
     </div>
   );
