@@ -145,7 +145,7 @@ const Index = () => {
           </div>
         </div>
       </section>
-
+      <MobileBottomNav />
       <Footer />
     </div>
   );
