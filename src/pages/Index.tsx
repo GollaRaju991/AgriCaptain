@@ -1,13 +1,13 @@
-import React from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import HeroSlider from '@/components/HeroSlider';
-import ProductCard from '@/components/ProductCard';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
-import ProductCategories from '@/components/ProductCategories';
-import BrandsSection from '@/components/BrandsSection';
+import React from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import HeroSlider from "@/components/HeroSlider";
+import ProductCard from "@/components/ProductCard";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
+import ProductCategories from "@/components/ProductCategories";
+import BrandsSection from "@/components/BrandsSection";
 
 const Index = () => {
   const { translations } = useLanguage();
@@ -23,7 +23,7 @@ const Index = () => {
       discount: 25,
       inStock: true,
       description: "High-quality hybrid tomato seeds for excellent yield and disease resistance",
-      reviews: 124
+      reviews: 124,
     },
     {
       id: "2",
@@ -35,7 +35,7 @@ const Index = () => {
       discount: 20,
       inStock: true,
       description: "Complete nutrition fertilizer for healthy plant growth and better yield",
-      reviews: 89
+      reviews: 89,
     },
     {
       id: "3",
@@ -47,7 +47,7 @@ const Index = () => {
       discount: 24,
       inStock: true,
       description: "Professional grade garden tools for efficient farming and gardening",
-      reviews: 56
+      reviews: 56,
     },
     {
       id: "4",
@@ -59,7 +59,7 @@ const Index = () => {
       discount: 22,
       inStock: true,
       description: "Water-efficient irrigation system for precise and economical watering",
-      reviews: 78
+      reviews: 78,
     },
     {
       id: "5",
@@ -71,7 +71,7 @@ const Index = () => {
       discount: 18,
       inStock: true,
       description: "High-yielding wheat seeds suitable for various soil conditions",
-      reviews: 203
+      reviews: 203,
     },
     {
       id: "6",
@@ -83,12 +83,12 @@ const Index = () => {
       discount: 20,
       inStock: false,
       description: "Organic bio-fertilizer for sustainable farming and soil health",
-      reviews: 145
-    }
+      reviews: 145,
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden pb-24">
+    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       <Header />
 
       {/* Hero Slider */}
@@ -118,7 +118,9 @@ const Index = () => {
 
       {/* Featured Products */}
       <section className="py-8 md:py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-4 pb-24">
+          {/* <-- padding ensures button is fully visible */}
+
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold">{translations.featured_products}</h2>
             <p className="text-gray-600">{translations.discover_products}</p>
@@ -130,6 +132,7 @@ const Index = () => {
             ))}
           </div>
 
+          {/* --------  FIXED VIEW ALL BUTTON -------- */}
           <div className="text-center mt-12">
             <Link to="/products">
               <Button
@@ -144,12 +147,10 @@ const Index = () => {
       </section>
 
       <Footer />
-
-      {/* Space for Mobile Bottom Nav */}
-      <div className="h-24 lg:hidden"></div>
     </div>
   );
 };
 
 export default Index;
+
 
