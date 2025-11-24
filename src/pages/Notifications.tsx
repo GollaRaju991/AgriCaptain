@@ -263,6 +263,8 @@ const Notifications = () => {
           </Card>
         )}
       </div>
+<div className="h-20 lg:hidden"></div>
+
 <MobileBottomNav />
       <Footer />
     </div>
