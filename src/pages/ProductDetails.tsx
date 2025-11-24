@@ -377,7 +377,7 @@ const ProductDetails = () => {
           </Tabs>
         </div>
       </div>
-
+<MobileBottomNav />
       <Footer />
     </div>
   );
