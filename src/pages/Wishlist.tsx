@@ -5,8 +5,8 @@ import { Heart, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
+import MobileBottomNav from "@/components/MobileBottomNav";   // ✅ correct import
 
-import MobileBottomNav from "@/components/MobileBottomNav";   // ✅ FIX
 
 const Wishlist = () => {
   const { translations } = useLanguage();
