@@ -79,8 +79,8 @@ const Wishlist = () => {
           )}
         </div>
       </main>
-      
-      <Footer />
+      <MobileBottomNav />
+<Footer />
     </div>
   );
 };
