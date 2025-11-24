@@ -8,7 +8,6 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ProductCategories from '@/components/ProductCategories';
 import BrandsSection from '@/components/BrandsSection';
-import MobileBottomNav from "@/components/MobileBottomNav";
 
 const Index = () => {
   const { translations } = useLanguage();
@@ -89,28 +88,24 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden pb-24">
       <Header />
 
       {/* Hero Slider */}
       <HeroSlider />
 
-      {/* ---- LEFT + RIGHT IMAGES AROUND CATEGORY SECTION ---- */}
+      {/* Left + Right Image Layout */}
       <div className="flex justify-center items-start gap-4 px-4 py-10">
-
-        {/* LEFT IMAGE  – hidden on mobile */}
         <img
           src="https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png"
           alt="Left Banner"
           className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
         />
 
-        {/* CENTER CATEGORY SECTION */}
         <div className="w-full max-w-4xl mx-auto">
           <ProductCategories />
         </div>
 
-        {/* RIGHT IMAGE – hidden on mobile */}
         <img
           src="https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png"
           alt="Right Banner"
@@ -148,12 +143,13 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
-
       <Footer />
+
+      {/* Space for Mobile Bottom Nav */}
+      <div className="h-24 lg:hidden"></div>
     </div>
   );
 };
 
 export default Index;
+
