@@ -3,13 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Phone, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
 const Auth = () => {
   const { user, session, loading, redirectAfterLogin, setRedirectAfterLogin, sendOTP, verifyOTP, testLogin } = useAuth();
@@ -22,6 +20,7 @@ const Auth = () => {
   });
 
   const [otpForm, setOtpForm] = useState({
+    name: '',
     phone: '',
     otp: ''
   });
@@ -33,11 +32,31 @@ const Auth = () => {
     confirmPassword: ''
   });
 
-  const [otpSent, setOtpSent] = useState(false);
+  const [otpStep, setOtpStep] = useState<'details' | 'otp'>('details');
   const [isLoading, setIsLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(120); // 2 minutes in seconds
+  const [timerActive, setTimerActive] = useState(false);
 
   // Test OTP for development
   const TEST_OTP = '123456';
+
+  // Timer countdown
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (timerActive && timeLeft > 0) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0) {
+      setTimerActive(false);
+      toast({
+        title: "OTP Expired",
+        description: "Please request a new OTP",
+        variant: "destructive"
+      });
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft, toast]);
 
   // Handle successful authentication
   useEffect(() => {
@@ -48,6 +67,12 @@ const Auth = () => {
       navigate(redirectPath, { replace: true });
     }
   }, [user, session, loading, navigate, redirectAfterLogin, setRedirectAfterLogin]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,10 +175,9 @@ const Auth = () => {
 
       toast({
         title: "Signup Successful",
-        description: "Please check your email to verify your account. For testing, you may need to disable 'Confirm email' in Supabase settings.",
+        description: "Please check your email to verify your account.",
       });
 
-      // Clear form
       setSignupForm({ name: '', email: '', password: '', confirmPassword: '' });
     } catch (error) {
       console.error('Signup error:', error);
@@ -167,11 +191,63 @@ const Auth = () => {
     }
   };
 
-  const handleVerifyOTP = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpForm.phone || !otpForm.otp) {
+    
+    if (!otpForm.name || !otpForm.phone) {
       toast({
         title: "Please fill all fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (otpForm.phone.length !== 10) {
+      toast({
+        title: "Invalid phone number",
+        description: "Please enter a valid 10-digit phone number",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await sendOTP(otpForm.phone, otpForm.name);
+      if (result.success) {
+        setOtpStep('otp');
+        setTimeLeft(120);
+        setTimerActive(true);
+        toast({
+          title: "OTP Sent",
+          description: `Verification code sent to ${otpForm.phone}`,
+        });
+      } else {
+        toast({
+          title: "Failed to send OTP",
+          description: result.error || "Please try again",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Send OTP error:', error);
+      toast({
+        title: "Failed to send OTP",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!otpForm.otp) {
+      toast({
+        title: "Please enter OTP",
         variant: "destructive"
       });
       return;
@@ -187,8 +263,9 @@ const Auth = () => {
         if (result.success) {
           toast({
             title: "Login Successful",
-            description: "Welcome to AgriCaptain!"
+            description: `Welcome ${otpForm.name}!`
           });
+          setTimerActive(false);
           return;
         } else {
           toast({
@@ -199,12 +276,13 @@ const Auth = () => {
         }
       } else {
         // Try real OTP verification
-        const result = await verifyOTP(otpForm.phone, otpForm.otp);
+        const result = await verifyOTP(otpForm.phone, otpForm.otp, otpForm.name);
         if (result.success) {
           toast({
             title: "Login Successful",
-            description: "Welcome to AgriCaptain!"
+            description: `Welcome ${otpForm.name}!`
           });
+          setTimerActive(false);
         } else {
           toast({
             title: "Invalid OTP",
@@ -225,37 +303,29 @@ const Auth = () => {
     }
   };
 
-  const handleSendOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!otpForm.phone) {
-      toast({
-        title: "Please enter phone number",
-        variant: "destructive"
-      });
-      return;
-    }
-
+  const handleResendOTP = async () => {
     setIsLoading(true);
-
     try {
-      const result = await sendOTP(otpForm.phone);
+      const result = await sendOTP(otpForm.phone, otpForm.name);
       if (result.success) {
-        setOtpSent(true);
+        setTimeLeft(120);
+        setTimerActive(true);
+        setOtpForm({ ...otpForm, otp: '' });
         toast({
-          title: "OTP Sent",
-          description: `Verification code sent to ${otpForm.phone}. For testing, use OTP: ${TEST_OTP}`,
+          title: "OTP Resent",
+          description: `New verification code sent to ${otpForm.phone}`,
         });
       } else {
         toast({
-          title: "Failed to send OTP",
+          title: "Failed to resend OTP",
           description: result.error || "Please try again",
           variant: "destructive"
         });
       }
     } catch (error) {
-      console.error('Send OTP error:', error);
+      console.error('Resend OTP error:', error);
       toast({
-        title: "Failed to send OTP",
+        title: "Failed to resend OTP",
         description: "Something went wrong. Please try again.",
         variant: "destructive"
       });
@@ -303,27 +373,73 @@ const Auth = () => {
                 </TabsList>
 
                 <TabsContent value="otp">
-                  <form onSubmit={otpSent ? handleVerifyOTP : handleSendOTP} className="space-y-4">
-                    <div>
-                      <Label htmlFor="phone" className="text-sm font-medium">Phone Number *</Label>
-                      <div className="flex mt-1">
-                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                          +91
-                        </span>
+                  {otpStep === 'details' ? (
+                    <form onSubmit={handleSendOTP} className="space-y-4">
+                      <div>
+                        <Label htmlFor="name" className="text-sm font-medium">First Name *</Label>
                         <Input
-                          id="phone"
-                          type="tel"
-                          placeholder="9876543210"
-                          value={otpForm.phone}
-                          onChange={(e) => setOtpForm({ ...otpForm, phone: e.target.value })}
-                          className="rounded-l-none text-sm"
-                          disabled={otpSent}
-                          maxLength={10}
+                          id="name"
+                          type="text"
+                          placeholder="Enter your first name"
+                          value={otpForm.name}
+                          onChange={(e) => setOtpForm({ ...otpForm, name: e.target.value })}
+                          className="mt-1 text-sm"
                         />
                       </div>
-                    </div>
 
-                    {otpSent && (
+                      <div>
+                        <Label htmlFor="phone" className="text-sm font-medium">Phone Number *</Label>
+                        <div className="flex mt-1">
+                          <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                            +91
+                          </span>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="9876543210"
+                            value={otpForm.phone}
+                            onChange={(e) => setOtpForm({ ...otpForm, phone: e.target.value })}
+                            className="rounded-l-none text-sm"
+                            maxLength={10}
+                          />
+                        </div>
+                      </div>
+
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3" 
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Sending OTP...
+                          </>
+                        ) : (
+                          'Send OTP'
+                        )}
+                      </Button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleVerifyOTP} className="space-y-4">
+                      <div className="text-center mb-4">
+                        <p className="text-sm text-gray-600">
+                          OTP sent to +91{otpForm.phone}
+                        </p>
+                        <Button
+                          type="button"
+                          variant="link"
+                          onClick={() => {
+                            setOtpStep('details');
+                            setOtpForm({ ...otpForm, otp: '' });
+                            setTimerActive(false);
+                          }}
+                          className="text-xs text-green-600"
+                        >
+                          Change Number
+                        </Button>
+                      </div>
+
                       <div>
                         <Label htmlFor="otp" className="text-sm">Enter OTP</Label>
                         <Input
@@ -332,43 +448,43 @@ const Auth = () => {
                           placeholder="Enter 6-digit OTP"
                           value={otpForm.otp}
                           onChange={(e) => setOtpForm({ ...otpForm, otp: e.target.value })}
-                          className="mt-1 text-sm"
+                          className="mt-1 text-sm text-center text-lg tracking-widest"
                           maxLength={6}
                         />
-                        <p className="text-xs text-gray-500 mt-1">
-                          For testing, use OTP: {TEST_OTP}
-                        </p>
+                        <div className="mt-2 flex justify-between items-center">
+                          <p className="text-sm text-gray-500">
+                            Time remaining: <span className="font-semibold text-green-600">{formatTime(timeLeft)}</span>
+                          </p>
+                          {timeLeft === 0 && (
+                            <Button
+                              type="button"
+                              variant="link"
+                              onClick={handleResendOTP}
+                              className="text-xs text-green-600"
+                              disabled={isLoading}
+                            >
+                              Resend OTP
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                    )}
 
-                    <Button type="submit" className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3" disabled={isLoading}>
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          {otpSent ? 'Verifying...' : 'Sending...'}
-                        </>
-                      ) : (
-                        <>
-                          <Phone className="mr-2 h-4 w-4" />
-                          {otpSent ? 'Verify OTP' : 'Send OTP'}
-                        </>
-                      )}
-                    </Button>
-
-                    {otpSent && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setOtpSent(false);
-                          setOtpForm({ ...otpForm, otp: '' });
-                        }}
-                        className="w-full text-sm"
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3"
+                        disabled={isLoading}
                       >
-                        Change Phone Number
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Verifying...
+                          </>
+                        ) : (
+                          'Verify & Login'
+                        )}
                       </Button>
-                    )}
-                  </form>
+                    </form>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="email">

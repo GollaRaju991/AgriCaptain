@@ -57,45 +57,60 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send OTP via Fast2SMS
-    const fast2smsApiKey = Deno.env.get("FAST2SMS_API_KEY");
+    // Send OTP via Twilio
+    const twilioAccountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
+    const twilioAuthToken = Deno.env.get("TWILIO_AUTH_TOKEN");
+    const twilioPhoneNumber = Deno.env.get("TWILIO_PHONE_NUMBER");
     
-    if (!fast2smsApiKey) {
-      console.log("Fast2SMS API key not configured, returning OTP for testing:", otp);
+    if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
+      console.log("Twilio credentials not configured, returning OTP for testing:", otp);
       return new Response(
         JSON.stringify({ 
           success: true, 
           message: "OTP generated (SMS not configured)",
-          otp: otp // Only for testing, remove in production
+          otp: otp // Only for testing
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Fast2SMS API call
+    // Twilio API call
     const message = `Your AgriCaptain OTP is: ${otp}. Valid for 10 minutes. Do not share with anyone.`;
-    const fast2smsUrl = `https://www.fast2sms.com/dev/bulkV2?authorization=${fast2smsApiKey}&route=otp&variables_values=${otp}&flash=0&numbers=${phone.replace('+91', '')}`;
-
-    const smsResponse = await fetch(fast2smsUrl, {
-      method: "GET",
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
+    
+    const twilioAuth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
+    
+    const formData = new URLSearchParams({
+      To: phone,
+      From: twilioPhoneNumber,
+      Body: message
     });
 
-    const smsResult = await smsResponse.json();
-    
-    if (!smsResponse.ok || smsResult.return === false) {
-      console.error("SMS sending failed:", smsResult);
+    const smsResponse = await fetch(twilioUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${twilioAuth}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: formData.toString()
+    });
+
+    if (!smsResponse.ok) {
+      const errorText = await smsResponse.text();
+      console.error("Twilio SMS sending failed:", errorText);
       // Still return success for testing, but log the SMS failure
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "OTP generated (SMS not sent - check Fast2SMS configuration)",
+          message: "OTP generated (SMS not sent - check Twilio configuration)",
           otp: otp // For testing when SMS fails
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log("OTP sent successfully:", { phone, messageId: smsResult.message_id });
+    const smsResult = await smsResponse.json();
+    console.log("OTP sent successfully via Twilio:", { phone, sid: smsResult.sid });
 
     return new Response(
       JSON.stringify({ 

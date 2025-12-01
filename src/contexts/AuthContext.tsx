@@ -18,8 +18,8 @@ interface AuthContextType {
   loading: boolean;
   redirectAfterLogin: string | undefined;
   setRedirectAfterLogin: (path: string | undefined) => void;
-  sendOTP: (phone: string) => Promise<{ success: boolean; error?: string }>;
-  verifyOTP: (phone: string, otp: string) => Promise<{ success: boolean; error?: string }>;
+  sendOTP: (phone: string, name?: string) => Promise<{ success: boolean; error?: string }>;
+  verifyOTP: (phone: string, otp: string, name?: string) => Promise<{ success: boolean; error?: string }>;
   testLogin: (phone: string) => Promise<{ success: boolean; error?: string }>;
   updateUser: (userData: Partial<AuthUser>) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const sendOTP = async (phone: string): Promise<{ success: boolean; error?: string }> => {
+  const sendOTP = async (phone: string, name?: string): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('Sending OTP to phone:', phone);
       
@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const verifyOTP = async (phone: string, otp: string): Promise<{ success: boolean; error?: string }> => {
+  const verifyOTP = async (phone: string, otp: string, name?: string): Promise<{ success: boolean; error?: string }> => {
     try {
       console.log('Verifying OTP for phone:', phone);
       
@@ -94,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Call our custom edge function for real-time OTP verification
       const { data, error } = await supabase.functions.invoke('verify-otp', {
-        body: { phone: formattedPhone, otp: otp }
+        body: { phone: formattedPhone, otp: otp, name: name || 'User' }
       });
 
       if (error) {
