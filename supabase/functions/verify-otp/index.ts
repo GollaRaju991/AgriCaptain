@@ -118,10 +118,12 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       if (signInError) {
-        const userId = signInData?.user?.id;
+        // Try to update password and retry
+        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+        const existingUser = users?.find(u => u.email === testEmail);
 
-        if (userId) {
-          const { error: adminError } = await supabase.auth.admin.updateUserById(userId, {
+        if (existingUser && !listError) {
+          const { error: adminError } = await supabase.auth.admin.updateUserById(existingUser.id, {
             password: testPassword,
           });
 

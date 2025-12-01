@@ -447,14 +447,6 @@ const MarketDetails = () => {
                       <TableCell className="text-right">₹{item.yesterday}</TableCell>
                       <TableCell className="text-right">₹{item.today}</TableCell>
                       <TableCell className="text-center">{getNewlyAddedText(item.newlyAdded)}</TableCell>
-                      <style jsx>{`
-                        /* row hover background using arbitrary color with Tailwind notations
-                           In case your Tailwind config doesn't allow arbitrary colors in class names,
-                           the inline style fallback below is used. */
-                        tr:hover {
-                          background: ${hoverBg};
-                        }
-                      `}</style>
                     </TableRow>
                   ))}
                 </TableBody>
