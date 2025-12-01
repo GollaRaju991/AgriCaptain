@@ -147,12 +147,21 @@ const Header = () => {
                 )}
               </Link>
 
-              {/* LOGIN BUTTON FIXED */}
-              <Link to="/auth">
-                <Button className="border border-green-600 text-green-700 hover:bg-green-600 hover:text-white">
-                  Login
+              {/* LOGIN / USER BUTTON */}
+              {user ? (
+                <Button 
+                  onClick={() => setLogoutDialogOpen(true)}
+                  className="border border-green-600 text-green-700 hover:bg-green-600 hover:text-white"
+                >
+                  {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
                 </Button>
-              </Link>
+              ) : (
+                <Link to="/auth">
+                  <Button className="border border-green-600 text-green-700 hover:bg-green-600 hover:text-white">
+                    Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

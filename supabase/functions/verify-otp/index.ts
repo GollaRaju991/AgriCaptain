@@ -10,6 +10,7 @@ const corsHeaders = {
 interface VerifyOTPRequest {
   phone: string;
   otp: string;
+  name?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -18,7 +19,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { phone, otp }: VerifyOTPRequest = await req.json();
+    const { phone, otp, name }: VerifyOTPRequest = await req.json();
 
     if (!phone || !otp) {
       return new Response(
@@ -105,7 +106,7 @@ const handler = async (req: Request): Promise<Response> => {
       options: {
         data: {
           phone: phone,
-          name: 'User'
+          name: name || 'User'
         }
       }
     });
