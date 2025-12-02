@@ -8,7 +8,20 @@ import {
   X,
   Languages,
   UserPlus,
+  ChevronDown,
+  User as UserIcon,
+  Package,
+  Heart,
+  Gift,
+  LogOut,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import ImageSearch from "./ImageSearch";
 import { useCart } from "@/contexts/CartContext";
@@ -147,14 +160,53 @@ const Header = () => {
                 )}
               </Link>
 
-              {/* LOGIN / USER BUTTON */}
+              {/* LOGIN / USER DROPDOWN */}
               {user ? (
-                <Button 
-                  onClick={() => setLogoutDialogOpen(true)}
-                  className="border border-green-600 text-green-700 hover:bg-green-600 hover:text-white"
-                >
-                  {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                    >
+                      <UserIcon className="h-4 w-4" />
+                      {user.user_metadata?.name || user.email?.split('@')[0] || 'User'}
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="flex items-center cursor-pointer">
+                        <UserIcon className="h-4 w-4 mr-2" />
+                        My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/orders" className="flex items-center cursor-pointer">
+                        <Package className="h-4 w-4 mr-2" />
+                        Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/wishlist" className="flex items-center cursor-pointer">
+                        <Heart className="h-4 w-4 mr-2" />
+                        Wishlist
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/gift-cards" className="flex items-center cursor-pointer">
+                        <Gift className="h-4 w-4 mr-2" />
+                        Gift Cards
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      onClick={() => setLogoutDialogOpen(true)}
+                      className="cursor-pointer text-red-600 focus:text-red-600"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <Link to="/auth">
                   <Button className="bg-green-600 text-white hover:bg-green-700">
