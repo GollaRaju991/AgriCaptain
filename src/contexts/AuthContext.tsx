@@ -108,6 +108,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Set session if returned
       if (data.session) {
+        // CRITICAL: Set the session in Supabase client for authenticated API calls
+        await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token
+        });
         setSession(data.session);
         setUser(data.user as AuthUser);
       }
