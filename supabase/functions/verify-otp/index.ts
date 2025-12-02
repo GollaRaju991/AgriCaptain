@@ -113,40 +113,44 @@ const handler = async (req: Request): Promise<Response> => {
 
     // If user exists, sign in
     if (signUpError?.message.includes('already registered')) {
+      // Get the existing user
+      const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+      const existingUser = users?.find(u => u.email === testEmail);
+
+      if (existingUser && !listError) {
+        // Update user metadata with new name and password
+        const { error: adminError } = await supabase.auth.admin.updateUserById(existingUser.id, {
+          password: testPassword,
+          user_metadata: {
+            phone: phone,
+            name: name || 'User'
+          }
+        });
+
+        if (!adminError) {
+          const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
+            email: testEmail,
+            password: testPassword,
+          });
+
+          if (!retryError && retrySignIn.session) {
+            return new Response(
+              JSON.stringify({
+                success: true,
+                session: retrySignIn.session,
+                user: retrySignIn.user,
+              }),
+              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+            );
+          }
+        }
+      }
+
+      // Fallback: try regular sign in
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email: testEmail,
         password: testPassword
       });
-
-      if (signInError) {
-        // Try to update password and retry
-        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
-        const existingUser = users?.find(u => u.email === testEmail);
-
-        if (existingUser && !listError) {
-          const { error: adminError } = await supabase.auth.admin.updateUserById(existingUser.id, {
-            password: testPassword,
-          });
-
-          if (!adminError) {
-            const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
-              email: testEmail,
-              password: testPassword,
-            });
-
-            if (!retryError && retrySignIn.session) {
-              return new Response(
-                JSON.stringify({
-                  success: true,
-                  session: retrySignIn.session,
-                  user: retrySignIn.user,
-                }),
-                { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-              );
-            }
-          }
-        }
-      }
 
       if (signInData?.session) {
         return new Response(
