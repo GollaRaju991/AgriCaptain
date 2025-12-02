@@ -157,7 +157,7 @@ const Header = () => {
                 </Button>
               ) : (
                 <Link to="/auth">
-                  <Button className="border border-green-600 text-green-700 hover:bg-green-600 hover:text-white">
+                  <Button className="bg-green-600 text-white hover:bg-green-700">
                     Login
                   </Button>
                 </Link>

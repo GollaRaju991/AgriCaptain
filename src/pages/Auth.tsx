@@ -22,6 +22,7 @@ const Auth = () => {
   const [otpForm, setOtpForm] = useState({
     name: '',
     phone: '',
+    referenceId: '',
     otp: ''
   });
 
@@ -403,6 +404,18 @@ const Auth = () => {
                             maxLength={10}
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="referenceId" className="text-sm font-medium">Reference ID</Label>
+                        <Input
+                          id="referenceId"
+                          type="text"
+                          placeholder="Enter reference ID (optional)"
+                          value={otpForm.referenceId}
+                          onChange={(e) => setOtpForm({ ...otpForm, referenceId: e.target.value })}
+                          className="mt-1 text-sm"
+                        />
                       </div>
 
                       <Button 
