@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlider from "@/components/HeroSlider";
@@ -10,9 +10,19 @@ import ProductCategories from "@/components/ProductCategories";
 import BrandsSection from "@/components/BrandsSection";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import CategoryNavigation from "@/components/CategoryNavigation";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const Index = () => {
   const { translations } = useLanguage();
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 4;
 
   const products = [
     {
@@ -126,21 +136,57 @@ const Index = () => {
       {/* Featured Products */}
       <section className="py-8 md:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 pb-24">
-          {/* <-- padding ensures button is fully visible */}
-
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold">{translations.featured_products}</h2>
             <p className="text-gray-600">{translations.discover_products}</p>
           </div>
 
+          {/* Product Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {products
+              .slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage)
+              .map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
           </div>
 
-          {/* --------  FIXED VIEW ALL BUTTON -------- */}
-          <div className="text-center mt-12">
+          {/* Pagination */}
+          <div className="flex justify-center mt-8">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    className={`cursor-pointer ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
+                  />
+                </PaginationItem>
+                {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(i + 1)}
+                      isActive={currentPage === i + 1}
+                      className="cursor-pointer"
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(prev + 1, Math.ceil(products.length / productsPerPage))
+                      )
+                    }
+                    className={`cursor-pointer ${currentPage === Math.ceil(products.length / productsPerPage) ? "pointer-events-none opacity-50" : ""}`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+
+          {/* View All Button */}
+          <div className="text-center mt-8">
             <Link to="/products">
               <Button
                 size="lg"
