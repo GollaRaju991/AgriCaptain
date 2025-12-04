@@ -14,6 +14,14 @@ import {
   Heart,
   Gift,
   LogOut,
+  Sprout,
+  Droplet,
+  Wrench,
+  Award,
+  TrendingUp,
+  Users,
+  Truck,
+  CreditCard,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -99,6 +107,36 @@ const Header = () => {
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
+        </div>
+
+        {/* Mobile Category Navigation - Scrollable */}
+        <div className="lg:hidden overflow-x-auto bg-white border-b">
+          <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
+            {[
+              { name: 'Seeds', icon: Sprout, path: '/products?category=seeds' },
+              { name: 'Fertilizers', icon: Droplet, path: '/products?category=fertilizers' },
+              { name: 'Agri Products', icon: Wrench, path: '/products?category=agriculture' },
+              { name: 'Brands', icon: Award, path: '/products?category=brands' },
+              { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
+              { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
+              { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
+              { name: 'Loans', icon: CreditCard, path: '/loans' },
+            ].map((category, index) => {
+              const Icon = category.icon;
+              return (
+                <Link
+                  key={index}
+                  to={category.path}
+                  className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-600"
+                >
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-1">
+                    <Icon className="h-5 w-5 text-green-600" />
+                  </div>
+                  <span className="text-xs text-center whitespace-nowrap">{category.name}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* ---------------------- DESKTOP HEADER ---------------------- */}

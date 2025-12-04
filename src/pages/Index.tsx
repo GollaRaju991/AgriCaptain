@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCategories from "@/components/ProductCategories";
 import BrandsSection from "@/components/BrandsSection";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import CategoryNavigation from "@/components/CategoryNavigation";
 
 const Index = () => {
   const { translations } = useLanguage();
@@ -91,6 +92,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       <Header />
+      
+      {/* Desktop Category Navigation */}
+      <div className="hidden lg:block">
+        <CategoryNavigation />
+      </div>
 
       {/* Hero Slider */}
       <HeroSlider />
