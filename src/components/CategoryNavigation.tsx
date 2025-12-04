@@ -21,38 +21,22 @@ const CategoryNavigation = () => {
   ];
 
   return (
-    <div className="bg-green-600 py-3">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-start overflow-x-auto">
-          <div className="flex items-center space-x-1">
-            {categories.map((category, index) => {
-              const Icon = category.icon;
-              return (
-                <Link
-                  key={index}
-                  to={category.path}
-                  className="flex items-center space-x-2 text-white hover:bg-green-700 px-4 py-2 rounded-md transition-colors whitespace-nowrap min-w-fit"
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-sm font-medium">{category.name}</span>
-                </Link>
-              );
-            })}
-
-            {rightCategories.map((category, index) => {
-              const Icon = category.icon;
-              return (
-                <Link
-                  key={`right-${index}`}
-                  to={category.path}
-                  className="flex items-center space-x-2 text-white hover:bg-green-700 px-4 py-2 rounded-md transition-colors whitespace-nowrap min-w-fit"
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-sm font-medium">{category.name}</span>
-                </Link>
-              );
-            })}
-          </div>
+    <div className="bg-green-600">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between">
+          {[...categories, ...rightCategories].map((category, index) => {
+            const Icon = category.icon;
+            return (
+              <Link
+                key={index}
+                to={category.path}
+                className="flex-1 flex items-center justify-center space-x-2 text-white hover:bg-green-700 py-3 px-2 border-r border-green-500 last:border-r-0 transition-colors"
+              >
+                <Icon className="h-5 w-5" />
+                <span className="text-sm font-medium whitespace-nowrap">{category.name}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
