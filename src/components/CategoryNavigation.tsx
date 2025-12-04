@@ -1,43 +1,108 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp } from 'lucide-react';
+import { Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp, ChevronDown } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const CategoryNavigation = () => {
   const { translations } = useLanguage();
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const categories = [
-    { name: 'Seeds', icon: Sprout, path: '/products?category=seeds' },
-    { name: 'Fertilizers', icon: Droplet, path: '/products?category=fertilizers' },
+    { 
+      name: 'Seeds', 
+      icon: Sprout, 
+      path: '/products?category=seeds',
+      hasDropdown: true,
+      subcategories: [
+        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable' },
+        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit' },
+        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower' },
+        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain' },
+      ]
+    },
+    { 
+      name: 'Fertilizers', 
+      icon: Droplet, 
+      path: '/products?category=fertilizers',
+      hasDropdown: true,
+      subcategories: [
+        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic' },
+        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical' },
+        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio' },
+        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients' },
+      ]
+    },
     { name: 'Agriculture Products', icon: Wrench, path: '/products?category=agriculture' },
-    { name: 'Brands', icon: Award, path: '/products?category=brands' },
+    { 
+      name: 'Brands', 
+      icon: Award, 
+      path: '/products?category=brands',
+      hasDropdown: true,
+      subcategories: [
+        { name: 'BASF', path: '/products?brand=basf' },
+        { name: 'Bayer', path: '/products?brand=bayer' },
+        { name: 'Syngenta', path: '/products?brand=syngenta' },
+        { name: 'UPL', path: '/products?brand=upl' },
+        { name: 'Tata Rallis', path: '/products?brand=tata-rallis' },
+      ]
+    },
     { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
-  ];
-
-  const rightCategories = [
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
     { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
-    { name: 'Loans', icon: CreditCard, path: '/loans' },
+    { 
+      name: 'Loans', 
+      icon: CreditCard, 
+      path: '/loans',
+      hasDropdown: true,
+      subcategories: [
+        { name: 'Crop Loans', path: '/loans?type=crop' },
+        { name: 'Equipment Loans', path: '/loans?type=equipment' },
+        { name: 'Land Loans', path: '/loans?type=land' },
+        { name: 'Kisan Credit Card', path: '/loans?type=kcc' },
+      ]
+    },
   ];
 
   return (
-    <div className="bg-green-600">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between">
-          {[...categories, ...rightCategories].map((category, index) => {
-            const Icon = category.icon;
-            return (
+    <div className="bg-green-600 w-full">
+      <div className="flex items-center justify-between">
+        {categories.map((category, index) => {
+          const Icon = category.icon;
+          const hasDropdown = 'hasDropdown' in category && category.hasDropdown;
+          
+          return (
+            <div 
+              key={index}
+              className="flex-1 relative"
+              onMouseEnter={() => hasDropdown && setOpenDropdown(category.name)}
+              onMouseLeave={() => setOpenDropdown(null)}
+            >
               <Link
-                key={index}
                 to={category.path}
-                className="flex-1 flex items-center justify-center space-x-2 text-white hover:bg-green-700 py-3 px-2 border-r border-green-500 last:border-r-0 transition-colors"
+                className="flex items-center justify-center space-x-2 text-white hover:bg-green-700 py-3 px-2 border-r border-green-500 last:border-r-0 transition-colors w-full"
               >
                 <Icon className="h-5 w-5" />
                 <span className="text-sm font-medium whitespace-nowrap">{category.name}</span>
+                {hasDropdown && <ChevronDown className="h-4 w-4" />}
               </Link>
-            );
-          })}
-        </div>
+              
+              {/* Dropdown Menu */}
+              {hasDropdown && openDropdown === category.name && 'subcategories' in category && (
+                <div className="absolute top-full left-0 w-48 bg-white shadow-lg rounded-b-md z-50 border border-gray-200">
+                  {category.subcategories.map((sub, subIndex) => (
+                    <Link
+                      key={subIndex}
+                      to={sub.path}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"
+                    >
+                      {sub.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
