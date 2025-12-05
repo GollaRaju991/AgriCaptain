@@ -19,6 +19,13 @@ const RedeemGiftCardDialog = ({ onSuccess }: RedeemGiftCardDialogProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // Validate gift card code format (XXXX-XXXX-XXXX-XXXX)
+  const isValidGiftCardCode = (code: string): boolean => {
+    const cleanCode = code.toUpperCase().trim();
+    // Allow alphanumeric codes with optional dashes
+    return /^[A-Z0-9]{4}-?[A-Z0-9]{4}-?[A-Z0-9]{4}-?[A-Z0-9]{4}$/.test(cleanCode);
+  };
+
   const handleRedeem = async () => {
     if (!user) {
       toast({
@@ -29,6 +36,8 @@ const RedeemGiftCardDialog = ({ onSuccess }: RedeemGiftCardDialogProps) => {
       return;
     }
 
+    const cleanCode = code.toUpperCase().trim().replace(/-/g, '');
+    
     if (!code.trim()) {
       toast({
         title: "Error",
@@ -38,19 +47,46 @@ const RedeemGiftCardDialog = ({ onSuccess }: RedeemGiftCardDialogProps) => {
       return;
     }
 
+    // Validate code format to prevent injection
+    if (!isValidGiftCardCode(code)) {
+      toast({
+        title: "Error",
+        description: "Invalid gift card code format",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
-      // Check if gift card exists and is valid
+      // Format code for database lookup (with dashes)
+      const formattedCode = cleanCode.replace(/(.{4})/g, '$1-').slice(0, -1);
+      
+      // Check if gift card exists, is valid, AND is not already owned by another user
+      // RLS policies will only return cards that either belong to the current user
+      // or have no owner (user_id is null) - but since user_id is NOT NULL, 
+      // we need to check if the card was purchased by the current user or is "unassigned"
       const { data: giftCard, error: fetchError } = await supabase
         .from('gift_cards')
         .select('*')
-        .eq('code', code.toUpperCase().trim())
+        .eq('code', formattedCode)
         .single();
 
       if (fetchError || !giftCard) {
         toast({
           title: "Error",
-          description: "Invalid gift card code",
+          description: "Invalid gift card code or card not found",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Security check: Only allow redemption if the card already belongs to this user
+      // Gift cards should be purchased directly or transferred through a secure process
+      if (giftCard.user_id !== user.id) {
+        toast({
+          title: "Error",
+          description: "This gift card cannot be redeemed. Please contact support.",
           variant: "destructive",
         });
         return;
@@ -83,40 +119,19 @@ const RedeemGiftCardDialog = ({ onSuccess }: RedeemGiftCardDialogProps) => {
         return;
       }
 
-      // Transfer gift card to user
-      const { error: updateError } = await supabase
-        .from('gift_cards')
-        .update({ user_id: user.id })
-        .eq('id', giftCard.id);
-
-      if (updateError) throw updateError;
-
-      // Create transaction record
-      const { error: transactionError } = await supabase
-        .from('gift_card_transactions')
-        .insert({
-          gift_card_id: giftCard.id,
-          user_id: user.id,
-          transaction_type: 'credit',
-          amount: giftCard.balance,
-          description: 'Gift card redeemed',
-        });
-
-      if (transactionError) throw transactionError;
-
+      // Card is valid and belongs to user - show current balance
       toast({
-        title: "Success",
-        description: `Gift card redeemed! Balance: ₹${giftCard.balance}`,
+        title: "Gift Card Valid",
+        description: `Your gift card has a balance of ₹${giftCard.balance}`,
       });
 
       setOpen(false);
       setCode("");
       onSuccess?.();
     } catch (error: any) {
-      console.error('Error redeeming gift card:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to redeem gift card",
+        description: "Failed to verify gift card",
         variant: "destructive",
       });
     } finally {
@@ -129,14 +144,14 @@ const RedeemGiftCardDialog = ({ onSuccess }: RedeemGiftCardDialogProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <Ticket className="w-4 h-4" />
-          Redeem Code
+          Check Balance
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Ticket className="w-5 h-5" />
-            Redeem Gift Card
+            Check Gift Card Balance
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
@@ -156,7 +171,7 @@ const RedeemGiftCardDialog = ({ onSuccess }: RedeemGiftCardDialogProps) => {
             disabled={loading || !code}
             className="w-full"
           >
-            {loading ? "Validating..." : "Redeem"}
+            {loading ? "Checking..." : "Check Balance"}
           </Button>
         </div>
       </DialogContent>

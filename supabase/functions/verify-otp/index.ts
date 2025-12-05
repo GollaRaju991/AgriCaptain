@@ -13,6 +13,17 @@ interface VerifyOTPRequest {
   name?: string;
 }
 
+// Validate phone number format (E.164)
+const isValidPhoneNumber = (phone: string): boolean => {
+  const e164Regex = /^\+[1-9]\d{1,14}$/;
+  return e164Regex.test(phone) && phone.length >= 10 && phone.length <= 16;
+};
+
+// Validate OTP format (6 digits)
+const isValidOTP = (otp: string): boolean => {
+  return /^\d{6}$/.test(otp);
+};
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -24,6 +35,22 @@ const handler = async (req: Request): Promise<Response> => {
     if (!phone || !otp) {
       return new Response(
         JSON.stringify({ error: "Phone number and OTP are required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate phone number format
+    if (!isValidPhoneNumber(phone)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid phone number format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate OTP format
+    if (!isValidOTP(otp)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid OTP format. Must be 6 digits." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -92,7 +119,7 @@ const handler = async (req: Request): Promise<Response> => {
       .eq("phone", phone);
 
     if (updateError) {
-      console.error("Error updating OTP status:", updateError);
+      console.error("Error updating OTP status");
     }
 
     // Create or get user by phone
@@ -185,9 +212,9 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
   } catch (error: any) {
-    console.error("Error in verify-otp function:", error);
+    console.error("Error in verify-otp function");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to process request" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

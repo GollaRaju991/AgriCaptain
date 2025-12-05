@@ -11,6 +11,12 @@ interface SendOTPRequest {
   phone: string;
 }
 
+// Validate phone number format (E.164)
+const isValidPhoneNumber = (phone: string): boolean => {
+  const e164Regex = /^\+[1-9]\d{1,14}$/;
+  return e164Regex.test(phone) && phone.length >= 10 && phone.length <= 16;
+};
+
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -22,6 +28,14 @@ const handler = async (req: Request): Promise<Response> => {
     if (!phone) {
       return new Response(
         JSON.stringify({ error: "Phone number is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate phone number format
+    if (!isValidPhoneNumber(phone)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid phone number format. Please use E.164 format (e.g., +919876543210)" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -50,7 +64,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
     if (dbError) {
-      console.error("Database error:", dbError);
+      console.error("Database error storing OTP");
       return new Response(
         JSON.stringify({ error: "Failed to store OTP" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -63,12 +77,11 @@ const handler = async (req: Request): Promise<Response> => {
     const twilioPhoneNumber = Deno.env.get("TWILIO_PHONE_NUMBER");
     
     if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
-      console.log("Twilio credentials not configured, returning OTP for testing:", otp);
+      console.log("Twilio credentials not configured - OTP stored in database");
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "OTP generated (SMS not configured)",
-          otp: otp // Only for testing
+          message: "OTP generated (SMS not configured)"
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -96,21 +109,17 @@ const handler = async (req: Request): Promise<Response> => {
     });
 
     if (!smsResponse.ok) {
-      const errorText = await smsResponse.text();
-      console.error("Twilio SMS sending failed:", errorText);
-      // Still return success for testing, but log the SMS failure
+      console.error("Twilio SMS sending failed");
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "OTP generated (SMS not sent - check Twilio configuration)",
-          otp: otp // For testing when SMS fails
+          message: "OTP generated (SMS delivery issue - check Twilio configuration)"
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const smsResult = await smsResponse.json();
-    console.log("OTP sent successfully via Twilio:", { phone, sid: smsResult.sid });
+    console.log("OTP sent successfully via Twilio");
 
     return new Response(
       JSON.stringify({ 
@@ -121,9 +130,9 @@ const handler = async (req: Request): Promise<Response> => {
     );
 
   } catch (error: any) {
-    console.error("Error in send-otp function:", error);
+    console.error("Error in send-otp function");
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: "Failed to process request" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

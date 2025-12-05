@@ -41,7 +41,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, { session: !!session });
         setSession(session);
         setUser(session?.user as AuthUser || null);
         setLoading(false);
@@ -50,7 +49,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', { session: !!session });
       setSession(session);
       setUser(session?.user as AuthUser || null);
       setLoading(false);
@@ -61,8 +59,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const sendOTP = async (phone: string, name?: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      console.log('Sending OTP to phone:', phone);
-      
       const formattedPhone = phone.startsWith('+') ? phone : '+91' + phone;
       
       // Call our custom edge function for real-time OTP
@@ -71,25 +67,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        console.error('Send OTP error:', error);
         return { success: false, error: error.message || 'Failed to send OTP' };
-      }
-
-      if (data?.otp) {
-        console.log('Development mode - OTP:', data.otp);
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Exception sending OTP:', error);
       return { success: false, error: 'Failed to send OTP' };
     }
   };
 
   const verifyOTP = async (phone: string, otp: string, name?: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      console.log('Verifying OTP for phone:', phone);
-      
       const formattedPhone = phone.startsWith('+') ? phone : '+91' + phone;
       
       // Call our custom edge function for real-time OTP verification
@@ -98,7 +86,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        console.error('Verify OTP error:', error);
         return { success: false, error: error.message || 'Failed to verify OTP' };
       }
 
@@ -108,7 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Set session if returned
       if (data.session) {
-        // CRITICAL: Set the session in Supabase client for authenticated API calls
+        // Set the session in Supabase client for authenticated API calls
         await supabase.auth.setSession({
           access_token: data.session.access_token,
           refresh_token: data.session.refresh_token
@@ -119,25 +106,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: true };
     } catch (error) {
-      console.error('Exception verifying OTP:', error);
       return { success: false, error: 'Failed to verify OTP' };
     }
   };
 
   const testLogin = async (phone: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      console.log('Test login for phone:', phone);
-      
-      // For test users, we'll create a real session using the service role
-      // This is for development/testing purposes only
-      
       // Check if test user already exists
       let testUser = testUsers.get(phone);
       
       if (!testUser) {
-        // Create a real test user in Supabase Auth using admin client
+        // Create a real test user in Supabase Auth
         try {
-          // Use sign up with email for test users since phone auth is not working
           const testEmail = `test_${phone.replace('+', '')}@test.agricaptain.com`;
           const testPassword = 'testuser123';
           
@@ -153,7 +133,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           
           if (signUpError && !signUpError.message.includes('User already registered')) {
-            console.error('Error creating test user:', signUpError);
             throw signUpError;
           }
           
@@ -164,25 +143,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           });
           
           if (signInError) {
-            console.error('Error signing in test user:', signInError);
             throw signInError;
           }
           
           testUser = signInData.user;
           testUsers.set(phone, testUser);
           
-          console.log('Test user created and signed in:', testUser?.id);
-          
         } catch (authError) {
-          console.error('Failed to create real test user, falling back to mock:', authError);
-          // Fallback to mock user for development
           return { success: false, error: 'Test authentication not available. Please use real OTP or configure test auth properly.' };
         }
       }
       
       return { success: true };
     } catch (error) {
-      console.error('Test login error:', error);
       return { success: false, error: 'Test login failed' };
     }
   };
@@ -192,8 +165,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!user) {
         return { success: false, error: 'No user logged in' };
       }
-
-      console.log('Updating user profile:', userData);
       
       const { error } = await supabase
         .from('profiles')
@@ -208,7 +179,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', user.id);
 
       if (error) {
-        console.error('Profile update error:', error);
         return { success: false, error: error.message };
       }
 
@@ -221,7 +191,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: true };
     } catch (error) {
-      console.error('Exception updating profile:', error);
       return { success: false, error: 'Failed to update profile' };
     }
   };
@@ -233,7 +202,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(null);
       setRedirectAfterLogin(undefined);
     } catch (error) {
-      console.error('Logout error:', error);
+      // Silently handle logout errors
     }
   };
 
