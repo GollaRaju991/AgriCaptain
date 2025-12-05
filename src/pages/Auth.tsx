@@ -38,9 +38,6 @@ const Auth = () => {
   const [timeLeft, setTimeLeft] = useState(120); // 2 minutes in seconds
   const [timerActive, setTimerActive] = useState(false);
 
-  // Test OTP for development
-  const TEST_OTP = '123456';
-
   // Timer countdown
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -62,7 +59,6 @@ const Auth = () => {
   // Handle successful authentication
   useEffect(() => {
     if (!loading && user && session) {
-      console.log('User authenticated, redirecting to:', redirectAfterLogin || '/');
       const redirectPath = redirectAfterLogin || '/';
       setRedirectAfterLogin(undefined);
       navigate(redirectPath, { replace: true });
@@ -257,43 +253,22 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      // Check if it's the test OTP
-      if (otpForm.otp === TEST_OTP) {
-        console.log('Using test OTP for login');
-        const result = await testLogin(otpForm.phone);
-        if (result.success) {
-          toast({
-            title: "Login Successful",
-            description: `Welcome ${otpForm.name}!`
-          });
-          setTimerActive(false);
-          return;
-        } else {
-          toast({
-            title: "Login Failed",
-            description: result.error || "Test login failed",
-            variant: "destructive"
-          });
-        }
+      // Verify OTP through the edge function
+      const result = await verifyOTP(otpForm.phone, otpForm.otp, otpForm.name);
+      if (result.success) {
+        toast({
+          title: "Login Successful",
+          description: `Welcome ${otpForm.name}!`
+        });
+        setTimerActive(false);
       } else {
-        // Try real OTP verification
-        const result = await verifyOTP(otpForm.phone, otpForm.otp, otpForm.name);
-        if (result.success) {
-          toast({
-            title: "Login Successful",
-            description: `Welcome ${otpForm.name}!`
-          });
-          setTimerActive(false);
-        } else {
-          toast({
-            title: "Invalid OTP",
-            description: result.error || "Please check your OTP and try again",
-            variant: "destructive"
-          });
-        }
+        toast({
+          title: "Invalid OTP",
+          description: result.error || "Please check your OTP and try again",
+          variant: "destructive"
+        });
       }
     } catch (error) {
-      console.error('OTP verification error:', error);
       toast({
         title: "Verification failed",
         description: "Something went wrong. Please try again.",
