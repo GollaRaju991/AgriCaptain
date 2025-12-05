@@ -22,7 +22,9 @@ import {
   Users,
   Truck,
   CreditCard,
+  Globe,
 } from "lucide-react";
+import appLogo from "@/assets/app-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,9 +77,7 @@ const Header = () => {
 
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold shadow">
-              A
-            </div>
+            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
             <span className="text-xl font-bold text-green-700">Agrizin</span>
           </Link>
 
@@ -98,6 +98,16 @@ const Header = () => {
             </Button>
           </form>
 
+          {/* Language Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setLanguageDialogOpen(true)}
+            className="text-green-700"
+          >
+            <Globe className="h-5 w-5" />
+          </Button>
+
           {/* Menu Toggle */}
           <Button
             variant="ghost"
@@ -110,7 +120,7 @@ const Header = () => {
         </div>
 
         {/* Mobile Category Navigation - Scrollable */}
-        <div className="lg:hidden overflow-x-auto bg-white border-b">
+        <div className="lg:hidden overflow-x-auto bg-green-600 border-b border-green-500">
           <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
             {[
               { name: 'Seeds', icon: Sprout, path: '/products?category=seeds' },
@@ -127,10 +137,10 @@ const Header = () => {
                 <Link
                   key={index}
                   to={category.path}
-                  className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-600"
+                  className="flex flex-col items-center min-w-[70px] px-2 py-1 text-white hover:text-green-100"
                 >
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-1">
-                    <Icon className="h-5 w-5 text-green-600" />
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-1">
+                    <Icon className="h-5 w-5 text-white" />
                   </div>
                   <span className="text-xs text-center whitespace-nowrap">{category.name}</span>
                 </Link>
@@ -145,9 +155,7 @@ const Header = () => {
 
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold shadow">
-                A
-              </div>
+              <img src={appLogo} alt="Agrizin" className="w-10 h-10 rounded-full shadow" />
               <span className="text-3xl font-bold text-green-700">Agrizin</span>
             </Link>
 
