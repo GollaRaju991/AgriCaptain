@@ -136,17 +136,18 @@ const HeroSlider = () => {
         <ChevronRight className="h-4 w-4" />
       </Button>
 
-      {/* Small Flipkart-style dots */}
-      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1.5 z-30">
+      {/* Horizontal Flipkart-style dots */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-row items-center justify-center gap-2">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+            className={`rounded-full transition-all duration-300 ${
               index === currentSlide
-                ? 'bg-white scale-125'
-                : 'bg-white/40 hover:bg-white/70'
+                ? 'w-3 h-3 bg-white'
+                : 'w-2 h-2 bg-white/50 hover:bg-white/80'
             }`}
+            style={{ display: 'inline-block' }}
           />
         ))}
       </div>
