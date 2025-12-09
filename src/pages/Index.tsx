@@ -185,17 +185,6 @@ const Index = () => {
             </Pagination>
           </div>
 
-          {/* View All Button */}
-          <div className="text-center mt-8">
-            <Link to="/products">
-              <Button
-                size="lg"
-                className="bg-green-600 hover:bg-green-700 px-8 py-4 text-white"
-              >
-                {translations.view_all_products}
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
       <div className="h-20 lg:hidden"></div>
