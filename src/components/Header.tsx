@@ -128,15 +128,39 @@ const Header = () => {
               { name: 'Agri Products', icon: Wrench, path: '/products?category=agriculture' },
               { name: 'Brands', icon: Award, path: '/products?category=brands' },
               { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
-              { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
-              { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
+              { name: 'Farm Worker', icon: Users, isPopup: true, action: 'farmWorker' as const },
+              { name: 'Rent Vehicles', icon: Truck, isPopup: true, action: 'rentVehicle' as const },
               { name: 'Loans', icon: CreditCard, path: '/loans' },
             ].map((category, index) => {
               const Icon = category.icon;
+              
+              // Handle popup items (Farm Worker, Rent Vehicles)
+              if ('isPopup' in category && category.isPopup) {
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      if (category.action === 'farmWorker') {
+                        setFarmWorkerDialogOpen(true);
+                      } else if (category.action === 'rentVehicle') {
+                        setVehicleRentDialogOpen(true);
+                      }
+                    }}
+                    className="flex flex-col items-center min-w-[70px] px-2 py-1 text-white hover:text-green-100"
+                  >
+                    <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-1">
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                    <span className="text-xs text-center whitespace-nowrap">{category.name}</span>
+                  </button>
+                );
+              }
+              
+              // Handle regular link items
               return (
                 <Link
                   key={index}
-                  to={category.path}
+                  to={'path' in category ? category.path : '/'}
                   className="flex flex-col items-center min-w-[70px] px-2 py-1 text-white hover:text-green-100"
                 >
                   <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-1">
