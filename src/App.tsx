@@ -23,6 +23,7 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import Wishlist from "./pages/Wishlist";
 import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
+import Loans from "./pages/Loans";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
@@ -61,6 +62,7 @@ const App = () => (
                   <Route path="/wishlist" element={<Wishlist />} />
                   <Route path="/gift-cards" element={<GiftCards />} />
                   <Route path="/market-details" element={<MarketDetails />} />
+                  <Route path="/loans" element={<Loans />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
 

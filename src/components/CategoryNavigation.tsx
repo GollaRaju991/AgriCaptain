@@ -56,8 +56,8 @@ const CategoryNavigation = () => {
     { 
       name: 'Loans', 
       icon: CreditCard, 
-      path: '/loans',
       hasDropdown: true,
+      isDropdownOnly: true,
       subcategories: [
         { name: 'Crop Loans', path: '/loans?type=crop' },
         { name: 'Equipment Loans', path: '/loans?type=equipment' },
@@ -85,6 +85,7 @@ const CategoryNavigation = () => {
             const Icon = category.icon;
             const hasDropdown = 'hasDropdown' in category && category.hasDropdown;
             const isPopup = 'isPopup' in category && category.isPopup;
+            const isDropdownOnly = 'isDropdownOnly' in category && category.isDropdownOnly;
             
             return (
               <div 
@@ -101,6 +102,14 @@ const CategoryNavigation = () => {
                     <Icon className="h-5 w-5" />
                     <span className="text-sm font-medium whitespace-nowrap">{category.name}</span>
                   </button>
+                ) : isDropdownOnly ? (
+                  <div
+                    className="flex items-center justify-center space-x-2 text-white hover:bg-green-700 py-3 px-2 border-r border-green-500 last:border-r-0 transition-colors w-full cursor-pointer"
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span className="text-sm font-medium whitespace-nowrap">{category.name}</span>
+                    {hasDropdown && <ChevronDown className="h-4 w-4" />}
+                  </div>
                 ) : (
                   <Link
                     to={'path' in category ? category.path : '#'}
