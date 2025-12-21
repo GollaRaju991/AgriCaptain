@@ -23,6 +23,7 @@ import {
   Truck,
   CreditCard,
   Globe,
+  ScanLine,
 } from "lucide-react";
 import appLogo from "@/assets/app-logo.png";
 import {
@@ -73,49 +74,68 @@ const Header = () => {
       <header className="bg-white shadow-md sticky top-0 z-50 w-full">
 
         {/* ---------------------- MOBILE HEADER ---------------------- */}
-        <div className="lg:hidden flex items-center justify-between px-3 py-3 border-b shadow-sm">
-
-          {/* Logo */}
+        {/* Row 1: Logo, Name, Language, Menu */}
+        <div className="lg:hidden flex items-center justify-between px-3 py-2 bg-green-600">
+          {/* Logo and Name */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
-            <span className="text-xl font-bold text-green-700">Agrizin</span>
+            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow border-2 border-white" />
+            <span className="text-lg font-bold text-white">Agrizin</span>
           </Link>
 
-          {/* Search */}
+          {/* Right side: Language and Menu */}
+          <div className="flex items-center space-x-1">
+            {/* Language Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setLanguageDialogOpen(true)}
+              className="text-white hover:bg-green-500"
+            >
+              <Globe className="h-5 w-5" />
+            </Button>
+
+            {/* Menu Toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white hover:bg-green-500"
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Row 2: Search Box with Camera and Scanner */}
+        <div className="lg:hidden flex items-center px-3 py-2 bg-green-600 gap-2">
           <form
             onSubmit={handleSearch}
-            className="flex flex-1 mx-3 bg-gray-100 rounded-lg overflow-hidden"
+            className="flex flex-1 items-center bg-white rounded-lg overflow-hidden shadow-sm"
           >
+            <div className="flex items-center pl-3">
+              <Search className="h-4 w-4 text-gray-400" />
+            </div>
             <Input
               type="text"
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-none bg-gray-100 text-sm"
+              className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-            <Button type="submit" className="bg-green-600 rounded-none text-white">
-              <Search className="h-4 w-4" />
-            </Button>
+            <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
           </form>
-
-          {/* Language Button */}
+          
+          {/* Barcode Scanner Button */}
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setLanguageDialogOpen(true)}
-            className="text-green-700"
+            className="text-white hover:bg-green-500 flex-shrink-0"
+            onClick={() => {
+              // Scanner functionality placeholder
+              console.log("Scanner clicked");
+            }}
           >
-            <Globe className="h-5 w-5" />
-          </Button>
-
-          {/* Menu Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="text-green-700"
-          >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <ScanLine className="h-6 w-6" />
           </Button>
         </div>
 
