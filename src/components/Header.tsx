@@ -218,29 +218,29 @@ const Header = () => {
             </form>
 
             {/* Right Options */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-5">
 
               {/* Language */}
               <Button
                 variant="ghost"
                 onClick={() => setLanguageDialogOpen(true)}
-                className="text-green-700"
+                className="text-green-700 px-5 py-2 min-w-[110px]"
               >
-                <Languages className="h-5 w-5 mr-1" />
+                <Languages className="h-5 w-5 mr-2" />
                 Language
               </Button>
 
               {/* Seller */}
               <Link to="/become-seller">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white">
-                  <UserPlus className="h-4 w-4 mr-1" />
+                <Button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 min-w-[140px]">
+                  <UserPlus className="h-4 w-4 mr-2" />
                   Become Seller
                 </Button>
               </Link>
 
               {/* Cart */}
               <Link to="/cart" className="relative">
-                <Button variant="ghost" className="text-green-700">
+                <Button variant="ghost" className="text-green-700 px-5 py-2 min-w-[90px]">
                   🛒 Cart
                 </Button>
                 {totalItems > 0 && (
@@ -299,7 +299,7 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <Link to="/auth">
-                  <Button className="bg-green-600 text-white hover:bg-green-700">
+                  <Button className="bg-green-600 text-white hover:bg-green-700 px-6 py-2 min-w-[90px]">
                     Login
                   </Button>
                 </Link>
