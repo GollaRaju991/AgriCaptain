@@ -10,6 +10,7 @@ import ProductCategories from "@/components/ProductCategories";
 import BrandsSection from "@/components/BrandsSection";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import CategoryNavigation from "@/components/CategoryNavigation";
+import { products } from "@/data/products";
 import {
   Pagination,
   PaginationContent,
@@ -22,82 +23,7 @@ import {
 const Index = () => {
   const { translations } = useLanguage();
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 4;
-
-  const products = [
-    {
-      id: "1",
-      name: "Premium Tomato Seeds",
-      price: 299,
-      originalPrice: 399,
-      image: "https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png",
-      rating: 4.5,
-      discount: 25,
-      inStock: true,
-      description: "High-quality hybrid tomato seeds for excellent yield and disease resistance",
-      reviews: 124,
-    },
-    {
-      id: "2",
-      name: "Organic NPK Fertilizer",
-      price: 799,
-      originalPrice: 999,
-      image: "https://i.postimg.cc/4y7Mm13R/Pestiside.png",
-      rating: 4.8,
-      discount: 20,
-      inStock: true,
-      description: "Complete nutrition fertilizer for healthy plant growth and better yield",
-      reviews: 89,
-    },
-    {
-      id: "3",
-      name: "Garden Tools Set",
-      price: 1299,
-      originalPrice: 1699,
-      image: "https://i.postimg.cc/bNby5x95/ns-404-file-1319.jpg",
-      rating: 4.3,
-      discount: 24,
-      inStock: true,
-      description: "Professional grade garden tools for efficient farming and gardening",
-      reviews: 56,
-    },
-    {
-      id: "4",
-      name: "Drip Irrigation Kit",
-      price: 2499,
-      originalPrice: 3199,
-      image: "https://i.postimg.cc/vmPbn3G4/balwaan-shakti-battery-sprayer-12x8-file-7234.jpg",
-      rating: 4.6,
-      discount: 22,
-      inStock: true,
-      description: "Water-efficient irrigation system for precise and economical watering",
-      reviews: 78,
-    },
-    {
-      id: "5",
-      name: "Wheat Seeds Premium",
-      price: 450,
-      originalPrice: 550,
-      image: "https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png",
-      rating: 4.7,
-      discount: 18,
-      inStock: true,
-      description: "High-yielding wheat seeds suitable for various soil conditions",
-      reviews: 203,
-    },
-    {
-      id: "6",
-      name: "Bio Fertilizer Mix",
-      price: 799,
-      originalPrice: 999,
-      image: "https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png",
-      rating: 4.4,
-      discount: 20,
-      inStock: false,
-      description: "Organic bio-fertilizer for sustainable farming and soil health",
-      reviews: 145,
-    },
-  ];
+  const productsPerPage = 12;
 
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
@@ -151,7 +77,10 @@ const Index = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-center mt-8">
+          <div className="flex flex-col items-center gap-4 mt-8">
+            <p className="text-sm text-gray-600">
+              Showing {(currentPage - 1) * productsPerPage + 1} - {Math.min(currentPage * productsPerPage, products.length)} of {products.length} products
+            </p>
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
@@ -160,17 +89,38 @@ const Index = () => {
                     className={`cursor-pointer ${currentPage === 1 ? "pointer-events-none opacity-50" : ""}`}
                   />
                 </PaginationItem>
-                {Array.from({ length: Math.ceil(products.length / productsPerPage) }, (_, i) => (
-                  <PaginationItem key={i + 1}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(i + 1)}
-                      isActive={currentPage === i + 1}
-                      className="cursor-pointer"
-                    >
-                      {i + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+                {(() => {
+                  const totalPages = Math.ceil(products.length / productsPerPage);
+                  const pages: (number | string)[] = [];
+                  
+                  if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                  } else {
+                    pages.push(1);
+                    if (currentPage > 3) pages.push("...");
+                    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+                      pages.push(i);
+                    }
+                    if (currentPage < totalPages - 2) pages.push("...");
+                    pages.push(totalPages);
+                  }
+                  
+                  return pages.map((page, idx) => (
+                    <PaginationItem key={idx}>
+                      {page === "..." ? (
+                        <span className="px-3 py-2">...</span>
+                      ) : (
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page as number)}
+                          isActive={currentPage === page}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ));
+                })()}
                 <PaginationItem>
                   <PaginationNext
                     onClick={() =>
