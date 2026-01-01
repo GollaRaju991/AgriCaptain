@@ -19,6 +19,8 @@ interface OrderSummaryProps {
   selectedAddress: any;
   onCouponApply: () => void;
   onPayment: () => void;
+  codAdvancePaid?: boolean;
+  codAdvanceAmount?: number;
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -33,8 +35,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   paymentMethod,
   selectedAddress,
   onCouponApply,
-  onPayment
+  onPayment,
+  codAdvancePaid = false,
+  codAdvanceAmount = 99
 }) => {
+  const isCOD = paymentMethod === 'cod';
+  const codRemainingAmount = Math.max(0, finalTotal - codAdvanceAmount);
   return (
     <div className="space-y-4">
       {/* Coupon Section */}
@@ -115,19 +121,56 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             <span>Amount Payable</span>
             <span>₹{finalTotal.toFixed(2)}</span>
           </div>
+
+          {/* COD Payment Breakdown */}
+          {isCOD && (
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-3 space-y-2">
+              <p className="text-sm font-medium text-amber-800">Cash on Delivery Breakdown:</p>
+              <div className="flex justify-between text-sm">
+                <span className={codAdvancePaid ? 'text-green-700' : 'text-amber-700'}>
+                  {codAdvancePaid ? '✓ Advance Paid' : 'Advance Payment'}
+                </span>
+                <span className={codAdvancePaid ? 'text-green-700 font-medium' : 'text-amber-700'}>
+                  ₹{codAdvanceAmount}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Due on Delivery</span>
+                <span className="font-medium">₹{codRemainingAmount.toFixed(2)}</span>
+              </div>
+              {(upiDiscount > 0 || couponDiscount > 0) && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Total Savings</span>
+                  <span>-₹{(upiDiscount + couponDiscount).toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+          )}
           
           {/* Pay Button */}
           <div className="mt-6">
             <Button 
               onClick={onPayment} 
               className="w-full h-12 text-base font-medium bg-orange-500 hover:bg-orange-600 text-white"
-              disabled={!paymentMethod || !selectedAddress}
+              disabled={!paymentMethod || !selectedAddress || (isCOD && !codAdvancePaid)}
             >
-              PAY ₹{finalTotal.toFixed(0)}
+              {isCOD 
+                ? (codAdvancePaid 
+                    ? `PLACE ORDER (Pay ₹${codRemainingAmount.toFixed(0)} on Delivery)` 
+                    : 'Complete Advance Payment First')
+                : `PAY ₹${finalTotal.toFixed(0)}`
+              }
             </Button>
-            {(!paymentMethod || !selectedAddress) && (
+            {(!paymentMethod || !selectedAddress || (isCOD && !codAdvancePaid)) && (
               <p className="text-xs text-gray-500 mt-2 text-center">
-                {!selectedAddress ? 'Please select delivery address' : 'Please select payment method'}
+                {!selectedAddress 
+                  ? 'Please select delivery address' 
+                  : !paymentMethod 
+                    ? 'Please select payment method'
+                    : isCOD && !codAdvancePaid 
+                      ? 'Please complete ₹99 advance payment above'
+                      : ''
+                }
               </p>
             )}
           </div>
