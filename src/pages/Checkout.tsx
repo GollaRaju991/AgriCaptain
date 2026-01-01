@@ -51,9 +51,17 @@ const Checkout = () => {
   const [selectedBank, setSelectedBank] = useState('');
   const [selectedEMI, setSelectedEMI] = useState('');
   
+  // COD advance payment state
+  const [codAdvancePaid, setCodAdvancePaid] = useState(false);
+  const [codPaymentMethod, setCodPaymentMethod] = useState('');
+  const [codPaymentProcessing, setCodPaymentProcessing] = useState(false);
+  
   // Coupon state
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+
+  // COD constants
+  const COD_ADVANCE_AMOUNT = 99;
 
   // Pricing calculations
   const deliveryFee = 0;
@@ -155,6 +163,22 @@ const Checkout = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleCodAdvancePayment = async (method: string) => {
+    setCodPaymentProcessing(true);
+    
+    // Simulate payment processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setCodPaymentMethod(method);
+    setCodAdvancePaid(true);
+    setCodPaymentProcessing(false);
+    
+    toast({
+      title: "Advance Payment Successful!",
+      description: `₹${COD_ADVANCE_AMOUNT} paid via ${method}. Remaining ₹${Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} will be collected on delivery.`,
+    });
   };
 
   const saveOrderToDatabase = async (orderDetails: any) => {
@@ -381,6 +405,9 @@ const Checkout = () => {
               selectedEMI={selectedEMI}
               setSelectedEMI={setSelectedEMI}
               finalTotal={finalTotal}
+              codAdvancePaid={codAdvancePaid}
+              onCodAdvancePayment={handleCodAdvancePayment}
+              codPaymentProcessing={codPaymentProcessing}
             />
           </div>
 
@@ -397,6 +424,8 @@ const Checkout = () => {
             selectedAddress={selectedAddress}
             onCouponApply={handleCouponApply}
             onPayment={handlePayment}
+            codAdvancePaid={codAdvancePaid}
+            codAdvanceAmount={COD_ADVANCE_AMOUNT}
           />
         </div>
       </div>

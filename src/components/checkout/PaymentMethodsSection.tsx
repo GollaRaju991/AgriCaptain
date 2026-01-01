@@ -5,7 +5,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { CreditCard, Smartphone, Building, Truck } from 'lucide-react';
+import { CreditCard, Smartphone, Building, Truck, CheckCircle } from 'lucide-react';
+import CODAdvancePayment from './CODAdvancePayment';
 
 interface PaymentMethodsSectionProps {
   paymentMethod: string;
@@ -25,7 +26,12 @@ interface PaymentMethodsSectionProps {
   selectedEMI: string;
   setSelectedEMI: (emi: string) => void;
   finalTotal: number;
+  codAdvancePaid: boolean;
+  onCodAdvancePayment: (method: string) => void;
+  codPaymentProcessing: boolean;
 }
+
+const COD_ADVANCE_AMOUNT = 99;
 
 const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
   paymentMethod,
@@ -44,7 +50,10 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
   setSelectedBank,
   selectedEMI,
   setSelectedEMI,
-  finalTotal
+  finalTotal,
+  codAdvancePaid,
+  onCodAdvancePayment,
+  codPaymentProcessing
 }) => {
   const [timeLeft, setTimeLeft] = useState(10 * 60); // 10 minutes in seconds
 
@@ -236,17 +245,36 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 <div className="flex items-center space-x-3 mb-1">
                   <Truck className="h-5 w-5 text-green-600" />
                   <Label htmlFor="cod" className="text-base font-medium cursor-pointer">Cash on Delivery</Label>
+                  {codAdvancePaid && (
+                    <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full flex items-center">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      ₹{COD_ADVANCE_AMOUNT} Paid
+                    </span>
+                  )}
                 </div>
-                <p className="text-sm text-gray-600">Pay when you receive your order</p>
+                <p className="text-sm text-gray-600">
+                  Pay ₹{COD_ADVANCE_AMOUNT} now, remaining ₹{Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} on delivery
+                </p>
                 {paymentMethod === 'cod' && (
-                  <div className="mt-4 border-t pt-4 bg-green-50 p-3 rounded">
-                    <p className="text-sm text-green-700 font-medium">
-                      ✓ You can pay cash when your order is delivered
-                    </p>
-                    <p className="text-xs text-green-600 mt-1">
-                      No additional charges for Cash on Delivery
-                    </p>
-                  </div>
+                  <>
+                    {codAdvancePaid ? (
+                      <div className="mt-4 border-t pt-4 bg-green-50 p-3 rounded">
+                        <p className="text-sm text-green-700 font-medium flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Advance payment of ₹{COD_ADVANCE_AMOUNT} completed!
+                        </p>
+                        <p className="text-xs text-green-600 mt-1">
+                          Pay remaining ₹{Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} when your order is delivered
+                        </p>
+                      </div>
+                    ) : (
+                      <CODAdvancePayment
+                        advanceAmount={COD_ADVANCE_AMOUNT}
+                        onPaymentComplete={onCodAdvancePayment}
+                        isProcessing={codPaymentProcessing}
+                      />
+                    )}
+                  </>
                 )}
               </div>
             </div>
