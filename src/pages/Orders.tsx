@@ -250,10 +250,10 @@ const Orders = () => {
 
                           <div>
                             <h4 className="font-medium mb-2">Payment Details</h4>
-                            <div className="bg-gray-50 p-3 rounded">
+                            <div className="bg-gray-50 p-3 rounded space-y-2">
                               <div className="flex justify-between">
                                 <span>Payment Method:</span>
-                                <span className="font-medium">{order.payment_method}</span>
+                                <span className="font-medium uppercase">{order.payment_method}</span>
                               </div>
                               <div className="flex justify-between">
                                 <span>Payment Status:</span>
@@ -264,6 +264,22 @@ const Orders = () => {
                                   {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
                                 </span>
                               </div>
+                              
+                              {order.payment_method === 'cod' && (
+                                <>
+                                  <div className="border-t pt-2 mt-2">
+                                    <div className="flex justify-between text-green-600">
+                                      <span>Advance Paid (Online):</span>
+                                      <span className="font-medium">₹99</span>
+                                    </div>
+                                    <div className="flex justify-between text-orange-600">
+                                      <span>Due on Delivery:</span>
+                                      <span className="font-medium">₹{order.total_amount - 99}</span>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                              
                               <div className="flex justify-between text-lg font-bold border-t pt-2 mt-2">
                                 <span>Total Amount:</span>
                                 <span>₹{order.total_amount}</span>
