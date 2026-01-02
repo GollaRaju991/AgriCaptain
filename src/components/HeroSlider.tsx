@@ -136,8 +136,8 @@ const HeroSlider = () => {
         <ChevronRight className="h-4 w-4" />
       </Button>
 
-      {/* Flipkart-style bar indicators (row) */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-row flex-nowrap items-center justify-center gap-2">
+      {/* Flipkart-style horizontal dash indicators */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-row items-center justify-center gap-1">
         {slides.map((_, index) => {
           const isActive = index === currentSlide;
           return (
@@ -147,14 +147,14 @@ const HeroSlider = () => {
               onClick={() => setCurrentSlide(index)}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={isActive}
-              className="min-w-0 min-h-0 h-6 w-6 grid place-items-center bg-transparent p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="p-1 bg-transparent focus:outline-none"
             >
               <span
                 className={
-                  "block rounded-full transition-all duration-300 ease-out " +
+                  "block rounded-sm transition-all duration-300 " +
                   (isActive
-                    ? "h-4 w-1.5 bg-background shadow"
-                    : "h-3.5 w-1 bg-background/50 hover:bg-background/75")
+                    ? "w-5 h-1 bg-background shadow-md"
+                    : "w-3 h-1 bg-background/50 hover:bg-background/70")
                 }
               />
             </button>
