@@ -5,13 +5,38 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+
+// Collapsible Product Section Component
+interface ProductSectionProps {
+  title: string;
+  defaultOpen?: boolean;
+  bgColor: string;
+  borderColor: string;
+  children: React.ReactNode;
+}
+
+const ProductSection = ({ title, defaultOpen = false, bgColor, borderColor, children }: ProductSectionProps) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger className={`w-full flex items-center justify-between p-4 ${bgColor} ${borderColor} border rounded-lg hover:opacity-90 transition-all`}>
+        <span className="font-semibold text-foreground">{title}</span>
+        <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+      </CollapsibleTrigger>
+      <CollapsibleContent className={`${bgColor} ${borderColor} border border-t-0 rounded-b-lg px-4 pb-4 pt-2`}>
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -337,146 +362,133 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        {/* Enhanced Product Details Tabs - Flipkart Style */}
-        <div className="mt-8 md:mt-12 border-t">
-          <Tabs defaultValue="description" className="w-full">
-            <TabsList className="w-full h-auto p-0 bg-transparent border-b rounded-none flex justify-start overflow-x-auto">
-              <TabsTrigger 
-                value="description" 
-                className="flex-1 md:flex-none px-4 md:px-8 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-sm md:text-base font-medium text-muted-foreground data-[state=active]:text-foreground"
-              >
-                Description
-              </TabsTrigger>
-              <TabsTrigger 
-                value="specifications" 
-                className="flex-1 md:flex-none px-4 md:px-8 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-sm md:text-base font-medium text-muted-foreground data-[state=active]:text-foreground"
-              >
-                Specifications
-              </TabsTrigger>
-              <TabsTrigger 
-                value="features" 
-                className="flex-1 md:flex-none px-4 md:px-8 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-sm md:text-base font-medium text-muted-foreground data-[state=active]:text-foreground"
-              >
-                Features
-              </TabsTrigger>
-              <TabsTrigger 
-                value="reviews" 
-                className="flex-1 md:flex-none px-4 md:px-8 py-4 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-sm md:text-base font-medium text-muted-foreground data-[state=active]:text-foreground"
-              >
-                Reviews
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="description" className="mt-0 pt-6">
-              <div className="bg-background p-4 md:p-6 rounded-lg border">
-                <h3 className="text-lg md:text-xl font-semibold mb-4">Product Description</h3>
-                <div className="prose max-w-none">
-                  <div className="whitespace-pre-line text-muted-foreground leading-relaxed text-sm md:text-base">
-                    {product.detailedDescription}
-                  </div>
-                  <div className="mt-6">
-                    <h4 className="text-base md:text-lg font-semibold mb-2">Usage Instructions</h4>
-                    <p className="text-muted-foreground text-sm md:text-base">{product.usage}</p>
-                  </div>
-                </div>
+        {/* Product Details - Stacked Collapsible Sections */}
+        <div className="mt-8 md:mt-12 space-y-3">
+          {/* Description Section */}
+          <ProductSection 
+            title="Description" 
+            defaultOpen={true}
+            bgColor="bg-blue-50 dark:bg-blue-950/30"
+            borderColor="border-blue-200 dark:border-blue-800"
+          >
+            <div className="prose max-w-none">
+              <h4 className="text-base md:text-lg font-semibold mb-3 text-blue-800 dark:text-blue-300">Product Description</h4>
+              <div className="whitespace-pre-line text-muted-foreground leading-relaxed text-sm md:text-base">
+                {product.detailedDescription}
               </div>
-            </TabsContent>
+              <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+                <h4 className="text-base md:text-lg font-semibold mb-2 text-blue-800 dark:text-blue-300">Usage Instructions</h4>
+                <p className="text-muted-foreground text-sm md:text-base">{product.usage}</p>
+              </div>
+            </div>
+          </ProductSection>
 
-            <TabsContent value="specifications" className="mt-0 pt-6">
-              <div className="bg-background p-4 md:p-6 rounded-lg border">
-                <h3 className="text-lg md:text-xl font-semibold mb-4">Product Specifications</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                  {Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex justify-between items-center border-b border-border pb-2">
-                      <span className="font-medium text-sm md:text-base">{key}:</span>
-                      <span className="text-muted-foreground text-sm md:text-base">{value}</span>
+          {/* Specifications Section */}
+          <ProductSection 
+            title="Specifications" 
+            defaultOpen={false}
+            bgColor="bg-green-50 dark:bg-green-950/30"
+            borderColor="border-green-200 dark:border-green-800"
+          >
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Product Specifications</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              {Object.entries(product.specifications).map(([key, value]) => (
+                <div key={key} className="flex justify-between items-center border-b border-green-200 dark:border-green-700 pb-2">
+                  <span className="font-medium text-sm md:text-base text-green-900 dark:text-green-100">{key}:</span>
+                  <span className="text-muted-foreground text-sm md:text-base">{value}</span>
+                </div>
+              ))}
+            </div>
+          </ProductSection>
+
+          {/* Features Section */}
+          <ProductSection 
+            title="Features" 
+            defaultOpen={false}
+            bgColor="bg-orange-50 dark:bg-orange-950/30"
+            borderColor="border-orange-200 dark:border-orange-800"
+          >
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-orange-800 dark:text-orange-300">Key Features</h4>
+            <ul className="space-y-3">
+              {product.features.map((feature, index) => (
+                <li key={index} className="flex items-center space-x-3">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0"></span>
+                  <span className="text-sm md:text-base">{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </ProductSection>
+
+          {/* Reviews Section */}
+          <ProductSection 
+            title="Reviews" 
+            defaultOpen={false}
+            bgColor="bg-purple-50 dark:bg-purple-950/30"
+            borderColor="border-purple-200 dark:border-purple-800"
+          >
+            <div className="flex flex-col md:flex-row gap-6 mb-6">
+              {/* Rating Summary */}
+              <div className="flex-shrink-0 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                  <span className="text-3xl md:text-4xl font-bold text-purple-800 dark:text-purple-300">{product.rating}</span>
+                  <Star className="h-6 w-6 md:h-8 md:w-8 fill-yellow-400 text-yellow-400" />
+                </div>
+                <p className="text-muted-foreground text-sm">{product.reviews || product.reviewsList?.length || 0} Reviews</p>
+              </div>
+              
+              {/* Rating Distribution */}
+              <div className="flex-1 space-y-2">
+                {ratingDistribution.map(({ stars, count, percentage }) => (
+                  <div key={stars} className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground w-6">{stars}★</span>
+                    <div className="flex-1 h-2 bg-purple-200 dark:bg-purple-800 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-purple-500 rounded-full transition-all"
+                        style={{ width: `${percentage}%` }}
+                      />
                     </div>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="features" className="mt-0 pt-6">
-              <div className="bg-background p-4 md:p-6 rounded-lg border">
-                <h3 className="text-lg md:text-xl font-semibold mb-4">Key Features</h3>
-                <ul className="space-y-3">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-center space-x-3">
-                      <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></span>
-                      <span className="text-sm md:text-base">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="reviews" className="mt-0 pt-6">
-              <div className="bg-background p-4 md:p-6 rounded-lg border">
-                <div className="flex flex-col md:flex-row gap-6 mb-6">
-                  {/* Rating Summary */}
-                  <div className="flex-shrink-0 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                      <span className="text-3xl md:text-4xl font-bold">{product.rating}</span>
-                      <Star className="h-6 w-6 md:h-8 md:w-8 fill-yellow-400 text-yellow-400" />
-                    </div>
-                    <p className="text-muted-foreground text-sm">{product.reviews || product.reviewsList?.length || 0} Reviews</p>
+                    <span className="text-sm text-muted-foreground w-8">{count}</span>
                   </div>
-                  
-                  {/* Rating Distribution */}
-                  <div className="flex-1 space-y-2">
-                    {ratingDistribution.map(({ stars, count, percentage }) => (
-                      <div key={stars} className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground w-6">{stars}★</span>
-                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary rounded-full transition-all"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground w-8">{count}</span>
+                ))}
+              </div>
+            </div>
+            
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-purple-800 dark:text-purple-300">Customer Reviews</h4>
+            <div className="space-y-4">
+              {(product.reviewsList || []).map((review) => (
+                <div key={review.id} className="border-b border-purple-200 dark:border-purple-700 pb-4 last:border-b-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-purple-200 dark:bg-purple-800 rounded-full flex items-center justify-center">
+                        <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">
+                          {review.name.charAt(0)}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <h3 className="text-base md:text-lg font-semibold mb-4">Customer Reviews</h3>
-                <div className="space-y-4">
-                  {(product.reviewsList || []).map((review) => (
-                    <div key={review.id} className="border-b border-border pb-4 last:border-b-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                            <span className="text-primary font-medium text-sm">
-                              {review.name.charAt(0)}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-medium text-sm">{review.name}</p>
-                            <p className="text-xs text-muted-foreground">{review.date}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center bg-primary text-primary-foreground px-2 py-0.5 rounded text-sm">
-                          <span>{review.rating}</span>
-                          <Star className="h-3 w-3 fill-current ml-0.5" />
-                        </div>
-                      </div>
-                      <p className="text-muted-foreground text-sm mb-3">{review.comment}</p>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <button className="flex items-center gap-1 hover:text-primary transition-colors">
-                          <ThumbsUp className="h-3.5 w-3.5" />
-                          <span>Helpful ({review.helpful})</span>
-                        </button>
-                        <button className="flex items-center gap-1 hover:text-destructive transition-colors">
-                          <ThumbsDown className="h-3.5 w-3.5" />
-                          <span>({review.notHelpful})</span>
-                        </button>
+                      <div>
+                        <p className="font-medium text-sm">{review.name}</p>
+                        <p className="text-xs text-muted-foreground">{review.date}</p>
                       </div>
                     </div>
-                  ))}
+                    <div className="flex items-center bg-purple-600 text-white px-2 py-0.5 rounded text-sm">
+                      <span>{review.rating}</span>
+                      <Star className="h-3 w-3 fill-current ml-0.5" />
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-3">{review.comment}</p>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <button className="flex items-center gap-1 hover:text-purple-600 transition-colors">
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                      <span>Helpful ({review.helpful})</span>
+                    </button>
+                    <button className="flex items-center gap-1 hover:text-destructive transition-colors">
+                      <ThumbsDown className="h-3.5 w-3.5" />
+                      <span>({review.notHelpful})</span>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </TabsContent>
-          </Tabs>
+              ))}
+            </div>
+          </ProductSection>
         </div>
 
         {/* Related Products Section */}
