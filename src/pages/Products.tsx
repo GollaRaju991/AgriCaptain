@@ -448,10 +448,10 @@ const Products = () => {
             {/* Products Grid */}
             {currentProducts.length > 0 ? (
               <>
-                {/* Mobile List View */}
-                <div className="flex flex-col gap-3 mb-8 md:hidden">
+                {/* Mobile Grid View - 2 columns */}
+                <div className="grid grid-cols-2 gap-3 mb-8 md:hidden">
                   {currentProducts.map(product => (
-                    <ProductCard key={product.id} product={product} variant="list" />
+                    <ProductCard key={product.id} product={product} variant="grid" />
                   ))}
                 </div>
                 
