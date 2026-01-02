@@ -136,20 +136,30 @@ const HeroSlider = () => {
         <ChevronRight className="h-4 w-4" />
       </Button>
 
-      {/* Horizontal Flipkart-style dots with animations */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-row items-center justify-center gap-2">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`rounded-full transition-all duration-500 ease-out transform ${
-              index === currentSlide
-                ? 'w-4 h-2 bg-white scale-100 shadow-lg'
-                : 'w-2 h-2 bg-white/40 hover:bg-white/70 hover:scale-110'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+      {/* Flipkart-style bar indicators (row) */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex flex-row flex-nowrap items-center justify-center gap-2">
+        {slides.map((_, index) => {
+          const isActive = index === currentSlide;
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={() => setCurrentSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+              aria-current={isActive}
+              className="min-w-0 min-h-0 h-6 w-6 grid place-items-center bg-transparent p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <span
+                className={
+                  "block rounded-full transition-all duration-300 ease-out " +
+                  (isActive
+                    ? "h-4 w-1.5 bg-background shadow"
+                    : "h-3.5 w-1 bg-background/50 hover:bg-background/75")
+                }
+              />
+            </button>
+          );
+        })}
       </div>
     </div>
   );
