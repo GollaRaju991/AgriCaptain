@@ -36,7 +36,22 @@ const CategoryNavigation = () => {
         { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients' },
       ]
     },
-    { name: 'Agriculture Products', icon: Wrench, path: '/products?category=agriculture' },
+    { 
+      name: 'Agriculture Products', 
+      icon: Wrench, 
+      path: '/products?category=agriculture',
+      hasDropdown: true,
+      subcategories: [
+        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides' },
+        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides' },
+        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides' },
+        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides' },
+        { name: 'Plant Growth Regulators', path: '/products?category=agriculture&type=growth-regulators' },
+        { name: 'Sprayers & Equipment', path: '/products?category=agriculture&type=equipment' },
+        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation' },
+        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting' },
+      ]
+    },
     { 
       name: 'Brands', 
       icon: Award, 
