@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
+import { products } from '@/data/products';
+import ProductCard from '@/components/ProductCard';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -18,8 +20,42 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
+  // Find product from products data or use mock
+  const foundProduct = products.find(p => p.id === id);
+
   // Enhanced mock product data
-  const product = {
+  const product = foundProduct ? {
+    ...foundProduct,
+    images: [
+      foundProduct.image,
+      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
+    ],
+    category: 'seeds',
+    shortDescription: foundProduct.description || 'Premium quality product for farming',
+    detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
+    usage: `Ideal for commercial farming and home gardening.`,
+    specifications: {
+      'Product Type': 'Seeds',
+      'Quality': 'Premium',
+      'Shelf Life': '2 years',
+      'Origin': 'India'
+    },
+    features: [
+      'High quality product',
+      'Suitable for all conditions',
+      'Professional packaging',
+      'Detailed instructions included'
+    ],
+    reviewsList: [
+      { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery. Highly recommend for all farmers.', helpful: 45, notHelpful: 2 },
+      { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected. Delivery was on time.', helpful: 23, notHelpful: 3 },
+      { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used. Will buy again.', helpful: 67, notHelpful: 1 },
+      { id: 4, name: 'Dinesh Yadav', rating: 4, date: '2 months ago', comment: 'Value for money product. Recommended for farmers.', helpful: 34, notHelpful: 5 },
+      { id: 5, name: 'Rajesh Sharma', rating: 5, date: '2 months ago', comment: 'Amazing results! Very happy with this purchase.', helpful: 89, notHelpful: 0 }
+    ]
+  } : {
     id: id || '1',
     name: 'Hybrid Tomato Seeds - Premium Quality',
     price: 299,
@@ -37,40 +73,58 @@ const ProductDetails = () => {
     inStock: true,
     shortDescription: 'Premium quality hybrid tomato seeds for high-yield farming',
     detailedDescription: `These premium hybrid tomato seeds are specially developed for Indian growing conditions. 
-    Our seeds undergo rigorous quality testing and come with a 95%+ germination guarantee. Perfect for both 
-    commercial farming and home gardening, these seeds produce disease-resistant plants with excellent fruit quality.
-    
-    Key Benefits:
-    • High yield potential (15-20 tons per acre)
-    • Disease resistant varieties
-    • Suitable for all seasons
-    • Premium quality assurance
-    • Organic farming compatible
-    • Professional farmer tested`,
-    usage: `Ideal for commercial farming, kitchen gardens, and greenhouse cultivation. These seeds work well in 
-    various soil types and climatic conditions across India. Best planted during the recommended seasons for 
-    optimal yield and quality.`,
+    Our seeds undergo rigorous quality testing and come with a 95%+ germination guarantee.`,
+    usage: `Ideal for commercial farming, kitchen gardens, and greenhouse cultivation.`,
     specifications: {
       'Seed Type': 'Hybrid F1',
       'Germination Rate': '95%+',
       'Days to Maturity': '75-80 days',
-      'Plant Height': '4-6 feet (indeterminate)',
-      'Fruit Weight': '150-200g average',
-      'Package Weight': '10g (approximately 40-50 seeds)',
-      'Shelf Life': '2 years from manufacture date',
       'Origin': 'India'
     },
     features: [
       'High germination rate (95%+)',
       'Disease resistant varieties',
       'Suitable for all climates',
-      'High yield potential',
-      'Premium quality assurance',
-      'Organic farming compatible',
-      'Professional packaging',
-      'Detailed growing instructions included'
+      'Premium quality assurance'
+    ],
+    reviewsList: [
+      { id: 1, name: 'John Farmer', rating: 5, date: '2 weeks ago', comment: 'Excellent seeds! Great germination rate and healthy plants.', helpful: 45, notHelpful: 2 },
+      { id: 2, name: 'Sarah Green', rating: 4, date: '1 month ago', comment: 'Good quality seeds. Plants grew well but took a bit longer.', helpful: 23, notHelpful: 3 }
     ]
   };
+
+  // Get related products - match by similar names or random selection
+  const relatedProducts = useMemo(() => {
+    const currentId = product.id;
+    // Get products with similar keywords in name
+    const keywords = product.name.toLowerCase().split(' ').filter(w => w.length > 3);
+    const similar = products.filter(p => {
+      if (p.id === currentId) return false;
+      const pName = p.name.toLowerCase();
+      return keywords.some(kw => pName.includes(kw));
+    });
+    
+    if (similar.length >= 4) return similar.slice(0, 8);
+    
+    // If not enough similar, add random products
+    const remaining = products.filter(p => p.id !== currentId && !similar.includes(p));
+    return [...similar, ...remaining].slice(0, 8);
+  }, [product.id, product.name]);
+
+  // Rating distribution
+  const ratingDistribution = useMemo(() => {
+    const reviews = product.reviewsList || [];
+    const total = reviews.length || 1;
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(r => {
+      dist[r.rating as keyof typeof dist]++;
+    });
+    return Object.entries(dist).reverse().map(([stars, count]) => ({
+      stars: parseInt(stars),
+      count,
+      percentage: Math.round((count / total) * 100)
+    }));
+  }, [product.reviewsList]);
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
@@ -339,47 +393,99 @@ const ProductDetails = () => {
 
             <TabsContent value="reviews">
               <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-semibold mb-4">Customer Reviews</h3>
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex flex-col md:flex-row gap-6 mb-6">
+                    {/* Rating Summary */}
+                    <div className="flex-shrink-0 text-center md:text-left">
+                      <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                        <span className="text-4xl font-bold text-gray-900">{product.rating}</span>
+                        <Star className="h-8 w-8 fill-yellow-400 text-yellow-400" />
+                      </div>
+                      <p className="text-gray-600 text-sm">{product.reviews || product.reviewsList?.length || 0} Reviews</p>
+                    </div>
+                    
+                    {/* Rating Distribution */}
+                    <div className="flex-1 space-y-2">
+                      {ratingDistribution.map(({ stars, count, percentage }) => (
+                        <div key={stars} className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600 w-6">{stars}★</span>
+                          <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-green-600 rounded-full transition-all"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <span className="text-sm text-gray-500 w-8">{count}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold mb-4">Customer Reviews</h3>
                   <div className="space-y-4">
-                    <div className="border-b pb-4">
-                      <div className="flex items-center mb-2">
-                        <div className="flex items-center mr-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          ))}
+                    {(product.reviewsList || []).map((review) => (
+                      <div key={review.id} className="border-b pb-4 last:border-b-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                              <span className="text-green-700 font-medium text-sm">
+                                {review.name.charAt(0)}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{review.name}</p>
+                              <p className="text-xs text-gray-500">{review.date}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center bg-green-600 text-white px-2 py-0.5 rounded text-sm">
+                            <span>{review.rating}</span>
+                            <Star className="h-3 w-3 fill-white ml-0.5" />
+                          </div>
                         </div>
-                        <span className="font-medium">John Farmer</span>
-                      </div>
-                      <p className="text-gray-700">
-                        Excellent seeds! Great germination rate and healthy plants. 
-                        Highly recommend for anyone looking for quality tomato seeds.
-                      </p>
-                    </div>
-                    <div className="border-b pb-4">
-                      <div className="flex items-center mb-2">
-                        <div className="flex items-center mr-2">
-                          {[...Array(4)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          ))}
-                          <Star className="h-4 w-4 text-gray-300" />
+                        <p className="text-gray-700 text-sm mb-3">{review.comment}</p>
+                        <div className="flex items-center gap-4 text-xs text-gray-500">
+                          <button className="flex items-center gap-1 hover:text-green-600">
+                            <ThumbsUp className="h-3.5 w-3.5" />
+                            <span>Helpful ({review.helpful})</span>
+                          </button>
+                          <button className="flex items-center gap-1 hover:text-red-500">
+                            <ThumbsDown className="h-3.5 w-3.5" />
+                            <span>({review.notHelpful})</span>
+                          </button>
                         </div>
-                        <span className="font-medium">Sarah Green</span>
                       </div>
-                      <p className="text-gray-700">
-                        Good quality seeds. Plants grew well but took a bit longer to fruit than expected.
-                      </p>
-                    </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-12 mb-8">
+            <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+            
+            {/* Mobile: 2 column grid */}
+            <div className="grid grid-cols-2 gap-3 md:hidden">
+              {relatedProducts.slice(0, 6).map(relProduct => (
+                <ProductCard key={relProduct.id} product={relProduct} variant="grid" />
+              ))}
+            </div>
+            
+            {/* Desktop: 4 column grid */}
+            <div className="hidden md:grid md:grid-cols-4 gap-6">
+              {relatedProducts.map(relProduct => (
+                <ProductCard key={relProduct.id} product={relProduct} variant="grid" />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       <div className="h-20 lg:hidden"></div>
 
-<MobileBottomNav />
+      <MobileBottomNav />
       <Footer />
     </div>
   );

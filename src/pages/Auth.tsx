@@ -342,10 +342,19 @@ const Auth = () => {
             <CardContent className="p-6">
               <h2 className="text-xl font-bold text-center mb-6">Authentication</h2>
               <Tabs defaultValue="otp" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-6">
-                  <TabsTrigger value="email" className="text-xs">📧 Email</TabsTrigger>
-                  <TabsTrigger value="otp" className="text-xs">📱 OTP</TabsTrigger>
-                  <TabsTrigger value="signup" className="text-xs">📝 Signup</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 mb-6 h-auto p-1">
+                  <TabsTrigger value="email" className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-2 px-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    <span className="text-base">📧</span>
+                    <span className="hidden xs:inline sm:inline">Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="otp" className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-2 px-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    <span className="text-base">📱</span>
+                    <span className="hidden xs:inline sm:inline">OTP</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="signup" className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-2 px-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                    <span className="text-base">📝</span>
+                    <span className="hidden xs:inline sm:inline">Signup</span>
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="otp">
