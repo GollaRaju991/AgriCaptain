@@ -25,9 +25,10 @@ interface Product {
 interface ProductCardProps {
   product: Product;
   variant?: 'grid' | 'list';
+  showButtons?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', showButtons = false }) => {
   const { addToCart } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -126,7 +127,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
           </div>
         </Link>
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Only show when showButtons is true */}
+        {showButtons && (
         <div className="px-3 pb-3 flex gap-2">
           <Button 
             variant="outline" 
@@ -147,6 +149,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
             Buy
           </Button>
         </div>
+        )}
       </Card>
     );
   }
@@ -205,6 +208,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
         </CardContent>
       </Link>
       
+      {/* Action Buttons - Only show when showButtons is true */}
+      {showButtons && (
       <div className="px-3 pb-3 flex flex-col gap-2 mt-auto">
         <Button 
           variant="outline" 
@@ -225,6 +230,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid' }) 
           Buy
         </Button>
       </div>
+      )}
     </Card>
   );
 };
