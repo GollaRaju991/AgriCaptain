@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -46,9 +46,13 @@ import LogoutConfirmation from "./LogoutConfirmation";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { items } = useCart();
   const { user, logout } = useAuth();
   const { translations } = useLanguage();
+
+  // Check if on product detail page
+  const isProductPage = location.pathname.startsWith('/product/');
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,7 +110,8 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Row 2: Search Box with Camera and Scanner */}
+        {/* Row 2: Search Box with Camera and Scanner - Hidden on product pages */}
+        {!isProductPage && (
         <div className="lg:hidden flex items-center px-3 py-2 bg-green-600 gap-2">
           <form
             onSubmit={handleSearch}
@@ -138,8 +143,10 @@ const Header = () => {
             <ScanLine className="h-6 w-6" />
           </Button>
         </div>
+        )}
 
-        {/* Mobile Category Navigation - Scrollable */}
+        {/* Mobile Category Navigation - Scrollable - Hidden on product pages */}
+        {!isProductPage && (
         <div className="lg:hidden overflow-x-auto bg-green-600 border-b border-green-500">
           <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
             {[
@@ -192,6 +199,7 @@ const Header = () => {
             })}
           </div>
         </div>
+        )}
 
         {/* ---------------------- DESKTOP HEADER ---------------------- */}
         <div className="hidden lg:block">
