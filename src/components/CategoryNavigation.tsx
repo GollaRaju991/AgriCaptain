@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp, ChevronDown } from 'lucide-react';
+import { 
+  Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp, ChevronDown,
+  Carrot, Apple, Flower2, Wheat, Leaf, FlaskConical, Bug, Sparkles,
+  ShieldAlert, Target, Spline, CircleDot, TrendingUp as Growth, SprayCan, Droplets, Scissors,
+  Factory, Building2, Atom, Zap, Star, LucideIcon
+} from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import FarmWorkerDialog from './FarmWorkerDialog';
 import RentVehicleDialog from './RentVehicleDialog';
@@ -18,10 +23,10 @@ const CategoryNavigation = () => {
       path: '/products?category=seeds',
       hasDropdown: true,
       subcategories: [
-        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable', color: 'bg-green-500' },
-        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit', color: 'bg-orange-500' },
-        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower', color: 'bg-pink-500' },
-        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain', color: 'bg-amber-500' },
+        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable', icon: Carrot },
+        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit', icon: Apple },
+        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower', icon: Flower2 },
+        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain', icon: Wheat },
       ]
     },
     { 
@@ -30,10 +35,10 @@ const CategoryNavigation = () => {
       path: '/products?category=fertilizers',
       hasDropdown: true,
       subcategories: [
-        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', color: 'bg-emerald-500' },
-        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', color: 'bg-blue-500' },
-        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', color: 'bg-teal-500' },
-        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', color: 'bg-purple-500' },
+        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', icon: Leaf },
+        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', icon: FlaskConical },
+        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', icon: Bug },
+        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', icon: Sparkles },
       ]
     },
     { 
@@ -42,14 +47,14 @@ const CategoryNavigation = () => {
       path: '/products?category=agriculture',
       hasDropdown: true,
       subcategories: [
-        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', color: 'bg-red-500' },
-        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', color: 'bg-yellow-500' },
-        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', color: 'bg-lime-500' },
-        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', color: 'bg-cyan-500' },
-        { name: 'Plant Growth Regulators', path: '/products?category=agriculture&type=growth-regulators', color: 'bg-indigo-500' },
-        { name: 'Sprayers & Equipment', path: '/products?category=agriculture&type=equipment', color: 'bg-slate-500' },
-        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation', color: 'bg-sky-500' },
-        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting', color: 'bg-rose-500' },
+        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', icon: ShieldAlert },
+        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', icon: Target },
+        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', icon: Spline },
+        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', icon: CircleDot },
+        { name: 'Plant Growth Regulators', path: '/products?category=agriculture&type=growth-regulators', icon: Growth },
+        { name: 'Sprayers & Equipment', path: '/products?category=agriculture&type=equipment', icon: SprayCan },
+        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation', icon: Droplets },
+        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting', icon: Scissors },
       ]
     },
     { 
@@ -58,11 +63,11 @@ const CategoryNavigation = () => {
       path: '/products?category=brands',
       hasDropdown: true,
       subcategories: [
-        { name: 'BASF', path: '/products?brand=basf', color: 'bg-blue-600' },
-        { name: 'Bayer', path: '/products?brand=bayer', color: 'bg-green-600' },
-        { name: 'Syngenta', path: '/products?brand=syngenta', color: 'bg-violet-600' },
-        { name: 'UPL', path: '/products?brand=upl', color: 'bg-red-600' },
-        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', color: 'bg-amber-600' },
+        { name: 'BASF', path: '/products?brand=basf', icon: Factory },
+        { name: 'Bayer', path: '/products?brand=bayer', icon: Building2 },
+        { name: 'Syngenta', path: '/products?brand=syngenta', icon: Atom },
+        { name: 'UPL', path: '/products?brand=upl', icon: Zap },
+        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', icon: Star },
       ]
     },
     { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
@@ -74,10 +79,10 @@ const CategoryNavigation = () => {
       hasDropdown: true,
       isDropdownOnly: true,
       subcategories: [
-        { name: 'Crop Loans', path: '/loans?type=crop' },
-        { name: 'Equipment Loans', path: '/loans?type=equipment' },
-        { name: 'Land Loans', path: '/loans?type=land' },
-        { name: 'Kisan Credit Card', path: '/loans?type=kcc' },
+        { name: 'Crop Loans', path: '/loans?type=crop', icon: Wheat },
+        { name: 'Equipment Loans', path: '/loans?type=equipment', icon: Wrench },
+        { name: 'Land Loans', path: '/loans?type=land', icon: Sprout },
+        { name: 'Kisan Credit Card', path: '/loans?type=kcc', icon: CreditCard },
       ]
     },
   ];
@@ -138,16 +143,20 @@ const CategoryNavigation = () => {
                 
                 {/* Dropdown Menu - Simple List Style */}
                 {hasDropdown && openDropdown === category.name && 'subcategories' in category && (
-                  <div className="absolute top-full left-0 min-w-[140px] bg-white shadow-lg z-50 border border-gray-200">
-                    {category.subcategories.map((sub, subIndex) => (
-                      <Link
-                        key={subIndex}
-                        to={sub.path}
-                        className="block px-4 py-2 text-sm text-green-700 hover:bg-gray-100 border-b border-gray-100 last:border-b-0 transition-colors"
-                      >
-                        {sub.name}
-                      </Link>
-                    ))}
+                  <div className="absolute top-full left-0 min-w-[160px] bg-white shadow-lg z-50 border border-gray-200">
+                    {category.subcategories.map((sub, subIndex) => {
+                      const SubIcon = sub.icon;
+                      return (
+                        <Link
+                          key={subIndex}
+                          to={sub.path}
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-green-700 hover:bg-gray-100 border-b border-gray-100 last:border-b-0 transition-colors"
+                        >
+                          <SubIcon className="h-4 w-4 text-green-600" />
+                          {sub.name}
+                        </Link>
+                      );
+                    })}
                     <Link
                       to={'path' in category ? category.path : '#'}
                       className="block px-4 py-2 text-sm font-medium bg-gray-50 text-gray-800 hover:bg-gray-100 border-t border-gray-200"
