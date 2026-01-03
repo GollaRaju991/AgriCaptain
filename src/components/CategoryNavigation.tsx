@@ -18,10 +18,10 @@ const CategoryNavigation = () => {
       path: '/products?category=seeds',
       hasDropdown: true,
       subcategories: [
-        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable' },
-        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit' },
-        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower' },
-        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain' },
+        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable', color: 'bg-green-500' },
+        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit', color: 'bg-orange-500' },
+        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower', color: 'bg-pink-500' },
+        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain', color: 'bg-amber-500' },
       ]
     },
     { 
@@ -30,10 +30,10 @@ const CategoryNavigation = () => {
       path: '/products?category=fertilizers',
       hasDropdown: true,
       subcategories: [
-        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic' },
-        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical' },
-        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio' },
-        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients' },
+        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', color: 'bg-emerald-500' },
+        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', color: 'bg-blue-500' },
+        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', color: 'bg-teal-500' },
+        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', color: 'bg-purple-500' },
       ]
     },
     { 
@@ -42,14 +42,14 @@ const CategoryNavigation = () => {
       path: '/products?category=agriculture',
       hasDropdown: true,
       subcategories: [
-        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides' },
-        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides' },
-        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides' },
-        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides' },
-        { name: 'Plant Growth Regulators', path: '/products?category=agriculture&type=growth-regulators' },
-        { name: 'Sprayers & Equipment', path: '/products?category=agriculture&type=equipment' },
-        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation' },
-        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting' },
+        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', color: 'bg-red-500' },
+        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', color: 'bg-yellow-500' },
+        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', color: 'bg-lime-500' },
+        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', color: 'bg-cyan-500' },
+        { name: 'Plant Growth Regulators', path: '/products?category=agriculture&type=growth-regulators', color: 'bg-indigo-500' },
+        { name: 'Sprayers & Equipment', path: '/products?category=agriculture&type=equipment', color: 'bg-slate-500' },
+        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation', color: 'bg-sky-500' },
+        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting', color: 'bg-rose-500' },
       ]
     },
     { 
@@ -58,11 +58,11 @@ const CategoryNavigation = () => {
       path: '/products?category=brands',
       hasDropdown: true,
       subcategories: [
-        { name: 'BASF', path: '/products?brand=basf' },
-        { name: 'Bayer', path: '/products?brand=bayer' },
-        { name: 'Syngenta', path: '/products?brand=syngenta' },
-        { name: 'UPL', path: '/products?brand=upl' },
-        { name: 'Tata Rallis', path: '/products?brand=tata-rallis' },
+        { name: 'BASF', path: '/products?brand=basf', color: 'bg-blue-600' },
+        { name: 'Bayer', path: '/products?brand=bayer', color: 'bg-green-600' },
+        { name: 'Syngenta', path: '/products?brand=syngenta', color: 'bg-violet-600' },
+        { name: 'UPL', path: '/products?brand=upl', color: 'bg-red-600' },
+        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', color: 'bg-amber-600' },
       ]
     },
     { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
@@ -138,16 +138,21 @@ const CategoryNavigation = () => {
                 
                 {/* Dropdown Menu */}
                 {hasDropdown && openDropdown === category.name && 'subcategories' in category && (
-                  <div className="absolute top-full left-0 w-48 bg-white shadow-lg rounded-b-md z-50 border border-gray-200">
-                    {category.subcategories.map((sub, subIndex) => (
-                      <Link
-                        key={subIndex}
-                        to={sub.path}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors"
-                      >
-                        {sub.name}
-                      </Link>
-                    ))}
+                  <div className="absolute top-full left-0 w-56 bg-white shadow-lg rounded-b-md z-50 border border-gray-200 p-2">
+                    <div className="grid grid-cols-1 gap-1">
+                      {category.subcategories.map((sub, subIndex) => (
+                        <Link
+                          key={subIndex}
+                          to={sub.path}
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors group"
+                        >
+                          <div className={`w-8 h-8 ${sub.color} rounded-md flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
+                            <div className="w-4 h-4 bg-white/30 rounded-sm"></div>
+                          </div>
+                          <span className="font-medium group-hover:text-green-700">{sub.name}</span>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
