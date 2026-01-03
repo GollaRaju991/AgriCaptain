@@ -136,23 +136,24 @@ const CategoryNavigation = () => {
                   </Link>
                 )}
                 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu - Simple List Style */}
                 {hasDropdown && openDropdown === category.name && 'subcategories' in category && (
-                  <div className="absolute top-full left-0 w-56 bg-white shadow-lg rounded-b-md z-50 border border-gray-200 p-2">
-                    <div className="grid grid-cols-1 gap-1">
-                      {category.subcategories.map((sub, subIndex) => (
-                        <Link
-                          key={subIndex}
-                          to={sub.path}
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors group"
-                        >
-                          <div className={`w-8 h-8 ${sub.color} rounded-md flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform`}>
-                            <div className="w-4 h-4 bg-white/30 rounded-sm"></div>
-                          </div>
-                          <span className="font-medium group-hover:text-green-700">{sub.name}</span>
-                        </Link>
-                      ))}
-                    </div>
+                  <div className="absolute top-full left-0 min-w-[140px] bg-white shadow-lg z-50 border border-gray-200">
+                    {category.subcategories.map((sub, subIndex) => (
+                      <Link
+                        key={subIndex}
+                        to={sub.path}
+                        className="block px-4 py-2 text-sm text-green-700 hover:bg-gray-100 border-b border-gray-100 last:border-b-0 transition-colors"
+                      >
+                        {sub.name}
+                      </Link>
+                    ))}
+                    <Link
+                      to={'path' in category ? category.path : '#'}
+                      className="block px-4 py-2 text-sm font-medium bg-gray-50 text-gray-800 hover:bg-gray-100 border-t border-gray-200"
+                    >
+                      Shop Now
+                    </Link>
                   </div>
                 )}
               </div>
