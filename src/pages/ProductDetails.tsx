@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
@@ -40,10 +40,16 @@ const ProductSection = ({ title, defaultOpen = false, bgColor, borderColor, chil
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+
+  // Find current product index for navigation
+  const currentIndex = useMemo(() => products.findIndex(p => p.id === id), [id]);
+  const prevProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
+  const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
 
   // Scroll to top when product ID changes
   useEffect(() => {
@@ -181,19 +187,74 @@ const ProductDetails = () => {
     setSelectedImage((prev) => (prev - 1 + product.images.length) % product.images.length);
   };
 
+  const handleBuyNow = () => {
+    for (let i = 0; i < quantity; i++) {
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.images[0],
+        category: product.category
+      });
+    }
+    navigate('/cart');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <div className="container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-8 text-sm">
-          <Link to="/" className="text-gray-600 hover:text-green-600">Home</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <Link to="/products" className="text-gray-600 hover:text-green-600">Products</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-900">{product.name}</span>
-        </nav>
+      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8 pb-32 md:pb-8">
+        {/* Back Button & Breadcrumb with Product Navigation */}
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <div className="flex items-center gap-2 md:gap-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-1 text-sm"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden md:inline">Back</span>
+            </Button>
+            
+            {/* Desktop Breadcrumb */}
+            <nav className="hidden md:flex text-sm">
+              <Link to="/" className="text-gray-600 hover:text-green-600">Home</Link>
+              <span className="mx-2 text-gray-400">/</span>
+              <Link to="/products" className="text-gray-600 hover:text-green-600">Products</Link>
+              <span className="mx-2 text-gray-400">/</span>
+              <span className="text-gray-900 truncate max-w-[200px]">{product.name}</span>
+            </nav>
+          </div>
+
+          {/* Product Navigation - Prev/Next */}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => prevProduct && navigate(`/product/${prevProduct.id}`)}
+              disabled={!prevProduct}
+              className="flex items-center gap-1"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden md:inline">Prev</span>
+            </Button>
+            <span className="text-xs text-gray-500 hidden md:inline">
+              {currentIndex + 1} / {products.length}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => nextProduct && navigate(`/product/${nextProduct.id}`)}
+              disabled={!nextProduct}
+              className="flex items-center gap-1"
+            >
+              <span className="hidden md:inline">Next</span>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Enhanced Product Images Gallery */}
@@ -321,17 +382,22 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              <div className="flex space-x-4">
-                <Button onClick={handleAddToCart} className="flex-1">
+              <div className="flex flex-col md:flex-row gap-3">
+                <Button onClick={handleAddToCart} className="flex-1 bg-white text-gray-900 border border-gray-300 hover:bg-gray-100">
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   Add to Cart
                 </Button>
-                <Button variant="outline" size="sm">
-                  <Heart className="h-4 w-4" />
+                <Button onClick={handleBuyNow} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+                  Buy Now
                 </Button>
-                <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="icon">
+                    <Heart className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon">
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -512,10 +578,28 @@ const ProductDetails = () => {
           </div>
         )}
       </div>
-      <div className="h-20 lg:hidden"></div>
+      
+      {/* Mobile Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex gap-2 lg:hidden z-40 shadow-lg">
+        <Button 
+          variant="outline" 
+          className="flex-1 border-gray-300"
+          onClick={handleAddToCart}
+        >
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          Add to Cart
+        </Button>
+        <Button 
+          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+          onClick={handleBuyNow}
+        >
+          Buy Now
+        </Button>
+      </div>
 
-      <MobileBottomNav />
-      <Footer />
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
     </div>
   );
 };
