@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCategories from "@/components/ProductCategories";
 import BrandsSection from "@/components/BrandsSection";
+import PromoBanners from "@/components/PromoBanners";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import CategoryNavigation from "@/components/CategoryNavigation";
 import { products } from "@/data/products";
@@ -41,6 +42,9 @@ const Index = () => {
       <div className="w-full px-2 md:px-4 py-4 md:py-6 bg-white">
         <ProductCategories />
       </div>
+
+      {/* Promo Banners */}
+      <PromoBanners />
 
       {/* Brands Section */}
       <BrandsSection />
