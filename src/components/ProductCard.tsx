@@ -154,56 +154,53 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
     );
   }
 
-  // Grid View (Default)
+  // Grid View (Default) - Compact Flipkart style
   return (
-    <Card className="hover:shadow-lg transition-shadow h-full flex flex-col bg-white">
+    <Card className="hover:shadow-md transition-shadow h-full flex flex-col bg-white border border-gray-100 rounded-sm">
       <Link to={`/product/${product.id}`} className="flex-1 flex flex-col">
         <div className="relative">
           <img 
             src={product.image} 
             alt={product.name}
-            className="w-full h-32 md:h-48 object-contain bg-gray-50 rounded-t-lg p-2"
+            className="w-full h-28 md:h-40 object-contain bg-white p-1.5 md:p-2"
           />
           {product.discount && (
-            <Badge className="absolute top-2 left-2 bg-green-600 text-white text-[10px] px-1.5 py-0.5">
+            <Badge className="absolute top-1 left-1 bg-green-600 text-white text-[9px] md:text-[10px] px-1 py-0.5 rounded-sm">
               {product.discount}% OFF
             </Badge>
           )}
-          {product.inStock === false && (
-            <Badge className="absolute top-2 right-2 bg-gray-500 text-[10px] px-1.5 py-0.5">
-              Out of Stock
-            </Badge>
-          )}
-          <button className="absolute top-2 right-2 text-gray-400 hover:text-red-500 bg-white rounded-full p-1 shadow-sm">
-            <Heart className="h-4 w-4" />
+          <button className="absolute top-1 right-1 text-gray-400 hover:text-red-500 bg-white/80 rounded-full p-0.5">
+            <Heart className="h-3.5 w-3.5 md:h-4 md:w-4" />
           </button>
         </div>
         
-        <CardContent className="p-3 flex-1 flex flex-col">
-          <h3 className="font-medium text-sm text-gray-900 mb-1.5 line-clamp-2 hover:text-green-600 transition-colors leading-tight">
+        <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col">
+          <h3 className="font-medium text-xs md:text-sm text-gray-900 mb-1 line-clamp-2 leading-tight">
             {product.name}
           </h3>
           
           {product.rating && (
-            <div className="flex items-center mb-1.5 gap-1">
-              <div className="flex items-center bg-green-600 text-white text-xs px-1.5 py-0.5 rounded">
-                <Star className="h-3 w-3 fill-white mr-0.5" />
+            <div className="flex items-center mb-1 gap-0.5">
+              <div className="flex items-center bg-green-600 text-white text-[10px] px-1 py-0.5 rounded-sm">
+                <Star className="h-2.5 w-2.5 fill-white mr-0.5" />
                 <span>{product.rating}</span>
               </div>
               {product.reviews && (
-                <span className="text-xs text-gray-500">({product.reviews.toLocaleString()})</span>
+                <span className="text-[10px] text-gray-500">({product.reviews})</span>
               )}
             </div>
           )}
           
-          <div className="flex items-center flex-wrap gap-1 mb-2">
-            <span className="text-base font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
-            {product.originalPrice && (
-              <span className="text-xs text-gray-400 line-through">₹{product.originalPrice.toLocaleString()}</span>
-            )}
-            {product.discount && (
-              <span className="text-green-600 text-xs font-medium">{product.discount}% off</span>
-            )}
+          <div className="flex flex-col gap-0.5 mt-auto">
+            <span className="text-sm md:text-base font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
+            <div className="flex items-center gap-1 flex-wrap">
+              {product.originalPrice && (
+                <span className="text-[10px] md:text-xs text-gray-400 line-through">₹{product.originalPrice.toLocaleString()}</span>
+              )}
+              {product.discount && (
+                <span className="text-green-600 text-[10px] md:text-xs font-medium">{product.discount}% off</span>
+              )}
+            </div>
           </div>
         </CardContent>
       </Link>
