@@ -38,32 +38,28 @@ const BrandsSection = () => {
   const displayedBrands = showAll ? brands : brands.slice(0, 8);
 
   return (
-    <section className="py-8 md:py-12 bg-green-50">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-              {translations.trusted_brands || "Trusted Brands"}
-            </h2>
-            <p className="text-gray-600">
-              {translations.premium_brands || "Premium agricultural brands you can trust"}
-            </p>
-          </div>
+    <section className="py-4 md:py-6 bg-white border-t border-gray-100">
+      <div className="w-full px-2 md:px-4">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h2 className="text-lg md:text-xl font-bold text-gray-900">
+            {translations.trusted_brands || "Trusted Brands"}
+          </h2>
           <Button 
-            variant="outline" 
+            variant="ghost" 
+            size="sm"
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-2"
+            className="text-green-600 hover:text-green-700 text-sm"
           >
             {showAll ? "View Less" : "View All"}
-            <ChevronRight className={`h-4 w-4 transition-transform ${showAll ? 'rotate-90' : ''}`} />
+            <ChevronRight className={`h-4 w-4 ml-1 transition-transform ${showAll ? 'rotate-90' : ''}`} />
           </Button>
         </div>
         
-        <div className={`grid ${showAll ? 'grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 md:gap-4' : 'grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 md:gap-4'}`}>
+        <div className={`grid ${showAll ? 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1 md:gap-2' : 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1 md:gap-2'}`}>
           {displayedBrands.map((brand, index) => (
-            <Card key={index} className="hover:shadow-md transition-all duration-300 hover:scale-105 cursor-pointer border-gray-200">
-              <CardContent className="p-2 md:p-3">
-                <div className="w-full h-12 md:h-16 flex items-center justify-center">
+            <Card key={index} className="hover:shadow-sm transition-all cursor-pointer border border-gray-100 bg-white">
+              <CardContent className="p-1.5 md:p-2">
+                <div className="w-full h-10 md:h-12 flex items-center justify-center">
                   <img 
                     src={brand.logo} 
                     alt={brand.name}

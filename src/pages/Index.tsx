@@ -37,38 +37,24 @@ const Index = () => {
       {/* Hero Slider */}
       <HeroSlider />
 
-      {/* Left + Right Image Layout */}
-      <div className="flex justify-center items-start gap-4 px-4 py-10">
-        <img
-          src="https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png"
-          alt="Left Banner"
-          className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
-        />
-
-        <div className="w-full max-w-4xl mx-auto">
-          <ProductCategories />
-        </div>
-
-        <img
-          src="https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png"
-          alt="Right Banner"
-          className="hidden lg:block w-60 h-[500px] object-cover rounded-xl shadow-lg"
-        />
+      {/* Categories Section - Full Width */}
+      <div className="w-full px-2 md:px-4 py-4 md:py-6 bg-white">
+        <ProductCategories />
       </div>
 
       {/* Brands Section */}
       <BrandsSection />
 
       {/* Featured Products */}
-      <section className="py-8 md:py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 pb-24">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold">{translations.featured_products}</h2>
-            <p className="text-gray-600">{translations.discover_products}</p>
+      <section className="py-4 md:py-8 bg-white">
+        <div className="w-full px-2 md:px-4 pb-24">
+          <div className="text-center mb-4 md:mb-6">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900">{translations.featured_products}</h2>
+            <p className="text-sm text-gray-600">{translations.discover_products}</p>
           </div>
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Product Grid - Tighter gaps like Flipkart */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
             {products
               .slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage)
               .map((product) => (
