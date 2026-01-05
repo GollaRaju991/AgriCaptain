@@ -5,13 +5,24 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import useScrollToTop from '@/hooks/useScrollToTop';
-
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 interface Order {
   id: string;
   order_number: string;
@@ -40,6 +51,7 @@ const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
 
   // Make scroll to top optional - only scroll when coming from external navigation
   useScrollToTop(false);
@@ -93,6 +105,8 @@ const Orders = () => {
         return 'bg-yellow-100 text-yellow-800';
       case 'pending':
         return 'bg-gray-100 text-gray-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -106,8 +120,80 @@ const Orders = () => {
         return <Truck className="h-4 w-4 text-blue-600" />;
       case 'processing':
         return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'cancelled':
+        return <XCircle className="h-4 w-4 text-red-600" />;
       default:
         return <Package className="h-4 w-4 text-gray-600" />;
+    }
+  };
+
+  // Check if order can be cancelled (within 24 hours)
+  const canCancelOrder = (order: Order): boolean => {
+    if (order.status === 'cancelled' || order.status === 'delivered' || order.status === 'shipped') {
+      return false;
+    }
+    const orderDate = new Date(order.created_at);
+    const now = new Date();
+    const hoursDiff = (now.getTime() - orderDate.getTime()) / (1000 * 60 * 60);
+    return hoursDiff <= 24;
+  };
+
+  // Get time remaining for cancellation
+  const getCancellationTimeRemaining = (order: Order): string => {
+    const orderDate = new Date(order.created_at);
+    const deadline = new Date(orderDate.getTime() + 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const hoursRemaining = Math.max(0, (deadline.getTime() - now.getTime()) / (1000 * 60 * 60));
+    
+    if (hoursRemaining <= 0) return 'Cancellation window expired';
+    if (hoursRemaining < 1) return `${Math.round(hoursRemaining * 60)} minutes left to cancel`;
+    return `${Math.round(hoursRemaining)} hours left to cancel`;
+  };
+
+  // Calculate refund amount
+  const getRefundAmount = (order: Order): number => {
+    if (order.payment_status !== 'completed') return 0;
+    if (order.payment_method === 'cod') return 99; // COD advance payment
+    return order.total_amount; // Full refund for online payments
+  };
+
+  // Handle order cancellation
+  const handleCancelOrder = async (order: Order) => {
+    setCancellingOrderId(order.id);
+    
+    try {
+      const refundAmount = getRefundAmount(order);
+      
+      const { error } = await supabase
+        .from('orders')
+        .update({ 
+          status: 'cancelled',
+          payment_status: order.payment_status === 'completed' ? 'refund_initiated' : order.payment_status
+        })
+        .eq('id', order.id);
+
+      if (error) {
+        console.error('Error cancelling order:', error);
+        toast.error('Failed to cancel order. Please try again.');
+        return;
+      }
+
+      // Refresh orders
+      await fetchOrders();
+
+      if (refundAmount > 0) {
+        toast.success(
+          `Order cancelled successfully! ₹${refundAmount} will be refunded to your original payment method within 5-7 business days.`,
+          { duration: 6000 }
+        );
+      } else {
+        toast.success('Order cancelled successfully!');
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      toast.error('Failed to cancel order. Please try again.');
+    } finally {
+      setCancellingOrderId(null);
     }
   };
 
@@ -289,7 +375,25 @@ const Orders = () => {
                         </div>
                       )}
                       
-                      <div className="flex items-center space-x-3 pt-4">
+                      {/* Cancellation info banner */}
+                      {canCancelOrder(order) && (
+                        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
+                          <AlertCircle className="h-4 w-4 shrink-0" />
+                          <span>{getCancellationTimeRemaining(order)}</span>
+                        </div>
+                      )}
+
+                      {order.status === 'cancelled' && (
+                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+                          <XCircle className="h-4 w-4 shrink-0" />
+                          <span>
+                            This order has been cancelled.
+                            {order.payment_status === 'refund_initiated' && ' Refund has been initiated.'}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-4">
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -299,14 +403,65 @@ const Orders = () => {
                           <Eye className="h-4 w-4" />
                           <span>{isExpanded ? 'Hide Details' : 'View Details'}</span>
                         </Button>
-                        <Button variant="outline" size="sm" className="flex items-center space-x-1">
-                          <Truck className="h-4 w-4" />
-                          <span>Track Order</span>
-                        </Button>
+                        
+                        {order.status !== 'cancelled' && (
+                          <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                            <Truck className="h-4 w-4" />
+                            <span>Track Order</span>
+                          </Button>
+                        )}
+                        
                         {order.status === 'delivered' && (
                           <Button variant="outline" size="sm">
                             Reorder
                           </Button>
+                        )}
+
+                        {canCancelOrder(order) && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="destructive" 
+                                size="sm" 
+                                className="flex items-center space-x-1"
+                                disabled={cancellingOrderId === order.id}
+                              >
+                                {cancellingOrderId === order.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <XCircle className="h-4 w-4" />
+                                )}
+                                <span>Cancel Order</span>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Cancel Order #{order.order_number}?</AlertDialogTitle>
+                                <AlertDialogDescription className="space-y-2">
+                                  <p>Are you sure you want to cancel this order?</p>
+                                  {getRefundAmount(order) > 0 && (
+                                    <p className="font-medium text-green-600">
+                                      ₹{getRefundAmount(order)} will be refunded to your {order.payment_method === 'cod' ? 'payment method' : 'original payment method'} within 5-7 business days.
+                                    </p>
+                                  )}
+                                  {order.payment_method === 'cod' && order.payment_status === 'completed' && (
+                                    <p className="text-sm text-muted-foreground">
+                                      (Advance payment of ₹99 will be refunded)
+                                    </p>
+                                  )}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Keep Order</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleCancelOrder(order)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Yes, Cancel Order
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         )}
                       </div>
                     </div>
