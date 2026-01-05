@@ -12,6 +12,14 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // Collapsible Product Section Component
 interface ProductSectionProps {
@@ -205,55 +213,26 @@ const ProductDetails = () => {
       <Header />
       
       <div className="container mx-auto px-2 md:px-4 py-4 md:py-8 pb-32 md:pb-8">
-        {/* Back Button & Breadcrumb with Product Navigation */}
-        <div className="flex items-center justify-between mb-4 md:mb-6">
-          <div className="flex items-center gap-2 md:gap-4">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => navigate(-1)}
-              className="flex items-center gap-1 text-sm"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden md:inline">Back</span>
-            </Button>
-            
-            {/* Desktop Breadcrumb */}
-            <nav className="hidden md:flex text-sm">
-              <Link to="/" className="text-gray-600 hover:text-green-600">Home</Link>
-              <span className="mx-2 text-gray-400">/</span>
-              <Link to="/products" className="text-gray-600 hover:text-green-600">Products</Link>
-              <span className="mx-2 text-gray-400">/</span>
-              <span className="text-gray-900 truncate max-w-[200px]">{product.name}</span>
-            </nav>
-          </div>
-
-          {/* Product Navigation - Prev/Next */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => prevProduct && navigate(`/product/${prevProduct.id}`)}
-              disabled={!prevProduct}
-              className="flex items-center gap-1"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span className="hidden md:inline">Prev</span>
-            </Button>
-            <span className="text-xs text-gray-500 hidden md:inline">
-              {currentIndex + 1} / {products.length}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => nextProduct && navigate(`/product/${nextProduct.id}`)}
-              disabled={!nextProduct}
-              className="flex items-center gap-1"
-            >
-              <span className="hidden md:inline">Next</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+        {/* Back Button & Breadcrumb */}
+        <div className="flex items-center gap-2 md:gap-4 mb-4 md:mb-6">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back</span>
+          </Button>
+          
+          {/* Breadcrumb */}
+          <nav className="flex text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-primary">Home</Link>
+            <span className="mx-2">/</span>
+            <Link to="/products" className="hover:text-primary">Products</Link>
+            <span className="mx-2">/</span>
+            <span className="text-foreground truncate max-w-[120px] md:max-w-[200px]">{product.name}</span>
+          </nav>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -577,6 +556,94 @@ const ProductDetails = () => {
             </div>
           </div>
         )}
+
+        {/* Product Pagination at Bottom */}
+        <div className="mt-8 mb-8 flex justify-center">
+          <Pagination>
+            <PaginationContent className="flex-wrap justify-center">
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => {
+                    if (currentIndex > 0) {
+                      const prevProduct = products[currentIndex - 1];
+                      navigate(`/product/${prevProduct.id}`);
+                    }
+                  }}
+                  className={currentIndex === 0 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+              
+              {/* Show first page if not visible */}
+              {currentIndex > 2 && (
+                <>
+                  <PaginationItem>
+                    <PaginationLink 
+                      onClick={() => navigate(`/product/${products[0].id}`)}
+                      className="cursor-pointer"
+                    >
+                      1
+                    </PaginationLink>
+                  </PaginationItem>
+                  {currentIndex > 3 && (
+                    <PaginationItem>
+                      <span className="px-2 text-muted-foreground">...</span>
+                    </PaginationItem>
+                  )}
+                </>
+              )}
+              
+              {/* Show pages around current */}
+              {Array.from({ length: 5 }, (_, i) => {
+                const pageIndex = Math.max(0, currentIndex - 2) + i;
+                if (pageIndex >= products.length) return null;
+                if (pageIndex < 0) return null;
+                
+                return (
+                  <PaginationItem key={pageIndex}>
+                    <PaginationLink 
+                      onClick={() => navigate(`/product/${products[pageIndex].id}`)}
+                      isActive={pageIndex === currentIndex}
+                      className="cursor-pointer"
+                    >
+                      {pageIndex + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+              
+              {/* Show last page if not visible */}
+              {currentIndex < products.length - 3 && (
+                <>
+                  {currentIndex < products.length - 4 && (
+                    <PaginationItem>
+                      <span className="px-2 text-muted-foreground">...</span>
+                    </PaginationItem>
+                  )}
+                  <PaginationItem>
+                    <PaginationLink 
+                      onClick={() => navigate(`/product/${products[products.length - 1].id}`)}
+                      className="cursor-pointer"
+                    >
+                      {products.length}
+                    </PaginationLink>
+                  </PaginationItem>
+                </>
+              )}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => {
+                    if (currentIndex < products.length - 1) {
+                      const nextProduct = products[currentIndex + 1];
+                      navigate(`/product/${nextProduct.id}`);
+                    }
+                  }}
+                  className={currentIndex >= products.length - 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
       
       {/* Mobile Sticky Bottom Bar */}
