@@ -182,7 +182,7 @@ const Orders = () => {
         .from('orders')
         .update({ 
           status: 'cancelled',
-          payment_status: order.payment_status === 'completed' ? 'refund_initiated' : order.payment_status
+          payment_status: order.payment_status === 'completed' ? 'refunded' : order.payment_status
         })
         .eq('id', order.id);
 
@@ -453,7 +453,7 @@ const Orders = () => {
                           <XCircle className="h-4 w-4 shrink-0" />
                           <span>
                             This order has been cancelled.
-                            {order.payment_status === 'refund_initiated' && ' Refund has been initiated.'}
+                            {order.payment_status === 'refunded' && ' Refund has been initiated.'}
                           </span>
                         </div>
                       )}
