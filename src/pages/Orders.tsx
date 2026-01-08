@@ -81,6 +81,7 @@ const Orders = () => {
         .from('orders')
         .select('*')
         .eq('user_id', user?.id)
+        .neq('status', 'cancelled') // Filter out cancelled orders
         .order('created_at', { ascending: false });
 
       if (error) {
