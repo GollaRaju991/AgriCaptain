@@ -5,13 +5,14 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { toast } from 'sonner';
+import OrderTracking from '@/components/OrderTracking';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +24,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+interface TrackingUpdate {
+  status: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  location?: string;
+}
+
 interface Order {
   id: string;
   order_number: string;
@@ -35,6 +45,8 @@ interface Order {
   updated_at: string;
   shipping_address: Json;
   payment_method: string;
+  estimated_delivery?: string | null;
+  tracking_updates?: Json;
 }
 
 interface ShippingAddress {
@@ -52,6 +64,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
+  const [trackingOrderId, setTrackingOrderId] = useState<string | null>(null);
 
   // Make scroll to top optional - only scroll when coming from external navigation
   useScrollToTop(false);
@@ -178,6 +191,22 @@ const Orders = () => {
         return;
       }
 
+      // Create notification for order cancellation
+      const notificationMessage = refundAmount > 0 
+        ? `Your order #${order.order_number} has been cancelled. ₹${refundAmount} will be refunded within 5-7 business days.`
+        : `Your order #${order.order_number} has been cancelled.`;
+
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: user?.id,
+          order_id: order.id,
+          type: 'order',
+          title: 'Order Cancelled',
+          message: notificationMessage,
+          action_url: '/orders'
+        });
+
       // Refresh orders
       await fetchOrders();
 
@@ -236,6 +265,25 @@ const Orders = () => {
     setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
+  // Calculate estimated delivery date (5-7 days from order date)
+  const getEstimatedDelivery = (order: Order): string | null => {
+    if (order.estimated_delivery) return order.estimated_delivery;
+    if (order.status === 'delivered' || order.status === 'cancelled') return null;
+    const orderDate = new Date(order.created_at);
+    orderDate.setDate(orderDate.getDate() + 5); // Default: 5 days from order
+    return orderDate.toISOString();
+  };
+
+  // Parse tracking updates from JSON
+  const getTrackingUpdates = (order: Order): TrackingUpdate[] => {
+    if (!order.tracking_updates || !Array.isArray(order.tracking_updates)) {
+      return [];
+    }
+    return order.tracking_updates as unknown as TrackingUpdate[];
+  };
+
+  const trackingOrder = orders.find(o => o.id === trackingOrderId);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -277,6 +325,22 @@ const Orders = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
+                      {/* Estimated Delivery Date */}
+                      {getEstimatedDelivery(order) && order.status !== 'delivered' && order.status !== 'cancelled' && (
+                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                          <Calendar className="h-4 w-4 shrink-0" />
+                          <span className="text-sm">
+                            <strong>Estimated Delivery:</strong>{' '}
+                            {new Date(getEstimatedDelivery(order)!).toLocaleDateString('en-IN', {
+                              weekday: 'short',
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium">Items Ordered:</p>
@@ -405,7 +469,12 @@ const Orders = () => {
                         </Button>
                         
                         {order.status !== 'cancelled' && (
-                          <Button variant="outline" size="sm" className="flex items-center space-x-1">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex items-center space-x-1"
+                            onClick={() => setTrackingOrderId(order.id)}
+                          >
                             <Truck className="h-4 w-4" />
                             <span>Track Order</span>
                           </Button>
@@ -479,6 +548,19 @@ const Orders = () => {
               <Button>Start Shopping</Button>
             </CardContent>
           </Card>
+        )}
+
+        {/* Order Tracking Dialog */}
+        {trackingOrder && (
+          <OrderTracking
+            isOpen={!!trackingOrderId}
+            onClose={() => setTrackingOrderId(null)}
+            orderNumber={trackingOrder.order_number}
+            currentStatus={trackingOrder.status}
+            estimatedDelivery={getEstimatedDelivery(trackingOrder)}
+            trackingUpdates={getTrackingUpdates(trackingOrder)}
+            createdAt={trackingOrder.created_at}
+          />
         )}
       </div>
       <div className="h-20 lg:hidden"></div>

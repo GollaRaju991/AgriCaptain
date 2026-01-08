@@ -1,78 +1,73 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import Footer from '@/components/Footer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Bell, Package, Truck, CheckCircle, Gift, AlertCircle, Trash2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Bell, Package, Truck, CheckCircle, Gift, AlertCircle, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import useScrollToTop from '@/hooks/useScrollToTop';
+import { useAuth } from '@/contexts/AuthContext';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Notification {
   id: string;
-  type: 'order' | 'delivery' | 'promotion' | 'system';
+  type: string;
   title: string;
   message: string;
-  timestamp: string;
-  isRead: boolean;
-  actionUrl?: string;
+  created_at: string;
+  is_read: boolean;
+  action_url?: string | null;
+  order_id?: string | null;
 }
 
 const Notifications = () => {
-  const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // Scroll to top when component mounts
   useScrollToTop();
 
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      type: 'order',
-      title: 'Order Confirmed',
-      message: 'Your order #AG-2024-001 has been confirmed and is being processed.',
-      timestamp: '2024-01-15T10:30:00Z',
-      isRead: false,
-      actionUrl: '/orders'
-    },
-    {
-      id: '2',
-      type: 'delivery',
-      title: 'Order Shipped',
-      message: 'Your order #AG-2024-002 has been shipped and will arrive in 2-3 days.',
-      timestamp: '2024-01-14T15:45:00Z',
-      isRead: true,
-      actionUrl: '/orders'
-    },
-    {
-      id: '3',
-      type: 'promotion',
-      title: 'New Coupon Available',
-      message: 'Get 20% off on all products with code AGRI20. Valid till month end!',
-      timestamp: '2024-01-13T09:00:00Z',
-      isRead: false,
-      actionUrl: '/coupons'
-    },
-    {
-      id: '4',
-      type: 'delivery',
-      title: 'Order Delivered',
-      message: 'Your order #AG-2024-003 has been successfully delivered.',
-      timestamp: '2024-01-12T14:20:00Z',
-      isRead: true,
-      actionUrl: '/orders'
-    },
-    {
-      id: '5',
-      type: 'system',
-      title: 'Profile Update Required',
-      message: 'Please update your profile information to continue using all features.',
-      timestamp: '2024-01-11T11:15:00Z',
-      isRead: false,
-      actionUrl: '/profile'
+  useEffect(() => {
+    if (user) {
+      fetchNotifications();
     }
-  ]);
+  }, [user]);
+
+  const fetchNotifications = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching notifications:', error);
+      } else {
+        setNotifications(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -104,30 +99,58 @@ const Notifications = () => {
     }
   };
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id
-          ? { ...notification, isRead: true }
-          : notification
-      )
-    );
+  const markAsRead = async (id: string) => {
+    try {
+      await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', id);
+
+      setNotifications(prev =>
+        prev.map(notification =>
+          notification.id === id
+            ? { ...notification, is_read: true }
+            : notification
+        )
+      );
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, isRead: true }))
-    );
-    toast({
-      title: "All notifications marked as read",
-    });
+  const markAllAsRead = async () => {
+    try {
+      const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+      if (unreadIds.length === 0) return;
+
+      await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .in('id', unreadIds);
+
+      setNotifications(prev =>
+        prev.map(notification => ({ ...notification, is_read: true }))
+      );
+      toast.success("All notifications marked as read");
+    } catch (error) {
+      console.error('Error marking all as read:', error);
+      toast.error("Failed to mark notifications as read");
+    }
   };
 
-  const deleteNotification = (id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-    toast({
-      title: "Notification deleted",
-    });
+  const deleteNotification = async (id: string) => {
+    try {
+      await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', id);
+
+      setNotifications(prev => prev.filter(notification => notification.id !== id));
+      toast.success("Notification deleted");
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      toast.error("Failed to delete notification");
+    }
   };
 
   const formatTimestamp = (timestamp: string) => {
@@ -148,7 +171,14 @@ const Notifications = () => {
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const handleNotificationClick = (notification: Notification) => {
+    markAsRead(notification.id);
+    if (notification.action_url) {
+      navigate(notification.action_url);
+    }
+  };
+
+  const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -187,9 +217,9 @@ const Notifications = () => {
               <Card 
                 key={notification.id} 
                 className={`hover:shadow-md transition-shadow cursor-pointer ${
-                  !notification.isRead ? 'border-l-4 border-l-blue-500 bg-blue-50' : ''
+                  !notification.is_read ? 'border-l-4 border-l-blue-500 bg-blue-50' : ''
                 }`}
-                onClick={() => markAsRead(notification.id)}
+                onClick={() => handleNotificationClick(notification)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
@@ -198,7 +228,7 @@ const Notifications = () => {
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-1">
                           <h3 className={`font-medium ${
-                            !notification.isRead ? 'text-gray-900' : 'text-gray-700'
+                            !notification.is_read ? 'text-gray-900' : 'text-gray-700'
                           }`}>
                             {notification.title}
                           </h3>
@@ -208,27 +238,26 @@ const Notifications = () => {
                           >
                             {notification.type}
                           </Badge>
-                          {!notification.isRead && (
+                          {!notification.is_read && (
                             <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                           )}
                         </div>
                         <p className={`text-sm ${
-                          !notification.isRead ? 'text-gray-700' : 'text-gray-600'
+                          !notification.is_read ? 'text-gray-700' : 'text-gray-600'
                         }`}>
                           {notification.message}
                         </p>
                         <p className="text-xs text-gray-500 mt-2">
-                          {formatTimestamp(notification.timestamp)}
+                          {formatTimestamp(notification.created_at)}
                         </p>
-                        {notification.actionUrl && (
+                        {notification.action_url && (
                           <Button 
                             variant="link" 
                             size="sm" 
                             className="p-0 h-auto mt-2 text-blue-600"
                             onClick={(e) => {
                               e.stopPropagation();
-                              // Navigate to the action URL
-                              window.location.href = notification.actionUrl!;
+                              handleNotificationClick(notification);
                             }}
                           >
                             View Details →
@@ -258,14 +287,14 @@ const Notifications = () => {
               <Bell className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No notifications</h3>
               <p className="text-gray-600 mb-6">You're all caught up! We'll notify you when something important happens.</p>
-              <Button>Browse Products</Button>
+              <Button onClick={() => navigate('/products')}>Browse Products</Button>
             </CardContent>
           </Card>
         )}
       </div>
-<div className="h-20 lg:hidden"></div>
+      <div className="h-20 lg:hidden"></div>
 
-<MobileBottomNav />
+      <MobileBottomNav />
       <Footer />
     </div>
   );

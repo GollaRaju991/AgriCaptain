@@ -25,6 +25,21 @@ class DualBackendService {
   // Save order to both Supabase and Hostinger
   async saveOrderDual(orderData: DualOrderData): Promise<{ success: boolean; error?: string }> {
     try {
+      // Calculate estimated delivery (5 days from now)
+      const estimatedDelivery = new Date();
+      estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
+
+      // Initial tracking update
+      const trackingUpdates = [
+        {
+          status: 'pending',
+          title: 'Order Placed',
+          description: 'Your order has been placed successfully',
+          timestamp: new Date().toISOString(),
+          location: 'Online'
+        }
+      ];
+
       // Save to Supabase first (primary database)
       const { data: supabaseOrder, error: supabaseError } = await supabase
         .from('orders')
@@ -36,7 +51,9 @@ class DualBackendService {
           payment_status: 'completed',
           payment_method: orderData.paymentMethod,
           items: orderData.items,
-          shipping_address: orderData.address
+          shipping_address: orderData.address,
+          estimated_delivery: estimatedDelivery.toISOString(),
+          tracking_updates: trackingUpdates
         })
         .select()
         .single();
@@ -45,6 +62,18 @@ class DualBackendService {
         console.error('Supabase order save error:', supabaseError);
         throw new Error('Failed to save order to primary database');
       }
+
+      // Create notification for new order
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: orderData.userId,
+          order_id: supabaseOrder.id,
+          type: 'order',
+          title: 'Order Confirmed',
+          message: `Your order ${orderData.orderId} has been confirmed and is being processed. Estimated delivery: ${estimatedDelivery.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}`,
+          action_url: '/orders'
+        });
 
       // Then save to Hostinger (backup/sync)
       const hostingerOrderData: OrderData = {
