@@ -13,8 +13,8 @@ export interface Product {
 
 // Unique images for each product - mapped by index
 const productImages = [
-  "https://images.unsplash.com/photo-1592921870789-04563d55041c?w=400", // Tomato Seeds
-  "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400", // NPK Fertilizer
+  "https://ibb.co/Dfr5N3Sk", // mirch Seeds
+  "https://ibb.co/xSsRdB7X", // cutton seeds
   "https://images.unsplash.com/photo-1416453072034-c8dbfa2856b5?w=400", // Garden Tools
   "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a4?w=400", // Drip Irrigation
   "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400", // Wheat Seeds
@@ -66,8 +66,8 @@ const productImages = [
 ];
 
 const productNames = [
-  "Premium Tomato Seeds",
-  "Organic NPK Fertilizer",
+  "mirchi Seeds",
+  "cutton seeds",
   "Garden Tools Set",
   "Drip Irrigation Kit",
   "Wheat Seeds Premium",
