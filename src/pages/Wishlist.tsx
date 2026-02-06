@@ -1,14 +1,14 @@
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
+import { Heart, ShoppingCart, Trash2, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import MobileBottomNav from "@/components/MobileBottomNav";
 
 const Wishlist = () => {
@@ -16,6 +16,7 @@ const Wishlist = () => {
   const { wishlistItems, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleAddToCart = (item: typeof wishlistItems[0]) => {
     addToCart({
@@ -31,12 +32,27 @@ const Wishlist = () => {
     });
   };
 
+  const handleBuyNow = (item: typeof wishlistItems[0]) => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      category: item.category
+    });
+    navigate('/checkout');
+  };
+
   const handleRemoveFromWishlist = (item: typeof wishlistItems[0]) => {
     removeFromWishlist(item.id);
     toast({
       title: "Removed from wishlist",
       description: `${item.name} has been removed from your wishlist.`,
     });
+  };
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = '/placeholder.svg';
   };
 
   return (
@@ -91,8 +107,9 @@ const Wishlist = () => {
                     <Link to={`/product/${item.id}`}>
                       <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
                         <img 
-                          src={item.image} 
+                          src={item.image || '/placeholder.svg'} 
                           alt={item.name}
+                          onError={handleImageError}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
                       </div>
@@ -101,19 +118,31 @@ const Wishlist = () => {
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{item.name}</h3>
                     <p className="text-lg font-bold text-green-600 mb-3">₹{item.price.toLocaleString()}</p>
 
-                    <div className="flex gap-2">
-                      <Button size="sm" className="flex-1" onClick={() => handleAddToCart(item)}>
-                        <ShoppingCart className="h-4 w-4 mr-1" />
-                        {translations.language === 'te' ? 'కార్ట్‌కి జోడించు' : 'Add to Cart'}
-                      </Button>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        <Button size="sm" className="flex-1" onClick={() => handleAddToCart(item)}>
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          {translations.language === 'te' ? 'కార్ట్‌కి జోడించు' : 'Add to Cart'}
+                        </Button>
 
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleRemoveFromWishlist(item)}
+                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
                       <Button 
                         size="sm" 
-                        variant="outline"
-                        onClick={() => handleRemoveFromWishlist(item)}
-                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                        variant="secondary"
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                        onClick={() => handleBuyNow(item)}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Zap className="h-4 w-4 mr-1" />
+                        {translations.language === 'te' ? 'ఇప్పుడే కొనండి' : 'Buy Now'}
                       </Button>
                     </div>
                   </CardContent>
