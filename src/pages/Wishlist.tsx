@@ -1,17 +1,43 @@
 import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Heart, ShoppingCart } from 'lucide-react';
+import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import MobileBottomNav from "@/components/MobileBottomNav";   // ✅ correct import
-
+import { useWishlist } from '@/contexts/WishlistContext';
+import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 const Wishlist = () => {
   const { translations } = useLanguage();
-  
-  const wishlistItems: any[] = [];
+  const { wishlistItems, removeFromWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = (item: typeof wishlistItems[0]) => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      category: item.category
+    });
+    toast({
+      title: "Added to cart!",
+      description: `${item.name} has been added to your cart.`,
+    });
+  };
+
+  const handleRemoveFromWishlist = (item: typeof wishlistItems[0]) => {
+    removeFromWishlist(item.id);
+    toast({
+      title: "Removed from wishlist",
+      description: `${item.name} has been removed from your wishlist.`,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
@@ -20,7 +46,7 @@ const Wishlist = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-6">
-            <Heart className="h-6 w-6 text-red-500" />
+            <Heart className="h-6 w-6 text-red-500 fill-red-500" />
             <h1 className="text-2xl font-bold text-gray-900">
               {translations.language === 'te' ? 'ఇష్టపడిన వస్తువులు' : 'My Wishlist'}
             </h1>
@@ -49,36 +75,45 @@ const Wishlist = () => {
                     : 'Save items you like by clicking the heart icon'}
                 </p>
 
-                <Button className="mt-4">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {translations.language === 'te' ? 'షాపింగ్ ప్రారంభించండి' : 'Start Shopping'}
-                </Button>
+                <Link to="/products">
+                  <Button className="mt-4">
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    {translations.language === 'te' ? 'షాపింగ్ ప్రారంభించండి' : 'Start Shopping'}
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {wishlistItems.map((item, index) => (
-                <Card key={index} className="group">
+              {wishlistItems.map((item) => (
+                <Card key={item.id} className="group">
                   <CardContent className="p-4">
-                    <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
-                      <img 
-                        src={item.image} 
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      />
-                    </div>
+                    <Link to={`/product/${item.id}`}>
+                      <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
+                        <img 
+                          src={item.image} 
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      </div>
+                    </Link>
 
-                    <h3 className="font-semibold text-gray-900 mb-2">{item.name}</h3>
-                    <p className="text-lg font-bold text-green-600 mb-3">₹{item.price}</p>
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{item.name}</h3>
+                    <p className="text-lg font-bold text-green-600 mb-3">₹{item.price.toLocaleString()}</p>
 
                     <div className="flex gap-2">
-                      <Button size="sm" className="flex-1">
+                      <Button size="sm" className="flex-1" onClick={() => handleAddToCart(item)}>
                         <ShoppingCart className="h-4 w-4 mr-1" />
                         {translations.language === 'te' ? 'కార్ట్‌కి జోడించు' : 'Add to Cart'}
                       </Button>
 
-                      <Button size="sm" variant="outline">
-                        <Heart className="h-4 w-4 text-red-500" />
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => handleRemoveFromWishlist(item)}
+                        className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </CardContent>
@@ -90,9 +125,7 @@ const Wishlist = () => {
       </main>
       <div className="h-20 lg:hidden"></div>
 
-
-      <MobileBottomNav />   {/* ✅ Fix: Nav will show now */}
-
+      <MobileBottomNav />
       <Footer />
     </div>
   );

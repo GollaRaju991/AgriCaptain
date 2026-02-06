@@ -8,10 +8,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
+import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
+import ShareDialog from '@/components/ShareDialog';
 import {
   Pagination,
   PaginationContent,
@@ -50,9 +52,11 @@ const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
 
   // Find current product index for navigation
   const currentIndex = useMemo(() => products.findIndex(p => p.id === id), [id]);
@@ -370,15 +374,42 @@ const ProductDetails = () => {
                   Buy Now
                 </Button>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon">
-                    <Heart className="h-4 w-4" />
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => {
+                      toggleWishlist({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.images[0],
+                        category: product.category
+                      });
+                      toast({
+                        title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
+                        description: isInWishlist(product.id) 
+                          ? `${product.name} removed from your wishlist.`
+                          : `${product.name} added to your wishlist.`
+                      });
+                    }}
+                    className={isInWishlist(product.id) ? 'border-red-500' : ''}
+                  >
+                    <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
                   </Button>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" onClick={() => setShareDialogOpen(true)}>
                     <Share2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </div>
+
+            {/* Share Dialog */}
+            <ShareDialog
+              isOpen={shareDialogOpen}
+              onClose={() => setShareDialogOpen(false)}
+              productName={product.name}
+              productUrl={window.location.href}
+            />
 
             {/* Enhanced Delivery Info */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-green-50 rounded-lg">

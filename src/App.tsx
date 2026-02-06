@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { WishlistProvider } from "./contexts/WishlistContext";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetails from "./pages/ProductDetails";
@@ -37,40 +38,42 @@ const App = () => (
       <LanguageProvider>
         <AuthProvider>
           <CartProvider>
-            {/* ⭐ Add bottom padding so content is not hidden */}
-            <div className="w-full min-h-screen overflow-x-hidden pb-24">
-              
-              <Toaster />
-              <Sonner />
+            <WishlistProvider>
+              {/* ⭐ Add bottom padding so content is not hidden */}
+              <div className="w-full min-h-screen overflow-x-hidden pb-24">
+                
+                <Toaster />
+                <Sonner />
 
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/products" element={<Products />} />
-                  <Route path="/product/:id" element={<ProductDetails />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/orders" element={<Orders />} />
-                  <Route path="/coupons" element={<Coupons />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/farm-worker" element={<FarmWorker />} />
-                  <Route path="/vehicle-rent" element={<VehicleRent />} />
-                  <Route path="/become-seller" element={<BecomeSeller />} />
-                  <Route path="/order-confirmation" element={<OrderConfirmation />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/gift-cards" element={<GiftCards />} />
-                  <Route path="/market-details" element={<MarketDetails />} />
-                  <Route path="/loans" element={<Loans />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/products" element={<Products />} />
+                    <Route path="/product/:id" element={<ProductDetails />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/orders" element={<Orders />} />
+                    <Route path="/coupons" element={<Coupons />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/farm-worker" element={<FarmWorker />} />
+                    <Route path="/vehicle-rent" element={<VehicleRent />} />
+                    <Route path="/become-seller" element={<BecomeSeller />} />
+                    <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/gift-cards" element={<GiftCards />} />
+                    <Route path="/market-details" element={<MarketDetails />} />
+                    <Route path="/loans" element={<Loans />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
 
-                {/* ⭐ ALWAYS visible on mobile */}
-                <MobileBottomNav />
+                  {/* ⭐ ALWAYS visible on mobile */}
+                  <MobileBottomNav />
 
-              </BrowserRouter>
-            </div>
+                </BrowserRouter>
+              </div>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </LanguageProvider>
