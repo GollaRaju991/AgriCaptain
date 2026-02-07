@@ -235,17 +235,17 @@ const descriptions = [
   "Specially formulated for Indian agricultural conditions",
 ];
 
-export const products: Product[] = Array.from({ length: 50 }, (_, index) => {
+export const products: Product[] = Array.from({ length: 500 }, (_, index) => {
   const basePrice = Math.floor(Math.random() * 3000) + 199;
   const discount = Math.floor(Math.random() * 30) + 10;
   const originalPrice = Math.floor(basePrice / (1 - discount / 100));
   
   return {
     id: String(index + 1),
-    name: productNames[index],
+    name: `${productNames[index % productNames.length]} - ${Math.floor(index / productNames.length) + 1}`,
     price: basePrice,
     originalPrice: originalPrice,
-    image: productImages[index],
+    image: productImages[index % productImages.length],
     rating: Number((Math.random() * 1.5 + 3.5).toFixed(1)),
     discount: discount,
     inStock: Math.random() > 0.15,
