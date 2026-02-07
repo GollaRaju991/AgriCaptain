@@ -123,12 +123,12 @@ const ProductCategories = () => {
             <Link key={index} to={category.href}>
               <Card className="text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer h-full border-gray-200">
                 <CardContent className="p-3 md:p-4">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3 overflow-hidden">
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-3 overflow-hidden">
                     {category.image ? (
                       <img 
                         src={category.image} 
                         alt={category.name}
-                        className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                        className="w-full h-full object-contain p-1"
                       />
                     ) : (
                       <category.icon className={`h-8 w-8 md:h-10 md:w-10 ${category.color.split(' ')[1]}`} />
