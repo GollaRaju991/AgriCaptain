@@ -14,7 +14,7 @@ export interface Product {
 // Unique images for each product - mapped by index
 const productImages = [
   "https://ik.imagekit.io/wadwvg0en/hph-5531-chilli-2-file-2220.webp", // mirch Seeds
-  "https://ik.imagekit.io/wadwvg0en/COTTON-INDO-US-955-PLUS.png", // cutton seeds
+  "https://ik.imagekit.io/wadwvg0en/COTTON-INDO-US-955-PLUS.png?tr=c-at_max,w-400,h-300", // cutton seeds
   "https://images.unsplash.com/photo-1416453072034-c8dbfa2856b5?w=400", // Garden Tools
   "https://images.unsplash.com/photo-1563514227147-6d2ff665a6a4?w=400", // Drip Irrigation
   "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400", // Wheat Seeds
