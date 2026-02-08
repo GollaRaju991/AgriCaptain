@@ -123,7 +123,7 @@
   }
 
   /* Better touch targets for mobile */
-  button, a, input, select, textarea {
+  button:not([role="radio"]), a, input, select, textarea {
     min-height: 44px;
   }
 
@@ -195,55 +195,5 @@
       @apply h-28;
     }
   }
-}
-/* ---------------- Flipkart-style circular radio for shadcn/radix RadioGroupItem ---------------- */
-.radio-circle {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #d1d5db; /* light gray */
-  border-radius: 9999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.14s ease;
-  background: white;
-  flex: 0 0 auto;
-}
-
-/* inner dot becomes visible when checked */
-.radio-circle::after {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background: white;
-  opacity: 0;
-  transform: scale(0.6);
-  transition: opacity 0.14s ease, transform 0.14s ease;
-  box-shadow: inset 0 0 0 2px transparent;
-}
-
-/* Radix / shadcn applies data-state="checked" on the checked RadioGroupItem */
-[data-state="checked"] > .radio-circle {
-  border-color: #2563eb; /* blue-600 */
-  background: #2563eb;
-}
-
-[data-state="checked"] > .radio-circle::after {
-  opacity: 1;
-  transform: scale(1);
-  background: white;
-}
-
-/* subtle hover */
-.radio-circle:hover {
-  border-color: #2563eb;
-}
-
-/* helper wrapper for alignment where you used mt-1 previously */
-.radio-wrapper {
-  display: inline-flex;
-  align-items: start;
-  margin-top: 4px;
 }
 

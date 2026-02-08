@@ -48,7 +48,7 @@
 
 /* Ensure proper mobile touch targets */
 @media (max-width: 768px) {
-  button, .button, a[role="button"] {
+  button:not([role="radio"]), .button, a[role="button"] {
     min-height: 44px;
     min-width: 44px;
   }
