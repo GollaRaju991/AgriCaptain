@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import ShareDialog from '@/components/ShareDialog';
+import ImageZoomModal from '@/components/ImageZoomModal';
 import {
   Pagination,
   PaginationContent,
@@ -57,6 +58,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [zoomModalOpen, setZoomModalOpen] = useState(false);
 
   // Find current product index for navigation
   const currentIndex = useMemo(() => products.findIndex(p => p.id === id), [id]);
@@ -217,49 +219,58 @@ const ProductDetails = () => {
       <Header />
       
       <div className="container mx-auto px-2 md:px-4 py-4 md:py-8 pb-32 md:pb-8">
-        {/* Back Button & Breadcrumb */}
-        <div className="flex items-center gap-2 md:gap-4 mb-4 md:mb-6">
+        {/* Back Button & Breadcrumb - Stacked Layout */}
+        <div className="mb-4 md:mb-6">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 text-sm"
+            className="flex items-center gap-1 text-sm mb-2"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </Button>
           
-          {/* Breadcrumb */}
+          {/* Breadcrumb below back button */}
           <nav className="flex text-sm text-muted-foreground">
             <Link to="/" className="hover:text-primary">Home</Link>
             <span className="mx-2">/</span>
             <Link to="/products" className="hover:text-primary">Products</Link>
             <span className="mx-2">/</span>
-            <span className="text-foreground truncate max-w-[120px] md:max-w-[200px]">{product.name}</span>
+            <span className="text-foreground truncate max-w-[200px] md:max-w-[300px]">{product.name}</span>
           </nav>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Enhanced Product Images Gallery */}
           <div>
-            <div className="relative mb-4">
+            <div 
+              className="relative mb-4 cursor-zoom-in group"
+              onClick={() => setZoomModalOpen(true)}
+            >
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-96 object-cover rounded-lg"
+                className="w-full h-80 md:h-96 object-contain rounded-lg bg-gray-100"
               />
+              
+              {/* Zoom Hint */}
+              <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ZoomIn className="h-4 w-4" />
+                <span>Click to zoom</span>
+              </div>
               
               {/* Navigation Arrows */}
               {product.images.length > 1 && (
                 <>
                   <button
-                    onClick={prevImage}
+                    onClick={(e) => { e.stopPropagation(); prevImage(); }}
                     className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                   <button
-                    onClick={nextImage}
+                    onClick={(e) => { e.stopPropagation(); nextImage(); }}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
                   >
                     <ChevronRight className="h-6 w-6" />
@@ -273,24 +284,36 @@ const ProductDetails = () => {
               </div>
             </div>
             
-            {/* Thumbnail Images */}
-            <div className="flex space-x-2 overflow-x-auto">
+            {/* Thumbnail Images - Better visibility */}
+            <div className="flex gap-3 overflow-x-auto pb-2">
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded border-2 overflow-hidden transition-all ${
-                    selectedImage === index ? 'border-green-600 scale-105' : 'border-gray-200'
+                  className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all bg-gray-50 ${
+                    selectedImage === index 
+                      ? 'border-green-600 ring-2 ring-green-200 scale-105' 
+                      : 'border-gray-200 hover:border-gray-400'
                   }`}
                 >
                   <img
                     src={image}
                     alt={`${product.name} ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-1"
                   />
                 </button>
               ))}
             </div>
+
+            {/* Image Zoom Modal */}
+            <ImageZoomModal
+              isOpen={zoomModalOpen}
+              onClose={() => setZoomModalOpen(false)}
+              images={product.images}
+              selectedIndex={selectedImage}
+              productName={product.name}
+              onChangeImage={setSelectedImage}
+            />
           </div>
 
           {/* Enhanced Product Info */}
