@@ -103,11 +103,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* UPI Payment */}
           <div className="border rounded-lg">
             <div className="flex items-start space-x-3 p-4 hover:bg-gray-50">
-              <RadioGroupItem value="upi" id="upi" className="mt-1">
-                <div className="radio-wrapper">
-                  <div className="radio-circle" />
-                </div>
-              </RadioGroupItem>
+              <RadioGroupItem value="upi" id="upi" className="mt-1" />
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-1">
                   <Smartphone className="h-5 w-5 text-orange-500" />
@@ -117,11 +113,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 {paymentMethod === 'upi' && (
                   <div className="mt-4 space-y-3 border-t pt-4">
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="upi-id" id="upi-id">
-                        <div className="radio-wrapper">
-                          <div className="radio-circle" />
-                        </div>
-                      </RadioGroupItem>
+                      <RadioGroupItem value="upi-id" id="upi-id" />
                       <Label htmlFor="upi-id" className="text-sm font-medium">Your UPI ID</Label>
                     </div>
                     <div className="flex space-x-2 ml-6">
@@ -143,11 +135,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* Credit/Debit Card */}
           <div className="border rounded-lg">
             <div className="flex items-start space-x-3 p-4 hover:bg-gray-50">
-              <RadioGroupItem value="card" id="card" className="mt-1">
-                <div className="radio-wrapper">
-                  <div className="radio-circle" />
-                </div>
-              </RadioGroupItem>
+              <RadioGroupItem value="card" id="card" className="mt-1" />
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-1">
                   <CreditCard className="h-5 w-5 text-gray-600" />
@@ -199,11 +187,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* Net Banking */}
           <div className="border rounded-lg">
             <div className="flex items-start space-x-3 p-4 hover:bg-gray-50">
-              <RadioGroupItem value="netbanking" id="netbanking" className="mt-1">
-                <div className="radio-wrapper">
-                  <div className="radio-circle" />
-                </div>
-              </RadioGroupItem>
+              <RadioGroupItem value="netbanking" id="netbanking" className="mt-1" />
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-1">
                   <Building className="h-5 w-5 text-blue-600" />
@@ -236,11 +220,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* Cash on Delivery */}
           <div className="border rounded-lg">
             <div className="flex items-start space-x-3 p-4 hover:bg-gray-50">
-              <RadioGroupItem value="cod" id="cod" className="mt-1">
-                <div className="radio-wrapper">
-                  <div className="radio-circle" />
-                </div>
-              </RadioGroupItem>
+              <RadioGroupItem value="cod" id="cod" className="mt-1" />
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-1">
                   <Truck className="h-5 w-5 text-green-600" />
@@ -283,11 +263,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* EMI */}
           <div className="border rounded-lg">
             <div className="flex items-start space-x-3 p-4 hover:bg-gray-50">
-              <RadioGroupItem value="emi" id="emi" className="mt-1">
-                <div className="radio-wrapper">
-                  <div className="radio-circle" />
-                </div>
-              </RadioGroupItem>
+              <RadioGroupItem value="emi" id="emi" className="mt-1" />
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-1">
                   <CreditCard className="h-5 w-5 text-purple-600" />
@@ -299,27 +275,15 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <RadioGroup value={selectedEMI} onValueChange={setSelectedEMI}>
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="3months" id="3months">
-                            <div className="radio-wrapper">
-                              <div className="radio-circle" />
-                            </div>
-                          </RadioGroupItem>
+                          <RadioGroupItem value="3months" id="3months" />
                           <Label htmlFor="3months" className="text-sm">3 Months - ₹{Math.ceil(finalTotal/3)}/month</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="6months" id="6months">
-                            <div className="radio-wrapper">
-                              <div className="radio-circle" />
-                            </div>
-                          </RadioGroupItem>
+                          <RadioGroupItem value="6months" id="6months" />
                           <Label htmlFor="6months" className="text-sm">6 Months - ₹{Math.ceil(finalTotal/6)}/month</Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="12months" id="12months">
-                            <div className="radio-wrapper">
-                              <div className="radio-circle" />
-                            </div>
-                          </RadioGroupItem>
+                          <RadioGroupItem value="12months" id="12months" />
                           <Label htmlFor="12months" className="text-sm">12 Months - ₹{Math.ceil(finalTotal/12)}/month</Label>
                         </div>
                       </div>
