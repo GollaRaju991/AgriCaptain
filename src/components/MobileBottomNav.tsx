@@ -20,9 +20,9 @@ const MobileBottomNav = () => {
         </Link>
 
         {/* Categories */}
-        <Link to="/products" className="flex flex-col items-center">
-          <Layers className={`h-6 w-6 ${isActive("/products")}`} />
-          <span className={`text-xs ${isActive("/products")}`}>Categories</span>
+        <Link to="/categories" className="flex flex-col items-center">
+          <Layers className={`h-6 w-6 ${isActive("/categories")}`} />
+          <span className={`text-xs ${isActive("/categories")}`}>Categories</span>
         </Link>
 
         {/* Cart */}
