@@ -22,8 +22,8 @@ import {
   Users,
   Truck,
   CreditCard,
-  Globe,
   ScanLine,
+  Bell,
 } from "lucide-react";
 import appLogo from "@/assets/app-logo.png";
 import {
@@ -78,34 +78,65 @@ const Header = () => {
       <header className="bg-white shadow-md sticky top-0 z-50 w-full">
 
         {/* ---------------------- MOBILE HEADER ---------------------- */}
-        {/* Row 1: Logo, Name, Language, Menu */}
+        {/* Row 1: Logo/Name + Quick Links + Notification + Menu */}
         <div className="lg:hidden flex items-center justify-between px-3 py-2 bg-green-600">
           {/* Logo and Name */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow border-2 border-white" />
+          <Link to="/" className="flex items-center space-x-1 flex-shrink-0">
             <span className="text-lg font-bold text-white">Agrizin</span>
           </Link>
 
-          {/* Right side: Language and Menu */}
-          <div className="flex items-center space-x-1">
-            {/* Language Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setLanguageDialogOpen(true)}
-              className="text-white hover:bg-green-500"
+          {/* Quick Links */}
+          <div className="flex items-center space-x-3 overflow-x-auto">
+            <Link 
+              to="/become-seller" 
+              className="text-xs text-white hover:text-green-100 whitespace-nowrap"
             >
-              <Globe className="h-5 w-5" />
-            </Button>
+              Become seller
+            </Link>
+            <button
+              onClick={() => setLanguageDialogOpen(true)}
+              className="text-xs text-white hover:text-green-100 whitespace-nowrap"
+            >
+              Language
+            </button>
+            {user ? (
+              <Link 
+                to="/profile" 
+                className="text-xs text-white hover:text-green-100 whitespace-nowrap"
+              >
+                {user.user_metadata?.name || 'Account'}
+              </Link>
+            ) : (
+              <Link 
+                to="/auth" 
+                className="text-xs text-white hover:text-green-100 whitespace-nowrap"
+              >
+                Login/Signup
+              </Link>
+            )}
+          </div>
+
+          {/* Right side: Notification and Menu */}
+          <div className="flex items-center space-x-1 flex-shrink-0">
+            {/* Notification Button */}
+            <Link to="/notifications">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-white hover:bg-green-500 h-8 w-8"
+              >
+                <Bell className="h-5 w-5" />
+              </Button>
+            </Link>
 
             {/* Menu Toggle */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:bg-green-500"
+              className="text-white hover:bg-green-500 h-8 w-8"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
