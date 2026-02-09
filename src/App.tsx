@@ -26,6 +26,9 @@ import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
 import Loans from "./pages/Loans";
 import Categories from "./pages/Categories";
+import HelpCenter from "./pages/HelpCenter";
+import TermsPolicies from "./pages/TermsPolicies";
+import FAQs from "./pages/FAQs";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
@@ -67,6 +70,9 @@ const App = () => (
                     <Route path="/market-details" element={<MarketDetails />} />
                     <Route path="/loans" element={<Loans />} />
                     <Route path="/categories" element={<Categories />} />
+                    <Route path="/help-center" element={<HelpCenter />} />
+                    <Route path="/terms-policies" element={<TermsPolicies />} />
+                    <Route path="/faqs" element={<FAQs />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
