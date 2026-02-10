@@ -104,14 +104,14 @@ const Header = () => {
             className="flex flex-col items-center justify-center bg-yellow-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
           >
             <UserPlus className="h-5 w-5 text-yellow-900 mb-0.5" />
-            <span className="text-[10px] font-semibold text-yellow-900 whitespace-nowrap">Become Seller</span>
+            <span className="text-[10px] font-semibold text-yellow-900 whitespace-nowrap">{translations.become_seller}</span>
           </Link>
           <button
             onClick={() => setLanguageDialogOpen(true)}
             className="flex flex-col items-center justify-center bg-blue-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
           >
             <Languages className="h-5 w-5 text-blue-900 mb-0.5" />
-            <span className="text-[10px] font-semibold text-blue-900 whitespace-nowrap">Language</span>
+            <span className="text-[10px] font-semibold text-blue-900 whitespace-nowrap">{translations.language}</span>
           </button>
           {user ? (
             <Link
@@ -127,7 +127,7 @@ const Header = () => {
               className="flex flex-col items-center justify-center bg-orange-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
             >
               <UserIcon className="h-5 w-5 text-orange-900 mb-0.5" />
-              <span className="text-[10px] font-semibold text-orange-900 whitespace-nowrap">Login/Signup</span>
+              <span className="text-[10px] font-semibold text-orange-900 whitespace-nowrap">{translations.login_signup}</span>
             </Link>
           )}
         </div>
@@ -144,7 +144,7 @@ const Header = () => {
             </div>
             <Input
               type="text"
-              placeholder="Search products..."
+              placeholder={translations.search_products || 'Search products...'}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -172,14 +172,14 @@ const Header = () => {
         <div className="lg:hidden overflow-x-auto bg-green-600 border-b border-green-500">
           <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
             {[
-              { name: 'Seeds', icon: Sprout, path: '/products?category=seeds' },
-              { name: 'Fertilizers', icon: Droplet, path: '/products?category=fertilizers' },
-              { name: 'Agri Products', icon: Wrench, path: '/products?category=agriculture' },
-              { name: 'Brands', icon: Award, path: '/products?category=brands' },
-              { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
-              { name: 'Farm Worker', icon: Users, isPopup: true, action: 'farmWorker' as const },
-              { name: 'Rent Vehicles', icon: Truck, isPopup: true, action: 'rentVehicle' as const },
-              { name: 'Loans', icon: CreditCard, path: '/loans' },
+              { name: translations.seeds, icon: Sprout, path: '/products?category=seeds' },
+              { name: translations.fertilizers, icon: Droplet, path: '/products?category=fertilizers' },
+              { name: translations.agri_products || translations.agriculture_products, icon: Wrench, path: '/products?category=agriculture' },
+              { name: translations.brands, icon: Award, path: '/products?category=brands' },
+              { name: translations.market_details, icon: TrendingUp, path: '/market-details' },
+              { name: translations.farm_worker, icon: Users, isPopup: true, action: 'farmWorker' as const },
+              { name: translations.rent_vehicles, icon: Truck, isPopup: true, action: 'rentVehicle' as const },
+              { name: translations.loans, icon: CreditCard, path: '/loans' },
             ].map((category, index) => {
               const Icon = category.icon;
               
@@ -257,21 +257,21 @@ const Header = () => {
                 className="text-green-700 px-5 py-2 min-w-[110px]"
               >
                 <Languages className="h-5 w-5 mr-2" />
-                Language
+                {translations.language}
               </Button>
 
               {/* Seller */}
               <Link to="/become-seller">
                 <Button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 min-w-[140px]">
                   <UserPlus className="h-4 w-4 mr-2" />
-                  Become Seller
+                  {translations.become_seller}
                 </Button>
               </Link>
 
               {/* Cart */}
               <Link to="/cart" className="relative">
                 <Button variant="ghost" className="text-green-700 px-5 py-2 min-w-[90px]">
-                  🛒 Cart
+                  🛒 {translations.cart}
                 </Button>
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -296,25 +296,25 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/profile" className="flex items-center cursor-pointer">
                         <UserIcon className="h-4 w-4 mr-2" />
-                        My Profile
+                        {translations.my_profile || 'My Profile'}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/orders" className="flex items-center cursor-pointer">
                         <Package className="h-4 w-4 mr-2" />
-                        Orders
+                        {translations.orders || 'Orders'}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/wishlist" className="flex items-center cursor-pointer">
                         <Heart className="h-4 w-4 mr-2" />
-                        Wishlist
+                        {translations.wishlist || 'Wishlist'}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to="/gift-cards" className="flex items-center cursor-pointer">
                         <Gift className="h-4 w-4 mr-2" />
-                        Gift Cards
+                        {translations.gift_cards || 'Gift Cards'}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -323,14 +323,14 @@ const Header = () => {
                       className="cursor-pointer text-red-600 focus:text-red-600"
                     >
                       <LogOut className="h-4 w-4 mr-2" />
-                      Logout
+                      {translations.logout || 'Logout'}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <Link to="/auth">
                   <Button className="bg-green-600 text-white hover:bg-green-700 px-6 py-2 min-w-[90px]">
-                    Login
+                    {translations.login}
                   </Button>
                 </Link>
               )}

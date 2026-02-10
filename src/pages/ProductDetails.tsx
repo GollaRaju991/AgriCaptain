@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateProductName, translateDescription } from '@/data/translations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -55,6 +57,7 @@ const ProductDetails = () => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { toast } = useToast();
+  const { language, translations } = useLanguage();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
@@ -237,7 +240,7 @@ const ProductDetails = () => {
             <span className="mx-2">/</span>
             <Link to="/products" className="hover:text-primary">Products</Link>
             <span className="mx-2">/</span>
-            <span className="text-foreground truncate max-w-[200px] md:max-w-[300px]">{product.name}</span>
+            <span className="text-foreground truncate max-w-[200px] md:max-w-[300px]">{translateProductName(product.name, language)}</span>
           </nav>
         </div>
 
@@ -322,7 +325,7 @@ const ProductDetails = () => {
               <Badge className="bg-green-100 text-green-800 mb-2">
                 {product.category.toUpperCase()}
               </Badge>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{translateProductName(product.name, language)}</h1>
               
               <div className="flex items-center mb-4">
                 <div className="flex items-center mr-4">
@@ -360,7 +363,7 @@ const ProductDetails = () => {
                   </>
                 )}
               </div>
-              <p className="text-green-600 font-medium">✓ In Stock • Free Delivery • 7 Day Returns</p>
+              <p className="text-green-600 font-medium">✓ {translations.in_stock} • {translations.free_delivery_short} • {translations.day_returns}</p>
             </div>
 
             <div className="mb-6">
@@ -370,7 +373,7 @@ const ProductDetails = () => {
             {/* Quantity and Actions */}
             <div className="mb-6">
               <div className="flex items-center space-x-4 mb-4">
-                <label className="text-sm font-medium">Quantity:</label>
+                <label className="text-sm font-medium">{translations.quantity}:</label>
                 <div className="flex items-center border rounded">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -391,10 +394,10 @@ const ProductDetails = () => {
               <div className="flex flex-col md:flex-row gap-3">
                 <Button onClick={handleAddToCart} className="flex-1 bg-white text-gray-900 border border-gray-300 hover:bg-gray-100">
                   <ShoppingCart className="h-4 w-4 mr-2" />
-                  Add to Cart
+                  {translations.add_to_cart}
                 </Button>
                 <Button onClick={handleBuyNow} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
-                  Buy Now
+                  {translations.buy_now}
                 </Button>
                 <div className="flex gap-2">
                   <Button 
