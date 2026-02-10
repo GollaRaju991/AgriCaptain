@@ -78,67 +78,58 @@ const Header = () => {
       <header className="bg-white shadow-md sticky top-0 z-50 w-full">
 
         {/* ---------------------- MOBILE HEADER ---------------------- */}
-        {/* Row 1: Logo/Name + Quick Links + Notification + Menu */}
-        <div className="lg:hidden flex items-center justify-between px-3 py-2 bg-green-600">
-          {/* Logo and Name */}
-          <Link to="/" className="flex items-center space-x-1 flex-shrink-0">
-            <span className="text-lg font-bold text-white">Agrizin</span>
+        {/* Row 0: White top bar with Agrizin logo */}
+        <div className="lg:hidden flex items-center justify-between px-3 py-2 bg-white">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
+            <span className="text-lg font-bold text-green-700">Agrizin</span>
           </Link>
 
-          {/* Quick Links */}
-          <div className="flex items-center space-x-3 overflow-x-auto">
-            <Link 
-              to="/become-seller" 
-              className="text-xs text-white hover:text-green-100 whitespace-nowrap"
-            >
-              Become seller
-            </Link>
-            <button
-              onClick={() => setLanguageDialogOpen(true)}
-              className="text-xs text-white hover:text-green-100 whitespace-nowrap"
-            >
-              Language
-            </button>
-            {user ? (
-              <Link 
-                to="/profile" 
-                className="text-xs text-white hover:text-green-100 whitespace-nowrap"
-              >
-                {user.user_metadata?.name || 'Account'}
-              </Link>
-            ) : (
-              <Link 
-                to="/auth" 
-                className="text-xs text-white hover:text-green-100 whitespace-nowrap"
-              >
-                Login/Signup
-              </Link>
-            )}
-          </div>
-
-          {/* Right side: Notification and Menu */}
-          <div className="flex items-center space-x-1 flex-shrink-0">
-            {/* Notification Button */}
-            <Link to="/notifications">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-white hover:bg-green-500 h-8 w-8"
-              >
-                <Bell className="h-5 w-5" />
-              </Button>
-            </Link>
-
-            {/* Menu Toggle */}
+          {/* Notification icon */}
+          <Link to="/notifications">
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:bg-green-500 h-8 w-8"
+              className="text-green-700 hover:bg-green-50 h-8 w-8"
             >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <Bell className="h-5 w-5" />
             </Button>
-          </div>
+          </Link>
+        </div>
+
+        {/* Row 1: Colorful box-style quick links (Flipkart style) */}
+        <div className="lg:hidden flex items-center justify-around px-2 py-2 bg-green-600 gap-2">
+          <Link
+            to="/become-seller"
+            className="flex flex-col items-center justify-center bg-yellow-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
+          >
+            <UserPlus className="h-5 w-5 text-yellow-900 mb-0.5" />
+            <span className="text-[10px] font-semibold text-yellow-900 whitespace-nowrap">Become Seller</span>
+          </Link>
+          <button
+            onClick={() => setLanguageDialogOpen(true)}
+            className="flex flex-col items-center justify-center bg-blue-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
+          >
+            <Languages className="h-5 w-5 text-blue-900 mb-0.5" />
+            <span className="text-[10px] font-semibold text-blue-900 whitespace-nowrap">Language</span>
+          </button>
+          {user ? (
+            <Link
+              to="/profile"
+              className="flex flex-col items-center justify-center bg-orange-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
+            >
+              <UserIcon className="h-5 w-5 text-orange-900 mb-0.5" />
+              <span className="text-[10px] font-semibold text-orange-900 whitespace-nowrap">{user.user_metadata?.name || 'Account'}</span>
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              className="flex flex-col items-center justify-center bg-orange-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
+            >
+              <UserIcon className="h-5 w-5 text-orange-900 mb-0.5" />
+              <span className="text-[10px] font-semibold text-orange-900 whitespace-nowrap">Login/Signup</span>
+            </Link>
+          )}
         </div>
 
         {/* Row 2: Search Box with Camera and Scanner - Hidden on product pages */}
@@ -347,25 +338,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* ---------------------- MOBILE MENU ---------------------- */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white shadow-md border-t">
-            <div className="px-4 py-4 space-y-3 text-gray-700">
-
-              <Link to="/" className="block py-2">Home</Link>
-              <Link to="/products" className="block py-2">Products</Link>
-              <Link to="/market-details" className="block py-2">Market Details</Link>
-              <Link to="/become-seller" className="block py-2">Become Seller</Link>
-
-              <button
-                onClick={() => setLanguageDialogOpen(true)}
-                className="block py-2 w-full text-left"
-              >
-                🌐 Language
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Mobile menu removed - options now in top bar */}
       </header>
 
       {/* ---------------------- POPUP COMPONENTS ---------------------- */}
