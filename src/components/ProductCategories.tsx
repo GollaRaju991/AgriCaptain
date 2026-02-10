@@ -9,67 +9,59 @@ const ProductCategories = () => {
 
   const categories = [
     {
-      name: "Offers",
+      nameKey: 'offers',
       icon: Gift,
       href: '/products?category=offers',
       color: 'bg-red-100 text-red-600',
-      description: "Special offers and deals",
       image: "https://i.postimg.cc/Y2d2Kr6Y/Offers.webp"
     },
     {
-      name: "Seeds",
+      nameKey: 'seeds',
       icon: Sprout,
       href: '/products?category=seeds',
       color: 'bg-green-100 text-green-600',
-      description: "High quality seeds for all crops",
       image: "https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png"
     },
     {
-      name: "Fertilizers",
+      nameKey: 'fertilizers',
       icon: Beaker,
       href: '/products?category=fertilizers',
       color: 'bg-blue-100 text-blue-600',
-      description: "Organic & chemical fertilizers",
       image: "https://i.postimg.cc/0Q24pk6h/Fertilizer.png"
     },
     {
-      name: "Agriculture",
+      nameKey: 'agriculture',
       icon: Droplets,
       href: '/products?category=agriculture',
       color: 'bg-purple-100 text-purple-600',
-      description: "Pesticides & crop protection",
       image: "https://i.postimg.cc/4y7Mm13R/Pestiside.png"
     },
     {
-      name: "Equipment",
+      nameKey: 'equipment',
       icon: Tractor,
       href: '/products?category=equipment',
       color: 'bg-orange-100 text-orange-600',
-      description: "Farm machinery & tools",
       image: "https://i.postimg.cc/bNby5x95/ns-404-file-1319.jpg"
     },
     {
-      name: "Tools",
+      nameKey: 'tools',
       icon: Wrench,
       href: '/products?category=tools',
       color: 'bg-gray-100 text-gray-600',
-      description: "Farming tools & accessories",
       image: "https://i.postimg.cc/vmPbn3G4/balwaan-shakti-battery-sprayer-12x8-file-7234.jpg"
     },
     {
-      name: "Organic Farming",
+      nameKey: 'organic_farming',
       icon: Wheat,
       href: '/products?category=organic',
       color: 'bg-green-100 text-green-600',
-      description: "Organic farming products",
       image: "https://i.postimg.cc/Qd0RYCwP/katyayani-activated-humic-acid-fulvic-acid-plants-fertilizer-bio-enhancer-with-silicon-wetting-agent.png"
     },
     {
-      name: "Animal Husbandry",
+      nameKey: 'animal_husbandry',
       icon: Users,
       href: '/products?category=animal-husbandry',
       color: 'bg-orange-100 text-orange-600',
-      description: "Animal care products",
       image: "https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png"
     }
   ];
@@ -79,10 +71,10 @@ const ProductCategories = () => {
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-            {translations.shop_by_category || "Shop by Category"}
+            {translations.shop_by_category}
           </h2>
           <p className="text-gray-600">
-            {translations.browse_categories || "Browse our wide range of agricultural categories"}
+            {translations.browse_categories}
           </p>
         </div>
         
@@ -95,14 +87,14 @@ const ProductCategories = () => {
                     {category.image ? (
                       <img 
                         src={category.image} 
-                        alt={category.name}
+                        alt={translations[category.nameKey]}
                         className="w-full h-full object-contain p-1"
                       />
                     ) : (
                       <category.icon className={`h-8 w-8 md:h-10 md:w-10 ${category.color.split(' ')[1]}`} />
                     )}
                   </div>
-                  <h3 className="font-medium text-xs md:text-sm text-gray-800 leading-tight">{category.name}</h3>
+                  <h3 className="font-medium text-xs md:text-sm text-gray-800 leading-tight">{translations[category.nameKey]}</h3>
                 </CardContent>
               </Card>
             </Link>

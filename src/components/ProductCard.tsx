@@ -6,6 +6,8 @@ import { Star, ShoppingCart, Heart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateProductName } from '@/data/translations';
 
 interface Product {
   id: string;
@@ -32,6 +34,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
   const { addToCart } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { language, translations } = useLanguage();
+
+  const translatedName = translateProductName(product.name, language);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,8 +50,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
     });
     
     toast({
-      title: "Added to cart!",
-      description: `${product.name} has been added to your cart.`,
+      title: translations.added_to_cart,
+      description: `${translatedName} ${translations.added_to_cart_desc}`,
     });
   };
 
@@ -71,32 +76,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
       <Card className="hover:shadow-lg transition-shadow bg-white">
         <Link to={`/product/${product.id}`}>
           <div className="flex p-3 gap-3">
-            {/* Image Section */}
             <div className="relative w-28 h-28 flex-shrink-0">
               <img 
                 src={product.image} 
-                alt={product.name}
+                alt={translatedName}
                 className="w-full h-full object-contain rounded-lg bg-gray-50"
               />
               {product.discount && (
                 <Badge className="absolute top-0 left-0 bg-green-600 text-white text-[10px] px-1.5 py-0.5 rounded-br-lg rounded-tl-lg">
-                  {product.discount}% OFF
+                  {product.discount}% {translations.off}
                 </Badge>
               )}
             </div>
 
-            {/* Details Section */}
             <div className="flex-1 flex flex-col min-w-0">
               <div className="flex justify-between items-start">
                 <h3 className="font-medium text-sm text-gray-900 line-clamp-2 pr-2">
-                  {product.name}
+                  {translatedName}
                 </h3>
                 <button className="text-gray-400 hover:text-red-500 flex-shrink-0">
                   <Heart className="h-5 w-5" />
                 </button>
               </div>
 
-              {/* Rating */}
               {product.rating && (
                 <div className="flex items-center mt-1.5 gap-1">
                   <div className="flex items-center bg-green-600 text-white text-xs px-1.5 py-0.5 rounded">
@@ -109,7 +111,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
                 </div>
               )}
 
-              {/* Price */}
               <div className="flex items-center gap-2 mt-2">
                 {product.discount && (
                   <span className="text-green-600 text-xs font-medium">↓{product.discount}%</span>
@@ -121,13 +122,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
               </div>
 
               {product.inStock === false && (
-                <span className="text-red-500 text-xs mt-1">Out of Stock</span>
+                <span className="text-red-500 text-xs mt-1">{translations.out_of_stock}</span>
               )}
             </div>
           </div>
         </Link>
 
-        {/* Action Buttons - Only show when showButtons is true */}
         {showButtons && (
         <div className="px-3 pb-3 flex gap-2">
           <Button 
@@ -138,7 +138,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
             disabled={product.inStock === false}
           >
             <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-            Add
+            {translations.add}
           </Button>
           <Button 
             size="sm" 
@@ -146,7 +146,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
             onClick={handleBuyNow}
             disabled={product.inStock === false}
           >
-            Buy
+            {translations.buy}
           </Button>
         </div>
         )}
@@ -154,19 +154,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
     );
   }
 
-  // Grid View (Default) - Compact Flipkart style
+  // Grid View (Default)
   return (
     <Card className="hover:shadow-md transition-shadow h-full flex flex-col bg-white border border-gray-100 rounded-sm">
       <Link to={`/product/${product.id}`} className="flex-1 flex flex-col">
         <div className="relative">
           <img 
             src={product.image} 
-            alt={product.name}
+            alt={translatedName}
             className="w-full h-28 md:h-40 object-contain bg-white p-1.5 md:p-2"
           />
           {product.discount && (
             <Badge className="absolute top-1 left-1 bg-green-600 text-white text-[9px] md:text-[10px] px-1 py-0.5 rounded-sm">
-              {product.discount}% OFF
+              {product.discount}% {translations.off}
             </Badge>
           )}
           <button className="absolute top-1 right-1 text-gray-400 hover:text-red-500 bg-white/80 rounded-full p-0.5">
@@ -176,7 +176,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
         
         <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col">
           <h3 className="font-medium text-xs md:text-sm text-gray-900 mb-1 line-clamp-2 leading-tight">
-            {product.name}
+            {translatedName}
           </h3>
           
           {product.rating && (
@@ -198,14 +198,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
                 <span className="text-[10px] md:text-xs text-gray-400 line-through">₹{product.originalPrice.toLocaleString()}</span>
               )}
               {product.discount && (
-                <span className="text-green-600 text-[10px] md:text-xs font-medium">{product.discount}% off</span>
+                <span className="text-green-600 text-[10px] md:text-xs font-medium">{product.discount}% {translations.off}</span>
               )}
             </div>
           </div>
         </CardContent>
       </Link>
       
-      {/* Action Buttons - Only show when showButtons is true */}
       {showButtons && (
       <div className="px-3 pb-3 flex flex-col gap-2 mt-auto">
         <Button 
@@ -216,7 +215,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
           disabled={product.inStock === false}
         >
           <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-          Add
+          {translations.add}
         </Button>
         <Button 
           size="sm" 
@@ -224,7 +223,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
           onClick={handleBuyNow}
           disabled={product.inStock === false}
         >
-          Buy
+          {translations.buy}
         </Button>
       </div>
       )}

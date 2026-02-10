@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { translateProductName } from '@/data/translations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const { user, setRedirectAfterLogin } = useAuth();
-  const { translations } = useLanguage();
+  const { language, translations } = useLanguage();
   const navigate = useNavigate();
 
   const deliveryCharges = 0;
@@ -40,9 +41,9 @@ const Cart = () => {
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <ShoppingBag className="h-24 w-24 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Cart is Empty</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{translations.your_cart_empty}</h2>
             <p className="text-gray-600 mb-8">
-              Looks like you haven't added any items to your cart yet.
+              {translations.cart_empty_desc}
             </p>
             <Link to="/products">
               <Button>{translations.continue_shopping}</Button>
@@ -61,8 +62,8 @@ const Cart = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-gray-900">{translations.shopping_cart}</h1>
-          <Button variant="outline" onClick={clearCart}>
-            Clear Cart
+           <Button variant="outline" onClick={clearCart}>
+            {translations.clear_cart}
           </Button>
         </div>
 
@@ -80,7 +81,7 @@ const Cart = () => {
                     />
                     
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{item.name}</h3>
+                      <h3 className="font-semibold text-lg">{translateProductName(item.name, language)}</h3>
                       <p className="text-gray-600 capitalize">{item.category}</p>
                       <p className="text-green-600 font-bold">₹{item.price}</p>
                     </div>
@@ -148,8 +149,8 @@ const Cart = () => {
                     <span>-₹{upiDiscount}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
-                    <span>Tax</span>
-                    <span>Calculated at checkout</span>
+                    <span>{translations.tax}</span>
+                    <span>{translations.tax_at_checkout}</span>
                   </div>
                 </div>
                 
@@ -159,7 +160,7 @@ const Cart = () => {
                     <span>₹{totalPrice - discountAmount}</span>
                   </div>
                   <div className="text-sm text-green-600 mt-1">
-                    With UPI: ₹{totalPrice - discountAmount - upiDiscount}
+                    {translations.with_upi}: ₹{totalPrice - discountAmount - upiDiscount}
                   </div>
                 </div>
                 
@@ -167,12 +168,12 @@ const Cart = () => {
                   className="w-full mb-4" 
                   onClick={handleCheckoutClick}
                 >
-                  {user ? translations.checkout : 'Login to Checkout'}
+                  {user ? translations.checkout : translations.login_to_checkout}
                 </Button>
                 
                 {!user && (
                   <p className="text-sm text-gray-600 text-center mb-4">
-                    Please login to proceed with your order
+                    {translations.login_to_proceed}
                   </p>
                 )}
                 
@@ -187,17 +188,17 @@ const Cart = () => {
             {/* Coupon Section */}
             <Card className="mt-4">
               <CardContent className="p-6">
-                <h4 className="font-semibold mb-3">Have a Coupon?</h4>
+                <h4 className="font-semibold mb-3">{translations.have_coupon}</h4>
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    placeholder="Enter coupon code"
+                    placeholder={translations.enter_coupon}
                     className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
-                  <Button variant="outline">Apply</Button>
+                  <Button variant="outline">{translations.apply}</Button>
                 </div>
                 <div className="mt-3 space-y-1 text-sm text-gray-600">
-                  <p>Available Coupons:</p>
+                  <p>{translations.available_coupons}</p>
                   <p className="text-green-600">• SAVE10 - 10% off on orders above ₹1000</p>
                   <p className="text-green-600">• FIRST20 - 20% off for first time buyers</p>
                   <p className="text-green-600">• UPI10 - Extra 10% off with UPI payment</p>
