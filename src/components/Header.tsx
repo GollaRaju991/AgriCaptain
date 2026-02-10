@@ -80,14 +80,31 @@ const Header = () => {
         {/* ---------------------- MOBILE HEADER ---------------------- */}
         {/* Single row: Logo, quick links, notification - white background */}
         <div className="lg:hidden flex items-center px-2 py-2 bg-white gap-1.5">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-1 flex-shrink-0">
-            <img src={appLogo} alt="Agrizin" className="w-7 h-7 rounded-full shadow" />
-            <span className="text-sm font-bold text-green-700">Agrizin</span>
+          {/* Logo - icon only */}
+          <Link to="/" className="flex-shrink-0">
+            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
           </Link>
 
-          {/* Quick action buttons */}
+          {/* Action buttons in order: Become Seller, Language, Login, Notification */}
           <div className="flex items-center gap-1.5 ml-auto">
+            {/* Become Seller */}
+            <Link
+              to="/become-seller"
+              className="flex items-center gap-1 bg-orange-500 rounded-lg px-2.5 py-1.5 shadow-sm"
+            >
+              <UserPlus className="h-3.5 w-3.5 text-white" />
+              <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.become_seller}</span>
+            </Link>
+
+            {/* Language */}
+            <button
+              onClick={() => setLanguageDialogOpen(true)}
+              className="flex items-center gap-1 bg-blue-400 rounded-lg px-2.5 py-1.5 shadow-sm"
+            >
+              <Languages className="h-3.5 w-3.5 text-white" />
+              <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.language}</span>
+            </button>
+
             {/* Login / Account */}
             {user ? (
               <Link
@@ -107,24 +124,6 @@ const Header = () => {
               </Link>
             )}
 
-            {/* Become Seller */}
-            <Link
-              to="/become-seller"
-              className="flex items-center gap-1 bg-orange-500 rounded-lg px-2.5 py-1.5 shadow-sm"
-            >
-              <UserPlus className="h-3.5 w-3.5 text-white" />
-              <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.become_seller}</span>
-            </Link>
-
-            {/* Language */}
-            <button
-              onClick={() => setLanguageDialogOpen(true)}
-              className="flex items-center gap-1 bg-blue-400 rounded-lg px-2.5 py-1.5 shadow-sm"
-            >
-              <Languages className="h-3.5 w-3.5 text-white" />
-              <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.language}</span>
-            </button>
-
             {/* Notification */}
             <Link to="/notifications">
               <Button
@@ -140,7 +139,7 @@ const Header = () => {
 
         {/* Row 2: Search Box with Camera and Scanner - Hidden on product pages */}
         {!isProductPage && (
-        <div className="lg:hidden flex items-center px-3 py-2 bg-green-600 gap-2">
+        <div className="lg:hidden flex items-center px-3 py-2 bg-white gap-2">
           <form
             onSubmit={handleSearch}
             className="flex flex-1 items-center bg-white rounded-lg overflow-hidden shadow-sm"
@@ -162,7 +161,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-white hover:bg-green-500 flex-shrink-0"
+            className="text-gray-600 hover:bg-gray-100 flex-shrink-0"
             onClick={() => {
               // Scanner functionality placeholder
               console.log("Scanner clicked");
