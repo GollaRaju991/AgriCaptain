@@ -78,58 +78,64 @@ const Header = () => {
       <header className="bg-white shadow-md sticky top-0 z-50 w-full">
 
         {/* ---------------------- MOBILE HEADER ---------------------- */}
-        {/* Row 0: White top bar with Agrizin logo */}
-        <div className="lg:hidden flex items-center justify-between px-3 py-2 bg-white">
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
-            <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
-            <span className="text-lg font-bold text-green-700">Agrizin</span>
+        {/* Single row: Logo, quick links, notification - white background */}
+        <div className="lg:hidden flex items-center px-2 py-2 bg-white gap-1.5">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-1 flex-shrink-0">
+            <img src={appLogo} alt="Agrizin" className="w-7 h-7 rounded-full shadow" />
+            <span className="text-sm font-bold text-green-700">Agrizin</span>
           </Link>
 
-          {/* Notification icon */}
-          <Link to="/notifications">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-green-700 hover:bg-green-50 h-8 w-8"
-            >
-              <Bell className="h-5 w-5" />
-            </Button>
-          </Link>
-        </div>
+          {/* Quick action buttons */}
+          <div className="flex items-center gap-1.5 ml-auto">
+            {/* Login / Account */}
+            {user ? (
+              <Link
+                to="/profile"
+                className="flex items-center gap-1 bg-green-500 rounded-lg px-2.5 py-1.5 shadow-sm"
+              >
+                <UserIcon className="h-3.5 w-3.5 text-white" />
+                <span className="text-[10px] font-semibold text-white whitespace-nowrap">{user.user_metadata?.name || 'Account'}</span>
+              </Link>
+            ) : (
+              <Link
+                to="/auth"
+                className="flex items-center gap-1 bg-green-500 rounded-lg px-2.5 py-1.5 shadow-sm"
+              >
+                <UserIcon className="h-3.5 w-3.5 text-white" />
+                <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.login_signup}</span>
+              </Link>
+            )}
 
-        {/* Row 1: Colorful box-style quick links (Flipkart style) */}
-        <div className="lg:hidden flex items-center justify-around px-2 py-2 bg-green-600 gap-2">
-          <Link
-            to="/become-seller"
-            className="flex flex-col items-center justify-center bg-yellow-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
-          >
-            <UserPlus className="h-5 w-5 text-yellow-900 mb-0.5" />
-            <span className="text-[10px] font-semibold text-yellow-900 whitespace-nowrap">{translations.become_seller}</span>
-          </Link>
-          <button
-            onClick={() => setLanguageDialogOpen(true)}
-            className="flex flex-col items-center justify-center bg-blue-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
-          >
-            <Languages className="h-5 w-5 text-blue-900 mb-0.5" />
-            <span className="text-[10px] font-semibold text-blue-900 whitespace-nowrap">{translations.language}</span>
-          </button>
-          {user ? (
+            {/* Become Seller */}
             <Link
-              to="/profile"
-              className="flex flex-col items-center justify-center bg-orange-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
+              to="/become-seller"
+              className="flex items-center gap-1 bg-orange-500 rounded-lg px-2.5 py-1.5 shadow-sm"
             >
-              <UserIcon className="h-5 w-5 text-orange-900 mb-0.5" />
-              <span className="text-[10px] font-semibold text-orange-900 whitespace-nowrap">{user.user_metadata?.name || 'Account'}</span>
+              <UserPlus className="h-3.5 w-3.5 text-white" />
+              <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.become_seller}</span>
             </Link>
-          ) : (
-            <Link
-              to="/auth"
-              className="flex flex-col items-center justify-center bg-orange-400 rounded-xl px-3 py-2 min-w-[90px] shadow-sm"
+
+            {/* Language */}
+            <button
+              onClick={() => setLanguageDialogOpen(true)}
+              className="flex items-center gap-1 bg-blue-400 rounded-lg px-2.5 py-1.5 shadow-sm"
             >
-              <UserIcon className="h-5 w-5 text-orange-900 mb-0.5" />
-              <span className="text-[10px] font-semibold text-orange-900 whitespace-nowrap">{translations.login_signup}</span>
+              <Languages className="h-3.5 w-3.5 text-white" />
+              <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.language}</span>
+            </button>
+
+            {/* Notification */}
+            <Link to="/notifications">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-green-700 hover:bg-green-50 h-7 w-7"
+              >
+                <Bell className="h-4.5 w-4.5" />
+              </Button>
             </Link>
-          )}
+          </div>
         </div>
 
         {/* Row 2: Search Box with Camera and Scanner - Hidden on product pages */}
