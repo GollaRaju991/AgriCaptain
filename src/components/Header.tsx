@@ -131,49 +131,43 @@ const Header = () => {
                 <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
               </Link>
 
-              <div className="flex items-center gap-1.5 ml-auto">
+            <div className="flex items-center gap-1 ml-auto">
                 <Link
                   to="/become-seller"
-                  className="flex items-center gap-1 bg-orange-500 rounded-lg px-2.5 py-1.5 shadow-sm"
+                  className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
                 >
-                  <UserPlus className="h-3.5 w-3.5 text-white" />
-                  <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.become_seller}</span>
+                  <UserPlus className="h-3.5 w-3.5 text-gray-600" />
+                  <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{translations.become_seller}</span>
                 </Link>
 
                 <button
                   onClick={() => setLanguageDialogOpen(true)}
-                  className="flex items-center gap-1 bg-blue-400 rounded-lg px-2.5 py-1.5 shadow-sm"
+                  className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
                 >
-                  <Languages className="h-3.5 w-3.5 text-white" />
-                  <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.language}</span>
+                  <Languages className="h-3.5 w-3.5 text-gray-600" />
+                  <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{translations.language}</span>
                 </button>
 
                 {user ? (
                   <Link
                     to="/profile"
-                    className="flex items-center gap-1 bg-green-500 rounded-lg px-2.5 py-1.5 shadow-sm"
+                    className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
                   >
-                    <UserIcon className="h-3.5 w-3.5 text-white" />
-                    <span className="text-[10px] font-semibold text-white whitespace-nowrap">{user.user_metadata?.name || 'Account'}</span>
+                    <UserIcon className="h-3.5 w-3.5 text-gray-600" />
+                    <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{user.user_metadata?.name || 'Account'}</span>
                   </Link>
                 ) : (
                   <Link
                     to="/auth"
-                    className="flex items-center gap-1 bg-green-500 rounded-lg px-2.5 py-1.5 shadow-sm"
+                    className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
                   >
-                    <UserIcon className="h-3.5 w-3.5 text-white" />
-                    <span className="text-[10px] font-semibold text-white whitespace-nowrap">{translations.login_signup}</span>
+                    <UserIcon className="h-3.5 w-3.5 text-gray-600" />
+                    <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{translations.login_signup}</span>
                   </Link>
                 )}
 
-                <Link to="/notifications">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-green-700 hover:bg-green-50 h-7 w-7"
-                  >
-                    <Bell className="h-4.5 w-4.5" />
-                  </Button>
+                <Link to="/notifications" className="flex items-center border border-gray-300 rounded-md p-1.5">
+                  <Bell className="h-3.5 w-3.5 text-gray-600" />
                 </Link>
               </div>
             </div>
@@ -182,10 +176,10 @@ const Header = () => {
             <div className="lg:hidden flex items-center px-3 py-2 bg-white gap-2">
               <form
                 onSubmit={handleSearch}
-                className="flex flex-1 items-center bg-gray-100 rounded-lg overflow-hidden shadow-sm"
+                className="flex flex-1 items-center border-2 border-gray-800 rounded-lg overflow-hidden"
               >
                 <div className="flex items-center pl-3">
-                  <Search className="h-4 w-4 text-gray-400" />
+                  <Search className="h-4 w-4 text-green-600" />
                 </div>
                 <Input
                   type="text"
