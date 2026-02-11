@@ -29,9 +29,9 @@ const MobileBottomNav = () => {
           <Heart className={`h-6 w-6 ${isActive("/wishlist")}`} />
           <span className={`text-xs ${isActive("/wishlist")}`}>{translations.bottom_wishlist}</span>
         </Link>
-        <Link to="/auth" className="flex flex-col items-center">
-          <User className={`h-6 w-6 ${isActive("/auth")}`} />
-          <span className={`text-xs ${isActive("/auth")}`}>{translations.bottom_account}</span>
+        <Link to="/profile" className="flex flex-col items-center">
+          <User className={`h-6 w-6 ${isActive("/profile")}`} />
+          <span className={`text-xs ${isActive("/profile")}`}>{translations.bottom_account}</span>
         </Link>
       </div>
     </div>
