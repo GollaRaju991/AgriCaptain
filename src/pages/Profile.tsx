@@ -43,6 +43,7 @@ import LogoutConfirmation from '@/components/LogoutConfirmation';
 import { supabase } from '@/integrations/supabase/client';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import MobileAppDownload from '@/components/MobileAppDownload';
+import DesktopProfileLayout from '@/components/profile/DesktopProfileLayout';
 
 const Profile = () => {
   const { user, loading: authLoading, logout } = useAuth();
@@ -316,106 +317,12 @@ const Profile = () => {
         </div>
       ) : (
         /* =================== DESKTOP LAYOUT =================== */
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="space-y-6">
-            {/* Profile Header */}
-            <Card className="bg-white shadow-md rounded-lg overflow-hidden">
-              <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback>{profile.name?.charAt(0).toUpperCase() || '?'}</AvatarFallback>
-                </Avatar>
-                <div className="ml-4">
-                  <CardTitle className="text-lg font-semibold">{profile.name || 'No Name'}</CardTitle>
-                  <p className="text-sm text-muted-foreground">User ID: {user?.id}</p>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap items-center gap-4">
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span>No Address</span>
-                  </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Phone className="h-4 w-4 mr-1" />
-                    <span>{profile.phone || 'No Phone'}</span>
-                  </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Mail className="h-4 w-4 mr-1" />
-                    <span className="truncate max-w-[150px]">{user?.email || 'No Email'}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Desktop grid cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setIsEditProfileOpen(true)}>
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="bg-blue-100 p-2 rounded-lg"><User className="h-5 w-5 text-blue-600" /></div>
-                  <div className="ml-3">
-                    <CardTitle className="text-base">Edit Profile</CardTitle>
-                    <p className="text-sm text-muted-foreground">Update your profile information</p>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setIsAddressManagerOpen(true)}>
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="bg-green-100 p-2 rounded-lg"><MapPin className="h-5 w-5 text-green-600" /></div>
-                  <div className="ml-3">
-                    <CardTitle className="text-base">Manage Addresses</CardTitle>
-                    <p className="text-sm text-muted-foreground">Add, edit, or remove your addresses</p>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="bg-orange-100 p-2 rounded-lg"><Package className="h-5 w-5 text-orange-600" /></div>
-                  <div className="ml-3">
-                    <CardTitle className="text-base">Orders</CardTitle>
-                    <p className="text-sm text-muted-foreground">View your order history</p>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="bg-red-100 p-2 rounded-lg"><Heart className="h-5 w-5 text-red-600" /></div>
-                  <div className="ml-3">
-                    <CardTitle className="text-base">Wishlist</CardTitle>
-                    <p className="text-sm text-muted-foreground">Your favorite items</p>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="bg-teal-100 p-2 rounded-lg"><Gift className="h-5 w-5 text-teal-600" /></div>
-                  <div className="ml-3">
-                    <CardTitle className="text-base">Gift Cards</CardTitle>
-                    <p className="text-sm text-muted-foreground">Your gift cards and rewards</p>
-                  </div>
-                </CardHeader>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader className="flex flex-row items-center space-y-0 pb-2">
-                  <div className="bg-purple-100 p-2 rounded-lg"><Bell className="h-5 w-5 text-purple-600" /></div>
-                  <div className="ml-3">
-                    <CardTitle className="text-base">Notifications</CardTitle>
-                    <p className="text-sm text-muted-foreground">Your latest updates</p>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-
-            <Button variant="destructive" className="w-full" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
-        </div>
+        <DesktopProfileLayout
+          profile={profile}
+          userEmail={user?.email || null}
+          userId={user?.id || ''}
+          onSignOut={handleSignOut}
+        />
       )}
       <div className="h-20 lg:hidden"></div>
 
