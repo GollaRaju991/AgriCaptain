@@ -54,6 +54,7 @@ const Header = () => {
   const { translations } = useLanguage();
 
   const isProductPage = location.pathname.startsWith('/product/');
+  const hideFullMobileHeader = ['/cart', '/wishlist', '/profile'].includes(location.pathname);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
@@ -119,7 +120,7 @@ const Header = () => {
         )}
 
         {/* Non-product pages mobile header */}
-        {!isProductPage && (
+        {!isProductPage && !hideFullMobileHeader && (
           <>
             {/* Row 1: Logo + actions - hides on scroll */}
             <div
