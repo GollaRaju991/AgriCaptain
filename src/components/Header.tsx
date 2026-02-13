@@ -123,52 +123,46 @@ const Header = () => {
           <>
             {/* Row 1: Logo + actions - hides on scroll */}
             <div
-              className={`lg:hidden flex items-center px-2 py-2 bg-white gap-1.5 transition-all duration-300 overflow-hidden ${
+              className={`lg:hidden flex items-center px-3 py-2 bg-green-600 gap-2 transition-all duration-300 overflow-hidden ${
                 scrolled ? "max-h-0 py-0 opacity-0" : "max-h-20 opacity-100"
               }`}
             >
               <Link to="/" className="flex-shrink-0">
-                <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full shadow" />
+                <span className="text-xl font-bold text-white">Agrizin</span>
               </Link>
 
-            <div className="flex items-center gap-1 ml-auto">
+              <div className="flex items-center gap-1.5 ml-auto">
                 <Link
                   to="/become-seller"
-                  className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
+                  className="flex items-center gap-1.5 bg-white rounded-md px-2.5 py-1.5"
                 >
-                  <UserPlus className="h-3.5 w-3.5 text-gray-600" />
-                  <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{translations.become_seller}</span>
+                  <UserPlus className="h-4 w-4 text-green-700" />
+                  <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.become_seller}</span>
                 </Link>
 
                 <button
                   onClick={() => setLanguageDialogOpen(true)}
-                  className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
+                  className="flex items-center gap-1.5 bg-white rounded-md px-2.5 py-1.5"
                 >
-                  <Languages className="h-3.5 w-3.5 text-gray-600" />
-                  <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{translations.language}</span>
+                  <Languages className="h-4 w-4 text-green-700" />
+                  <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.language}</span>
                 </button>
 
                 {user ? (
                   <Link
                     to="/profile"
-                    className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
+                    className="relative flex items-center bg-white rounded-md p-2"
                   >
-                    <UserIcon className="h-3.5 w-3.5 text-gray-600" />
-                    <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{user.user_metadata?.name || 'Account'}</span>
+                    <UserIcon className="h-5 w-5 text-blue-600" />
                   </Link>
                 ) : (
                   <Link
                     to="/auth"
-                    className="flex items-center gap-1 border border-gray-300 rounded-md px-2 py-1.5"
+                    className="relative flex items-center bg-white rounded-md p-2"
                   >
-                    <UserIcon className="h-3.5 w-3.5 text-gray-600" />
-                    <span className="text-[10px] font-medium text-gray-700 whitespace-nowrap">{translations.login_signup}</span>
+                    <UserIcon className="h-5 w-5 text-blue-600" />
                   </Link>
                 )}
-
-                <Link to="/notifications" className="flex items-center border border-gray-300 rounded-md p-1.5">
-                  <Bell className="h-3.5 w-3.5 text-gray-600" />
-                </Link>
               </div>
             </div>
 
