@@ -121,12 +121,14 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <EditProfile />
+      {isMobile && <EditProfile />}
 
-      <AddressManager
-        onAddressSelect={handleAddressSelect}
-        selectedAddressId=""
-      />
+      {isMobile && (
+        <AddressManager
+          onAddressSelect={handleAddressSelect}
+          selectedAddressId=""
+        />
+      )}
 
       <LogoutConfirmation
         isOpen={showLogoutConfirmation}
