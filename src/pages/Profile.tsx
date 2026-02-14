@@ -38,7 +38,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import EditProfile from '@/components/EditProfile';
-import AddressManager from '@/components/AddressManager';
+import AddressManager from '@/components/AddressManager'; // kept for desktop
 import LogoutConfirmation from '@/components/LogoutConfirmation';
 import { supabase } from '@/integrations/supabase/client';
 import useScrollToTop from '@/hooks/useScrollToTop';
@@ -49,7 +49,7 @@ const Profile = () => {
   const { user, loading: authLoading, logout } = useAuth();
   const isMobile = useIsMobile();
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-  const [isAddressManagerOpen, setIsAddressManagerOpen] = useState(false);
+  const [isAddressManagerOpen, setIsAddressManagerOpen] = useState(false); // desktop only
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const [profile, setProfile] = useState<{
     name: string | null;
@@ -122,13 +122,6 @@ const Profile = () => {
       <Header />
 
       {isMobile && <EditProfile />}
-
-      {isMobile && (
-        <AddressManager
-          onAddressSelect={handleAddressSelect}
-          selectedAddressId=""
-        />
-      )}
 
       <LogoutConfirmation
         isOpen={showLogoutConfirmation}
@@ -215,11 +208,7 @@ const Profile = () => {
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
 
-              <a
-                href="#"
-                onClick={(e) => { e.preventDefault(); setIsAddressManagerOpen(true); }}
-                className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100"
-              >
+              <a href="/profile/saved-addresses" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-blue-600" />
                   <span className="text-sm text-foreground">Saved Addresses</span>

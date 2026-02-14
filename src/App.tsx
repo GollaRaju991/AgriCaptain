@@ -31,6 +31,7 @@ import TermsPolicies from "./pages/TermsPolicies";
 import FAQs from "./pages/FAQs";
 import SavedUPI from "./pages/SavedUPI";
 import SavedCards from "./pages/SavedCards";
+import SavedAddresses from "./pages/SavedAddresses";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
@@ -77,6 +78,7 @@ const App = () => (
                     <Route path="/faqs" element={<FAQs />} />
                     <Route path="/profile/saved-upi" element={<SavedUPI />} />
                     <Route path="/profile/saved-cards" element={<SavedCards />} />
+                    <Route path="/profile/saved-addresses" element={<SavedAddresses />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
