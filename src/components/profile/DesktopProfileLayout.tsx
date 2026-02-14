@@ -19,6 +19,8 @@ import FAQsSection from './sections/FAQsSection';
 import CouponsSection from './sections/CouponsSection';
 import NotificationsSection from './sections/NotificationsSection';
 import WishlistSection from './sections/WishlistSection';
+import SavedUPISection from './sections/SavedUPISection';
+import SavedCardsSection from './sections/SavedCardsSection';
 
 type SidebarSection =
   | 'profile-info'
@@ -139,20 +141,8 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
           {activeSection === 'coupons' && <CouponsSection />}
           {activeSection === 'notifications' && <NotificationsSection userId={userId} />}
           {activeSection === 'wishlist' && <WishlistSection />}
-          {activeSection === 'saved-upi' && (
-            <div className="bg-card border rounded-xl p-12 text-center text-muted-foreground shadow-sm">
-              <CreditCard className="h-20 w-20 mx-auto mb-4 text-muted-foreground/40" />
-              <p className="font-bold text-xl text-foreground mb-2">Saved UPI</p>
-              <p className="text-sm">No saved UPI IDs found.</p>
-            </div>
-          )}
-          {activeSection === 'saved-cards' && (
-            <div className="bg-card border rounded-xl p-12 text-center text-muted-foreground shadow-sm">
-              <CreditCard className="h-20 w-20 mx-auto mb-4 text-muted-foreground/40" />
-              <p className="font-bold text-xl text-foreground mb-2">Saved Cards</p>
-              <p className="text-sm">No saved cards found.</p>
-            </div>
-          )}
+          {activeSection === 'saved-upi' && <SavedUPISection />}
+          {activeSection === 'saved-cards' && <SavedCardsSection />}
           {activeSection === 'faqs' && <FAQsSection />}
         </div>
       </div>

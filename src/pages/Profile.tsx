@@ -199,6 +199,22 @@ const Profile = () => {
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
 
+              <a href="/profile/saved-upi" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
+                <div className="flex items-center space-x-3">
+                  <Wallet className="h-5 w-5 text-blue-600" />
+                  <span className="text-sm text-foreground">Saved UPI</span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </a>
+
+              <a href="/profile/saved-cards" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="h-5 w-5 text-blue-600" />
+                  <span className="text-sm text-foreground">Saved Cards</span>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </a>
+
               <a
                 href="#"
                 onClick={(e) => { e.preventDefault(); setIsAddressManagerOpen(true); }}

@@ -292,6 +292,78 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_cards: {
+        Row: {
+          bank_name: string | null
+          card_holder_name: string
+          card_number_last4: string
+          card_type: string
+          created_at: string
+          expiry_month: number
+          expiry_year: number
+          id: string
+          is_default: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bank_name?: string | null
+          card_holder_name: string
+          card_number_last4: string
+          card_type?: string
+          created_at?: string
+          expiry_month: number
+          expiry_year: number
+          id?: string
+          is_default?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bank_name?: string | null
+          card_holder_name?: string
+          card_number_last4?: string
+          card_type?: string
+          created_at?: string
+          expiry_month?: number
+          expiry_year?: number
+          id?: string
+          is_default?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_upi: {
+        Row: {
+          created_at: string
+          id: string
+          is_default: boolean
+          provider: string | null
+          updated_at: string
+          upi_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          provider?: string | null
+          updated_at?: string
+          upi_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          provider?: string | null
+          updated_at?: string
+          upi_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
