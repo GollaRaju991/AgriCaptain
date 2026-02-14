@@ -340,6 +340,7 @@ const Profile = () => {
           userEmail={user?.email || null}
           userId={user?.id || ''}
           onSignOut={handleSignOut}
+          onProfileUpdate={fetchProfile}
         />
       )}
       <div className="h-20 lg:hidden"></div>
