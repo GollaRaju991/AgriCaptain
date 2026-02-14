@@ -29,6 +29,8 @@ import Categories from "./pages/Categories";
 import HelpCenter from "./pages/HelpCenter";
 import TermsPolicies from "./pages/TermsPolicies";
 import FAQs from "./pages/FAQs";
+import SavedUPI from "./pages/SavedUPI";
+import SavedCards from "./pages/SavedCards";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
@@ -73,6 +75,8 @@ const App = () => (
                     <Route path="/help-center" element={<HelpCenter />} />
                     <Route path="/terms-policies" element={<TermsPolicies />} />
                     <Route path="/faqs" element={<FAQs />} />
+                    <Route path="/profile/saved-upi" element={<SavedUPI />} />
+                    <Route path="/profile/saved-cards" element={<SavedCards />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
