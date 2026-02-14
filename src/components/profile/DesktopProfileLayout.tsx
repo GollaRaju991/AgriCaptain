@@ -38,6 +38,7 @@ interface DesktopProfileLayoutProps {
   userEmail: string | null;
   userId: string;
   onSignOut: () => void;
+  onProfileUpdate?: () => void;
 }
 
 const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
@@ -45,6 +46,7 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
   userEmail,
   userId,
   onSignOut,
+  onProfileUpdate,
 }) => {
   const [activeSection, setActiveSection] = useState<SidebarSection>('profile-info');
   const navigate = useNavigate();
@@ -135,7 +137,7 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
 
         {/* ======== RIGHT CONTENT ======== */}
         <div className="flex-1 min-w-0">
-          {activeSection === 'profile-info' && <ProfileInformation profile={profile} userEmail={userEmail} userId={userId} />}
+          {activeSection === 'profile-info' && <ProfileInformation profile={profile} userEmail={userEmail} userId={userId} onProfileUpdate={onProfileUpdate} />}
           {activeSection === 'pan-card' && <PanCardSection userId={userId} />}
           {activeSection === 'gift-cards' && <GiftCardsSection />}
           {activeSection === 'coupons' && <CouponsSection />}

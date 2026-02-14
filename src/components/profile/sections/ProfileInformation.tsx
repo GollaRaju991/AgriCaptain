@@ -25,9 +25,10 @@ interface Props {
   profile: { name: string | null; phone: string | null };
   userEmail: string | null;
   userId: string;
+  onProfileUpdate?: () => void;
 }
 
-const ProfileInformation: React.FC<Props> = ({ profile, userEmail, userId }) => {
+const ProfileInformation: React.FC<Props> = ({ profile, userEmail, userId, onProfileUpdate }) => {
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -57,8 +58,13 @@ const ProfileInformation: React.FC<Props> = ({ profile, userEmail, userId }) => 
     if (error) {
       toast({ title: `Failed to update ${field}`, variant: 'destructive' });
     } else {
+      // If name was updated, also update auth user metadata so header reflects it
+      if (value.name) {
+        await supabase.auth.updateUser({ data: { name: value.name } });
+      }
       toast({ title: `${field} updated successfully` });
       setEditingField(null);
+      onProfileUpdate?.();
     }
   };
 
