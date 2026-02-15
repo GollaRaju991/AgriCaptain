@@ -32,6 +32,7 @@ import FAQs from "./pages/FAQs";
 import SavedUPI from "./pages/SavedUPI";
 import SavedCards from "./pages/SavedCards";
 import SavedAddresses from "./pages/SavedAddresses";
+import EditProfilePage from "./pages/EditProfilePage";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
@@ -79,6 +80,7 @@ const App = () => (
                     <Route path="/profile/saved-upi" element={<SavedUPI />} />
                     <Route path="/profile/saved-cards" element={<SavedCards />} />
                     <Route path="/profile/saved-addresses" element={<SavedAddresses />} />
+                    <Route path="/profile/edit" element={<EditProfilePage />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
