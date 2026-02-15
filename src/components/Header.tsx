@@ -132,36 +132,36 @@ const Header = () => {
                 <span className="text-xl font-bold text-white">Agrizin</span>
               </Link>
 
-              <div className="flex items-center gap-1.5 ml-auto">
+              <div className="flex items-center gap-2 ml-auto">
                 <Link
                   to="/become-seller"
-                  className="flex items-center gap-1.5 bg-white rounded-md px-2.5 py-1.5"
+                  className="flex items-center gap-1.5 bg-white rounded-lg px-3 py-2"
                 >
-                  <UserPlus className="h-4 w-4 text-green-700" />
+                  <UserPlus className="h-5 w-5 text-green-700" />
                   <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.become_seller}</span>
                 </Link>
 
                 <button
                   onClick={() => setLanguageDialogOpen(true)}
-                  className="flex items-center gap-1.5 bg-white rounded-md px-2.5 py-1.5"
+                  className="flex items-center gap-1.5 bg-white rounded-lg px-3 py-2"
                 >
-                  <Languages className="h-4 w-4 text-green-700" />
+                  <Languages className="h-5 w-5 text-green-700" />
                   <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.language}</span>
                 </button>
 
                 {user ? (
                   <Link
                     to="/profile"
-                    className="relative flex items-center bg-white rounded-md p-2"
+                    className="relative flex items-center justify-center w-10 h-10 bg-white rounded-full"
                   >
-                    <UserIcon className="h-5 w-5 text-blue-600" />
+                    <UserIcon className="h-6 w-6 text-blue-600" />
                   </Link>
                 ) : (
                   <Link
                     to="/auth"
-                    className="relative flex items-center bg-white rounded-md p-2"
+                    className="relative flex items-center justify-center w-10 h-10 bg-white rounded-full"
                   >
-                    <UserIcon className="h-5 w-5 text-blue-600" />
+                    <UserIcon className="h-6 w-6 text-blue-600" />
                   </Link>
                 )}
               </div>
