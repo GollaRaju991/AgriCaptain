@@ -37,7 +37,6 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import EditProfile from '@/components/EditProfile';
 import AddressManager from '@/components/AddressManager'; // kept for desktop
 import LogoutConfirmation from '@/components/LogoutConfirmation';
 import { supabase } from '@/integrations/supabase/client';
@@ -48,7 +47,6 @@ import DesktopProfileLayout from '@/components/profile/DesktopProfileLayout';
 const Profile = () => {
   const { user, loading: authLoading, logout } = useAuth();
   const isMobile = useIsMobile();
-  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isAddressManagerOpen, setIsAddressManagerOpen] = useState(false); // desktop only
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const [profile, setProfile] = useState<{
@@ -121,8 +119,6 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {isMobile && <EditProfile />}
-
       <LogoutConfirmation
         isOpen={showLogoutConfirmation}
         onClose={() => setShowLogoutConfirmation(false)}
@@ -172,11 +168,7 @@ const Profile = () => {
           <div className="bg-white">
             <h3 className="px-4 pt-4 pb-2 text-base font-bold text-foreground">Account Settings</h3>
             <div className="divide-y divide-gray-100">
-              <a
-                href="#"
-                onClick={(e) => { e.preventDefault(); setIsEditProfileOpen(true); }}
-                className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100"
-              >
+              <a href="/profile/edit" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
                   <User className="h-5 w-5 text-blue-600" />
                   <span className="text-sm text-foreground">Edit Profile</span>
@@ -184,10 +176,10 @@ const Profile = () => {
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
 
-              <a href="/gift-cards" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
+              <a href="/profile/saved-cards" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
                   <CreditCard className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm text-foreground">Saved Credit / Debit & Gift Cards</span>
+                  <span className="text-sm text-foreground">Saved Credit / Debit Cards</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
@@ -196,14 +188,6 @@ const Profile = () => {
                 <div className="flex items-center space-x-3">
                   <Wallet className="h-5 w-5 text-blue-600" />
                   <span className="text-sm text-foreground">Saved UPI</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </a>
-
-              <a href="/profile/saved-cards" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
-                <div className="flex items-center space-x-3">
-                  <CreditCard className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm text-foreground">Saved Cards</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
