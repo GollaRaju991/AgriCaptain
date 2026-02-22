@@ -390,65 +390,79 @@ const MarketDetails = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead
-                      className="w-16"
+                      className="w-12 whitespace-nowrap"
                       style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
                     >
                       {translations.sno || 'S.No'}
                     </TableHead>
                     <TableHead
+                      className="whitespace-nowrap"
                       style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
                     >
                       {translations.agriculture_product || 'Product'}
                     </TableHead>
                     <TableHead
-                      className="text-right"
+                      className="text-right whitespace-nowrap"
                       style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
                     >
-                      {translations.avg_rate_2024_2025 || 'Avg 2024-25'}
+                      {translations.today_rate || 'Today Rate (₹/quintal)'}
                     </TableHead>
                     <TableHead
-                      className="text-right"
+                      className="text-right whitespace-nowrap"
+                      style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
+                    >
+                      {translations.yesterday_rate || 'Yesterday Rate (₹/quintal)'}
+                    </TableHead>
+                    <TableHead
+                      className="text-right whitespace-nowrap"
                       style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
                     >
                       {translations.avg_rate_2025_2026 || 'Avg 2025-26'}
                     </TableHead>
                     <TableHead
-                      className="text-right"
+                      className="text-right whitespace-nowrap"
                       style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
                     >
-                      {translations.yesterday_rate || 'Yesterday'}
-                    </TableHead>
-                    <TableHead
-                      className="text-right"
-                      style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
-                    >
-                      {translations.today_rate || 'Today'}
-                    </TableHead>
-                    <TableHead
-                      className="text-center"
-                      style={{ background: headerBg, borderBottom: `2px solid ${borderColor}` }}
-                    >
-                      {translations.newly_added_today || 'New'}
+                      {translations.avg_rate_2024_2025 || 'Avg 2024-25'}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
-                  {finalDisplayedData.map((item) => (
-                    <TableRow
-                      key={item.sno}
-                      className="hover:shadow-sm"
-                      style={{ borderBottom: `1px solid ${borderColor}` }}
-                    >
-                      <TableCell className="font-medium">{item.sno}</TableCell>
-                      <TableCell>{getProductName(item.product)}</TableCell>
-                      <TableCell className="text-right">₹{item.avg2024_2025}</TableCell>
-                      <TableCell className="text-right">₹{item.avg2025_2026}</TableCell>
-                      <TableCell className="text-right">₹{item.yesterday}</TableCell>
-                      <TableCell className="text-right">₹{item.today}</TableCell>
-                      <TableCell className="text-center">{getNewlyAddedText(item.newlyAdded)}</TableCell>
-                    </TableRow>
-                  ))}
+                  {finalDisplayedData.map((item) => {
+                    const todayVsYesterday = item.today - item.yesterday;
+                    const yesterdayVsAvg25 = item.yesterday - item.avg2025_2026;
+                    const avg25VsAvg24 = item.avg2025_2026 - item.avg2024_2025;
+
+                    const TrendArrow = ({ diff }: { diff: number }) => (
+                      diff > 0 ? <span className="text-green-600 ml-1 text-xs">↑</span>
+                      : diff < 0 ? <span className="text-red-600 ml-1 text-xs">↓</span>
+                      : null
+                    );
+
+                    return (
+                      <TableRow
+                        key={item.sno}
+                        className="hover:shadow-sm"
+                        style={{ borderBottom: `1px solid ${borderColor}` }}
+                      >
+                        <TableCell className="font-medium">{item.sno}</TableCell>
+                        <TableCell className="whitespace-nowrap">{getProductName(item.product)}</TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          ₹{item.today}<TrendArrow diff={todayVsYesterday} />
+                        </TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          ₹{item.yesterday}<TrendArrow diff={yesterdayVsAvg25} />
+                        </TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          ₹{item.avg2025_2026}<TrendArrow diff={avg25VsAvg24} />
+                        </TableCell>
+                        <TableCell className="text-right whitespace-nowrap">
+                          ₹{item.avg2024_2025}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
 
