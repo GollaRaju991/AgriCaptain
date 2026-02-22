@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { MapPin, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface LocationData {
   country: string;
@@ -6,6 +8,7 @@ interface LocationData {
   district: string;
   division?: string;
   mandal?: string;
+  village?: string;
 }
 
 interface LocationDetectorProps {
@@ -16,75 +19,83 @@ interface LocationDetectorProps {
 const LocationDetector: React.FC<LocationDetectorProps> = ({ enabled = false, onLocationDetected }) => {
   const [isDetecting, setIsDetecting] = useState(false);
 
-  const detectLocation = async () => {
-    setIsDetecting(true);
-    
+  const reverseGeocode = async (lat: number, lon: number): Promise<LocationData> => {
     try {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
-            
-            try {
-              // Mock location data for India
-              const mockLocationData: LocationData = {
-                country: 'India',
-                state: 'Telangana',
-                district: 'Hyderabad',
-                division: 'Secunderabad',
-                mandal: 'Begumpet'
-              };
-              
-              console.log('Location detected:', mockLocationData);
-              onLocationDetected(mockLocationData);
-            } catch (error) {
-              console.error('Error in reverse geocoding:', error);
-              onLocationDetected({
-                country: 'India',
-                state: 'Telangana',
-                district: 'Hyderabad'
-              });
-            }
-            setIsDetecting(false);
-          },
-          (error) => {
-            console.error('Geolocation error:', error);
-            onLocationDetected({
-              country: 'India',
-              state: 'Telangana',
-              district: 'Hyderabad'
-            });
-            setIsDetecting(false);
-          }
-        );
-      } else {
-        onLocationDetected({
-          country: 'India',
-          state: 'Telangana',
-          district: 'Hyderabad'
-        });
-        setIsDetecting(false);
-      }
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=en`,
+        { headers: { 'User-Agent': 'AgriCaptainApp/1.0' } }
+      );
+      const data = await response.json();
+      const addr = data.address || {};
+
+      return {
+        country: addr.country || 'India',
+        state: addr.state || '',
+        district: addr.state_district || addr.county || '',
+        division: addr.suburb || addr.city_district || addr.town || '',
+        mandal: addr.village || addr.hamlet || addr.neighbourhood || '',
+        village: addr.hamlet || addr.isolated_dwelling || '',
+      };
     } catch (error) {
-      console.error('Location detection error:', error);
-      onLocationDetected({
+      console.error('Reverse geocoding failed:', error);
+      return {
         country: 'India',
         state: 'Telangana',
-        district: 'Hyderabad'
-      });
-      setIsDetecting(false);
+        district: 'Hyderabad',
+        division: 'Secunderabad',
+        mandal: '',
+        village: '',
+      };
     }
   };
 
+  const detectLocation = async () => {
+    setIsDetecting(true);
+
+    if (!navigator.geolocation) {
+      onLocationDetected({ country: 'India', state: 'Telangana', district: 'Hyderabad' });
+      setIsDetecting(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationData = await reverseGeocode(latitude, longitude);
+        console.log('Location detected:', locationData);
+        onLocationDetected(locationData);
+        setIsDetecting(false);
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        onLocationDetected({ country: 'India', state: 'Telangana', district: 'Hyderabad' });
+        setIsDetecting(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
+      size="sm"
       onClick={detectLocation}
       disabled={isDetecting}
-      className="text-sm text-blue-600 hover:text-blue-700 underline disabled:opacity-50"
+      className="text-primary border-primary hover:bg-primary/10 gap-2"
     >
-      {isDetecting ? '📍 Detecting...' : '📍 Use My Location'}
-    </button>
+      {isDetecting ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Detecting Location...
+        </>
+      ) : (
+        <>
+          <MapPin className="h-4 w-4" />
+          Add Current Location
+        </>
+      )}
+    </Button>
   );
 };
 

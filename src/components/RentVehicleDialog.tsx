@@ -144,16 +144,38 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
     setAutoDetectLocation(true);
   };
 
+  const findCodeByName = (list: { code: string; name: string }[], name: string) => {
+    if (!name || !list) return '';
+    const lower = name.toLowerCase();
+    const match = list.find(item => item.name.toLowerCase().includes(lower) || lower.includes(item.name.toLowerCase()));
+    return match?.code || '';
+  };
+
   const handleLocationDetected = (location: any) => {
-    // Map the detected location to the form values
-    const countryCode = location.country === 'India' ? 'IN' : '';
-    const stateCode = location.state === 'Telangana' ? 'TG' : '';
-    const districtCode = location.district === 'Hyderabad' ? 'HYD' : '';
-    
+    const countryMatch = countries.find(c => c.name.toLowerCase() === (location.country || '').toLowerCase());
+    const countryCode = countryMatch?.code || '';
     if (countryCode) setSelectedCountry(countryCode);
+
+    const stateList = countryCode ? states[countryCode as keyof typeof states] || [] : [];
+    const stateCode = findCodeByName(stateList, location.state);
     if (stateCode) setSelectedState(stateCode);
+
+    const districtList = stateCode ? districts[stateCode as keyof typeof districts] || [] : [];
+    const districtCode = findCodeByName(districtList, location.district);
     if (districtCode) setSelectedDistrict(districtCode);
-    
+
+    const divisionList = districtCode ? divisions[districtCode as keyof typeof divisions] || [] : [];
+    const divisionCode = findCodeByName(divisionList, location.division);
+    if (divisionCode) setSelectedDivision(divisionCode);
+
+    const mandalList = divisionCode ? mandals[divisionCode as keyof typeof mandals] || [] : [];
+    const mandalCode = findCodeByName(mandalList, location.mandal);
+    if (mandalCode) setSelectedMandal(mandalCode);
+
+    const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
+    const villageCode = findCodeByName(villageList, location.village);
+    if (villageCode) setSelectedVillage(villageCode);
+
     setAutoDetectLocation(false);
   };
 
