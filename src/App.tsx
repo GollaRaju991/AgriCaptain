@@ -29,6 +29,10 @@ import Categories from "./pages/Categories";
 import HelpCenter from "./pages/HelpCenter";
 import TermsPolicies from "./pages/TermsPolicies";
 import FAQs from "./pages/FAQs";
+import Contact from "./pages/Contact";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import RefundPolicy from "./pages/RefundPolicy";
+import ShippingPolicy from "./pages/ShippingPolicy";
 import SavedUPI from "./pages/SavedUPI";
 import SavedCards from "./pages/SavedCards";
 import SavedAddresses from "./pages/SavedAddresses";
@@ -81,6 +85,10 @@ const App = () => (
                     <Route path="/profile/saved-cards" element={<SavedCards />} />
                     <Route path="/profile/saved-addresses" element={<SavedAddresses />} />
                     <Route path="/profile/edit" element={<EditProfilePage />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                    <Route path="/refund-policy" element={<RefundPolicy />} />
+                    <Route path="/shipping-policy" element={<ShippingPolicy />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
