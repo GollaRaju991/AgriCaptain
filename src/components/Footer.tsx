@@ -107,11 +107,11 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">{translations.customer_service || "Customer Service"}</h3>
             <ul className="space-y-2">
-              <li><Link to="/help" className="text-gray-400 hover:text-white transition-colors">{translations.help_center || "Help Center"}</Link></li>
-              <li><Link to="/returns" className="text-gray-400 hover:text-white transition-colors">{translations.returns || "Returns & Refunds"}</Link></li>
-              <li><Link to="/shipping" className="text-gray-400 hover:text-white transition-colors">{translations.shipping || "Shipping Info"}</Link></li>
-              <li><Link to="/track-order" className="text-gray-400 hover:text-white transition-colors">{translations.track_order || "Track Order"}</Link></li>
-              <li><Link to="/bulk-orders" className="text-gray-400 hover:text-white transition-colors">{translations.bulk_orders || "Bulk Orders"}</Link></li>
+              <li><Link to="/help-center" className="text-gray-400 hover:text-white transition-colors">{translations.help_center || "Help Center"}</Link></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-white transition-colors">Contact Us</Link></li>
+              <li><Link to="/refund-policy" className="text-gray-400 hover:text-white transition-colors">{translations.returns || "Returns & Refunds"}</Link></li>
+              <li><Link to="/shipping-policy" className="text-gray-400 hover:text-white transition-colors">{translations.shipping || "Shipping Info"}</Link></li>
+              <li><Link to="/orders" className="text-gray-400 hover:text-white transition-colors">{translations.track_order || "Track Order"}</Link></li>
             </ul>
           </div>
 
@@ -154,14 +154,14 @@ const Footer = () => {
               © 2024 Agrizin. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link to="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-                {translations.privacy_policy || "Privacy Policy"}
+              <Link to="/terms-and-conditions" className="text-gray-400 hover:text-white text-sm transition-colors">
+                {translations.terms || "Terms & Conditions"}
               </Link>
-              <Link to="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-                {translations.terms || "Terms of Service"}
+              <Link to="/refund-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
+                {translations.privacy_policy || "Refund Policy"}
               </Link>
-              <Link to="/cookies" className="text-gray-400 hover:text-white text-sm transition-colors">
-                {translations.cookies || "Cookie Policy"}
+              <Link to="/shipping-policy" className="text-gray-400 hover:text-white text-sm transition-colors">
+                {translations.shipping || "Shipping Policy"}
               </Link>
             </div>
           </div>
