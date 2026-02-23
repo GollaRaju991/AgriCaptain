@@ -22,11 +22,13 @@ import WishlistSection from './sections/WishlistSection';
 import SavedUPISection from './sections/SavedUPISection';
 import SavedCardsSection from './sections/SavedCardsSection';
 import ManageAddressesDesktop from './sections/ManageAddressesDesktop';
+import AgrizinMoneySection from './sections/AgrizinMoneySection';
 
 type SidebarSection =
   | 'profile-info'
   | 'manage-addresses'
   | 'pan-card'
+  | 'agrizin-money'
   | 'gift-cards'
   | 'saved-upi'
   | 'saved-cards'
@@ -106,6 +108,7 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
           {/* PAYMENTS */}
           {sectionHeader(<CreditCard className="h-5 w-5" />, 'Payments')}
           <div className="border-b pb-1">
+            <span className={sidebarLinkClass('agrizin-money')} onClick={() => setActiveSection('agrizin-money')}>Agrizin Money</span>
             <span className={sidebarLinkClass('gift-cards')} onClick={() => setActiveSection('gift-cards')}>Gift Cards</span>
             <span className={sidebarLinkClass('saved-upi')} onClick={() => setActiveSection('saved-upi')}>Saved UPI</span>
             <span className={sidebarLinkClass('saved-cards')} onClick={() => setActiveSection('saved-cards')}>Saved Cards</span>
@@ -143,6 +146,7 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
           {activeSection === 'profile-info' && <ProfileInformation profile={profile} userEmail={userEmail} userId={userId} onProfileUpdate={onProfileUpdate} />}
           {activeSection === 'manage-addresses' && <ManageAddressesDesktop userId={userId} />}
           {activeSection === 'pan-card' && <PanCardSection userId={userId} />}
+          {activeSection === 'agrizin-money' && <AgrizinMoneySection />}
           {activeSection === 'gift-cards' && <GiftCardsSection />}
           {activeSection === 'coupons' && <CouponsSection />}
           {activeSection === 'notifications' && <NotificationsSection userId={userId} />}

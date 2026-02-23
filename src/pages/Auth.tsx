@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ const Auth = () => {
   const { user, session, loading, redirectAfterLogin, setRedirectAfterLogin, sendOTP, verifyOTP, testLogin } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [loginForm, setLoginForm] = useState({
     email: '',
@@ -30,8 +31,17 @@ const Auth = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    referralCode: ''
   });
+
+  // Auto-fill referral code from URL
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    if (ref) {
+      setSignupForm(prev => ({ ...prev, referralCode: ref.toUpperCase() }));
+    }
+  }, [searchParams]);
 
   const [otpStep, setOtpStep] = useState<'details' | 'otp'>('details');
   const [isLoading, setIsLoading] = useState(false);
@@ -156,7 +166,8 @@ const Auth = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            name: signupForm.name
+            name: signupForm.name,
+            referral_code: signupForm.referralCode || undefined
           }
         }
       });
@@ -170,12 +181,27 @@ const Auth = () => {
         return;
       }
 
+      // Process referral code if provided
+      if (signupForm.referralCode && data?.user?.id) {
+        try {
+          const { supabase: sb } = await import('@/integrations/supabase/client');
+          await sb.functions.invoke('process-referral', {
+            body: {
+              referral_code: signupForm.referralCode,
+              new_user_id: data.user.id,
+            },
+          });
+        } catch (refErr) {
+          console.error('Referral processing error:', refErr);
+        }
+      }
+
       toast({
         title: "Signup Successful",
         description: "Please check your email to verify your account.",
       });
 
-      setSignupForm({ name: '', email: '', password: '', confirmPassword: '' });
+      setSignupForm({ name: '', email: '', password: '', confirmPassword: '', referralCode: '' });
     } catch (error) {
       console.error('Signup error:', error);
       toast({
@@ -578,8 +604,18 @@ const Auth = () => {
                         required
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="signup-referral" className="text-sm">Referral Code (Optional)</Label>
+                      <Input
+                        id="signup-referral"
+                        type="text"
+                        placeholder="Enter referral code"
+                        value={signupForm.referralCode}
+                        onChange={(e) => setSignupForm({ ...signupForm, referralCode: e.target.value.toUpperCase() })}
+                        className="text-sm font-mono"
+                      />
+                    </div>
                     <Button 
-                      type="submit" 
                       className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-medium py-3"
                       disabled={isLoading}
                     >

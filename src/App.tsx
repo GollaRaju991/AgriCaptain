@@ -37,6 +37,7 @@ import SavedUPI from "./pages/SavedUPI";
 import SavedCards from "./pages/SavedCards";
 import SavedAddresses from "./pages/SavedAddresses";
 import EditProfilePage from "./pages/EditProfilePage";
+import AgrizinMoney from "./pages/AgrizinMoney";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
@@ -89,6 +90,7 @@ const App = () => (
                     <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                     <Route path="/refund-policy" element={<RefundPolicy />} />
                     <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                    <Route path="/agrizin-money" element={<AgrizinMoney />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
