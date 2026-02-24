@@ -1,6 +1,5 @@
 
 import { supabase } from '@/integrations/supabase/client';
-import { hostingerApi, OrderData } from './hostingerApi';
 
 interface DualOrderData {
   orderId: string;
@@ -22,14 +21,11 @@ interface DualOrderData {
 }
 
 class DualBackendService {
-  // Save order to both Supabase and Hostinger
   async saveOrderDual(orderData: DualOrderData): Promise<{ success: boolean; error?: string }> {
     try {
-      // Calculate estimated delivery (5 days from now)
       const estimatedDelivery = new Date();
       estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
 
-      // Initial tracking update
       const trackingUpdates = [
         {
           status: 'pending',
@@ -40,7 +36,6 @@ class DualBackendService {
         }
       ];
 
-      // Save to Supabase first (primary database)
       const { data: supabaseOrder, error: supabaseError } = await supabase
         .from('orders')
         .insert({
@@ -59,11 +54,10 @@ class DualBackendService {
         .single();
 
       if (supabaseError) {
-        console.error('Supabase order save error:', supabaseError);
-        throw new Error('Failed to save order to primary database');
+        console.error('Order save error:', supabaseError);
+        throw new Error('Failed to save order');
       }
 
-      // Create notification for new order
       await supabase
         .from('notifications')
         .insert({
@@ -75,70 +69,21 @@ class DualBackendService {
           action_url: '/orders'
         });
 
-      // Then save to Hostinger (backup/sync)
-      const hostingerOrderData: OrderData = {
-        orderId: orderData.orderId,
-        customerName: orderData.customerData.name,
-        customerEmail: orderData.customerData.email,
-        customerPhone: orderData.customerData.phone,
-        items: orderData.items,
-        totalAmount: orderData.totalAmount,
-        paymentMethod: orderData.paymentMethod,
-        address: orderData.address
-      };
-
-      const hostingerResult = await hostingerApi.saveOrder(hostingerOrderData);
-      
-      if (!hostingerResult.success) {
-        console.warn('Hostinger order save failed, but Supabase saved successfully:', hostingerResult.error);
-        // Don't fail the whole operation if Hostinger fails
-      }
-
       return { success: true };
     } catch (error) {
-      console.error('Dual backend save error:', error);
+      console.error('Order save error:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
 
-  // Send OTP with dual backend support
-  async sendOTPDual(phone: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      // Generate OTP
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      
-      // Try Supabase OTP first
-      const supabaseResult = await supabase.auth.signInWithOtp({
-        phone: phone.startsWith('+') ? phone : '+91' + phone
-      });
-
-      // Also send via Hostinger for backup
-      const hostingerResult = await hostingerApi.sendOTP(phone, otp);
-      
-      if (supabaseResult.error && !hostingerResult.success) {
-        return { success: false, error: 'Failed to send OTP via both services' };
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Dual OTP send error:', error);
-      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
-    }
-  }
-
-  // Sync order status to both services
   async updateOrderStatusDual(orderId: string, status: string): Promise<void> {
     try {
-      // Update in Supabase
       await supabase
         .from('orders')
         .update({ status })
         .eq('order_number', orderId);
-
-      // Update in Hostinger
-      await hostingerApi.updateOrderStatus(orderId, status);
     } catch (error) {
-      console.error('Dual status update error:', error);
+      console.error('Status update error:', error);
     }
   }
 }

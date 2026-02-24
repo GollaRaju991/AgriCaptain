@@ -239,22 +239,34 @@ export type Database = {
         Row: {
           created_at: string | null
           expires_at: string
+          failed_attempts: number
+          first_sent_at: string | null
+          last_attempt_at: string | null
           otp: string
           phone: string
+          send_count: number
           verified: boolean | null
         }
         Insert: {
           created_at?: string | null
           expires_at: string
+          failed_attempts?: number
+          first_sent_at?: string | null
+          last_attempt_at?: string | null
           otp: string
           phone: string
+          send_count?: number
           verified?: boolean | null
         }
         Update: {
           created_at?: string | null
           expires_at?: string
+          failed_attempts?: number
+          first_sent_at?: string | null
+          last_attempt_at?: string | null
           otp?: string
           phone?: string
+          send_count?: number
           verified?: boolean | null
         }
         Relationships: []
@@ -461,7 +473,9 @@ export type Database = {
     Functions: {
       cleanup_expired_otps: { Args: never; Returns: undefined }
       generate_gift_card_code: { Args: never; Returns: string }
+      generate_order_number: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      validate_referral_code: { Args: { code: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

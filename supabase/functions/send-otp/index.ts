@@ -4,12 +4,14 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface SendOTPRequest {
   phone: string;
 }
+
+const MAX_SEND_PER_HOUR = 3;
 
 // Validate phone number format (E.164)
 const isValidPhoneNumber = (phone: string): boolean => {
@@ -32,7 +34,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Validate phone number format
     if (!isValidPhoneNumber(phone)) {
       return new Response(
         JSON.stringify({ error: "Invalid phone number format. Please use E.164 format (e.g., +919876543210)" }),
@@ -40,17 +41,45 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Store OTP in Supabase with 10-minute expiry
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Create OTP verification table entry
-    const expiryTime = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    
+    // Rate limiting: check existing record
+    const { data: existing } = await supabase
+      .from("otp_verifications")
+      .select("send_count, first_sent_at")
+      .eq("phone", phone)
+      .maybeSingle();
+
+    if (existing) {
+      const firstSent = new Date(existing.first_sent_at);
+      const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
+      if (firstSent > hourAgo && existing.send_count >= MAX_SEND_PER_HOUR) {
+        return new Response(
+          JSON.stringify({ error: "Too many OTP requests. Please try again later." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiryTime = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Determine send_count and first_sent_at
+    let sendCount = 1;
+    let firstSentAt = new Date().toISOString();
+    if (existing) {
+      const firstSent = new Date(existing.first_sent_at);
+      const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      if (firstSent > hourAgo) {
+        sendCount = existing.send_count + 1;
+        firstSentAt = existing.first_sent_at;
+      }
+    }
+
     const { error: dbError } = await supabase
       .from("otp_verifications")
       .upsert({
@@ -58,7 +87,10 @@ const handler = async (req: Request): Promise<Response> => {
         otp: otp,
         expires_at: expiryTime.toISOString(),
         verified: false,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        failed_attempts: 0,
+        send_count: sendCount,
+        first_sent_at: firstSentAt,
       }, {
         onConflict: 'phone'
       });
@@ -79,18 +111,13 @@ const handler = async (req: Request): Promise<Response> => {
     if (!twilioAccountSid || !twilioAuthToken || !twilioPhoneNumber) {
       console.log("Twilio credentials not configured - OTP stored in database");
       return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: "OTP generated (SMS not configured)"
-        }),
+        JSON.stringify({ success: true, message: "OTP generated (SMS not configured)" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Twilio API call
     const message = `Your AgriCaptain OTP is: ${otp}. Valid for 10 minutes. Do not share with anyone.`;
     const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`;
-    
     const twilioAuth = btoa(`${twilioAccountSid}:${twilioAuthToken}`);
     
     const formData = new URLSearchParams({
@@ -111,21 +138,13 @@ const handler = async (req: Request): Promise<Response> => {
     if (!smsResponse.ok) {
       console.error("Twilio SMS sending failed");
       return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: "OTP generated (SMS delivery issue - check Twilio configuration)"
-        }),
+        JSON.stringify({ success: true, message: "OTP generated (SMS delivery issue)" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log("OTP sent successfully via Twilio");
-
     return new Response(
-      JSON.stringify({ 
-        success: true,
-        message: "OTP sent successfully"
-      }),
+      JSON.stringify({ success: true, message: "OTP sent successfully" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
