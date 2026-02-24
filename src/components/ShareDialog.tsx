@@ -67,9 +67,25 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ isOpen, onClose, productName,
     }
   ];
 
-  const handleShare = (platform: typeof socialPlatforms[0]) => {
+  const handleShare = async (platform: typeof socialPlatforms[0]) => {
+    // Try navigator.share first (works on mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: productName,
+          text: shareText,
+          url: productUrl,
+        });
+        onClose();
+        return;
+      } catch (e) {
+        // User cancelled or not supported, fall through
+      }
+    }
+
+    // Fallback: platform-specific URL or copy
     if (platform.url) {
-      window.open(platform.url, '_blank', 'width=600,height=400');
+      window.open(platform.url, '_blank', 'noopener,noreferrer,width=600,height=400');
     } else {
       handleCopyLink();
       toast({
