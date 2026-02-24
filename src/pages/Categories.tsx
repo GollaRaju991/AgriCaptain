@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Sprout, Droplet, Wrench, Award, CreditCard, 
   Carrot, Apple, Flower2, Wheat, Leaf, FlaskConical, Bug, Sparkles,
   ShieldAlert, Target, Spline, CircleDot, TrendingUp, SprayCan, Droplets, Scissors,
-  Factory, Building2, Atom, Zap, Star, Search, Camera, ArrowLeft
+  Factory, Building2, Atom, Zap, Star, Search, Camera, ArrowLeft,
+  Users, Truck, BarChart3
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import FarmWorkerDialog from '@/components/FarmWorkerDialog';
+import RentVehicleDialog from '@/components/RentVehicleDialog';
 
 interface SubCategory {
   name: string;
@@ -22,11 +25,16 @@ interface Category {
   icon: React.ElementType;
   image: string;
   subcategories: SubCategory[];
+  action?: string;
+  actionPath?: string;
 }
 
 const Categories = () => {
   const { translations } = useLanguage();
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('seeds');
+  const [farmWorkerOpen, setFarmWorkerOpen] = useState(false);
+  const [rentVehicleOpen, setRentVehicleOpen] = useState(false);
 
   const categories: Category[] = [
     {
@@ -94,9 +102,46 @@ const Categories = () => {
         { name: 'Kisan Credit Card', path: '/loans?type=kcc', icon: CreditCard, image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp' },
       ]
     },
+    {
+      id: 'market-details',
+      name: 'Market Details',
+      icon: BarChart3,
+      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      action: 'navigate',
+      actionPath: '/market-details',
+      subcategories: []
+    },
+    {
+      id: 'farm-worker',
+      name: 'Farm Worker',
+      icon: Users,
+      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      action: 'farmWorker',
+      subcategories: []
+    },
+    {
+      id: 'rent-vehicles',
+      name: 'Rent Vehicles',
+      icon: Truck,
+      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      action: 'rentVehicle',
+      subcategories: []
+    },
   ];
 
   const activeCategoryData = categories.find(c => c.id === activeCategory);
+
+  const handleCategoryClick = (category: any) => {
+    if (category.action === 'farmWorker') {
+      setFarmWorkerOpen(true);
+    } else if (category.action === 'rentVehicle') {
+      setRentVehicleOpen(true);
+    } else if (category.action === 'navigate') {
+      navigate(category.actionPath);
+    } else {
+      setActiveCategory(category.id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -133,7 +178,7 @@ const Categories = () => {
             return (
               <button
                 key={category.id}
-                onClick={() => setActiveCategory(category.id)}
+                onClick={() => handleCategoryClick(category)}
                 className={`w-full p-3 flex flex-col items-center gap-2 border-l-4 transition-all ${
                   isActive 
                     ? 'bg-white border-l-green-600 text-green-600' 
@@ -161,7 +206,7 @@ const Categories = () => {
 
         {/* Right Content - Subcategories */}
         <div className="flex-1 bg-white p-4 overflow-y-auto">
-          {activeCategoryData && (
+          {activeCategoryData && activeCategoryData.subcategories.length > 0 && (
             <>
               <h2 className="text-lg font-semibold text-gray-800 mb-4">
                 {activeCategoryData.name}
@@ -191,7 +236,6 @@ const Categories = () => {
                 })}
               </div>
 
-              {/* Shop All Button */}
               <Link 
                 to={`/products?category=${activeCategoryData.id}`}
                 className="mt-6 block w-full bg-green-600 text-white text-center py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
@@ -204,6 +248,8 @@ const Categories = () => {
       </div>
 
       <MobileBottomNav />
+      <FarmWorkerDialog open={farmWorkerOpen} onOpenChange={setFarmWorkerOpen} />
+      <RentVehicleDialog open={rentVehicleOpen} onOpenChange={setRentVehicleOpen} />
     </div>
   );
 };
