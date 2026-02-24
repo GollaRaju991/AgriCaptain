@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface VerifyOTPRequest {
@@ -13,13 +13,13 @@ interface VerifyOTPRequest {
   name?: string;
 }
 
-// Validate phone number format (E.164)
+const MAX_FAILED_ATTEMPTS = 5;
+
 const isValidPhoneNumber = (phone: string): boolean => {
   const e164Regex = /^\+[1-9]\d{1,14}$/;
   return e164Regex.test(phone) && phone.length >= 10 && phone.length <= 16;
 };
 
-// Validate OTP format (6 digits)
 const isValidOTP = (otp: string): boolean => {
   return /^\d{6}$/.test(otp);
 };
@@ -39,7 +39,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Validate phone number format
     if (!isValidPhoneNumber(phone)) {
       return new Response(
         JSON.stringify({ error: "Invalid phone number format" }),
@@ -47,7 +46,6 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Validate OTP format
     if (!isValidOTP(otp)) {
       return new Response(
         JSON.stringify({ error: "Invalid OTP format. Must be 6 digits." }),
@@ -68,63 +66,60 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (fetchError || !otpRecord) {
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "No OTP found for this phone number" 
-        }),
+        JSON.stringify({ success: false, error: "No OTP found for this phone number" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Check if OTP is expired
-    const now = new Date();
-    const expiryTime = new Date(otpRecord.expires_at);
-    
-    if (now > expiryTime) {
+    // Check rate limiting on failed attempts
+    if (otpRecord.failed_attempts >= MAX_FAILED_ATTEMPTS) {
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "OTP has expired. Please request a new one." 
-        }),
+        JSON.stringify({ success: false, error: "Too many failed attempts. Please request a new OTP." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check expiry
+    if (new Date() > new Date(otpRecord.expires_at)) {
+      return new Response(
+        JSON.stringify({ success: false, error: "OTP has expired. Please request a new one." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Check if OTP already verified
+    // Check if already verified
     if (otpRecord.verified) {
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "OTP already used" 
-        }),
+        JSON.stringify({ success: false, error: "OTP already used" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Verify OTP
+    // Verify OTP - increment failed_attempts on mismatch
     if (otpRecord.otp !== otp) {
+      await supabase
+        .from("otp_verifications")
+        .update({ 
+          failed_attempts: otpRecord.failed_attempts + 1,
+          last_attempt_at: new Date().toISOString()
+        })
+        .eq("phone", phone);
+
       return new Response(
-        JSON.stringify({ 
-          success: false, 
-          error: "Invalid OTP" 
-        }),
+        JSON.stringify({ success: false, error: "Invalid OTP" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     // Mark OTP as verified
-    const { error: updateError } = await supabase
+    await supabase
       .from("otp_verifications")
       .update({ verified: true })
       .eq("phone", phone);
 
-    if (updateError) {
-      console.error("Error updating OTP status");
-    }
-
-    // Create or get user by phone
+    // Use cryptographically secure random password
+    const testPassword = crypto.randomUUID() + crypto.randomUUID();
     const testEmail = `user_${phone.replace(/\+/g, '')}@agricaptain.app`;
-    const testPassword = `otp_${phone}_${Date.now()}`;
 
     // Try to sign up
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -140,17 +135,15 @@ const handler = async (req: Request): Promise<Response> => {
 
     // If user exists, sign in
     if (signUpError?.message.includes('already registered')) {
-      // Get the existing user
       const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
       const existingUser = users?.find(u => u.email === testEmail);
 
       if (existingUser && !listError) {
-        // Update user metadata with new name and password
         const { error: adminError } = await supabase.auth.admin.updateUserById(existingUser.id, {
           password: testPassword,
           user_metadata: {
             phone: phone,
-            name: name || 'User'
+            name: name || existingUser.user_metadata?.name || 'User'
           }
         });
 
@@ -173,41 +166,29 @@ const handler = async (req: Request): Promise<Response> => {
         }
       }
 
-      // Fallback: try regular sign in
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      // Fallback
+      const { data: signInData } = await supabase.auth.signInWithPassword({
         email: testEmail,
         password: testPassword
       });
 
       if (signInData?.session) {
         return new Response(
-          JSON.stringify({ 
-            success: true,
-            session: signInData.session,
-            user: signInData.user
-          }),
+          JSON.stringify({ success: true, session: signInData.session, user: signInData.user }),
           { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
     }
 
-    // Return success with session
     if (signUpData?.session) {
       return new Response(
-        JSON.stringify({ 
-          success: true,
-          session: signUpData.session,
-          user: signUpData.user
-        }),
+        JSON.stringify({ success: true, session: signUpData.session, user: signUpData.user }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true,
-        message: "OTP verified successfully"
-      }),
+      JSON.stringify({ success: true, message: "OTP verified successfully" }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 

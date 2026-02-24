@@ -14,6 +14,7 @@ import useScrollToTop from '@/hooks/useScrollToTop';
 import { supabase } from '@/integrations/supabase/client';
 import { dualBackendService } from '@/services/dualBackendService';
 
+
 interface Address {
   id: string;
   name: string;
@@ -284,7 +285,7 @@ const Checkout = () => {
 
     try {
       const orderDetails = {
-        orderNumber: '#AG' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        orderNumber: '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase(),
         date: new Date().toLocaleDateString('en-IN', { 
           year: 'numeric', 
           month: 'long', 
