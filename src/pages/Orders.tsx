@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar, Search } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +13,7 @@ import type { Json } from '@/integrations/supabase/types';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { toast } from 'sonner';
 import OrderTracking from '@/components/OrderTracking';
+import OrderFilters from '@/components/OrderFilters';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -65,6 +66,9 @@ const Orders = () => {
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [trackingOrderId, setTrackingOrderId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilters, setStatusFilters] = useState<string[]>([]);
+  const [timeFilter, setTimeFilter] = useState('');
 
   // Make scroll to top optional - only scroll when coming from external navigation
   useScrollToTop(false);
@@ -284,19 +288,86 @@ const Orders = () => {
 
   const trackingOrder = orders.find(o => o.id === trackingOrderId);
 
+  // Filter + search logic
+  const filteredOrders = useMemo(() => {
+    let result = orders;
+
+    // Search by order number or item name
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(order => {
+        const matchesNumber = order.order_number.toLowerCase().includes(q);
+        const items = Array.isArray(order.items) ? order.items : [];
+        const matchesItem = items.some((item: any) =>
+          item?.name?.toLowerCase?.()?.includes(q)
+        );
+        return matchesNumber || matchesItem;
+      });
+    }
+
+    // Status filters
+    if (statusFilters.length > 0) {
+      result = result.filter(order => statusFilters.includes(order.status));
+    }
+
+    // Time filter
+    if (timeFilter) {
+      const now = new Date();
+      result = result.filter(order => {
+        const orderDate = new Date(order.created_at);
+        switch (timeFilter) {
+          case 'last30': {
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return orderDate >= thirtyDaysAgo;
+          }
+          case '2026':
+            return orderDate.getFullYear() === 2026;
+          case '2025':
+            return orderDate.getFullYear() === 2025;
+          case 'older':
+            return orderDate.getFullYear() < 2025;
+          default:
+            return true;
+        }
+      });
+    }
+
+    return result;
+  }, [orders, searchQuery, statusFilters, timeFilter]);
+
+  const hasActiveFilters = statusFilters.length > 0 || timeFilter !== '';
+
+  const clearAllFilters = () => {
+    setStatusFilters([]);
+    setTimeFilter('');
+    setSearchQuery('');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Orders</h1>
-          <p className="text-gray-600">Track and manage your AgriCaptain orders securely</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Your Orders</h1>
+          <p className="text-muted-foreground">Track and manage your AgriCaptain orders securely</p>
         </div>
 
-        {orders.length > 0 ? (
+        <OrderFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          statusFilters={statusFilters}
+          onStatusFiltersChange={setStatusFilters}
+          timeFilter={timeFilter}
+          onTimeFilterChange={setTimeFilter}
+          onClearFilters={clearAllFilters}
+          hasActiveFilters={hasActiveFilters}
+        />
+
+        {filteredOrders.length > 0 ? (
           <div className="space-y-6">
-            {orders.map((order) => {
+            {filteredOrders.map((order) => {
               const shippingAddress = getShippingAddress(order.shipping_address);
               const orderItems = getOrderItems(order.items);
               const isExpanded = expandedOrder === order.id;
@@ -539,12 +610,21 @@ const Orders = () => {
               );
             })}
           </div>
+        ) : orders.length > 0 ? (
+          <Card>
+            <CardContent className="text-center py-16">
+              <Search className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">No matching orders</h3>
+              <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
+              <Button variant="outline" onClick={clearAllFilters}>Clear Filters</Button>
+            </CardContent>
+          </Card>
         ) : (
           <Card>
             <CardContent className="text-center py-16">
-              <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No orders yet</h3>
-              <p className="text-gray-600 mb-6">You haven't placed any orders with AgriCaptain yet.</p>
+              <Package className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground mb-2">No orders yet</h3>
+              <p className="text-muted-foreground mb-6">You haven't placed any orders with AgriCaptain yet.</p>
               <Button>Start Shopping</Button>
             </CardContent>
           </Card>
