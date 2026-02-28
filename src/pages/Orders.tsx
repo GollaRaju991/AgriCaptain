@@ -81,7 +81,6 @@ const Orders = () => {
         .from('orders')
         .select('*')
         .eq('user_id', user?.id)
-        .neq('status', 'cancelled') // Filter out cancelled orders
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -451,9 +450,9 @@ const Orders = () => {
                       {order.status === 'cancelled' && (
                         <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
                           <XCircle className="h-4 w-4 shrink-0" />
-                          <span>
-                            This order has been cancelled.
-                            {order.payment_status === 'refunded' && ' Refund has been initiated.'}
+                          <span className="font-medium">
+                            Order was Cancelled
+                            {order.payment_status === 'refunded' && ' — Refund has been initiated.'}
                           </span>
                         </div>
                       )}
