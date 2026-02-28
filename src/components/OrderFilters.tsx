@@ -27,6 +27,7 @@ const STATUS_OPTIONS = [
   { value: 'shipped', label: 'On the way' },
   { value: 'delivered', label: 'Delivered' },
   { value: 'cancelled', label: 'Cancelled' },
+  { value: 'returned', label: 'Returned' },
 ];
 
 const TIME_OPTIONS = [

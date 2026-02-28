@@ -5,7 +5,7 @@ import MobileBottomNav from "@/components/MobileBottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar, Search } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar, Search, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -66,6 +66,7 @@ const Orders = () => {
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [trackingOrderId, setTrackingOrderId] = useState<string | null>(null);
+  const [returningOrderId, setReturningOrderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [timeFilter, setTimeFilter] = useState('');
@@ -164,6 +165,8 @@ const Orders = () => {
         return 'bg-gray-100 text-gray-800';
       case 'cancelled':
         return 'bg-red-100 text-red-800';
+      case 'returned':
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -179,6 +182,8 @@ const Orders = () => {
         return <Clock className="h-4 w-4 text-yellow-600" />;
       case 'cancelled':
         return <XCircle className="h-4 w-4 text-red-600" />;
+      case 'returned':
+        return <RotateCcw className="h-4 w-4 text-orange-600" />;
       default:
         return <Package className="h-4 w-4 text-gray-600" />;
     }
@@ -186,7 +191,7 @@ const Orders = () => {
 
   // Check if order can be cancelled (within 24 hours)
   const canCancelOrder = (order: Order): boolean => {
-    if (order.status === 'cancelled' || order.status === 'delivered' || order.status === 'shipped') {
+    if (order.status === 'cancelled' || order.status === 'delivered' || order.status === 'shipped' || order.status === 'returned') {
       return false;
     }
     const orderDate = new Date(order.created_at);
@@ -267,6 +272,64 @@ const Orders = () => {
       toast.error('Failed to cancel order. Please try again.');
     } finally {
       setCancellingOrderId(null);
+    }
+  };
+
+  // Check if order can be returned (delivered within 7 days)
+  const canReturnOrder = (order: Order): boolean => {
+    if (order.status !== 'delivered') return false;
+    const deliveredDate = new Date(order.updated_at);
+    const now = new Date();
+    const daysDiff = (now.getTime() - deliveredDate.getTime()) / (1000 * 60 * 60 * 24);
+    return daysDiff <= 7;
+  };
+
+  const getReturnTimeRemaining = (order: Order): string => {
+    const deliveredDate = new Date(order.updated_at);
+    const deadline = new Date(deliveredDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+    if (daysRemaining <= 0) return 'Return window expired';
+    return `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} left to return`;
+  };
+
+  // Handle order return
+  const handleReturnOrder = async (order: Order) => {
+    setReturningOrderId(order.id);
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          status: 'returned',
+          payment_status: 'refunded'
+        })
+        .eq('id', order.id);
+
+      if (error) {
+        toast.error('Failed to initiate return. Please try again.');
+        return;
+      }
+
+      await supabase
+        .from('notifications')
+        .insert({
+          user_id: user?.id,
+          order_id: order.id,
+          type: 'order',
+          title: 'Return Initiated',
+          message: `Return initiated for order #${order.order_number}. ₹${order.total_amount} will be refunded within 5-7 business days.`,
+          action_url: '/orders'
+        });
+
+      await fetchOrders();
+      toast.success(
+        `Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`,
+        { duration: 6000 }
+      );
+    } catch (error) {
+      toast.error('Failed to initiate return. Please try again.');
+    } finally {
+      setReturningOrderId(null);
     }
   };
 
@@ -512,6 +575,22 @@ const Orders = () => {
                         </div>
                       )}
 
+                      {order.status === 'returned' && (
+                        <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-sm">
+                          <RotateCcw className="h-4 w-4 shrink-0" />
+                          <span className="font-medium">
+                            Order was Returned — Refund has been initiated.
+                          </span>
+                        </div>
+                      )}
+
+                      {canReturnOrder(order) && (
+                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm">
+                          <RotateCcw className="h-4 w-4 shrink-0" />
+                          <span>{getReturnTimeRemaining(order)}</span>
+                        </div>
+                      )}
+
                       <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-4">
                         <Button 
                           variant="outline" 
@@ -523,7 +602,7 @@ const Orders = () => {
                           <span>{isExpanded ? 'Hide Details' : 'View Details'}</span>
                         </Button>
                         
-                        {order.status !== 'cancelled' && (
+                        {order.status !== 'cancelled' && order.status !== 'returned' && (
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -582,6 +661,46 @@ const Orders = () => {
                                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
                                   Yes, Cancel Order
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+
+                        {canReturnOrder(order) && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="flex items-center space-x-1 border-orange-300 text-orange-700 hover:bg-orange-50"
+                                disabled={returningOrderId === order.id}
+                              >
+                                {returningOrderId === order.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <RotateCcw className="h-4 w-4" />
+                                )}
+                                <span>Return Order</span>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Return Order #{order.order_number}?</AlertDialogTitle>
+                                <AlertDialogDescription className="space-y-2">
+                                  <p>Are you sure you want to return this order?</p>
+                                  <p className="font-medium text-green-600">
+                                    ₹{order.total_amount} will be refunded to your original payment method within 5-7 business days.
+                                  </p>
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Keep Order</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleReturnOrder(order)}
+                                  className="bg-orange-500 text-white hover:bg-orange-600"
+                                >
+                                  Yes, Return Order
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
