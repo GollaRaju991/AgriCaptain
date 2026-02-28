@@ -100,6 +100,46 @@ const Orders = () => {
     }
   };
 
+  // Filter + search logic (must be before early returns)
+  const filteredOrders = useMemo(() => {
+    let result = orders;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(order => {
+        const matchesNumber = order.order_number.toLowerCase().includes(q);
+        const items = Array.isArray(order.items) ? order.items : [];
+        const matchesItem = items.some((item: any) =>
+          item?.name?.toLowerCase?.()?.includes(q)
+        );
+        return matchesNumber || matchesItem;
+      });
+    }
+    if (statusFilters.length > 0) {
+      result = result.filter(order => statusFilters.includes(order.status));
+    }
+    if (timeFilter) {
+      const now = new Date();
+      result = result.filter(order => {
+        const orderDate = new Date(order.created_at);
+        switch (timeFilter) {
+          case 'last30': {
+            const thirtyDaysAgo = new Date(now);
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return orderDate >= thirtyDaysAgo;
+          }
+          case '2026': return orderDate.getFullYear() === 2026;
+          case '2025': return orderDate.getFullYear() === 2025;
+          case 'older': return orderDate.getFullYear() < 2025;
+          default: return true;
+        }
+      });
+    }
+    return result;
+  }, [orders, searchQuery, statusFilters, timeFilter]);
+
+  const hasActiveFilters = statusFilters.length > 0 || timeFilter !== '';
+  const clearAllFilters = () => { setStatusFilters([]); setTimeFilter(''); setSearchQuery(''); };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -287,62 +327,6 @@ const Orders = () => {
   };
 
   const trackingOrder = orders.find(o => o.id === trackingOrderId);
-
-  // Filter + search logic
-  const filteredOrders = useMemo(() => {
-    let result = orders;
-
-    // Search by order number or item name
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(order => {
-        const matchesNumber = order.order_number.toLowerCase().includes(q);
-        const items = Array.isArray(order.items) ? order.items : [];
-        const matchesItem = items.some((item: any) =>
-          item?.name?.toLowerCase?.()?.includes(q)
-        );
-        return matchesNumber || matchesItem;
-      });
-    }
-
-    // Status filters
-    if (statusFilters.length > 0) {
-      result = result.filter(order => statusFilters.includes(order.status));
-    }
-
-    // Time filter
-    if (timeFilter) {
-      const now = new Date();
-      result = result.filter(order => {
-        const orderDate = new Date(order.created_at);
-        switch (timeFilter) {
-          case 'last30': {
-            const thirtyDaysAgo = new Date(now);
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            return orderDate >= thirtyDaysAgo;
-          }
-          case '2026':
-            return orderDate.getFullYear() === 2026;
-          case '2025':
-            return orderDate.getFullYear() === 2025;
-          case 'older':
-            return orderDate.getFullYear() < 2025;
-          default:
-            return true;
-        }
-      });
-    }
-
-    return result;
-  }, [orders, searchQuery, statusFilters, timeFilter]);
-
-  const hasActiveFilters = statusFilters.length > 0 || timeFilter !== '';
-
-  const clearAllFilters = () => {
-    setStatusFilters([]);
-    setTimeFilter('');
-    setSearchQuery('');
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
