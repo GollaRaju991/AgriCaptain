@@ -459,17 +459,40 @@ const Orders = () => {
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">Items Ordered:</p>
-                          <div className="text-sm text-gray-600">
-                            {getItemsCount(order.items)} item(s)
+                      {/* Flipkart-style individual product items */}
+                      <div className="space-y-3">
+                        {orderItems.length > 0 ? orderItems.map((item: any, index: number) => (
+                          <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                            <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-white rounded-md border border-gray-100 overflow-hidden">
+                              <img 
+                                src={item.image || '/placeholder.svg'} 
+                                alt={item.name || 'Product'} 
+                                className="w-full h-full object-contain p-1"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm md:text-base text-gray-900 line-clamp-2">{item.name || `Item ${index + 1}`}</p>
+                              <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+                                Qty: {item.quantity || 1} × ₹{(item.price || 0).toLocaleString()}
+                              </p>
+                              <p className="font-semibold text-sm md:text-base mt-1">₹{((item.quantity || 1) * (item.price || 0)).toLocaleString()}</p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm text-gray-600">Payment: {order.payment_status}</p>
-                          <p className="font-bold text-lg">₹{order.total_amount}</p>
-                        </div>
+                        )) : (
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">Items Ordered:</p>
+                              <div className="text-sm text-muted-foreground">{getItemsCount(order.items)} item(s)</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                        <p className="text-sm text-muted-foreground">
+                          {getItemsCount(order.items)} item(s) · Payment: {order.payment_status}
+                        </p>
+                        <p className="font-bold text-lg">₹{order.total_amount.toLocaleString()}</p>
                       </div>
 
                       {isExpanded && (
