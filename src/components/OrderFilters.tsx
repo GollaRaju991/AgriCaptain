@@ -121,23 +121,23 @@ const OrderFilters: React.FC<OrderFiltersProps> = ({
           {statusFilters.map(s => {
             const label = STATUS_OPTIONS.find(o => o.value === s)?.label || s;
             return (
-              <span key={s} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+              <span key={s} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-green-600 text-white text-xs font-medium min-h-[40px] shadow-sm hover:bg-green-700 transition-colors cursor-default">
                 {label}
-                <button onClick={() => onStatusFiltersChange(statusFilters.filter(f => f !== s))}>
-                  <X className="h-3 w-3" />
+                <button onClick={() => onStatusFiltersChange(statusFilters.filter(f => f !== s))} className="hover:opacity-80">
+                  <X className="h-3.5 w-3.5" />
                 </button>
               </span>
             );
           })}
           {timeFilter && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md bg-green-600 text-white text-xs font-medium min-h-[40px] shadow-sm hover:bg-green-700 transition-colors cursor-default">
               {TIME_OPTIONS.find(o => o.value === timeFilter)?.label || timeFilter}
-              <button onClick={() => onTimeFilterChange('')}>
-                <X className="h-3 w-3" />
+              <button onClick={() => onTimeFilterChange('')} className="hover:opacity-80">
+                <X className="h-3.5 w-3.5" />
               </button>
             </span>
           )}
-          <button onClick={onClearFilters} className="text-xs text-destructive font-medium ml-1">
+          <button onClick={onClearFilters} className="inline-flex items-center px-3 py-2 rounded-md bg-destructive text-destructive-foreground text-xs font-medium min-h-[40px] shadow-sm hover:bg-destructive/90 transition-colors">
             Clear All
           </button>
         </div>
