@@ -166,8 +166,8 @@ const OrderFilters: React.FC<OrderFiltersProps> = ({
                       onClick={() => toggleTempStatus(opt.value)}
                       className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-sm transition-colors ${
                         isActive
-                          ? 'border-primary bg-primary/10 text-primary font-medium'
-                          : 'border-border text-muted-foreground hover:border-primary/50'
+                          ? 'border-green-600 bg-green-600 text-white font-medium'
+                          : 'border-destructive/40 text-destructive hover:border-destructive'
                       }`}
                     >
                       {opt.label}
@@ -190,8 +190,8 @@ const OrderFilters: React.FC<OrderFiltersProps> = ({
                       onClick={() => setTempTime(isActive ? '' : opt.value)}
                       className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border text-sm transition-colors ${
                         isActive
-                          ? 'border-primary bg-primary/10 text-primary font-medium'
-                          : 'border-border text-muted-foreground hover:border-primary/50'
+                          ? 'border-green-600 bg-green-600 text-white font-medium'
+                          : 'border-destructive/40 text-destructive hover:border-destructive'
                       }`}
                     >
                       {opt.label}
