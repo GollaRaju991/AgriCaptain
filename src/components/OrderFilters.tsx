@@ -207,7 +207,7 @@ const OrderFilters: React.FC<OrderFiltersProps> = ({
             <Button variant="outline" className="flex-1" onClick={() => setSheetOpen(false)}>
               Cancel
             </Button>
-            <Button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white" onClick={applyFilters}>
+            <Button className="flex-1 bg-green-600 hover:bg-green-700 text-white" onClick={applyFilters}>
               Apply
             </Button>
           </SheetFooter>
