@@ -157,66 +157,6 @@ const OrderConfirmation = () => {
           </CardContent>
         </Card>
 
-        {/* Next Steps */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <h3 className="font-semibold mb-4">What's Next?</h3>
-            <div className="space-y-3">
-              <div className="flex items-start space-x-3">
-                <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-blue-600 font-bold text-sm">1</span>
-                </div>
-                <div>
-                  <p className="font-medium">Order Confirmation</p>
-                  <p className="text-sm text-gray-600">You will receive a confirmation message shortly with your order details.</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="bg-yellow-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-yellow-600 font-bold text-sm">2</span>
-                </div>
-                <div>
-                  <p className="font-medium">Processing & Shipping</p>
-                  <p className="text-sm text-gray-600">Once your items are shipped, we'll notify you with tracking information.</p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <div className="bg-green-100 rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0 mt-1">
-                  <span className="text-green-600 font-bold text-sm">3</span>
-                </div>
-                <div>
-                  <p className="font-medium">Delivery</p>
-                  <p className="text-sm text-gray-600">Your order will be delivered to your doorstep within the expected timeframe.</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Support Section */}
-        <Card className="mb-8">
-          <CardContent className="p-6 text-center">
-            <h3 className="font-semibold mb-4">Need Help?</h3>
-            <p className="text-gray-600 mb-4">If you have any questions, feel free to contact our support team.</p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button variant="outline" className="flex items-center">
-                <Phone className="h-4 w-4 mr-2" />
-                Call Support
-              </Button>
-              <Button variant="outline" className="flex items-center">
-                <Mail className="h-4 w-4 mr-2" />
-                Email Support
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Thank You Message */}
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-green-600 mb-2">
-            Thank you for choosing AgriCaptain — we're proud to support your farming journey! 🌾
-          </h2>
-        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
