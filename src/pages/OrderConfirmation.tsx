@@ -163,7 +163,7 @@ const OrderConfirmation = () => {
           <Button onClick={() => navigate('/products')} className="bg-green-600 hover:bg-green-700">
             Continue Shopping
           </Button>
-          <Button onClick={() => navigate('/profile')} variant="outline">
+          <Button onClick={() => navigate('/orders')} variant="outline">
             View Order History
           </Button>
           <Button onClick={() => navigate('/')} variant="outline" className="flex items-center">
