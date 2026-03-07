@@ -409,6 +409,51 @@ export type Database = {
         }
         Relationships: []
       }
+      sellers: {
+        Row: {
+          aadhaar_number: string
+          address: string
+          created_at: string
+          id: string
+          name: string
+          phone: string
+          photo_url: string | null
+          pincode: string
+          seller_type: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aadhaar_number: string
+          address: string
+          created_at?: string
+          id?: string
+          name: string
+          phone: string
+          photo_url?: string | null
+          pincode: string
+          seller_type: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          aadhaar_number?: string
+          address?: string
+          created_at?: string
+          id?: string
+          name?: string
+          phone?: string
+          photo_url?: string | null
+          pincode?: string
+          seller_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       wallet_transactions: {
         Row: {
           amount: number
