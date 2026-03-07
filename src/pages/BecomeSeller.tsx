@@ -8,15 +8,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Wheat, Store, Upload, X, User, Phone, MapPin, CreditCard, Hash } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, CreditCard, Hash } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
+import agricultureImg from '@/assets/agriculture-products.png';
+import farmersMarketImg from '@/assets/farmers-market.png';
 
 type SellerType = 'agriculture_products' | 'farmers_market';
 
 const BecomeSeller = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { translations: t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedType, setSelectedType] = useState<SellerType | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -100,19 +104,15 @@ const BecomeSeller = () => {
   const sellerOptions = [
     {
       type: 'agriculture_products' as SellerType,
-      title: 'Agriculture Products',
-      description: 'Sell seeds, fertilizers, pesticides, tools & equipment',
-      icon: Wheat,
-      gradient: 'from-emerald-500 to-green-600',
-      bgLight: 'bg-emerald-50',
+      titleKey: 'seller_agriculture_title',
+      descKey: 'seller_agriculture_desc',
+      image: agricultureImg,
     },
     {
       type: 'farmers_market' as SellerType,
-      title: "Farmer's Market",
-      description: 'Sell fresh produce, grains, fruits & vegetables directly',
-      icon: Store,
-      gradient: 'from-amber-500 to-orange-600',
-      bgLight: 'bg-amber-50',
+      titleKey: 'seller_market_title',
+      descKey: 'seller_market_desc',
+      image: farmersMarketImg,
     },
   ];
 
@@ -124,35 +124,39 @@ const BecomeSeller = () => {
         {!selectedType ? (
           <>
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Become a Seller</h1>
-              <p className="text-muted-foreground">Choose your selling category to get started</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                {t['become_seller_title'] || 'Become a Seller'}
+              </h1>
+              <p className="text-muted-foreground">
+                {t['become_seller_subtitle'] || 'Choose your selling category to get started'}
+              </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {sellerOptions.map((option) => {
-                const Icon = option.icon;
-                return (
-                  <Card
-                    key={option.type}
-                    className="cursor-pointer group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary overflow-hidden"
-                    onClick={() => setSelectedType(option.type)}
-                  >
-                    <CardContent className="p-0">
-                      <div className={`bg-gradient-to-br ${option.gradient} p-8 flex items-center justify-center`}>
-                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-5">
-                          <Icon className="h-12 w-12 text-white" />
-                        </div>
-                      </div>
-                      <div className="p-6 text-center">
-                        <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                          {option.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">{option.description}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              {sellerOptions.map((option) => (
+                <Card
+                  key={option.type}
+                  className="cursor-pointer group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary overflow-hidden rounded-2xl"
+                  onClick={() => setSelectedType(option.type)}
+                >
+                  <CardContent className="p-0">
+                    <div className="w-full aspect-square overflow-hidden">
+                      <img
+                        src={option.image}
+                        alt={t[option.titleKey]}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-5 text-center">
+                      <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
+                        {t[option.titleKey]}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">{t[option.descKey]}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </>
         ) : (
@@ -161,60 +165,68 @@ const BecomeSeller = () => {
               onClick={() => setSelectedType(null)}
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
             >
-              <ArrowLeft className="h-4 w-4" /> Back to options
+              <ArrowLeft className="h-4 w-4" /> {t['seller_back'] || 'Back to options'}
             </button>
 
-            <Card>
+            <Card className="rounded-2xl">
               <CardContent className="p-6 sm:p-8">
                 <div className="text-center mb-6">
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-4 ${
-                    selectedType === 'agriculture_products' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                  }`}>
-                    {selectedType === 'agriculture_products' ? <Wheat className="h-4 w-4" /> : <Store className="h-4 w-4" />}
-                    {selectedType === 'agriculture_products' ? 'Agriculture Products' : "Farmer's Market"}
+                  <div className="w-24 h-24 mx-auto mb-4 rounded-xl overflow-hidden shadow-md">
+                    <img
+                      src={selectedType === 'agriculture_products' ? agricultureImg : farmersMarketImg}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <h2 className="text-2xl font-bold text-foreground">Seller Registration</h2>
+                  <h2 className="text-2xl font-bold text-foreground">
+                    {t['seller_registration'] || 'Seller Registration'}
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {selectedType === 'agriculture_products'
+                      ? t['seller_agriculture_title']
+                      : t['seller_market_title']}
+                  </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
                     <Label htmlFor="name" className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground" /> Name *
+                      <User className="h-4 w-4 text-muted-foreground" /> {t['seller_name'] || 'Name'} *
                     </Label>
-                    <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required className="mt-1" placeholder="Enter your full name" />
+                    <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_name'] || 'Enter your full name'} />
                   </div>
 
                   <div>
                     <Label htmlFor="aadhaarNumber" className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4 text-muted-foreground" /> Aadhaar Card Number *
+                      <CreditCard className="h-4 w-4 text-muted-foreground" /> {t['seller_aadhaar'] || 'Aadhaar Card Number'} *
                     </Label>
-                    <Input id="aadhaarNumber" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} required className="mt-1" placeholder="XXXX XXXX XXXX" maxLength={14} />
+                    <Input id="aadhaarNumber" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_aadhaar'] || 'XXXX XXXX XXXX'} maxLength={14} />
                   </div>
 
                   <div>
                     <Label htmlFor="phone" className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" /> Phone Number *
+                      <Phone className="h-4 w-4 text-muted-foreground" /> {t['seller_phone'] || 'Phone Number'} *
                     </Label>
-                    <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} required className="mt-1" placeholder="Enter your phone number" />
+                    <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_phone'] || 'Enter your phone number'} />
                   </div>
 
                   <div>
                     <Label htmlFor="address" className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground" /> Address *
+                      <MapPin className="h-4 w-4 text-muted-foreground" /> {t['seller_address'] || 'Address'} *
                     </Label>
-                    <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} required className="mt-1" placeholder="Enter your full address" rows={3} />
+                    <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_address'] || 'Enter your full address'} rows={3} />
                   </div>
 
                   <div>
                     <Label htmlFor="pincode" className="flex items-center gap-2">
-                      <Hash className="h-4 w-4 text-muted-foreground" /> Pin Code *
+                      <Hash className="h-4 w-4 text-muted-foreground" /> {t['seller_pincode'] || 'Pin Code'} *
                     </Label>
-                    <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleInputChange} required className="mt-1" placeholder="Enter pin code" maxLength={6} />
+                    <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_pincode'] || 'Enter pin code'} maxLength={6} />
                   </div>
 
                   <div>
                     <Label className="flex items-center gap-2 mb-2">
-                      <Upload className="h-4 w-4 text-muted-foreground" /> Upload Photo
+                      <Upload className="h-4 w-4 text-muted-foreground" /> {t['seller_upload_photo'] || 'Upload Photo'}
                     </Label>
                     {photoPreview ? (
                       <div className="relative inline-block">
@@ -229,14 +241,14 @@ const BecomeSeller = () => {
                         className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
                       >
                         <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                        <p className="text-sm text-muted-foreground">Click to upload photo (max 5MB)</p>
+                        <p className="text-sm text-muted-foreground">{t['seller_upload_hint'] || 'Click to upload photo (max 5MB)'}</p>
                       </div>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
                   </div>
 
                   <Button type="submit" disabled={submitting} className="w-full py-3 text-base">
-                    {submitting ? 'Submitting...' : 'Submit Application'}
+                    {submitting ? (t['seller_submitting'] || 'Submitting...') : (t['seller_submit'] || 'Submit Application')}
                   </Button>
                 </form>
               </CardContent>
