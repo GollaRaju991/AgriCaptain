@@ -175,7 +175,7 @@ const BecomeSeller = () => {
               <ArrowLeft className="h-4 w-4" /> {t['seller_back'] || 'Back to options'}
             </button>
 
-            <Card className="rounded-2xl">
+            <Card className="rounded-2xl border-0 shadow-lg bg-gradient-to-b from-card to-secondary/30">
               <CardContent className="p-6 sm:p-8">
                 <div className="text-center mb-6">
                   <div className="w-24 h-24 mx-auto mb-4 rounded-xl overflow-hidden shadow-md">
