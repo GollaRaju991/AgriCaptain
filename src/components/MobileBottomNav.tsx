@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Layers, ShoppingCart, Heart, User } from "lucide-react";
+import { Home, Layers, ShoppingCart, Sprout, User } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const MobileBottomNav = () => {
