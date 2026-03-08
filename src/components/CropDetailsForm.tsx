@@ -71,6 +71,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
 
         setCropData({
           cropName: crop.crop_name,
+          sellType: crop.sell_type || 'both',
           quantity: qtyNum,
           quantityUnit: qtyUnit,
           price: crop.price,
