@@ -24,6 +24,7 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import Wishlist from "./pages/Wishlist";
 import SellCrop from "./pages/SellCrop";
 import CropDetail from "./pages/CropDetail";
+import AddCropPage from "./pages/AddCropPage";
 import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
 import Loans from "./pages/Loans";

@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Loader2, Sprout, X } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Loader2, Sprout, X, Plus, Pencil, Trash2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Drawer, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -23,6 +25,7 @@ interface CropWithSeller {
   quality_grade: string;
   availability_location: string;
   location_address: string | null;
+  user_id: string;
   seller: {
     name: string;
     phone: string;
@@ -43,12 +46,7 @@ interface Filters {
 }
 
 const defaultFilters: Filters = {
-  cropName: '',
-  location: '',
-  minPrice: '',
-  maxPrice: '',
-  quantity: '',
-  availabilityLocation: '',
+  cropName: '', location: '', minPrice: '', maxPrice: '', quantity: '', availabilityLocation: '',
 };
 
 const cropOptions = ['Rice', 'Wheat', 'Tomato', 'Onion', 'Potato', 'Cotton', 'Sugarcane', 'Banana'];
@@ -72,28 +70,53 @@ const parseQuantityKg = (qty: string): number => {
 const SellCrop: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [crops, setCrops] = useState<CropWithSeller[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
   const [activeTab, setActiveTab] = useState('crop');
+  const [deletingCropId, setDeletingCropId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCrops = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('farmer_crops')
-        .select('*, seller:sellers!farmer_crops_seller_id_fkey(name, phone, photo_url, village, district, state)')
-        .order('created_at', { ascending: false });
+  const t = (en: string, te: string, hi?: string) => {
+    if (language === 'te') return te;
+    if (language === 'hi') return hi || en;
+    return en;
+  };
 
-      if (!error && data) {
-        setCrops(data as unknown as CropWithSeller[]);
-      }
-      setLoading(false);
-    };
-    fetchCrops();
-  }, []);
+  const fetchCrops = async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) setCurrentUserId(user.id);
+
+    const { data, error } = await supabase
+      .from('farmer_crops')
+      .select('*, seller:sellers!farmer_crops_seller_id_fkey(name, phone, photo_url, village, district, state)')
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setCrops(data as unknown as CropWithSeller[]);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => { fetchCrops(); }, []);
+
+  const handleDeleteCrop = async (cropId: string) => {
+    setDeletingCropId(cropId);
+    try {
+      const { error } = await supabase.from('farmer_crops').delete().eq('id', cropId);
+      if (error) throw error;
+      setCrops(prev => prev.filter(c => c.id !== cropId));
+      toast({ title: t('Crop deleted', 'పంట తొలగించబడింది') });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
+      setDeletingCropId(null);
+    }
+  };
 
   const filteredCrops = useMemo(() => {
     return crops.filter((crop) => {
@@ -102,8 +125,7 @@ const SellCrop: React.FC = () => {
       if (f.location) {
         const loc = f.location.toLowerCase();
         const match = [crop.location_address, crop.seller?.village, crop.seller?.district, crop.seller?.state]
-          .filter(Boolean)
-          .some((v) => v!.toLowerCase().includes(loc));
+          .filter(Boolean).some((v) => v!.toLowerCase().includes(loc));
         if (!match) return false;
       }
       const priceNum = parseFloat(crop.price.replace(/[^0-9.]/g, ''));
@@ -124,36 +146,113 @@ const SellCrop: React.FC = () => {
   }, [crops, appliedFilters]);
 
   const activeFilterCount = Object.values(appliedFilters).filter(Boolean).length;
+  const myCrops = filteredCrops.filter(c => c.user_id === currentUserId);
+  const otherCrops = filteredCrops.filter(c => c.user_id !== currentUserId);
 
   const getFirstImage = (images: string[] | null) => {
     if (images && images.length > 0) return images[0];
     return '/placeholder.svg';
   };
 
-  const t = (en: string, te: string, hi?: string) => {
-    if (language === 'te') return te;
-    if (language === 'hi') return hi || en;
-    return en;
-  };
+  const isOwner = (crop: CropWithSeller) => crop.user_id === currentUserId;
+
+  const renderCropCard = (crop: CropWithSeller, showActions: boolean) => (
+    <Card key={crop.id} className="overflow-hidden hover:shadow-md transition-shadow">
+      <CardContent className="p-0">
+        <Link to={`/sell-crop/${crop.id}`}>
+          <div className="flex">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted">
+              <img src={getFirstImage(crop.crop_images)} alt={crop.crop_name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
+            </div>
+            <div className="flex-1 p-3 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-foreground">{crop.crop_name}</h3>
+                <p className="text-sm text-muted-foreground">{crop.quantity}</p>
+                <p className="text-sm font-semibold text-primary">₹{crop.price}</p>
+              </div>
+              {crop.seller && (
+                <div className="flex items-center gap-2 mt-2">
+                  {crop.seller.photo_url ? (
+                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 rounded-full object-cover border-2 border-green-500" />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs">
+                      {crop.seller.name.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{crop.seller.name}</p>
+                    <p className="text-xs text-muted-foreground">+91 {crop.seller.phone}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </Link>
+
+        {/* Actions for own crops */}
+        {showActions && (
+          <div className="flex border-t">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 rounded-none text-primary"
+              onClick={() => navigate(`/sell-crop/add?editCrop=${crop.id}`)}
+            >
+              <Pencil className="h-4 w-4 mr-1" /> {t('Edit', 'మార్చు', 'बदलें')}
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex-1 rounded-none text-destructive" disabled={deletingCropId === crop.id}>
+                  <Trash2 className="h-4 w-4 mr-1" /> {t('Delete', 'తొలగించు', 'हटाएं')}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('Delete this crop?', 'ఈ పంటను తొలగించాలా?')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('This action cannot be undone.', 'ఈ చర్యను రద్దు చేయలేరు.')}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('Cancel', 'రద్దు')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleDeleteCrop(crop.id)}>{t('Delete', 'తొలగించు')}</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
+
+        {crop.location_address && (
+          <div className="bg-muted/50 px-3 py-2 flex items-center gap-2 border-t">
+            <MapPin className="h-4 w-4 text-green-600 flex-shrink-0" />
+            <span className="text-sm text-muted-foreground truncate">{crop.location_address}</span>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Mobile header */}
       <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-3 px-4 py-3">
         <button onClick={() => navigate(-1)}>
           <ArrowLeft className="h-6 w-6" />
         </button>
-        <h1 className="text-lg font-bold flex-1">
-          {t('Sell Crop', 'పంట అమ్మండి', 'फसल बेचें')}
-        </h1>
+        <h1 className="text-lg font-bold flex-1">{t('Sell Crop', 'పంట అమ్మండి', 'फसल बेचें')}</h1>
       </div>
 
-      {/* Desktop header */}
-      <div className="hidden lg:block">
-        <Header />
-      </div>
+      <div className="hidden lg:block"><Header /></div>
 
       <main className="container mx-auto px-4 py-4 max-w-2xl">
+        {/* Add Crop Button */}
+        <Button
+          onClick={() => navigate('/sell-crop/add')}
+          className="w-full mb-4 py-3 text-base"
+          size="lg"
+        >
+          <Plus className="h-5 w-5 mr-2" /> {t('Add Crop Details', 'పంట వివరాలు జోడించండి', 'फसल विवरण जोड़ें')}
+        </Button>
+
         {/* Filter chips */}
         <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
           {[
@@ -176,8 +275,7 @@ const SellCrop: React.FC = () => {
           ))}
           {activeFilterCount > 0 && (
             <Button variant="ghost" size="sm" className="flex-shrink-0 rounded-full" onClick={() => setAppliedFilters(defaultFilters)}>
-              <X className="h-3 w-3 mr-1" />
-              {t('Reset', 'రీసెట్', 'रीसेट')}
+              <X className="h-3 w-3 mr-1" /> {t('Reset', 'రీసెట్', 'रीसेट')}
             </Button>
           )}
         </div>
@@ -197,77 +295,37 @@ const SellCrop: React.FC = () => {
                 ? t('No crops match your filters', 'ఫిల్టర్‌కు సరిపోయే పంటలు లేవు')
                 : t('Farmers have not posted any crops yet', 'రైతులు ఇంకా పంటలు పోస్ట్ చేయలేదు')}
             </p>
-            {activeFilterCount > 0 ? (
+            {activeFilterCount > 0 && (
               <Button onClick={() => setAppliedFilters(defaultFilters)}>
                 {t('Reset Filters', 'ఫిల్టర్‌లు రీసెట్ చేయండి')}
               </Button>
-            ) : (
-              <Link to="/become-seller">
-                <Button>{t('Post Your Crop', 'పంట పోస్ట్ చేయండి')}</Button>
-              </Link>
             )}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {filteredCrops.map((crop) => (
-              <Link key={crop.id} to={`/sell-crop/${crop.id}`}>
-                <Card className="overflow-hidden hover:shadow-md transition-shadow">
-                  <CardContent className="p-0">
-                    <div className="flex">
-                      <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted">
-                        <img
-                          src={getFirstImage(crop.crop_images)}
-                          alt={crop.crop_name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
-                        />
-                      </div>
-                      <div className="flex-1 p-3 flex flex-col justify-between">
-                        <div>
-                          <h3 className="text-lg font-bold text-foreground">{crop.crop_name}</h3>
-                          <p className="text-sm text-muted-foreground">{crop.quantity}</p>
-                        </div>
-                        {crop.seller && (
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center gap-2">
-                              {crop.seller.photo_url ? (
-                                <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-8 h-8 rounded-full object-cover border-2 border-green-500" />
-                              ) : (
-                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-sm">
-                                  {crop.seller.name.charAt(0)}
-                                </div>
-                              )}
-                              <div>
-                                <p className="text-sm font-semibold text-foreground">{crop.seller.name}</p>
-                                <p className="text-xs text-muted-foreground">+91 {crop.seller.phone}</p>
-                              </div>
-                            </div>
-                            <a
-                              href={`tel:+91${crop.seller.phone}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="text-green-600 hover:text-green-700"
-                            >
-                              <Phone className="h-5 w-5" />
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {crop.location_address && (
-                      <div className="bg-muted/50 px-3 py-2 flex items-center gap-2 border-t">
-                        <MapPin className="h-4 w-4 text-green-600 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground truncate">{crop.location_address}</span>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {/* My Crops section */}
+            {myCrops.length > 0 && (
+              <>
+                <p className="text-sm font-semibold text-muted-foreground">
+                  {t('My Crops', 'నా పంటలు', 'मेरी फसलें')} ({myCrops.length})
+                </p>
+                {myCrops.map(crop => renderCropCard(crop, true))}
+
+                {otherCrops.length > 0 && (
+                  <p className="text-sm font-semibold text-muted-foreground mt-2">
+                    {t('All Crops', 'అన్ని పంటలు', 'सभी फसलें')} ({otherCrops.length})
+                  </p>
+                )}
+              </>
+            )}
+
+            {/* Other crops */}
+            {otherCrops.map(crop => renderCropCard(crop, false))}
           </div>
         )}
       </main>
 
-      {/* Filter Drawer - shows only active tab content */}
+      {/* Filter Drawer */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent>
           <div className="px-4 py-4 space-y-3">
@@ -276,9 +334,7 @@ const SellCrop: React.FC = () => {
                 <Select value={filters.cropName} onValueChange={(v) => setFilters({ ...filters, cropName: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select crop', 'పంట ఎంచుకోండి', 'फसल चुनें')} /></SelectTrigger>
                   <SelectContent>
-                    {cropOptions.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
+                    {cropOptions.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
                   </SelectContent>
                 </Select>
                 {filters.cropName && (
@@ -288,14 +344,9 @@ const SellCrop: React.FC = () => {
                 )}
               </>
             )}
-
             {activeTab === 'location' && (
               <>
-                <Input
-                  placeholder={t('Village, District or State', 'గ్రామం, జిల్లా లేదా రాష్ట్రం', 'गाँव, जिला या राज्य')}
-                  value={filters.location}
-                  onChange={(e) => setFilters({ ...filters, location: e.target.value })}
-                />
+                <Input placeholder={t('Village, District or State', 'గ్రామం, జిల్లా లేదా రాష్ట్రం', 'गाँव, जिला या राज्य')} value={filters.location} onChange={(e) => setFilters({ ...filters, location: e.target.value })} />
                 {filters.location && (
                   <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, location: '' })}>
                     <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
@@ -303,7 +354,6 @@ const SellCrop: React.FC = () => {
                 )}
               </>
             )}
-
             {activeTab === 'price' && (
               <>
                 <div className="flex gap-3">
@@ -323,15 +373,12 @@ const SellCrop: React.FC = () => {
                 )}
               </>
             )}
-
             {activeTab === 'quantity' && (
               <>
                 <Select value={filters.quantity} onValueChange={(v) => setFilters({ ...filters, quantity: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select range', 'పరిధి ఎంచుకోండి', 'सीमा चुनें')} /></SelectTrigger>
                   <SelectContent>
-                    {quantityOptions.map((q) => (
-                      <SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>
-                    ))}
+                    {quantityOptions.map((q) => (<SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>))}
                   </SelectContent>
                 </Select>
                 {filters.quantity && (
@@ -341,20 +388,17 @@ const SellCrop: React.FC = () => {
                 )}
               </>
             )}
-
             {activeTab === 'availability' && (
               <>
                 <Select value={filters.availabilityLocation} onValueChange={(v) => setFilters({ ...filters, availabilityLocation: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select location', 'ప్రాంతం ఎంచుకోండి', 'स्थान चुनें')} /></SelectTrigger>
                   <SelectContent>
-                    {availabilityOptions.map((a) => (
-                      <SelectItem key={a} value={a}>{a}</SelectItem>
-                    ))}
+                    {availabilityOptions.map((a) => (<SelectItem key={a} value={a}>{a}</SelectItem>))}
                   </SelectContent>
                 </Select>
                 {filters.availabilityLocation && (
                   <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, availabilityLocation: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हటाएं')}
+                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
                   </Button>
                 )}
               </>
