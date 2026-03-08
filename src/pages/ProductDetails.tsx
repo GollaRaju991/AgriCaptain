@@ -776,17 +776,17 @@ const ProductDetails = () => {
       </div>
       
       {/* Mobile Sticky Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex gap-2 lg:hidden z-40 shadow-lg">
+      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-3 flex gap-2 lg:hidden z-40 shadow-lg">
         <Button 
           variant="outline" 
-          className="flex-1 border-gray-300"
+          className="flex-1"
           onClick={handleAddToCart}
         >
           <ShoppingCart className="h-4 w-4 mr-2" />
           Add to Cart
         </Button>
         <Button 
-          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
           onClick={handleBuyNow}
         >
           Buy Now
