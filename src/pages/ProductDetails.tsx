@@ -298,11 +298,39 @@ const ProductDetails = () => {
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-80 md:h-96 object-contain rounded-lg bg-gray-100"
+                className="w-full h-80 md:h-96 object-contain rounded-lg bg-muted"
               />
               
+              {/* Wishlist & Share overlay on image */}
+              <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleWishlist({
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      image: product.images[0],
+                      category: product.category
+                    });
+                    toast({
+                      title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
+                    });
+                  }}
+                  className="bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white transition-colors"
+                >
+                  <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShareDialogOpen(true); }}
+                  className="bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white transition-colors"
+                >
+                  <Share2 className="h-5 w-5 text-muted-foreground" />
+                </button>
+              </div>
+
               {/* Zoom Hint */}
-              <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-3 left-3 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 <ZoomIn className="h-4 w-4" />
                 <span>Click to zoom</span>
               </div>
@@ -312,13 +340,13 @@ const ProductDetails = () => {
                 <>
                   <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/75 transition-opacity"
                   >
                     <ChevronLeft className="h-6 w-6" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-opacity"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/75 transition-opacity"
                   >
                     <ChevronRight className="h-6 w-6" />
                   </button>
@@ -326,21 +354,21 @@ const ProductDetails = () => {
               )}
               
               {/* Image Counter */}
-              <div className="absolute bottom-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
                 {selectedImage + 1} / {product.images.length}
               </div>
             </div>
             
-            {/* Thumbnail Images - Better visibility */}
+            {/* Thumbnail Images */}
             <div className="flex gap-3 overflow-x-auto pb-2">
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all bg-gray-50 ${
+                  className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all bg-muted ${
                     selectedImage === index 
-                      ? 'border-green-600 ring-2 ring-green-200 scale-105' 
-                      : 'border-gray-200 hover:border-gray-400'
+                      ? 'border-primary ring-2 ring-primary/20 scale-105' 
+                      : 'border-border hover:border-muted-foreground'
                   }`}
                 >
                   <img
