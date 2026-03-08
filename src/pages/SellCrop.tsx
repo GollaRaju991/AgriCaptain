@@ -24,6 +24,7 @@ interface CropWithSeller {
   quality_grade: string;
   availability_location: string;
   location_address: string | null;
+  sell_type: string;
   user_id: string;
   seller: {
     name: string;
@@ -113,6 +114,10 @@ const SellCrop: React.FC = () => {
 
   const filteredCrops = useMemo(() => {
     return crops.filter((crop) => {
+      // Only show crops listed for Crop Market (sell_type = 'crop_market' or 'both')
+      const sellType = crop.sell_type || 'both';
+      if (sellType !== 'crop_market' && sellType !== 'both') return false;
+
       const f = appliedFilters;
       if (f.cropName && crop.crop_name.toLowerCase() !== f.cropName.toLowerCase()) return false;
       if (f.location) {
