@@ -135,11 +135,7 @@ const Categories = () => {
   const activeCategoryData = categories.find(c => c.id === activeCategory);
 
   const handleCategoryClick = (category: Category) => {
-    if (category.action === 'farmWorker') {
-      setFarmWorkerOpen(true);
-    } else if (category.action === 'rentVehicle') {
-      setRentVehicleOpen(true);
-    } else if (category.action === 'navigate' && category.actionPath) {
+    if (category.action === 'navigate' && category.actionPath) {
       navigate(category.actionPath);
     } else {
       setActiveCategory(category.id);
