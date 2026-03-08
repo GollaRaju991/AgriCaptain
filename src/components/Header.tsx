@@ -127,63 +127,57 @@ const Header = () => {
         {/* Non-product pages mobile header */}
         {!isProductPage && !hideFullMobileHeader && (
           <>
-            {/* Row 1: Logo + actions - hides on scroll */}
-            <div
-              className={`lg:hidden flex items-center px-3 py-2 bg-white gap-2 transition-all duration-300 overflow-hidden ${
-                scrolled ? "max-h-0 py-0 opacity-0" : "max-h-20 opacity-100"
-              }`}
-            >
-              <Link to="/" className="flex-shrink-0">
-                <span className="text-xl font-bold text-green-700">Agrizin</span>
-              </Link>
-
-              <div className="flex items-center gap-2 ml-auto">
-                <Link
-                  to="/become-seller"
-                  className="flex items-center gap-1.5 bg-white border border-gray-300 rounded-lg px-3 py-2"
-                >
-                  <UserPlus className="h-5 w-5 text-green-700" />
-                  <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.become_seller}</span>
+            {/* Green gradient header area */}
+            <div className="lg:hidden" style={{ background: 'linear-gradient(135deg, #1FAF5A 0%, #0E8A43 100%)' }}>
+              {/* Row 1: Logo + actions - hides on scroll */}
+              <div
+                className={`flex items-center px-3 py-2.5 gap-2 transition-all duration-300 overflow-hidden ${
+                  scrolled ? "max-h-0 py-0 opacity-0" : "max-h-20 opacity-100"
+                }`}
+              >
+                <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+                  <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full" />
+                  <span className="text-xl font-bold text-white">Agrizin</span>
                 </Link>
 
-                <button
-                  onClick={() => setLanguageDialogOpen(true)}
-                  className="flex items-center gap-1.5 bg-white border border-gray-300 rounded-lg px-3 py-2"
-                >
-                  <Languages className="h-5 w-5 text-green-700" />
-                  <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.language}</span>
-                </button>
+                <div className="flex items-center gap-2 ml-auto">
+                  <Link
+                    to="/become-seller"
+                    className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm"
+                  >
+                    <UserPlus className="h-4 w-4 text-green-700" />
+                    <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">{translations.become_seller}</span>
+                  </Link>
 
-              </div>
-            </div>
-
-            {/* Row 2: Search - always visible (sticky on scroll) */}
-            <div className="lg:hidden flex items-center px-3 py-2 bg-white gap-2">
-              <form
-                onSubmit={handleSearch}
-                className="flex flex-1 items-center border-2 border-gray-800 rounded-lg overflow-hidden"
-              >
-                <div className="flex items-center pl-3">
-                  <Search className="h-4 w-4 text-green-600" />
+                  <button
+                    onClick={() => setLanguageDialogOpen(true)}
+                    className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm"
+                  >
+                    <Languages className="h-4 w-4 text-green-700" />
+                    <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">{translations.language}</span>
+                  </button>
                 </div>
-                <Input
-                  type="text"
-                  placeholder={translations.search_products || 'Search products...'}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-                <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
-              </form>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-600 hover:bg-gray-100 flex-shrink-0"
-                onClick={() => console.log("Scanner clicked")}
-              >
-                <ScanLine className="h-6 w-6" />
-              </Button>
+              </div>
+
+              {/* Row 2: Search bar */}
+              <div className="flex items-center px-3 pb-3 pt-1">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex flex-1 items-center bg-white rounded-full overflow-hidden shadow-md"
+                >
+                  <div className="flex items-center pl-4">
+                    <Search className="h-4 w-4 text-gray-400" />
+                  </div>
+                  <Input
+                    type="text"
+                    placeholder={translations.search_products || 'Search products...'}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
+                  />
+                  <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
+                </form>
+              </div>
             </div>
 
             {/* Row 3: Category menu - white background with green icons */}
