@@ -499,7 +499,6 @@ const ProductDetails = () => {
                   </Button>
                 </div>
               </div>
-              </div>
             </div>
 
             {/* Share Dialog */}
