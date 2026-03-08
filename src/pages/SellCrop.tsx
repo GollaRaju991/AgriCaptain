@@ -184,7 +184,11 @@ const SellCrop: React.FC = () => {
 
       <div className="hidden lg:block"><Header /></div>
 
-      <main className="container mx-auto px-4 py-4 max-w-2xl">
+      <div className="hidden lg:block">
+        <CategoryNavigation />
+      </div>
+
+      <main className="container mx-auto px-4 py-6 max-w-5xl">
         {/* Filter + Add Crop inline row */}
         <div className="flex gap-2 mb-4">
           <Button
