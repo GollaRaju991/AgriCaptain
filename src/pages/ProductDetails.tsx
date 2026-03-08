@@ -142,12 +142,12 @@ const ProductDetails = () => {
       'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
     ],
-    category: 'seeds',
+    category: foundProduct.category || 'seeds',
     shortDescription: foundProduct.description || 'Premium quality product for farming',
     detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
-    usage: `Ideal for commercial farming and home gardening.`,
+    usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
     specifications: {
-      'Product Type': 'Seeds',
+      'Product Type': (foundProduct.category || 'Seeds').charAt(0).toUpperCase() + (foundProduct.category || 'seeds').slice(1),
       'Quality': 'Premium',
       'Shelf Life': '2 years',
       'Origin': 'India'
@@ -163,7 +163,7 @@ const ProductDetails = () => {
       { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
       { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
     ]
-  } : {
+  } : null;
     id: id || '1',
     name: 'Hybrid Tomato Seeds - Premium Quality',
     price: 299,
