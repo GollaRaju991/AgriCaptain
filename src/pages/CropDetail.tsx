@@ -38,14 +38,25 @@ const CropDetailPage: React.FC = () => {
     const fetchCrop = async () => {
       if (!id) return;
       setLoading(true);
-      const { data, error } = await supabase
-        .from('farmer_crops')
-        .select('*, seller:sellers!farmer_crops_seller_id_fkey(name, phone, photo_url)')
+      // Use public views to avoid exposing sensitive data (aadhaar, etc.)
+      const { data: cropData, error: cropError } = await supabase
+        .from('public_farmer_crops' as any)
+        .select('*')
         .eq('id', id)
         .single();
 
-      if (!error && data) {
-        setCrop(data as unknown as CropDetail);
+      if (!cropError && cropData) {
+        // Fetch seller info from public view
+        let seller = null;
+        if ((cropData as any).seller_id) {
+          const { data: sellerData } = await supabase
+            .from('public_sellers' as any)
+            .select('name, phone, photo_url')
+            .eq('id', (cropData as any).seller_id)
+            .single();
+          seller = sellerData;
+        }
+        setCrop({ ...(cropData as any), seller } as unknown as CropDetail);
       }
       setLoading(false);
     };
