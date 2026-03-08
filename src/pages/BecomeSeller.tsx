@@ -224,7 +224,13 @@ const BecomeSeller = () => {
                 <Card
                   key={option.type}
                   className="cursor-pointer group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary overflow-hidden rounded-2xl"
-                  onClick={() => setSelectedType(option.type)}
+                  onClick={() => {
+                    if (option.type === 'farmers_market') {
+                      navigate('/sell-crop/add');
+                      return;
+                    }
+                    setSelectedType(option.type);
+                  }}
                 >
                   <CardContent className="p-0">
                     <div className="w-full aspect-square overflow-hidden">
