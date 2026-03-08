@@ -22,6 +22,8 @@ import VehicleRent from "./pages/VehicleRent";
 import BecomeSeller from "./pages/BecomeSeller";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import Wishlist from "./pages/Wishlist";
+import SellCrop from "./pages/SellCrop";
+import CropDetail from "./pages/CropDetail";
 import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
 import Loans from "./pages/Loans";
