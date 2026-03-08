@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -8,14 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Upload, X, User, Phone, MapPin, CreditCard, Hash } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, CreditCard, Hash, Home, Building2, Map } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import CropDetailsForm from '@/components/CropDetailsForm';
 import agricultureImg from '@/assets/agriculture-products.png';
 import farmersMarketImg from '@/assets/farmers-market.png';
 
 type SellerType = 'agriculture_products' | 'farmers_market';
+type FarmerStep = 'details' | 'crops';
 
 const BecomeSeller = () => {
   const navigate = useNavigate();
@@ -23,14 +24,20 @@ const BecomeSeller = () => {
   const { translations: t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedType, setSelectedType] = useState<SellerType | null>(null);
+  const [farmerStep, setFarmerStep] = useState<FarmerStep>('details');
   const [submitting, setSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [savedSellerId, setSavedSellerId] = useState<string | null>(null);
+  const [savedUserId, setSavedUserId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     aadhaarNumber: '',
     phone: '',
     address: '',
+    village: '',
+    district: '',
+    state: '',
     pincode: '',
   });
 
@@ -79,21 +86,31 @@ const BecomeSeller = () => {
         photoUrl = publicUrl;
       }
 
-      const { error } = await supabase.from('sellers').insert({
+      const { data, error } = await supabase.from('sellers').insert({
         user_id: user.id,
         seller_type: selectedType,
         name: formData.name,
         aadhaar_number: formData.aadhaarNumber,
         phone: formData.phone,
         address: formData.address,
+        village: formData.village,
+        district: formData.district,
+        state: formData.state,
         pincode: formData.pincode,
         photo_url: photoUrl,
-      } as any);
+      } as any).select().single();
 
       if (error) throw error;
 
-      toast({ title: 'Application Submitted!', description: 'We will review your application and get back to you within 24 hours.' });
-      navigate('/');
+      if (selectedType === 'farmers_market') {
+        setSavedSellerId((data as any).id);
+        setSavedUserId(user.id);
+        setFarmerStep('crops');
+        toast({ title: t['farmer_details_saved'] || 'Farmer Details Saved!', description: t['now_add_crops'] || 'Now add your crop details.' });
+      } else {
+        toast({ title: 'Application Submitted!', description: 'We will review your application and get back to you within 24 hours.' });
+        navigate('/');
+      }
     } catch (error: any) {
       toast({ title: 'Submission Failed', description: error.message || 'Something went wrong.', variant: 'destructive' });
     } finally {
@@ -115,6 +132,8 @@ const BecomeSeller = () => {
       image: farmersMarketImg,
     },
   ];
+
+  const isFarmerMarketCropStep = selectedType === 'farmers_market' && farmerStep === 'crops';
 
   return (
     <div className="min-h-screen bg-background">
@@ -166,14 +185,57 @@ const BecomeSeller = () => {
               ))}
             </div>
           </>
+        ) : isFarmerMarketCropStep ? (
+          <>
+            <button
+              onClick={() => setFarmerStep('details')}
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" /> {t['seller_back'] || 'Back'}
+            </button>
+
+            {/* Step indicator */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">✓</div>
+                <span className="text-sm font-medium text-muted-foreground">{t['step_farmer_details'] || 'Farmer Details'}</span>
+              </div>
+              <div className="w-8 h-px bg-primary" />
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">2</div>
+                <span className="text-sm font-medium text-foreground">{t['step_crop_details'] || 'Crop Details'}</span>
+              </div>
+            </div>
+
+            <CropDetailsForm
+              sellerId={savedSellerId!}
+              userId={savedUserId!}
+              onComplete={() => navigate('/')}
+            />
+          </>
         ) : (
           <>
             <button
-              onClick={() => setSelectedType(null)}
+              onClick={() => { setSelectedType(null); setFarmerStep('details'); }}
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" /> {t['seller_back'] || 'Back to options'}
             </button>
+
+            {/* Step indicator for farmer's market */}
+            {selectedType === 'farmers_market' && (
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">1</div>
+                  <span className="text-sm font-medium text-foreground">{t['step_farmer_details'] || 'Farmer Details'}</span>
+                </div>
+                <div className="w-8 h-px bg-muted-foreground/30" />
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center text-sm font-bold">2</div>
+                  <span className="text-sm font-medium text-muted-foreground">{t['step_crop_details'] || 'Crop Details'}</span>
+                </div>
+              </div>
+            )}
 
             <Card className="rounded-2xl border-0 shadow-lg bg-gradient-to-b from-card to-secondary/30">
               <CardContent className="p-6 sm:p-8">
@@ -186,7 +248,9 @@ const BecomeSeller = () => {
                     />
                   </div>
                   <h2 className="text-2xl font-bold text-foreground">
-                    {t['seller_registration'] || 'Seller Registration'}
+                    {selectedType === 'farmers_market'
+                      ? (t['farmer_registration'] || 'Farmer Registration')
+                      : (t['seller_registration'] || 'Seller Registration')}
                   </h2>
                   <p className="text-sm text-muted-foreground mt-1">
                     {selectedType === 'agriculture_products'
@@ -224,6 +288,31 @@ const BecomeSeller = () => {
                     <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_address'] || 'Enter your full address'} rows={3} />
                   </div>
 
+                  {selectedType === 'farmers_market' && (
+                    <>
+                      <div>
+                        <Label htmlFor="village" className="flex items-center gap-2">
+                          <Home className="h-4 w-4 text-muted-foreground" /> {t['seller_village'] || 'Village'} *
+                        </Label>
+                        <Input id="village" name="village" value={formData.village} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_village'] || 'Enter village name'} />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="district" className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" /> {t['seller_district'] || 'District'} *
+                        </Label>
+                        <Input id="district" name="district" value={formData.district} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_district'] || 'Enter district name'} />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="state" className="flex items-center gap-2">
+                          <Map className="h-4 w-4 text-muted-foreground" /> {t['seller_state'] || 'State'} *
+                        </Label>
+                        <Input id="state" name="state" value={formData.state} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_state'] || 'Enter state name'} />
+                      </div>
+                    </>
+                  )}
+
                   <div>
                     <Label htmlFor="pincode" className="flex items-center gap-2">
                       <Hash className="h-4 w-4 text-muted-foreground" /> {t['seller_pincode'] || 'Pin Code'} *
@@ -255,7 +344,11 @@ const BecomeSeller = () => {
                   </div>
 
                   <Button type="submit" disabled={submitting} className="w-full py-3 text-base">
-                    {submitting ? (t['seller_submitting'] || 'Submitting...') : (t['seller_submit'] || 'Submit Application')}
+                    {submitting
+                      ? (t['seller_submitting'] || 'Submitting...')
+                      : selectedType === 'farmers_market'
+                        ? (t['submit_continue'] || 'Submit & Continue')
+                        : (t['seller_submit'] || 'Submit Application')}
                   </Button>
                 </form>
               </CardContent>
