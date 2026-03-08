@@ -84,13 +84,27 @@ const SellCrop: React.FC = () => {
 
   const fetchCrops = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('farmer_crops')
-      .select('*, seller:sellers!farmer_crops_seller_id_fkey(name, phone, photo_url, village, district, state)')
+    // Use public views for marketplace browsing (excludes sensitive fields like aadhaar)
+    const { data: cropsData, error: cropsError } = await supabase
+      .from('public_farmer_crops' as any)
+      .select('*')
       .order('created_at', { ascending: false });
 
-    if (!error && data) {
-      setCrops(data as unknown as CropWithSeller[]);
+    if (!cropsError && cropsData) {
+      // Fetch seller info from public_sellers view for each unique seller_id
+      const sellerIds = [...new Set((cropsData as any[]).map(c => c.seller_id).filter(Boolean))];
+      const { data: sellersData } = await supabase
+        .from('public_sellers' as any)
+        .select('id, name, phone, photo_url, village, district, state')
+        .in('id', sellerIds);
+
+      const sellerMap = new Map((sellersData || []).map((s: any) => [s.id, s]));
+      
+      const enrichedCrops = (cropsData as any[]).map(crop => ({
+        ...crop,
+        seller: sellerMap.get(crop.seller_id) || null,
+      }));
+      setCrops(enrichedCrops as CropWithSeller[]);
     }
     setLoading(false);
   };
