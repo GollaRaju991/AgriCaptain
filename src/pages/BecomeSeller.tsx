@@ -198,8 +198,15 @@ const BecomeSeller = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
-
+      {/* Mobile standalone header */}
+      <div className="lg:hidden sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
+        <button onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-6 w-6" />
+        </button>
+        <h1 className="text-lg font-bold">{t['become_seller_title'] || 'Become a Seller'}</h1>
+      </div>
+      {/* Desktop header */}
+      <div className="hidden lg:block"><Header /></div>
       {/* Decorative background */}
       <div className="relative">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/10 to-primary/5 -z-10" />
