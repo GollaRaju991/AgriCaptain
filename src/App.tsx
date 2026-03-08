@@ -43,6 +43,7 @@ import SavedAddresses from "./pages/SavedAddresses";
 import EditProfilePage from "./pages/EditProfilePage";
 import AgrizinMoney from "./pages/AgrizinMoney";
 import AddProduct from "./pages/AddProduct";
+import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -102,6 +103,7 @@ const App = () => (
                     <Route path="/shipping-policy" element={<ShippingPolicy />} />
                     <Route path="/agrizin-money" element={<AgrizinMoney />} />
                     <Route path="/seller/add-product" element={<AddProduct />} />
+                    <Route path="/seller/edit-product/:id" element={<EditProduct />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
