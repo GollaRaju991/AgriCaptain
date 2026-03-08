@@ -69,8 +69,8 @@ const CategoryNavigation = () => {
       ]
     },
     { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
-    { name: 'Farm Worker', icon: Users, isPopup: true, action: 'farmWorker' },
-    { name: 'Rent Vehicles', icon: Truck, isPopup: true, action: 'rentVehicle' },
+    { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
+    { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
     { 
       name: 'Loans', 
       icon: CreditCard, 
