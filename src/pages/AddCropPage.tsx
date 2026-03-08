@@ -287,6 +287,25 @@ const AddCropPage: React.FC = () => {
         <h1 className="text-lg font-bold">{headerTitle}</h1>
       </div>
 
+      {/* Desktop back header */}
+      <div className="hidden lg:flex items-center gap-3 container mx-auto max-w-2xl px-4 pt-6 pb-2">
+        <button
+          onClick={() => {
+            if (step === 'crop-form') {
+              setStep(sellerProfiles.length > 0 ? 'profile-selection' : 'profile-form');
+            } else if (step === 'profile-form' && sellerProfiles.length > 0) {
+              setStep('profile-selection');
+            } else {
+              navigate('/sell-crop');
+            }
+          }}
+          className="p-2 rounded-full hover:bg-muted transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-foreground" />
+        </button>
+        <h1 className="text-xl font-bold text-foreground">{headerTitle}</h1>
+      </div>
+
       <main className="container mx-auto px-4 py-4 max-w-2xl">
         {/* ──── Step 1: Profile Selection ──── */}
         {step === 'profile-selection' && (
