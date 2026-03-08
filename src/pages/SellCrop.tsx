@@ -24,6 +24,7 @@ interface CropWithSeller {
   quality_grade: string;
   availability_location: string;
   location_address: string | null;
+  sell_type: string;
   user_id: string;
   seller: {
     name: string;
