@@ -118,14 +118,16 @@ const Categories = () => {
       id: 'farm-worker',
       name: 'Farm\nWorker',
       sidebarIcon: catFarmworkerIcon,
-      action: 'farmWorker',
+      action: 'navigate',
+      actionPath: '/farm-worker',
       subcategories: []
     },
     {
       id: 'rent-vehicles',
       name: 'Rent\nVehicles',
       sidebarIcon: catVehicleIcon,
-      action: 'rentVehicle',
+      action: 'navigate',
+      actionPath: '/vehicle-rent',
       subcategories: []
     },
   ];
