@@ -83,7 +83,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, onC
         seller_id: sellerId,
         user_id: userId,
         crop_name: cropData.cropName,
-        quantity: cropData.quantity,
+        quantity: `${cropData.quantity} ${cropData.quantityUnit}`,
         price: cropData.price,
         harvest_date: harvestDate ? format(harvestDate, 'yyyy-MM-dd') : null,
         quality_grade: cropData.qualityGrade,
