@@ -11,6 +11,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CategoryNavigation from '@/components/CategoryNavigation';
 import MobileBottomNav from '@/components/MobileBottomNav';
 
 interface CropWithSeller {
