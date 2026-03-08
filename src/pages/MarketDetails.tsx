@@ -1,7 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import MobileBottomNav from "@/components/MobileBottomNav";
 import { useLanguage } from '@/contexts/LanguageContext';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { MapPin, Calendar, TrendingUp, TrendingDown, Minus, Sprout, BarChart3, Users } from 'lucide-react';
 
