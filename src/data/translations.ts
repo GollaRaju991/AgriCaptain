@@ -530,6 +530,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_categories': 'వర్గాలు',
     'bottom_cart': 'కార్ట్',
     'bottom_wishlist': 'విష్‌లిస్ట్',
+    'bottom_sell_crop': 'పంట అమ్మండి',
     'bottom_account': 'ఖాతా',
 
     // Profile
