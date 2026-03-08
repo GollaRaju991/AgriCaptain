@@ -366,7 +366,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 lg:pb-0">
       <Header />
       
       <div className="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8">
@@ -432,6 +432,24 @@ const Checkout = () => {
       </div>
 
       <Footer />
+
+      {/* Mobile sticky bottom action bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-[0_-4px_12px_rgba(0,0,0,0.08)] z-50 px-4 py-3 safe-area-bottom">
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate('/products')}
+            className="flex-1 py-3 px-4 rounded-xl border-2 border-green-600 text-green-700 font-semibold text-sm bg-white hover:bg-green-50 transition-colors"
+          >
+            Add More
+          </button>
+          <button
+            onClick={handlePayment}
+            className="flex-[1.3] py-3 px-4 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-base transition-colors shadow-md"
+          >
+            Pay ₹{finalTotal.toLocaleString('en-IN')}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
