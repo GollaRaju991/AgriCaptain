@@ -422,7 +422,7 @@ const AddCropPage: React.FC = () => {
                     <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select District', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
                     <SelectContent>
                       {availableDistricts.map((d: any) => (
-                        <SelectItem key={d.code} value={d.name}>{d.name}</SelectItem>
+                        <SelectItem key={d.code} value={d.name}>{language === 'te' && d.nameTe ? d.nameTe : d.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
