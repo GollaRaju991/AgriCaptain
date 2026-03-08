@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -9,6 +9,7 @@ import SellerRegistrationForm from '@/components/seller/SellerRegistrationForm';
 import agricultureImg from '@/assets/agriculture-products.png';
 import farmersMarketImg from '@/assets/farmers-market.png';
 import sellerHeroBg from '@/assets/seller-hero-bg.jpg';
+import { supabase } from '@/integrations/supabase/client';
 
 type SellerType = 'agriculture_products' | 'farmers_market';
 
@@ -31,6 +32,24 @@ const BecomeSeller = () => {
   const navigate = useNavigate();
   const { translations: t } = useLanguage();
   const [selectedType, setSelectedType] = useState<SellerType | null>(null);
+  const [checkingSeller, setCheckingSeller] = useState(false);
+
+  // Check if user is already registered as agriculture seller
+  const checkExistingSeller = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    setCheckingSeller(true);
+    const { data } = await (supabase.from('sellers') as any)
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('seller_type', 'agriculture_products')
+      .limit(1);
+    if (data?.length) {
+      navigate('/seller/dashboard');
+      return;
+    }
+    setCheckingSeller(false);
+  };
 
   return (
     <div className="min-h-screen bg-background">
