@@ -15,6 +15,7 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
+import { mockProducts } from '@/data/mockProducts';
 import ProductCard from '@/components/ProductCard';
 import ShareDialog from '@/components/ShareDialog';
 import ImageZoomModal from '@/components/ImageZoomModal';
@@ -94,8 +95,9 @@ const ProductDetails = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [id]);
 
-  // Find product from products data or use mock
-  const foundProduct = isSellerProduct ? null : products.find(p => p.id === id);
+  // Check mockProducts first (Products page data), then fall back to generated products
+  const foundMockProduct = isSellerProduct ? null : mockProducts.find(p => p.id === id);
+  const foundProduct = isSellerProduct ? null : (foundMockProduct || products.find(p => p.id === id));
 
   // Build product from seller DB data or static data
   const product = sellerProduct ? {
@@ -140,12 +142,12 @@ const ProductDetails = () => {
       'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
     ],
-    category: 'seeds',
+    category: (foundProduct as any).category || 'seeds',
     shortDescription: foundProduct.description || 'Premium quality product for farming',
     detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
-    usage: `Ideal for commercial farming and home gardening.`,
+    usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
     specifications: {
-      'Product Type': 'Seeds',
+      'Product Type': ((foundProduct as any).category || 'Seeds').charAt(0).toUpperCase() + ((foundProduct as any).category || 'seeds').slice(1),
       'Quality': 'Premium',
       'Shelf Life': '2 years',
       'Origin': 'India'
@@ -161,48 +163,12 @@ const ProductDetails = () => {
       { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
       { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
     ]
-  } : {
-    id: id || '1',
-    name: 'Hybrid Tomato Seeds - Premium Quality',
-    price: 299,
-    originalPrice: 399,
-    images: [
-      'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
-    ],
-    category: 'seeds',
-    rating: 4.5,
-    reviews: 124,
-    discount: 25,
-    inStock: true,
-    shortDescription: 'Premium quality hybrid tomato seeds for high-yield farming',
-    detailedDescription: `These premium hybrid tomato seeds are specially developed for Indian growing conditions.`,
-    usage: `Ideal for commercial farming, kitchen gardens, and greenhouse cultivation.`,
-    specifications: {
-      'Seed Type': 'Hybrid F1',
-      'Germination Rate': '95%+',
-      'Days to Maturity': '75-80 days',
-      'Origin': 'India'
-    },
-    features: [
-      'High germination rate (95%+)',
-      'Disease resistant varieties',
-      'Suitable for all climates',
-      'Premium quality assurance'
-    ],
-    reviewsList: [
-      { id: 1, name: 'John Farmer', rating: 5, date: '2 weeks ago', comment: 'Excellent seeds!', helpful: 45, notHelpful: 2 },
-      { id: 2, name: 'Sarah Green', rating: 4, date: '1 month ago', comment: 'Good quality seeds.', helpful: 23, notHelpful: 3 }
-    ]
-  };
-
+  } : null;
 
   // Get related products - match by similar names or random selection
   const relatedProducts = useMemo(() => {
+    if (!product) return [];
     const currentId = product.id;
-    // Get products with similar keywords in name
     const keywords = product.name.toLowerCase().split(' ').filter(w => w.length > 3);
     const similar = products.filter(p => {
       if (p.id === currentId) return false;
@@ -212,13 +178,13 @@ const ProductDetails = () => {
     
     if (similar.length >= 4) return similar.slice(0, 8);
     
-    // If not enough similar, add random products
     const remaining = products.filter(p => p.id !== currentId && !similar.includes(p));
     return [...similar, ...remaining].slice(0, 8);
-  }, [product.id, product.name]);
+  }, [product?.id, product?.name]);
 
   // Rating distribution
   const ratingDistribution = useMemo(() => {
+    if (!product) return [];
     const reviews = product.reviewsList || [];
     const total = reviews.length || 1;
     const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -230,9 +196,19 @@ const ProductDetails = () => {
       count,
       percentage: Math.round((count / total) * 100)
     }));
-  }, [product.reviewsList]);
+  }, [product?.reviewsList]);
 
-  if (loadingSeller) {
+  // If no product found at all, show not found
+  if (!product && !loadingSeller) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Product not found</p>
+        <Button onClick={() => navigate('/products')}>Back to Products</Button>
+      </div>
+    );
+  }
+
+  if (!product) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Loading product...</p>
