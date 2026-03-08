@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CheckCircle, Package, Truck, Phone, Mail, ArrowLeft } from 'lucide-react';
+import { CheckCircle, Package, Truck, ShoppingBag, ClipboardList } from 'lucide-react';
 
 interface OrderDetails {
   orderNumber: string;
@@ -33,7 +33,6 @@ const OrderConfirmation = () => {
   const location = useLocation();
   const orderDetails = location.state?.orderDetails as OrderDetails;
 
-  // Fallback data if no order details are passed
   const defaultOrderDetails: OrderDetails = {
     orderNumber: '#AG' + Math.random().toString(36).substr(2, 9).toUpperCase(),
     date: new Date().toLocaleDateString('en-IN', { 
@@ -68,20 +67,20 @@ const OrderConfirmation = () => {
         {/* Success Header */}
         <div className="text-center mb-8">
           <div className="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle className="h-12 w-12 text-green-600" />
+            <CheckCircle className="h-12 w-12 text-[#22A45D]" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Thank you for your order!</h1>
           <p className="text-lg text-gray-600">
-            We appreciate your trust in AgriCaptain. Your order has been successfully placed and is now being processed.
+            We appreciate your trust in Agrizin. Your order has been successfully placed and is now being processed.
           </p>
         </div>
 
         {/* Order Summary Card */}
-        <Card className="mb-6">
+        <Card className="mb-6 rounded-xl shadow-sm">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold flex items-center">
-                <Package className="h-5 w-5 mr-2 text-green-600" />
+                <Package className="h-5 w-5 mr-2 text-[#22A45D]" />
                 Order Summary
               </h2>
               <div className="text-right">
@@ -107,7 +106,7 @@ const OrderConfirmation = () => {
 
               <div>
                 <h3 className="font-semibold mb-3 flex items-center">
-                  <Truck className="h-4 w-4 mr-2 text-green-600" />
+                  <Truck className="h-4 w-4 mr-2 text-[#22A45D]" />
                   Delivery Details
                 </h3>
                 <div className="bg-gray-50 p-4 rounded-lg">
@@ -118,7 +117,7 @@ const OrderConfirmation = () => {
                     {order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}
                   </p>
                   <div className="mt-3 pt-3 border-t">
-                    <p className="text-sm font-medium text-green-600">
+                    <p className="text-sm font-medium text-[#22A45D]">
                       Expected Delivery: Between {new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })} - {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                     </p>
                   </div>
@@ -129,7 +128,7 @@ const OrderConfirmation = () => {
         </Card>
 
         {/* Payment Summary */}
-        <Card className="mb-6">
+        <Card className="mb-6 rounded-xl shadow-sm">
           <CardContent className="p-6">
             <h3 className="font-semibold mb-4">💳 Payment Summary</h3>
             <div className="space-y-2">
@@ -142,7 +141,7 @@ const OrderConfirmation = () => {
                 <span>₹{order.paymentSummary.delivery}</span>
               </div>
               {order.paymentSummary.discount > 0 && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-[#22A45D]">
                   <span>Discount:</span>
                   <span>-₹{order.paymentSummary.discount}</span>
                 </div>
@@ -157,18 +156,22 @@ const OrderConfirmation = () => {
           </CardContent>
         </Card>
 
-
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button onClick={() => navigate('/products')} className="bg-green-600 hover:bg-green-700">
+        {/* Action Buttons - Side by Side */}
+        <div className="grid grid-cols-2 gap-4">
+          <Button
+            onClick={() => navigate('/products')}
+            className="h-12 text-sm font-semibold bg-[#22A45D] hover:bg-[#1b8f4e] text-white rounded-xl shadow-md flex items-center justify-center gap-2"
+          >
+            <ShoppingBag className="h-5 w-5" />
             Continue Shopping
           </Button>
-          <Button onClick={() => navigate('/orders')} variant="outline">
-            View Order History
-          </Button>
-          <Button onClick={() => navigate('/')} variant="outline" className="flex items-center">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
+          <Button
+            onClick={() => navigate('/orders')}
+            variant="outline"
+            className="h-12 text-sm font-semibold border-[#22A45D] text-[#22A45D] hover:bg-green-50 rounded-xl shadow-md flex items-center justify-center gap-2"
+          >
+            <ClipboardList className="h-5 w-5" />
+            Order History
           </Button>
         </div>
       </div>
