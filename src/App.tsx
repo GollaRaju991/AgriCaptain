@@ -43,6 +43,7 @@ import SavedAddresses from "./pages/SavedAddresses";
 import EditProfilePage from "./pages/EditProfilePage";
 import AgrizinMoney from "./pages/AgrizinMoney";
 import AddProduct from "./pages/AddProduct";
+import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import NotFound from "./pages/NotFound";
 
