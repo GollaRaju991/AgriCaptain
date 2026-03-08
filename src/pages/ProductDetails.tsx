@@ -164,41 +164,24 @@ const ProductDetails = () => {
       { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
     ]
   } : null;
-    id: id || '1',
-    name: 'Hybrid Tomato Seeds - Premium Quality',
-    price: 299,
-    originalPrice: 399,
-    images: [
-      'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
-    ],
-    category: 'seeds',
-    rating: 4.5,
-    reviews: 124,
-    discount: 25,
-    inStock: true,
-    shortDescription: 'Premium quality hybrid tomato seeds for high-yield farming',
-    detailedDescription: `These premium hybrid tomato seeds are specially developed for Indian growing conditions.`,
-    usage: `Ideal for commercial farming, kitchen gardens, and greenhouse cultivation.`,
-    specifications: {
-      'Seed Type': 'Hybrid F1',
-      'Germination Rate': '95%+',
-      'Days to Maturity': '75-80 days',
-      'Origin': 'India'
-    },
-    features: [
-      'High germination rate (95%+)',
-      'Disease resistant varieties',
-      'Suitable for all climates',
-      'Premium quality assurance'
-    ],
-    reviewsList: [
-      { id: 1, name: 'John Farmer', rating: 5, date: '2 weeks ago', comment: 'Excellent seeds!', helpful: 45, notHelpful: 2 },
-      { id: 2, name: 'Sarah Green', rating: 4, date: '1 month ago', comment: 'Good quality seeds.', helpful: 23, notHelpful: 3 }
-    ]
-  };
+
+  // If no product found at all, show not found
+  if (!product && !loadingSeller) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Product not found</p>
+        <Button onClick={() => navigate('/products')}>Back to Products</Button>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading product...</p>
+      </div>
+    );
+  }
 
 
   // Get related products - match by similar names or random selection
