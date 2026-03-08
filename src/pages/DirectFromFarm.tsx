@@ -263,24 +263,15 @@ const DirectFromFarm: React.FC = () => {
           </div>
         </Link>
 
-        {/* Action buttons */}
-        <div className="px-2 pb-2 sm:px-3 sm:pb-3 flex gap-1.5 sm:gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1 text-[10px] sm:text-xs px-1 sm:px-3 h-7 sm:h-9 border-gray-300 rounded-lg min-h-0"
-            onClick={(e) => { e.preventDefault(); navigate(`/sell-crop/${crop.id}`); }}
-          >
-            <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
-            <span className="ml-0.5 sm:ml-1 truncate">{t('View', 'వివరాలు', 'विवरण')}</span>
-          </Button>
+        {/* Add to Cart button */}
+        <div className="px-2 pb-2 sm:px-3 sm:pb-3">
           <Button
             size="sm"
-            className="flex-1 bg-green-700 hover:bg-green-800 text-[10px] sm:text-xs px-1 sm:px-3 h-7 sm:h-9 rounded-lg min-h-0"
+            className="w-full bg-green-700 hover:bg-green-800 text-[10px] sm:text-xs px-2 sm:px-3 h-7 sm:h-9 rounded-lg min-h-0"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
           >
-            <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
-            <span className="ml-0.5 sm:ml-1 truncate">{t('Add', 'కార్ట్', 'कार्ट')}</span>
+            <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0 mr-1" />
+            {t('Add to Cart', 'కార్ట్‌కు జోడించు', 'कार्ट में डालें')}
           </Button>
         </div>
 
