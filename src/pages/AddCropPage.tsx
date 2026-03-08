@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CropDetailsForm from '@/components/CropDetailsForm';
 import MobileBottomNav from '@/components/MobileBottomNav';
-import { states, districts, divisions, mandals, villages } from '@/data/locationData';
+import { states, districts, divisions, mandals, villages, getMandalsForDistrict } from '@/data/locationData';
 
 const allIndianStates = states.IN || [];
 
@@ -73,18 +73,7 @@ const AddCropPage: React.FC = () => {
     if (!formData.district) return [];
     const districtObj = availableDistricts.find((d: any) => d.name === formData.district);
     if (!districtObj) return [];
-    const mandalList = (mandals as any)[districtObj.code];
-    if (mandalList) return mandalList;
-    const divisionList = (divisions as any)[districtObj.code];
-    if (divisionList) {
-      const allM: any[] = [];
-      divisionList.forEach((div: any) => {
-        const m = (mandals as any)[div.code];
-        if (m) allM.push(...m);
-      });
-      return allM;
-    }
-    return [];
+    return getMandalsForDistrict(districtObj.code);
   }, [formData.district, availableDistricts]);
 
   const availableVillages = useMemo(() => {
@@ -433,7 +422,7 @@ const AddCropPage: React.FC = () => {
                     <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select District', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
                     <SelectContent>
                       {availableDistricts.map((d: any) => (
-                        <SelectItem key={d.code} value={d.name}>{d.name}</SelectItem>
+                        <SelectItem key={d.code} value={d.name}>{language === 'te' && d.nameTe ? d.nameTe : d.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -447,11 +436,11 @@ const AddCropPage: React.FC = () => {
                   {availableMandals.length > 0 ? (
                     <Select value={formData.mandal} onValueChange={(v) => handleSelectChange('mandal', v)} disabled={!formData.district}>
                       <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select Mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
-                      <SelectContent>
-                        {availableMandals.map((m: any) => (
-                          <SelectItem key={m.code} value={m.name}>{m.name}</SelectItem>
-                        ))}
-                      </SelectContent>
+                    <SelectContent>
+                      {availableMandals.map((m: any) => (
+                        <SelectItem key={m.code} value={m.name}>{language === 'te' && m.nameTe ? m.nameTe : m.name}</SelectItem>
+                      ))}
+                    </SelectContent>
                     </Select>
                   ) : (
                     <Input name="mandal" value={formData.mandal} onChange={handleInputChange} className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} disabled={!formData.district} />
