@@ -111,15 +111,22 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Mark OTP as verified
-    await supabase
-      .from("otp_verifications")
-      .update({ verified: true })
-      .eq("phone", phone);
-
     // Use cryptographically secure random password
     const testPassword = crypto.randomUUID() + crypto.randomUUID();
     const testEmail = `user_${phone.replace(/\+/g, '')}@agricaptain.app`;
+
+    const markVerified = async () => {
+      await supabase
+        .from("otp_verifications")
+        .update({ verified: true })
+        .eq("phone", phone);
+    };
+
+    const sendSession = (session: any, user: any) =>
+      new Response(
+        JSON.stringify({ success: true, session, user }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
 
     // Try to sign up
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -154,14 +161,8 @@ const handler = async (req: Request): Promise<Response> => {
           });
 
           if (!retryError && retrySignIn.session) {
-            return new Response(
-              JSON.stringify({
-                success: true,
-                session: retrySignIn.session,
-                user: retrySignIn.user,
-              }),
-              { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-            );
+            await markVerified();
+            return sendSession(retrySignIn.session, retrySignIn.user);
           }
         }
       }
@@ -173,23 +174,20 @@ const handler = async (req: Request): Promise<Response> => {
       });
 
       if (signInData?.session) {
-        return new Response(
-          JSON.stringify({ success: true, session: signInData.session, user: signInData.user }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        await markVerified();
+        return sendSession(signInData.session, signInData.user);
       }
     }
 
     if (signUpData?.session) {
-      return new Response(
-        JSON.stringify({ success: true, session: signUpData.session, user: signUpData.user }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      await markVerified();
+      return sendSession(signUpData.session, signUpData.user);
     }
 
+    // If we get here, OTP was correct but session creation failed — don't mark as verified
     return new Response(
-      JSON.stringify({ success: true, message: "OTP verified successfully" }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({ success: false, error: "OTP verified but session creation failed. Please try again." }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
   } catch (error: any) {
