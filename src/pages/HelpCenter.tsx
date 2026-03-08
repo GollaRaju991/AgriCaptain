@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from '@/components/Header';
+import { useNavigate } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
