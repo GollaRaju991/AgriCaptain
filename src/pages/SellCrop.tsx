@@ -185,42 +185,28 @@ const SellCrop: React.FC = () => {
       <div className="hidden lg:block"><Header /></div>
 
       <main className="container mx-auto px-4 py-4 max-w-2xl">
-        {/* Rectangular filter boxes */}
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-4">
-          {[
-            { key: 'crop', label: t('Crop', 'పంట', 'फसल'), active: !!appliedFilters.cropName },
-            { key: 'location', label: t('Location', 'ప్రాంతం', 'स्थान'), active: !!appliedFilters.location },
-            { key: 'price', label: t('Price', 'ధర', 'कीमत'), active: !!(appliedFilters.minPrice || appliedFilters.maxPrice) },
-            { key: 'quantity', label: t('Qty', 'పరిమాణం', 'मात्रा'), active: !!appliedFilters.quantity },
-            { key: 'availability', label: t('Avail.', 'అందుబాటు', 'उपलब्ध.'), active: !!appliedFilters.availabilityLocation },
-          ].map((tab) => (
-            <button
-              key={tab.key}
-              className={`border rounded-md px-3 py-2 text-sm font-medium text-center transition-colors ${
-                tab.active
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-card text-foreground border-border hover:border-primary/50'
-              }`}
-              onClick={() => { setFilters(appliedFilters); setActiveTab(tab.key); setDrawerOpen(true); }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        {activeFilterCount > 0 && (
-          <Button variant="ghost" size="sm" className="mb-3 text-destructive" onClick={() => setAppliedFilters(defaultFilters)}>
-            <X className="h-3 w-3 mr-1" /> {t('Reset Filters', 'ఫిల్టర్‌లు రీసెట్', 'फ़िल्टर रीसेट')}
+        {/* Filter + Add Crop inline row */}
+        <div className="flex gap-2 mb-4">
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={() => { setFilters(appliedFilters); setDrawerOpen(true); }}
+          >
+            <SlidersHorizontal className="h-4 w-4 mr-2" />
+            {t('Filter', 'ఫిల్టర్', 'फ़िल्टर')}
+            {activeFilterCount > 0 && (
+              <span className="ml-1.5 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                {activeFilterCount}
+              </span>
+            )}
           </Button>
-        )}
-
-        {/* Add Crop Button */}
-        <Button
-          onClick={() => navigate('/sell-crop/add')}
-          className="w-full mb-4 py-3 text-base"
-          size="lg"
-        >
-          <Plus className="h-5 w-5 mr-2" /> {t('Add Crop Details', 'పంట వివరాలు జోడించండి', 'फसल विवरण जोड़ें')}
-        </Button>
+          <Button
+            className="flex-1"
+            onClick={() => navigate('/sell-crop/add')}
+          >
+            <Plus className="h-4 w-4 mr-2" /> {t('Add Crop Details', 'పంట వివరాలు జోడించండి', 'फसल विवरण जोड़ें')}
+          </Button>
+        </div>
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
