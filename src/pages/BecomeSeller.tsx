@@ -214,23 +214,23 @@ const BecomeSeller = () => {
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/10 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl -z-10" />
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-3xl relative">
+      <div className="container mx-auto px-4 py-6 max-w-lg relative">
         {!selectedType ? (
           <>
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">
+            <div className="text-center mb-4">
+              <h1 className="text-xl font-bold text-foreground mb-1">
                 {t['become_seller_title'] || 'Become a Seller'}
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {t['become_seller_subtitle'] || 'Choose your selling category to get started'}
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-3">
               {sellerOptions.map((option) => (
                 <Card
                   key={option.type}
-                  className="cursor-pointer group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary overflow-hidden rounded-2xl"
+                  className="cursor-pointer group hover:shadow-lg transition-all duration-300 border hover:border-primary overflow-hidden rounded-xl"
                   onClick={() => {
                     if (option.type === 'farmers_market') {
                       navigate('/sell-crop/add');
@@ -240,7 +240,7 @@ const BecomeSeller = () => {
                   }}
                 >
                   <CardContent className="p-0">
-                    <div className="w-full aspect-square overflow-hidden">
+                    <div className="w-full aspect-[4/3] overflow-hidden">
                       <img
                         src={option.image}
                         alt={t[option.titleKey]}
@@ -248,11 +248,11 @@ const BecomeSeller = () => {
                         loading="lazy"
                       />
                     </div>
-                    <div className="p-5 text-center">
-                      <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
+                    <div className="p-2.5 text-center">
+                      <h3 className="text-sm font-bold text-foreground mb-0.5 group-hover:text-primary transition-colors">
                         {t[option.titleKey]}
                       </h3>
-                      <p className="text-sm text-muted-foreground">{t[option.descKey]}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{t[option.descKey]}</p>
                     </div>
                   </CardContent>
                 </Card>
