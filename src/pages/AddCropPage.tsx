@@ -436,11 +436,11 @@ const AddCropPage: React.FC = () => {
                   {availableMandals.length > 0 ? (
                     <Select value={formData.mandal} onValueChange={(v) => handleSelectChange('mandal', v)} disabled={!formData.district}>
                       <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select Mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
-                      <SelectContent>
-                        {availableMandals.map((m: any) => (
-                          <SelectItem key={m.code} value={m.name}>{m.name}</SelectItem>
-                        ))}
-                      </SelectContent>
+                    <SelectContent>
+                      {availableMandals.map((m: any) => (
+                        <SelectItem key={m.code} value={m.name}>{language === 'te' && m.nameTe ? m.nameTe : m.name}</SelectItem>
+                      ))}
+                    </SelectContent>
                     </Select>
                   ) : (
                     <Input name="mandal" value={formData.mandal} onChange={handleInputChange} className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} disabled={!formData.district} />
