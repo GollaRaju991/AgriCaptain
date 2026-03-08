@@ -65,7 +65,7 @@ const Header = () => {
   const hideFullMobileHeader = ['/cart', '/wishlist', '/profile'].includes(location.pathname);
   
   // Hide header completely on these standalone pages (mobile)
-  const hideHeaderPages = ['/coupons', '/help-center', '/orders', '/checkout'];
+  const hideHeaderPages = ['/coupons', '/help-center', '/orders', '/checkout', '/become-seller'];
   const isOrderDetailPage = /^\/orders\/[^/]+$/.test(location.pathname);
   const isStandalonePage = hideHeaderPages.includes(location.pathname) || isOrderDetailPage;
 
