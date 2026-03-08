@@ -620,10 +620,10 @@ const Orders = () => {
                           variant="outline" 
                           size="sm" 
                           className="flex items-center space-x-1"
-                          onClick={() => toggleOrderDetails(order.id)}
+                          onClick={() => navigate(`/orders/${order.id}`)}
                         >
                           <Eye className="h-4 w-4" />
-                          <span>{isExpanded ? 'Hide Details' : 'View Details'}</span>
+                          <span>View Details</span>
                         </Button>
                         
                         {order.status !== 'cancelled' && order.status !== 'returned' && (

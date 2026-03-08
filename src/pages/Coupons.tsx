@@ -60,12 +60,26 @@ const Coupons = () => {
     });
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      {/* Mobile standalone header */}
+      <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <button onClick={() => navigate(-1)} className="p-1">
+            <span className="text-gray-700 text-xl">←</span>
+          </button>
+          <h1 className="text-lg font-bold text-gray-900">My Coupons</h1>
+        </div>
+      </div>
+      {/* Desktop header */}
+      <div className="hidden lg:block">
+        <Header />
+      </div>
       
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-8 hidden lg:block">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Coupons</h1>
           <p className="text-gray-600">Save money with exclusive discount coupons</p>
         </div>
