@@ -55,6 +55,11 @@ const Header = () => {
 
   const isProductPage = location.pathname.startsWith('/product/');
   const hideFullMobileHeader = ['/cart', '/wishlist', '/profile'].includes(location.pathname);
+  
+  // Hide header completely on these standalone pages (mobile)
+  const hideHeaderPages = ['/coupons', '/help-center'];
+  const isOrderDetailPage = /^\/orders\/[^/]+$/.test(location.pathname);
+  const isStandalonePage = hideHeaderPages.includes(location.pathname) || isOrderDetailPage;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
