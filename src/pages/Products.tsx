@@ -345,12 +345,12 @@ const Products = () => {
           {/* Filters Button */}
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="flex-1 flex items-center justify-center gap-2 bg-green-50 border border-green-200 rounded-xl py-3 px-4 text-green-800 font-semibold text-base relative"
+            className="flex-1 flex items-center justify-center gap-2 bg-primary/10 border border-primary/20 rounded-xl py-3 px-4 text-primary font-semibold text-base relative"
           >
-            <SlidersHorizontal className="h-5 w-5 text-green-700" />
+            <SlidersHorizontal className="h-5 w-5 text-primary" />
             Filters
             {activeFilterCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-green-700 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
                 {activeFilterCount}
               </span>
             )}
