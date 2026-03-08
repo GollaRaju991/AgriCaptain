@@ -218,6 +218,37 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             </Select>
           </div>
 
+          {/* Sell Type */}
+          <div>
+            <Label className="flex items-center gap-2 mb-2">
+              <Store className="h-4 w-4 text-muted-foreground" /> {label('Sell Type', 'అమ్మకం రకం')} *
+            </Label>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: 'direct_from_farm', label: label('Direct From Farm', 'నేరుగా పొలం నుండి') },
+                { value: 'crop_market', label: label('Crop Market', 'పంట మార్కెట్') },
+                { value: 'both', label: label('Both', 'రెండూ') },
+              ] as const).map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setCropData({ ...cropData, sellType: option.value })}
+                  className={cn(
+                    "relative flex items-center justify-center gap-1.5 rounded-xl border-2 py-3 px-2 text-sm font-medium transition-all duration-200",
+                    cropData.sellType === option.value
+                      ? "border-primary bg-primary text-primary-foreground shadow-md"
+                      : "border-border bg-card text-foreground hover:border-primary/50"
+                  )}
+                >
+                  {cropData.sellType === option.value && (
+                    <Check className="h-4 w-4 shrink-0" />
+                  )}
+                  <span className="truncate text-xs sm:text-sm">{option.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Quantity */}
           <div>
             <Label htmlFor="quantity" className="flex items-center gap-2">
