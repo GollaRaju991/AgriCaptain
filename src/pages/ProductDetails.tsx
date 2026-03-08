@@ -142,12 +142,12 @@ const ProductDetails = () => {
       'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
       'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
     ],
-    category: foundProduct.category || 'seeds',
+    category: (foundProduct as any).category || 'seeds',
     shortDescription: foundProduct.description || 'Premium quality product for farming',
     detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
     usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
     specifications: {
-      'Product Type': (foundProduct.category || 'Seeds').charAt(0).toUpperCase() + (foundProduct.category || 'seeds').slice(1),
+      'Product Type': ((foundProduct as any).category || 'Seeds').charAt(0).toUpperCase() + ((foundProduct as any).category || 'seeds').slice(1),
       'Quality': 'Premium',
       'Shelf Life': '2 years',
       'Origin': 'India'
@@ -164,6 +164,39 @@ const ProductDetails = () => {
       { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
     ]
   } : null;
+
+  // Get related products - match by similar names or random selection
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    const currentId = product.id;
+    const keywords = product.name.toLowerCase().split(' ').filter(w => w.length > 3);
+    const similar = products.filter(p => {
+      if (p.id === currentId) return false;
+      const pName = p.name.toLowerCase();
+      return keywords.some(kw => pName.includes(kw));
+    });
+    
+    if (similar.length >= 4) return similar.slice(0, 8);
+    
+    const remaining = products.filter(p => p.id !== currentId && !similar.includes(p));
+    return [...similar, ...remaining].slice(0, 8);
+  }, [product?.id, product?.name]);
+
+  // Rating distribution
+  const ratingDistribution = useMemo(() => {
+    if (!product) return [];
+    const reviews = product.reviewsList || [];
+    const total = reviews.length || 1;
+    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(r => {
+      dist[r.rating as keyof typeof dist]++;
+    });
+    return Object.entries(dist).reverse().map(([stars, count]) => ({
+      stars: parseInt(stars),
+      count,
+      percentage: Math.round((count / total) * 100)
+    }));
+  }, [product?.reviewsList]);
 
   // If no product found at all, show not found
   if (!product && !loadingSeller) {
