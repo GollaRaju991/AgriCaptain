@@ -1,32 +1,42 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Sprout, Droplet, Wrench, Award, CreditCard, 
-  Carrot, Apple, Flower2, Wheat, Leaf, FlaskConical, Bug, Sparkles,
-  ShieldAlert, Target, Spline, CircleDot, TrendingUp, SprayCan, Droplets, Scissors,
-  Factory, Building2, Atom, Zap, Star, Search, Camera, ArrowLeft,
-  Users, Truck, BarChart3
-} from 'lucide-react';
+import { Search, Camera, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import FarmWorkerDialog from '@/components/FarmWorkerDialog';
 import RentVehicleDialog from '@/components/RentVehicleDialog';
 
+// Sidebar icons
+import catSeedsIcon from '@/assets/cat-seeds-icon.png';
+import catFertilizerIcon from '@/assets/cat-fertilizer-icon.png';
+import catAgriIcon from '@/assets/cat-agri-icon.png';
+import catBrandsIcon from '@/assets/cat-brands-icon.png';
+import catLoansIcon from '@/assets/cat-loans-icon.png';
+import catMarketIcon from '@/assets/cat-market-icon.png';
+import catFarmworkerIcon from '@/assets/cat-farmworker-icon.png';
+import catVehicleIcon from '@/assets/cat-vehicle-icon.png';
+
+// Subcategory images
+import catVegetableSeeds from '@/assets/cat-vegetable-seeds.png';
+import catFruitSeeds from '@/assets/cat-fruit-seeds.png';
+import catFlowerSeeds from '@/assets/cat-flower-seeds.png';
+import catGrainSeeds from '@/assets/cat-grain-seeds.png';
+
 interface SubCategory {
   name: string;
   path: string;
-  icon: React.ElementType;
   image: string;
+  accent?: string;
 }
 
 interface Category {
   id: string;
   name: string;
-  icon: React.ElementType;
-  image: string;
+  sidebarIcon: string;
   subcategories: SubCategory[];
   action?: string;
   actionPath?: string;
+  shopAllLabel?: string;
 }
 
 const Categories = () => {
@@ -40,90 +50,85 @@ const Categories = () => {
     {
       id: 'seeds',
       name: 'Seeds',
-      icon: Sprout,
-      image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png',
+      sidebarIcon: catSeedsIcon,
+      shopAllLabel: 'Shop All Seeds',
       subcategories: [
-        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable', icon: Carrot, image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png' },
-        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit', icon: Apple, image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png' },
-        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower', icon: Flower2, image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png' },
-        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain', icon: Wheat, image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png' },
+        { name: 'Vegetable Seeds', path: '/products?category=seeds&type=vegetable', image: catVegetableSeeds, accent: 'text-green-600' },
+        { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit', image: catFruitSeeds, accent: 'text-red-500' },
+        { name: 'Flower Seeds', path: '/products?category=seeds&type=flower', image: catFlowerSeeds, accent: 'text-pink-500' },
+        { name: 'Grain Seeds', path: '/products?category=seeds&type=grain', image: catGrainSeeds, accent: 'text-amber-600' },
       ]
     },
     {
       id: 'fertilizers',
       name: 'Fertilizers',
-      icon: Droplet,
-      image: 'https://i.postimg.cc/0Q24pk6h/Fertilizer.png',
+      sidebarIcon: catFertilizerIcon,
+      shopAllLabel: 'Shop All Fertilizers',
       subcategories: [
-        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', icon: Leaf, image: 'https://i.postimg.cc/0Q24pk6h/Fertilizer.png' },
-        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', icon: FlaskConical, image: 'https://i.postimg.cc/0Q24pk6h/Fertilizer.png' },
-        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', icon: Bug, image: 'https://i.postimg.cc/0Q24pk6h/Fertilizer.png' },
-        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', icon: Sparkles, image: 'https://i.postimg.cc/0Q24pk6h/Fertilizer.png' },
+        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', image: catVegetableSeeds, accent: 'text-green-600' },
+        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', image: catFruitSeeds, accent: 'text-blue-500' },
+        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', image: catFlowerSeeds, accent: 'text-emerald-500' },
+        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', image: catGrainSeeds, accent: 'text-amber-600' },
       ]
     },
     {
       id: 'agriculture',
-      name: 'Agri Products',
-      icon: Wrench,
-      image: 'https://i.postimg.cc/4y7Mm13R/Pestiside.png',
+      name: 'Agri\nProducts',
+      sidebarIcon: catAgriIcon,
+      shopAllLabel: 'Shop All Products',
       subcategories: [
-        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', icon: ShieldAlert, image: 'https://i.postimg.cc/4y7Mm13R/Pestiside.png' },
-        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', icon: Target, image: 'https://i.postimg.cc/4y7Mm13R/Pestiside.png' },
-        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', icon: Spline, image: 'https://i.postimg.cc/4y7Mm13R/Pestiside.png' },
-        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', icon: CircleDot, image: 'https://i.postimg.cc/4y7Mm13R/Pestiside.png' },
-        { name: 'Growth Regulators', path: '/products?category=agriculture&type=growth-regulators', icon: TrendingUp, image: 'https://i.postimg.cc/4y7Mm13R/Pestiside.png' },
-        { name: 'Sprayers', path: '/products?category=agriculture&type=equipment', icon: SprayCan, image: 'https://i.postimg.cc/vmPbn3G4/balwaan-shakti-battery-sprayer-12x8-file-7234.jpg' },
-        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation', icon: Droplets, image: 'https://i.postimg.cc/bNby5x95/ns-404-file-1319.jpg' },
-        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting', icon: Scissors, image: 'https://i.postimg.cc/bNby5x95/ns-404-file-1319.jpg' },
+        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', image: catVegetableSeeds, accent: 'text-red-500' },
+        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', image: catFruitSeeds, accent: 'text-orange-500' },
+        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', image: catFlowerSeeds, accent: 'text-green-600' },
+        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', image: catGrainSeeds, accent: 'text-amber-600' },
+        { name: 'Sprayers', path: '/products?category=agriculture&type=equipment', image: catVegetableSeeds, accent: 'text-blue-500' },
+        { name: 'Irrigation', path: '/products?category=agriculture&type=irrigation', image: catFlowerSeeds, accent: 'text-cyan-500' },
       ]
     },
     {
       id: 'brands',
       name: 'Brands',
-      icon: Award,
-      image: 'https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png',
+      sidebarIcon: catBrandsIcon,
+      shopAllLabel: 'Shop All Brands',
       subcategories: [
-        { name: 'BASF', path: '/products?brand=basf', icon: Factory, image: 'https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png' },
-        { name: 'Bayer', path: '/products?brand=bayer', icon: Building2, image: 'https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png' },
-        { name: 'Syngenta', path: '/products?brand=syngenta', icon: Atom, image: 'https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png' },
-        { name: 'UPL', path: '/products?brand=upl', icon: Zap, image: 'https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png' },
-        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', icon: Star, image: 'https://i.postimg.cc/s22R375s/katyayani-thioxam-thiamethoxam-25-wg-insecticide-file-10409.png' },
+        { name: 'BASF', path: '/products?brand=basf', image: catVegetableSeeds, accent: 'text-blue-600' },
+        { name: 'Bayer', path: '/products?brand=bayer', image: catFruitSeeds, accent: 'text-green-600' },
+        { name: 'Syngenta', path: '/products?brand=syngenta', image: catFlowerSeeds, accent: 'text-purple-500' },
+        { name: 'UPL', path: '/products?brand=upl', image: catGrainSeeds, accent: 'text-amber-600' },
+        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', image: catVegetableSeeds, accent: 'text-red-500' },
       ]
     },
     {
       id: 'loans',
       name: 'Loans',
-      icon: CreditCard,
-      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      sidebarIcon: catLoansIcon,
+      shopAllLabel: 'View All Loans',
       subcategories: [
-        { name: 'Crop Loans', path: '/loans?type=crop', icon: Wheat, image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp' },
-        { name: 'Equipment Loans', path: '/loans?type=equipment', icon: Wrench, image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp' },
-        { name: 'Land Loans', path: '/loans?type=land', icon: Sprout, image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp' },
-        { name: 'Kisan Credit Card', path: '/loans?type=kcc', icon: CreditCard, image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp' },
+        { name: 'Crop Loans', path: '/loans?type=crop', image: catGrainSeeds, accent: 'text-green-600' },
+        { name: 'Equipment Loans', path: '/loans?type=equipment', image: catVegetableSeeds, accent: 'text-blue-500' },
+        { name: 'Land Loans', path: '/loans?type=land', image: catFlowerSeeds, accent: 'text-amber-600' },
+        { name: 'Kisan Credit Card', path: '/loans?type=kcc', image: catFruitSeeds, accent: 'text-red-500' },
       ]
     },
     {
       id: 'market-details',
-      name: 'Market Details',
-      icon: BarChart3,
-      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      name: 'Market\nDetails',
+      sidebarIcon: catMarketIcon,
       action: 'navigate',
       actionPath: '/market-details',
       subcategories: []
     },
     {
       id: 'farm-worker',
-      name: 'Farm Worker',
-      icon: Users,
-      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      name: 'Farm\nWorker',
+      sidebarIcon: catFarmworkerIcon,
       action: 'farmWorker',
       subcategories: []
     },
     {
       id: 'rent-vehicles',
-      name: 'Rent Vehicles',
-      icon: Truck,
-      image: 'https://i.postimg.cc/Y2d2Kr6Y/Offers.webp',
+      name: 'Rent\nVehicles',
+      sidebarIcon: catVehicleIcon,
       action: 'rentVehicle',
       subcategories: []
     },
@@ -131,12 +136,12 @@ const Categories = () => {
 
   const activeCategoryData = categories.find(c => c.id === activeCategory);
 
-  const handleCategoryClick = (category: any) => {
+  const handleCategoryClick = (category: Category) => {
     if (category.action === 'farmWorker') {
       setFarmWorkerOpen(true);
     } else if (category.action === 'rentVehicle') {
       setRentVehicleOpen(true);
-    } else if (category.action === 'navigate') {
+    } else if (category.action === 'navigate' && category.actionPath) {
       navigate(category.actionPath);
     } else {
       setActiveCategory(category.id);
@@ -146,56 +151,55 @@ const Categories = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-green-600 text-white p-4">
+      <div className="bg-white border-b border-border p-4">
         <div className="flex items-center gap-3 mb-3">
           <Link to="/">
-            <ArrowLeft className="h-6 w-6" />
+            <ArrowLeft className="h-6 w-6 text-foreground" />
           </Link>
-          <h1 className="text-lg font-semibold">All Categories</h1>
+          <h1 className="text-lg font-semibold text-foreground">All Categories</h1>
         </div>
         
         {/* Search Bar */}
         <div className="flex gap-2">
-          <div className="flex-1 bg-white rounded-lg flex items-center px-3 py-2">
-            <Search className="h-5 w-5 text-gray-400" />
+          <div className="flex-1 bg-muted rounded-lg flex items-center px-3 py-2.5 border border-border">
+            <Search className="h-5 w-5 text-muted-foreground" />
             <input 
               type="text" 
               placeholder="Search products..." 
-              className="flex-1 ml-2 text-gray-800 outline-none text-sm"
+              className="flex-1 ml-2 text-foreground bg-transparent outline-none text-sm placeholder:text-muted-foreground"
             />
-            <Camera className="h-5 w-5 text-gray-400" />
+            <Camera className="h-5 w-5 text-muted-foreground" />
           </div>
         </div>
       </div>
 
       {/* Two Column Layout */}
       <div className="flex min-h-[calc(100vh-140px)]">
-        {/* Left Sidebar - Categories */}
-        <div className="w-24 bg-gray-100 border-r border-gray-200 overflow-y-auto">
+        {/* Left Sidebar */}
+        <div className="w-[90px] bg-muted/50 border-r border-border overflow-y-auto">
           {categories.map((category) => {
-            const Icon = category.icon;
             const isActive = activeCategory === category.id;
             return (
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category)}
-                className={`w-full p-3 flex flex-col items-center gap-2 border-l-4 transition-all ${
+                className={`w-full p-2 py-3 flex flex-col items-center gap-1.5 border-l-[3px] transition-all ${
                   isActive 
-                    ? 'bg-white border-l-green-600 text-green-600' 
-                    : 'border-l-transparent text-gray-600 hover:bg-gray-50'
+                    ? 'bg-white border-l-primary' 
+                    : 'border-l-transparent hover:bg-white/60'
                 }`}
               >
-                <div className={`w-14 h-14 rounded-lg flex items-center justify-center overflow-hidden ${
-                  isActive ? 'bg-green-100' : 'bg-white'
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden ${
+                  isActive ? 'bg-primary/10 border border-primary/20' : 'bg-white border border-border'
                 }`}>
                   <img 
-                    src={category.image} 
+                    src={category.sidebarIcon} 
                     alt={category.name}
-                    className="w-12 h-12 object-contain"
+                    className="w-9 h-9 object-contain"
                   />
                 </div>
-                <span className={`text-xs font-medium text-center leading-tight ${
-                  isActive ? 'text-green-600' : 'text-gray-700'
+                <span className={`text-[10px] font-medium text-center leading-tight whitespace-pre-line ${
+                  isActive ? 'text-primary' : 'text-muted-foreground'
                 }`}>
                   {category.name}
                 </span>
@@ -208,39 +212,39 @@ const Categories = () => {
         <div className="flex-1 bg-white p-4 overflow-y-auto">
           {activeCategoryData && activeCategoryData.subcategories.length > 0 && (
             <>
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                {activeCategoryData.name}
+              <h2 className="text-base font-bold text-foreground mb-4">
+                Categories
               </h2>
               
-              <div className="grid grid-cols-3 gap-3">
-                {activeCategoryData.subcategories.map((sub, index) => {
-                  const SubIcon = sub.icon;
-                  return (
-                    <Link
-                      key={index}
-                      to={sub.path}
-                      className="flex flex-col items-center p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-2 overflow-hidden">
-                        <img 
-                          src={sub.image} 
-                          alt={sub.name}
-                          className="w-14 h-14 object-contain"
-                        />
-                      </div>
-                      <span className="text-xs text-gray-700 text-center leading-tight">
-                        {sub.name}
-                      </span>
-                    </Link>
-                  );
-                })}
+              <div className="grid grid-cols-2 gap-3">
+                {activeCategoryData.subcategories.map((sub, index) => (
+                  <Link
+                    key={index}
+                    to={sub.path}
+                    className="flex flex-col items-center rounded-xl border border-border bg-card p-3 hover:shadow-md transition-shadow"
+                  >
+                    <div className="w-20 h-20 rounded-lg flex items-center justify-center mb-2">
+                      <img 
+                        src={sub.image} 
+                        alt={sub.name}
+                        className="w-16 h-16 object-contain"
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-foreground text-center leading-tight">
+                      {sub.name.split(' ')[0]}
+                    </span>
+                    <span className={`text-[10px] font-medium text-center ${sub.accent || 'text-primary'}`}>
+                      {sub.name.split(' ').slice(1).join(' ')}
+                    </span>
+                  </Link>
+                ))}
               </div>
 
               <Link 
                 to={`/products?category=${activeCategoryData.id}`}
-                className="mt-6 block w-full bg-green-600 text-white text-center py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                className="mt-5 block w-full bg-primary text-primary-foreground text-center py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors text-sm"
               >
-                Shop All {activeCategoryData.name}
+                {activeCategoryData.shopAllLabel || `Shop All ${activeCategoryData.name}`}
               </Link>
             </>
           )}
