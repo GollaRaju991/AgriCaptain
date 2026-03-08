@@ -85,6 +85,13 @@ const CropDetailPage: React.FC = () => {
 
       <div className="hidden lg:block"><Header /></div>
 
+      {/* Desktop back button */}
+      <div className="hidden lg:flex container mx-auto max-w-2xl px-4 pt-4">
+        <Button variant="outline" size="sm" onClick={() => navigate('/sell-crop')} className="gap-2">
+          <ArrowLeft className="h-4 w-4" /> {label('Back to Sell Crop', 'పంట అమ్మకానికి తిరిగి')}
+        </Button>
+      </div>
+
       <main className="container mx-auto px-4 py-4 max-w-2xl">
         {/* Image gallery */}
         <div className="rounded-xl overflow-hidden bg-muted mb-4">
