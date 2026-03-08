@@ -232,6 +232,14 @@ const ProductDetails = () => {
     }));
   }, [product.reviewsList]);
 
+  if (loadingSeller) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading product...</p>
+      </div>
+    );
+  }
+
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
       addToCart({
