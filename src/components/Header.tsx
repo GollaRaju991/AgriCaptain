@@ -192,18 +192,15 @@ const Header = () => {
             <div className="lg:hidden overflow-x-auto bg-white border-b border-gray-200">
               <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
                 {[
-                  { name: translations.seeds, icon: Sprout, path: '/products?category=seeds' },
-                  { name: translations.fertilizers, icon: Droplet, path: '/products?category=fertilizers' },
-                  { name: translations.agri_products || translations.agriculture_products, icon: Wrench, path: '/products?category=agriculture' },
-                  { name: translations.brands, icon: Award, path: '/products?category=brands' },
-                  { name: translations.tools || 'Tools', icon: Wrench, path: '/products?category=tools' },
-                  { name: translations.market_details, icon: TrendingUp, path: '/market-details' },
-                  { name: translations.farm_worker, icon: Users, isPopup: true, action: 'farmWorker' as const },
-                  { name: translations.rent_vehicles, icon: Truck, isPopup: true, action: 'rentVehicle' as const },
-                  { name: translations.loans, icon: CreditCard, path: '/loans' },
+                  { name: translations.seeds, image: catSeedsIcon, path: '/products?category=seeds', bg: 'bg-green-50' },
+                  { name: translations.fertilizers, image: catFertilizerIcon, path: '/products?category=fertilizers', bg: 'bg-emerald-50' },
+                  { name: translations.agri_products || translations.agriculture_products, image: catAgriIcon, path: '/products?category=agriculture', bg: 'bg-amber-50' },
+                  { name: translations.brands, image: catBrandsIcon, path: '/products?category=brands', bg: 'bg-pink-50' },
+                  { name: translations.market_details, image: catMarketIcon, path: '/market-details', bg: 'bg-cyan-50' },
+                  { name: translations.farm_worker, image: catFarmworkerIcon, isPopup: true, action: 'farmWorker' as const, bg: 'bg-orange-50' },
+                  { name: translations.rent_vehicles, image: catVehicleIcon, isPopup: true, action: 'rentVehicle' as const, bg: 'bg-lime-50' },
+                  { name: translations.loans, image: catLoansIcon, path: '/loans', bg: 'bg-yellow-50' },
                 ].map((category, index) => {
-                  const Icon = category.icon;
-                  
                   if ('isPopup' in category && category.isPopup) {
                     return (
                       <button
@@ -214,8 +211,8 @@ const Header = () => {
                         }}
                         className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-700"
                       >
-                        <div className="w-10 h-10 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center mb-1">
-                          <Icon className="h-5 w-5 text-green-600" />
+                        <div className={`w-10 h-10 ${category.bg} rounded-xl flex items-center justify-center mb-1 overflow-hidden`}>
+                          <img src={category.image} alt={category.name} className="w-8 h-8 object-contain" />
                         </div>
                         <span className="text-xs text-center whitespace-nowrap text-gray-700">{category.name}</span>
                       </button>
@@ -228,8 +225,8 @@ const Header = () => {
                       to={'path' in category ? category.path : '/'}
                       className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-700"
                     >
-                      <div className="w-10 h-10 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center mb-1">
-                        <Icon className="h-5 w-5 text-green-600" />
+                      <div className={`w-10 h-10 ${category.bg} rounded-xl flex items-center justify-center mb-1 overflow-hidden`}>
+                        <img src={category.image} alt={category.name} className="w-8 h-8 object-contain" />
                       </div>
                       <span className="text-xs text-center whitespace-nowrap text-gray-700">{category.name}</span>
                     </Link>
