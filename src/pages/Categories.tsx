@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Camera, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
-import FarmWorkerDialog from '@/components/FarmWorkerDialog';
-import RentVehicleDialog from '@/components/RentVehicleDialog';
 
 // Sidebar icons
 import catSeedsIcon from '@/assets/cat-seeds-icon.png';
