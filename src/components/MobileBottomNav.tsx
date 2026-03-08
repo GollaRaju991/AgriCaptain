@@ -7,6 +7,9 @@ const MobileBottomNav = () => {
   const { pathname } = useLocation();
   const { translations } = useLanguage();
 
+  // Hide bottom nav on product details page (shows Add to Cart / Buy Now instead)
+  if (pathname.startsWith('/product/')) return null;
+
   const isActive = (route: string) =>
     pathname === route ? "text-white font-semibold" : "text-green-100";
 
