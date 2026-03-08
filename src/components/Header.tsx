@@ -88,12 +88,12 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white shadow-md sticky top-0 z-50 w-full">
+      <header className={`bg-white shadow-md sticky top-0 z-50 w-full ${isStandalonePage ? 'lg:block hidden' : ''}`}>
 
         {/* ===================== MOBILE HEADER ===================== */}
 
         {/* Product page mobile header: back + search + cart */}
-        {isProductPage && (
+        {isProductPage && !isStandalonePage && (
           <div className="lg:hidden flex items-center px-2 py-2 bg-white gap-2">
             <button onClick={() => navigate(-1)} className="p-1">
               <ArrowLeft className="h-5 w-5 text-gray-700" />
