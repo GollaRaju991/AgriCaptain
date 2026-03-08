@@ -69,23 +69,20 @@ const AgrizinMoneySection: React.FC = () => {
     }
     setProcessing(true);
     try {
-      await supabase.from('wallet_transactions').insert({
-        user_id: user!.id,
-        amount,
-        type: 'credit',
-        description: 'Wallet Recharge',
-        reference_type: 'recharge',
+      const { data, error } = await supabase.functions.invoke('wallet-recharge', {
+        body: { amount },
       });
-      await supabase
-        .from('wallets')
-        .update({ balance: balance + amount })
-        .eq('user_id', user!.id);
+
+      if (error || !data?.success) {
+        throw new Error(data?.error || 'Recharge failed');
+      }
+
       toast({ title: `₹${amount} added to Agrizin Money!` });
       setRechargeAmount('');
       setShowRecharge(false);
       fetchWalletData();
-    } catch {
-      toast({ title: 'Recharge failed', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: err.message || 'Recharge failed', variant: 'destructive' });
     } finally {
       setProcessing(false);
     }
