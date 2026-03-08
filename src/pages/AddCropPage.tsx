@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,22 +30,26 @@ interface SellerData {
   photo_url: string | null;
 }
 
+type PageStep = 'profile-selection' | 'profile-form' | 'crop-form';
+
 const AddCropPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editCropId = searchParams.get('editCrop');
   const { toast } = useToast();
-  const { translations: t, language } = useLanguage();
+  const { language } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
-  const [existingSeller, setExistingSeller] = useState<SellerData | null>(null);
+  const [sellerProfiles, setSellerProfiles] = useState<SellerData[]>([]);
+  const [selectedSeller, setSelectedSeller] = useState<SellerData | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [editingFarmer, setEditingFarmer] = useState(false);
+  const [editingSeller, setEditingSeller] = useState<SellerData | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [deletingSeller, setDeletingSeller] = useState(false);
+  const [step, setStep] = useState<PageStep>('profile-selection');
 
   const [formData, setFormData] = useState({
     name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '',
@@ -91,7 +95,7 @@ const AddCropPage: React.FC = () => {
   }, [formData.mandal, availableMandals]);
 
   useEffect(() => {
-    const checkFarmer = async () => {
+    const loadProfiles = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         toast({ title: 'Please login first', variant: 'destructive' });
@@ -100,19 +104,22 @@ const AddCropPage: React.FC = () => {
       }
       setUserId(user.id);
 
-      const { data: seller } = await supabase
+      const { data: sellers } = await supabase
         .from('sellers')
         .select('*')
         .eq('user_id', user.id)
         .eq('seller_type', 'farmers_market')
-        .maybeSingle();
+        .order('created_at', { ascending: false });
 
-      if (seller) {
-        setExistingSeller(seller as unknown as SellerData);
+      if (sellers && sellers.length > 0) {
+        setSellerProfiles(sellers as unknown as SellerData[]);
+        setStep('profile-selection');
+      } else {
+        setStep('profile-form');
       }
       setLoading(false);
     };
-    checkFarmer();
+    loadProfiles();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -142,35 +149,47 @@ const AddCropPage: React.FC = () => {
     setPhotoPreview(URL.createObjectURL(file));
   };
 
-  const startEditFarmer = () => {
-    if (existingSeller) {
-      setFormData({
-        name: existingSeller.name,
-        phone: existingSeller.phone,
-        address: existingSeller.address,
-        village: existingSeller.village || '',
-        district: existingSeller.district || '',
-        state: existingSeller.state || '',
-        mandal: '',
-        pincode: existingSeller.pincode,
-      });
-      setPhotoPreview(existingSeller.photo_url);
-      setEditingFarmer(true);
-    }
+  const resetForm = () => {
+    setFormData({ name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '' });
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setEditingSeller(null);
   };
 
-  const handleDeleteFarmer = async () => {
-    if (!existingSeller) return;
+  const startCreateNew = () => {
+    resetForm();
+    setStep('profile-form');
+  };
+
+  const startEditProfile = (seller: SellerData) => {
+    setEditingSeller(seller);
+    setFormData({
+      name: seller.name,
+      phone: seller.phone,
+      address: seller.address,
+      village: seller.village || '',
+      district: seller.district || '',
+      state: seller.state || '',
+      mandal: '',
+      pincode: seller.pincode,
+    });
+    setPhotoPreview(seller.photo_url);
+    setStep('profile-form');
+  };
+
+  const handleDeleteProfile = async (seller: SellerData) => {
     setDeletingSeller(true);
     try {
-      // Delete all crops first
-      await supabase.from('farmer_crops').delete().eq('seller_id', existingSeller.id);
-      // Delete seller
-      const { error } = await supabase.from('sellers').delete().eq('id', existingSeller.id);
+      await supabase.from('farmer_crops').delete().eq('seller_id', seller.id);
+      const { error } = await supabase.from('sellers').delete().eq('id', seller.id);
       if (error) throw error;
-      toast({ title: label('Farmer details deleted', 'రైతు వివరాలు తొలగించబడ్డాయి') });
-      setExistingSeller(null);
-      setEditingFarmer(false);
+      const updated = sellerProfiles.filter(s => s.id !== seller.id);
+      setSellerProfiles(updated);
+      if (selectedSeller?.id === seller.id) setSelectedSeller(null);
+      toast({ title: label('Farmer profile deleted', 'రైతు ప్రొఫైల్ తొలగించబడింది') });
+      if (updated.length === 0) {
+        setStep('profile-form');
+      }
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
@@ -178,12 +197,12 @@ const AddCropPage: React.FC = () => {
     }
   };
 
-  const handleFarmerSubmit = async (e: React.FormEvent) => {
+  const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userId) return;
     setSubmitting(true);
     try {
-      let photoUrl = existingSeller?.photo_url || null;
+      let photoUrl = editingSeller?.photo_url || null;
       if (photoFile) {
         const ext = photoFile.name.split('.').pop();
         const filePath = `${userId}/${Date.now()}.${ext}`;
@@ -207,25 +226,33 @@ const AddCropPage: React.FC = () => {
         photo_url: photoUrl,
       };
 
-      if (existingSeller) {
-        // Update
-        const { error } = await supabase.from('sellers').update(sellerData).eq('id', existingSeller.id);
+      if (editingSeller) {
+        const { error } = await supabase.from('sellers').update(sellerData).eq('id', editingSeller.id);
         if (error) throw error;
-        setExistingSeller({ ...existingSeller, ...sellerData, id: existingSeller.id } as SellerData);
-        toast({ title: label('Farmer details updated', 'రైతు వివరాలు అప్‌డేట్ చేయబడ్డాయి') });
+        const updatedSeller = { ...editingSeller, ...sellerData, id: editingSeller.id } as SellerData;
+        setSellerProfiles(prev => prev.map(s => s.id === editingSeller.id ? updatedSeller : s));
+        setSelectedSeller(updatedSeller);
+        toast({ title: label('Profile updated', 'ప్రొఫైల్ అప్‌డేట్ చేయబడింది') });
       } else {
-        // Insert
         const { data, error } = await supabase.from('sellers').insert(sellerData).select().single();
         if (error) throw error;
-        setExistingSeller(data as unknown as SellerData);
-        toast({ title: label('Farmer details saved', 'రైతు వివరాలు సేవ్ చేయబడ్డాయి') });
+        const newSeller = data as unknown as SellerData;
+        setSellerProfiles(prev => [newSeller, ...prev]);
+        setSelectedSeller(newSeller);
+        toast({ title: label('Profile saved', 'ప్రొఫైల్ సేవ్ చేయబడింది') });
       }
-      setEditingFarmer(false);
+      resetForm();
+      setStep('crop-form');
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const selectProfileAndContinue = (seller: SellerData) => {
+    setSelectedSeller(seller);
+    setStep('crop-form');
   };
 
   if (loading) {
@@ -236,25 +263,97 @@ const AddCropPage: React.FC = () => {
     );
   }
 
-  const showFarmerForm = !existingSeller || editingFarmer;
+  const headerTitle = step === 'profile-selection'
+    ? label('Select Farmer Profile', 'రైతు ప్రొఫైల్ ఎంచుకోండి', 'किसान प्रोफ़ाइल चुनें')
+    : step === 'profile-form'
+      ? (editingSeller ? label('Edit Farmer Profile', 'రైతు ప్రొఫైల్ మార్చండి') : label('New Farmer Profile', 'కొత్త రైతు ప్రొఫైల్'))
+      : label('Crop Details', 'పంట వివరాలు', 'फसल विवरण');
 
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Mobile header */}
       <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-3 px-4 py-3">
-        <button onClick={() => navigate('/sell-crop')}>
+        <button onClick={() => {
+          if (step === 'crop-form') {
+            setStep(sellerProfiles.length > 0 ? 'profile-selection' : 'profile-form');
+          } else if (step === 'profile-form' && sellerProfiles.length > 0) {
+            setStep('profile-selection');
+          } else {
+            navigate('/sell-crop');
+          }
+        }}>
           <ArrowLeft className="h-6 w-6" />
         </button>
-        <h1 className="text-lg font-bold">
-          {showFarmerForm
-            ? label('Farmer Details', 'రైతు వివరాలు', 'किसान विवरण')
-            : label('Crop Details', 'పంట వివరాలు', 'फसल विवरण')}
-        </h1>
+        <h1 className="text-lg font-bold">{headerTitle}</h1>
       </div>
 
       <main className="container mx-auto px-4 py-4 max-w-2xl">
-        {showFarmerForm ? (
-          /* ──── Farmer Details Form ──── */
+        {/* ──── Step 1: Profile Selection ──── */}
+        {step === 'profile-selection' && (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              {label('Select an existing farmer profile or create a new one', 'ఇప్పటికే ఉన్న రైతు ప్రొఫైల్ ఎంచుకోండి లేదా కొత్తది సృష్టించండి')}
+            </p>
+
+            {sellerProfiles.map((seller) => (
+              <Card key={seller.id} className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    {seller.photo_url ? (
+                      <img src={seller.photo_url} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-green-500 flex-shrink-0" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg flex-shrink-0">
+                        {seller.name.charAt(0)}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-foreground">{seller.name}</p>
+                      <p className="text-sm text-muted-foreground">+91 {seller.phone}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {[seller.village, seller.district, seller.state].filter(Boolean).join(', ')}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 mt-3">
+                    <Button size="sm" className="flex-1" onClick={() => selectProfileAndContinue(seller)}>
+                      <Check className="h-3 w-3 mr-1" /> {label('Use This', 'ఉపయోగించు')}
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => startEditProfile(seller)}>
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-destructive border-destructive/30" disabled={deletingSeller}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{label('Delete this profile?', 'ఈ ప్రొఫైల్ తొలగించాలా?')}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {label('This will also delete all crops linked to this profile.', 'ఈ ప్రొఫైల్‌కు లింక్ చేయబడిన అన్ని పంటలు కూడా తొలగించబడతాయి.')}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{label('Cancel', 'రద్దు')}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeleteProfile(seller)}>{label('Delete', 'తొలగించు')}</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            <Button variant="outline" className="w-full py-3" onClick={startCreateNew}>
+              <Plus className="h-4 w-4 mr-2" /> {label('Create New Farmer Profile', 'కొత్త రైతు ప్రొఫైల్ సృష్టించండి')}
+            </Button>
+          </div>
+        )}
+
+        {/* ──── Step 2: Profile Form ──── */}
+        {step === 'profile-form' && (
           <Card className="rounded-2xl border-0 shadow-lg bg-gradient-to-b from-card to-secondary/30">
             <CardContent className="p-6">
               <div className="text-center mb-6">
@@ -262,14 +361,14 @@ const AddCropPage: React.FC = () => {
                   <User className="h-8 w-8 text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  {editingFarmer ? label('Edit Farmer Details', 'రైతు వివరాలు మార్చండి') : label('Farmer Details', 'రైతు వివరాలు')}
+                  {editingSeller ? label('Edit Farmer Profile', 'రైతు ప్రొఫైల్ మార్చండి') : label('Farmer Details', 'రైతు వివరాలు')}
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {label('Fill your details once to start listing crops', 'పంటలు జాబితా చేయడానికి మీ వివరాలు నమోదు చేయండి')}
+                  {label('Fill your details to start listing crops', 'పంటలు జాబితా చేయడానికి మీ వివరాలు నమోదు చేయండి')}
                 </p>
               </div>
 
-              <form onSubmit={handleFarmerSubmit} className="space-y-4">
+              <form onSubmit={handleProfileSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="name" className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" /> {label('Name', 'పేరు')} *
@@ -394,59 +493,40 @@ const AddCropPage: React.FC = () => {
               </form>
             </CardContent>
           </Card>
-        ) : (
-          /* ──── Farmer exists → show summary + crop form ──── */
+        )}
+
+        {/* ──── Step 3: Crop Form ──── */}
+        {step === 'crop-form' && selectedSeller && (
           <>
-            {/* Farmer summary card */}
+            {/* Selected farmer summary */}
             <Card className="mb-4 rounded-xl">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-semibold text-muted-foreground">{label('Farmer Details', 'రైతు వివరాలు')}</p>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={startEditFarmer}>
-                      <Pencil className="h-3 w-3 mr-1" /> {label('Edit', 'మార్చు')}
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm" disabled={deletingSeller}>
-                          <Trash2 className="h-3 w-3 mr-1" /> {label('Delete', 'తొలగించు')}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{label('Delete Farmer Details?', 'రైతు వివరాలు తొలగించాలా?')}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {label('This will also delete all your crops. This action cannot be undone.', 'ఇది మీ అన్ని పంటలను కూడా తొలగిస్తుంది.')}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>{label('Cancel', 'రద్దు')}</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleDeleteFarmer}>{label('Delete', 'తొలగించు')}</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    {label('Using Profile', 'ప్రొఫైల్ ఉపయోగించడం')}
+                  </p>
+                  <Button variant="ghost" size="sm" className="text-xs" onClick={() => setStep('profile-selection')}>
+                    {label('Change', 'మార్చు')}
+                  </Button>
                 </div>
                 <div className="flex items-center gap-3">
-                  {existingSeller.photo_url ? (
-                    <img src={existingSeller.photo_url} alt="" className="w-12 h-12 rounded-full object-cover border-2 border-green-500" />
+                  {selectedSeller.photo_url ? (
+                    <img src={selectedSeller.photo_url} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-green-500" />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg">
-                      {existingSeller.name.charAt(0)}
+                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-sm">
+                      {selectedSeller.name.charAt(0)}
                     </div>
                   )}
                   <div>
-                    <p className="font-bold text-foreground">{existingSeller.name}</p>
-                    <p className="text-sm text-muted-foreground">+91 {existingSeller.phone}</p>
-                    <p className="text-xs text-muted-foreground">{[existingSeller.village, existingSeller.district, existingSeller.state].filter(Boolean).join(', ')}</p>
+                    <p className="font-semibold text-foreground text-sm">{selectedSeller.name}</p>
+                    <p className="text-xs text-muted-foreground">{[selectedSeller.village, selectedSeller.district].filter(Boolean).join(', ')}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Crop details form */}
             <CropDetailsForm
-              sellerId={existingSeller.id}
+              sellerId={selectedSeller.id}
               userId={userId!}
               editCropId={editCropId || undefined}
               onComplete={() => navigate('/sell-crop')}
