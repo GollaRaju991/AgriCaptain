@@ -42,6 +42,8 @@ import SavedCards from "./pages/SavedCards";
 import SavedAddresses from "./pages/SavedAddresses";
 import EditProfilePage from "./pages/EditProfilePage";
 import AgrizinMoney from "./pages/AgrizinMoney";
+import AddProduct from "./pages/AddProduct";
+import SellerDashboard from "./pages/SellerDashboard";
 import NotFound from "./pages/NotFound";
 
 // ⭐ ADD THIS
