@@ -127,7 +127,9 @@ const DirectFromFarm: React.FC = () => {
 
   const filteredCrops = useMemo(() => {
     let result = crops.filter((crop) => {
-      const f = appliedFilters;
+      // Only show crops listed for Direct From Farm
+      const sellType = (crop as any).sell_type || 'both';
+      if (sellType !== 'direct_from_farm' && sellType !== 'both') return false;
       if (f.search) {
         const s = f.search.toLowerCase();
         const match = crop.crop_name.toLowerCase().includes(s) ||
