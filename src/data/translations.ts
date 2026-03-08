@@ -790,6 +790,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_wishlist': 'विशलिस्ट',
     'bottom_sell_crop': 'फसल बेचें',
     'bottom_account': 'खाता',
+    'bottom_direct_farm': 'खेत',
 
     // Profile
     'my_profile': 'मेरी प्रोफाइल',
