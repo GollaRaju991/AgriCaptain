@@ -28,6 +28,14 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import appLogo from "@/assets/app-logo.png";
+import catSeedsIcon from "@/assets/cat-seeds-icon.png";
+import catFertilizerIcon from "@/assets/cat-fertilizer-icon.png";
+import catAgriIcon from "@/assets/cat-agri-icon.png";
+import catBrandsIcon from "@/assets/cat-brands-icon.png";
+import catFarmworkerIcon from "@/assets/cat-farmworker-icon.png";
+import catVehicleIcon from "@/assets/cat-vehicle-icon.png";
+import catMarketIcon from "@/assets/cat-market-icon.png";
+import catLoansIcon from "@/assets/cat-loans-icon.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
