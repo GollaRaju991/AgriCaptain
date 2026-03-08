@@ -154,21 +154,6 @@ const Header = () => {
                   <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.language}</span>
                 </button>
 
-                {user ? (
-                  <Link
-                    to="/profile"
-                    className="relative flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full border border-gray-300"
-                  >
-                    <UserIcon className="h-6 w-6 text-green-700" />
-                  </Link>
-                ) : (
-                  <Link
-                    to="/auth"
-                    className="relative flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full border border-gray-300"
-                  >
-                    <UserIcon className="h-6 w-6 text-green-700" />
-                  </Link>
-                )}
               </div>
             </div>
 
