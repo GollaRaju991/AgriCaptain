@@ -190,17 +190,28 @@ const Cart = () => {
 
         {/* Sticky Bottom Bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 flex gap-3 z-50 safe-area-bottom">
-          <Link to="/products" className="flex-1">
-            <Button variant="outline" className="w-full h-12 text-base font-semibold rounded-xl border-gray-300">
-              {translations.continue_shopping}
+          {user ? (
+            <Button
+              className="w-full h-12 text-base font-semibold rounded-xl bg-green-700 hover:bg-green-800 text-white"
+              onClick={handleCheckoutClick}
+            >
+              {translations.checkout || 'Checkout'}
             </Button>
-          </Link>
-          <Button
-            className="flex-1 h-12 text-base font-semibold rounded-xl bg-green-700 hover:bg-green-800 text-white"
-            onClick={handleCheckoutClick}
-          >
-            {user ? translations.checkout : (translations.login_to_checkout || 'Login to Checkout')}
-          </Button>
+          ) : (
+            <>
+              <Link to="/products" className="flex-1">
+                <Button variant="outline" className="w-full h-12 text-base font-semibold rounded-xl border-gray-300">
+                  {translations.continue_shopping}
+                </Button>
+              </Link>
+              <Button
+                className="flex-1 h-12 text-base font-semibold rounded-xl bg-green-700 hover:bg-green-800 text-white"
+                onClick={handleCheckoutClick}
+              >
+                {translations.login_to_checkout || 'Login to Checkout'}
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
