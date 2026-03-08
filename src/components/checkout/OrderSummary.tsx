@@ -147,8 +147,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             </div>
           )}
           
-          {/* Pay Button */}
-          <div className="mt-6">
+          {/* Pay button hidden on mobile - shown in sticky bottom bar */}
+          <div className="mt-6 hidden lg:block">
             <Button 
               onClick={onPayment} 
               className="w-full h-12 text-base font-medium bg-orange-500 hover:bg-orange-600 text-white"
