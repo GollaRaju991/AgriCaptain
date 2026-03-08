@@ -786,6 +786,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_categories': 'श्रेणियां',
     'bottom_cart': 'कार्ट',
     'bottom_wishlist': 'विशलिस्ट',
+    'bottom_sell_crop': 'फसल बेचें',
     'bottom_account': 'खाता',
 
     // Profile
