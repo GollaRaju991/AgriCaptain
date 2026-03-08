@@ -26,7 +26,7 @@ const cropOptions = [
 
 const qualityGrades = ['Grade A', 'Grade B', 'Grade C', 'Organic'];
 
-const availabilityLocations = ['AC Cold Storage', 'Godham (Warehouse)', 'Marketplace'];
+const availabilityLocations = ['Farm location', 'AC Cold Storage', 'Godham (Warehouse)', 'Marketplace'];
 
 const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, onComplete }) => {
   const { toast } = useToast();
