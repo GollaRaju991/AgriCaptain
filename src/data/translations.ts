@@ -274,6 +274,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_categories': 'Categories',
     'bottom_cart': 'Cart',
     'bottom_wishlist': 'Wishlist',
+    'bottom_sell_crop': 'Sell Crop',
     'bottom_account': 'Account',
 
     // Profile
