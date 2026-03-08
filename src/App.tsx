@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
+import OrderDetails from "./pages/OrderDetails";
 import Coupons from "./pages/Coupons";
 import Notifications from "./pages/Notifications";
 import FarmWorker from "./pages/FarmWorker";
