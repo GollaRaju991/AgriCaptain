@@ -585,6 +585,63 @@ export type Database = {
       }
     }
     Views: {
+      public_farmer_crops: {
+        Row: {
+          availability_location: string | null
+          created_at: string | null
+          crop_images: string[] | null
+          crop_name: string | null
+          harvest_date: string | null
+          id: string | null
+          location_address: string | null
+          price: string | null
+          quality_grade: string | null
+          quantity: string | null
+          seller_id: string | null
+        }
+        Insert: {
+          availability_location?: string | null
+          created_at?: string | null
+          crop_images?: string[] | null
+          crop_name?: string | null
+          harvest_date?: string | null
+          id?: string | null
+          location_address?: string | null
+          price?: string | null
+          quality_grade?: string | null
+          quantity?: string | null
+          seller_id?: string | null
+        }
+        Update: {
+          availability_location?: string | null
+          created_at?: string | null
+          crop_images?: string[] | null
+          crop_name?: string | null
+          harvest_date?: string | null
+          id?: string | null
+          location_address?: string | null
+          price?: string | null
+          quality_grade?: string | null
+          quantity?: string | null
+          seller_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "farmer_crops_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "public_sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "farmer_crops_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_sellers: {
         Row: {
           address: string | null
