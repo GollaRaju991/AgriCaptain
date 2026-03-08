@@ -155,24 +155,29 @@ const SellCrop: React.FC = () => {
       </div>
 
       <main className="container mx-auto px-4 py-4 max-w-2xl">
-        {/* Filter bar */}
-        <div className="flex gap-2 mb-4">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={() => { setFilters(appliedFilters); setActiveTab('crop'); setDrawerOpen(true); }}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            {t('Filter', 'ఫిల్టర్', 'फ़िल्टर')}
-            {activeFilterCount > 0 && (
-              <span className="ml-1 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
+        {/* Filter chips */}
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+          {[
+            { key: 'crop', label: t('Crop', 'పంట', 'फसल'), active: !!appliedFilters.cropName },
+            { key: 'location', label: t('Location', 'ప్రాంతం', 'स्थान'), active: !!appliedFilters.location },
+            { key: 'price', label: t('Price', 'ధర', 'कीमत'), active: !!(appliedFilters.minPrice || appliedFilters.maxPrice) },
+            { key: 'quantity', label: t('Qty', 'పరిమాణం', 'मात्रा'), active: !!appliedFilters.quantity },
+            { key: 'availability', label: t('Avail.', 'అందుబాటు', 'उपलब्ध.'), active: !!appliedFilters.availabilityLocation },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              variant={tab.active ? 'default' : 'outline'}
+              size="sm"
+              className="flex-shrink-0 rounded-full"
+              onClick={() => { setFilters(appliedFilters); setActiveTab(tab.key); setDrawerOpen(true); }}
+            >
+              {tab.label}
+              {tab.active && <span className="ml-1 w-2 h-2 rounded-full bg-primary-foreground inline-block" />}
+            </Button>
+          ))}
           {activeFilterCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => setAppliedFilters(defaultFilters)}>
-              <X className="h-4 w-4 mr-1" />
+            <Button variant="ghost" size="sm" className="flex-shrink-0 rounded-full" onClick={() => setAppliedFilters(defaultFilters)}>
+              <X className="h-3 w-3 mr-1" />
               {t('Reset', 'రీసెట్', 'रीसेट')}
             </Button>
           )}
