@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp, ChevronDown,
   Carrot, Apple, Flower2, Wheat, Leaf, FlaskConical, Bug, Sparkles,
@@ -7,14 +7,11 @@ import {
   Factory, Building2, Atom, Zap, Star, LucideIcon
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import FarmWorkerDialog from './FarmWorkerDialog';
-import RentVehicleDialog from './RentVehicleDialog';
 
 const CategoryNavigation = () => {
   const { translations } = useLanguage();
+  const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [farmWorkerOpen, setFarmWorkerOpen] = useState(false);
-  const [rentVehicleOpen, setRentVehicleOpen] = useState(false);
 
   const categories = [
     { 
@@ -72,8 +69,8 @@ const CategoryNavigation = () => {
       ]
     },
     { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
-    { name: 'Farm Worker', icon: Users, isPopup: true, action: 'farmWorker' },
-    { name: 'Rent Vehicles', icon: Truck, isPopup: true, action: 'rentVehicle' },
+    { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
+    { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
     { 
       name: 'Loans', 
       icon: CreditCard, 
@@ -89,12 +86,8 @@ const CategoryNavigation = () => {
   ];
 
   const handleCategoryClick = (category: any) => {
-    if (category.isPopup) {
-      if (category.action === 'farmWorker') {
-        setFarmWorkerOpen(true);
-      } else if (category.action === 'rentVehicle') {
-        setRentVehicleOpen(true);
-      }
+    if (category.path) {
+      navigate(category.path);
     }
   };
 
@@ -172,9 +165,6 @@ const CategoryNavigation = () => {
         </div>
       </div>
 
-      {/* Popup Dialogs */}
-      <FarmWorkerDialog open={farmWorkerOpen} onOpenChange={setFarmWorkerOpen} />
-      <RentVehicleDialog open={rentVehicleOpen} onOpenChange={setRentVehicleOpen} />
     </>
   );
 };

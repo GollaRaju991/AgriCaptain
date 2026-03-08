@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Camera, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
-import FarmWorkerDialog from '@/components/FarmWorkerDialog';
-import RentVehicleDialog from '@/components/RentVehicleDialog';
 
 // Sidebar icons
 import catSeedsIcon from '@/assets/cat-seeds-icon.png';
@@ -43,8 +41,6 @@ const Categories = () => {
   const { translations } = useLanguage();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('seeds');
-  const [farmWorkerOpen, setFarmWorkerOpen] = useState(false);
-  const [rentVehicleOpen, setRentVehicleOpen] = useState(false);
 
   const categories: Category[] = [
     {
@@ -122,14 +118,16 @@ const Categories = () => {
       id: 'farm-worker',
       name: 'Farm\nWorker',
       sidebarIcon: catFarmworkerIcon,
-      action: 'farmWorker',
+      action: 'navigate',
+      actionPath: '/farm-worker',
       subcategories: []
     },
     {
       id: 'rent-vehicles',
       name: 'Rent\nVehicles',
       sidebarIcon: catVehicleIcon,
-      action: 'rentVehicle',
+      action: 'navigate',
+      actionPath: '/vehicle-rent',
       subcategories: []
     },
   ];
@@ -137,11 +135,7 @@ const Categories = () => {
   const activeCategoryData = categories.find(c => c.id === activeCategory);
 
   const handleCategoryClick = (category: Category) => {
-    if (category.action === 'farmWorker') {
-      setFarmWorkerOpen(true);
-    } else if (category.action === 'rentVehicle') {
-      setRentVehicleOpen(true);
-    } else if (category.action === 'navigate' && category.actionPath) {
+    if (category.action === 'navigate' && category.actionPath) {
       navigate(category.actionPath);
     } else {
       setActiveCategory(category.id);
@@ -252,8 +246,6 @@ const Categories = () => {
       </div>
 
       <MobileBottomNav />
-      <FarmWorkerDialog open={farmWorkerOpen} onOpenChange={setFarmWorkerOpen} />
-      <RentVehicleDialog open={rentVehicleOpen} onOpenChange={setRentVehicleOpen} />
     </div>
   );
 };
