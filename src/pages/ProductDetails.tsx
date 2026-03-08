@@ -97,8 +97,42 @@ const ProductDetails = () => {
   // Find product from products data or use mock
   const foundProduct = isSellerProduct ? null : products.find(p => p.id === id);
 
-  // Enhanced mock product data
-  const product = foundProduct ? {
+  // Build product from seller DB data or static data
+  const product = sellerProduct ? {
+    id: id || '',
+    name: sellerProduct.product_name,
+    price: sellerProduct.selling_price,
+    originalPrice: sellerProduct.mrp_price,
+    images: sellerProduct.product_images?.length > 0 
+      ? sellerProduct.product_images 
+      : ['https://via.placeholder.com/400'],
+    category: sellerProduct.category?.toLowerCase() || 'seeds',
+    rating: 4.0,
+    reviews: 0,
+    discount: sellerProduct.discount_percent || Math.round(((sellerProduct.mrp_price - sellerProduct.selling_price) / sellerProduct.mrp_price) * 100),
+    inStock: sellerProduct.stock_quantity > 0,
+    shortDescription: sellerProduct.description || sellerProduct.product_name,
+    detailedDescription: sellerProduct.description || sellerProduct.product_name,
+    usage: `Category: ${sellerProduct.category}${sellerProduct.sub_category ? ' > ' + sellerProduct.sub_category : ''}`,
+    specifications: {
+      'Brand': sellerProduct.brand || 'N/A',
+      'Category': sellerProduct.category,
+      'Sub Category': sellerProduct.sub_category || 'N/A',
+      'Crop Type': sellerProduct.crop_type || 'N/A',
+      'Season': sellerProduct.season || 'N/A',
+      'Shelf Life': sellerProduct.shelf_life || 'N/A',
+      'Unit': sellerProduct.unit_type,
+      'Delivery': sellerProduct.delivery_available ? `${sellerProduct.delivery_days || '3-5 days'} (₹${sellerProduct.delivery_charge || 0})` : 'Not available',
+    },
+    features: [
+      sellerProduct.brand ? `Brand: ${sellerProduct.brand}` : null,
+      sellerProduct.season ? `Season: ${sellerProduct.season}` : null,
+      sellerProduct.crop_type ? `Crop Type: ${sellerProduct.crop_type}` : null,
+      `Unit: ${sellerProduct.unit_type}`,
+      sellerProduct.delivery_available ? 'Delivery Available' : null,
+    ].filter(Boolean),
+    reviewsList: []
+  } : foundProduct ? {
     ...foundProduct,
     images: [
       foundProduct.image,
@@ -123,11 +157,9 @@ const ProductDetails = () => {
       'Detailed instructions included'
     ],
     reviewsList: [
-      { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery. Highly recommend for all farmers.', helpful: 45, notHelpful: 2 },
-      { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected. Delivery was on time.', helpful: 23, notHelpful: 3 },
-      { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used. Will buy again.', helpful: 67, notHelpful: 1 },
-      { id: 4, name: 'Dinesh Yadav', rating: 4, date: '2 months ago', comment: 'Value for money product. Recommended for farmers.', helpful: 34, notHelpful: 5 },
-      { id: 5, name: 'Rajesh Sharma', rating: 5, date: '2 months ago', comment: 'Amazing results! Very happy with this purchase.', helpful: 89, notHelpful: 0 }
+      { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery.', helpful: 45, notHelpful: 2 },
+      { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
+      { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
     ]
   } : {
     id: id || '1',
@@ -146,8 +178,7 @@ const ProductDetails = () => {
     discount: 25,
     inStock: true,
     shortDescription: 'Premium quality hybrid tomato seeds for high-yield farming',
-    detailedDescription: `These premium hybrid tomato seeds are specially developed for Indian growing conditions. 
-    Our seeds undergo rigorous quality testing and come with a 95%+ germination guarantee.`,
+    detailedDescription: `These premium hybrid tomato seeds are specially developed for Indian growing conditions.`,
     usage: `Ideal for commercial farming, kitchen gardens, and greenhouse cultivation.`,
     specifications: {
       'Seed Type': 'Hybrid F1',
@@ -162,10 +193,18 @@ const ProductDetails = () => {
       'Premium quality assurance'
     ],
     reviewsList: [
-      { id: 1, name: 'John Farmer', rating: 5, date: '2 weeks ago', comment: 'Excellent seeds! Great germination rate and healthy plants.', helpful: 45, notHelpful: 2 },
-      { id: 2, name: 'Sarah Green', rating: 4, date: '1 month ago', comment: 'Good quality seeds. Plants grew well but took a bit longer.', helpful: 23, notHelpful: 3 }
+      { id: 1, name: 'John Farmer', rating: 5, date: '2 weeks ago', comment: 'Excellent seeds!', helpful: 45, notHelpful: 2 },
+      { id: 2, name: 'Sarah Green', rating: 4, date: '1 month ago', comment: 'Good quality seeds.', helpful: 23, notHelpful: 3 }
     ]
   };
+
+  if (loadingSeller) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Loading product...</p>
+      </div>
+    );
+  }
 
   // Get related products - match by similar names or random selection
   const relatedProducts = useMemo(() => {
