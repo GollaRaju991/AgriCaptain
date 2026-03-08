@@ -13,7 +13,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CropDetailsForm from '@/components/CropDetailsForm';
 import MobileBottomNav from '@/components/MobileBottomNav';
-import { states, districts, divisions, mandals, villages } from '@/data/locationData';
+import { states, districts, divisions, mandals, villages, getMandalsForDistrict } from '@/data/locationData';
 
 const allIndianStates = states.IN || [];
 
