@@ -255,23 +255,30 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-background">
+      {/* Mobile top bar */}
+      <div className="lg:hidden sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
+        <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }}>
+          <ArrowLeft className="h-6 w-6" />
+        </button>
+        <h1 className="text-lg font-bold truncate flex-1">{translateProductName(product.name, language)}</h1>
+      </div>
+
+      <div className="hidden lg:block"><Header /></div>
       
       <div className="container mx-auto px-2 md:px-4 py-4 md:py-8 pb-32 md:pb-8">
-        {/* Back Button & Breadcrumb - Stacked Layout */}
-        <div className="mb-4 md:mb-6">
+        {/* Back Button & Breadcrumb - Desktop only */}
+        <div className="hidden lg:block mb-4 md:mb-6">
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={() => navigate(-1)}
+            onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }}
             className="flex items-center gap-1 text-sm mb-2"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </Button>
           
-          {/* Breadcrumb below back button */}
           <nav className="flex text-sm text-muted-foreground">
             <Link to="/" className="hover:text-primary">Home</Link>
             <span className="mx-2">/</span>
