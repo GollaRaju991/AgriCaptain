@@ -41,8 +41,6 @@ const Categories = () => {
   const { translations } = useLanguage();
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState('seeds');
-  const [farmWorkerOpen, setFarmWorkerOpen] = useState(false);
-  const [rentVehicleOpen, setRentVehicleOpen] = useState(false);
 
   const categories: Category[] = [
     {
