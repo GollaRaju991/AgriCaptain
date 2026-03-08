@@ -17,7 +17,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 const mockProducts = [
   {
