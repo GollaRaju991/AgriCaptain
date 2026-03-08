@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Sprout, Droplet, Wrench, Award, Users, Truck, CreditCard, TrendingUp, ChevronDown,
   Carrot, Apple, Flower2, Wheat, Leaf, FlaskConical, Bug, Sparkles,
@@ -7,14 +7,11 @@ import {
   Factory, Building2, Atom, Zap, Star, LucideIcon
 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import FarmWorkerDialog from './FarmWorkerDialog';
-import RentVehicleDialog from './RentVehicleDialog';
 
 const CategoryNavigation = () => {
   const { translations } = useLanguage();
+  const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [farmWorkerOpen, setFarmWorkerOpen] = useState(false);
-  const [rentVehicleOpen, setRentVehicleOpen] = useState(false);
 
   const categories = [
     { 
