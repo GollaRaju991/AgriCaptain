@@ -69,8 +69,6 @@ const Header = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
-  const [farmWorkerDialogOpen, setFarmWorkerDialogOpen] = useState(false);
-  const [vehicleRentDialogOpen, setVehicleRentDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
