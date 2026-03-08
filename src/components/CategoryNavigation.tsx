@@ -86,12 +86,8 @@ const CategoryNavigation = () => {
   ];
 
   const handleCategoryClick = (category: any) => {
-    if (category.isPopup) {
-      if (category.action === 'farmWorker') {
-        setFarmWorkerOpen(true);
-      } else if (category.action === 'rentVehicle') {
-        setRentVehicleOpen(true);
-      }
+    if (category.path) {
+      navigate(category.path);
     }
   };
 
