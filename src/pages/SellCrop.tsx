@@ -73,7 +73,7 @@ const SellCrop: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
-  const [activeTab, setActiveTab] = useState('crop');
+  
 
   const t = (en: string, te: string, hi?: string) => {
     if (language === 'te') return te;
