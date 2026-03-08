@@ -277,8 +277,6 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_sell_crop': 'Sell Crop',
     'bottom_account': 'Account',
     'bottom_direct_farm': 'Farm',
-    'bottom_sell_crop': 'Sell Crop',
-    'bottom_account': 'Account',
 
     // Profile
     'my_profile': 'My Profile',
