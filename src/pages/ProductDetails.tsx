@@ -63,6 +63,26 @@ const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
+  const [sellerProduct, setSellerProduct] = useState<any>(null);
+  const [loadingSeller, setLoadingSeller] = useState(false);
+
+  const isSellerProduct = id?.startsWith('sp-');
+
+  // Fetch seller product from DB
+  useEffect(() => {
+    if (isSellerProduct && id) {
+      const dbId = id.replace('sp-', '');
+      setLoadingSeller(true);
+      (supabase.from('seller_products') as any)
+        .select('*')
+        .eq('id', dbId)
+        .single()
+        .then(({ data }: any) => {
+          if (data) setSellerProduct(data);
+          setLoadingSeller(false);
+        });
+    }
+  }, [id, isSellerProduct]);
 
   // Find current product index for navigation
   const currentIndex = useMemo(() => products.findIndex(p => p.id === id), [id]);
@@ -75,7 +95,7 @@ const ProductDetails = () => {
   }, [id]);
 
   // Find product from products data or use mock
-  const foundProduct = products.find(p => p.id === id);
+  const foundProduct = isSellerProduct ? null : products.find(p => p.id === id);
 
   // Enhanced mock product data
   const product = foundProduct ? {
