@@ -11,7 +11,7 @@ interface SendOTPRequest {
   phone: string;
 }
 
-const MAX_SEND_PER_HOUR = 3;
+const MAX_SEND_PER_HOUR = 5;
 
 // Validate phone number format (E.164)
 const isValidPhoneNumber = (phone: string): boolean => {
