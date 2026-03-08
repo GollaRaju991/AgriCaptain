@@ -223,7 +223,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             <Label className="flex items-center gap-2 mb-2">
               <Store className="h-4 w-4 text-muted-foreground" /> {label('Sell Type', 'అమ్మకం రకం')} *
             </Label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="flex gap-2">
               {([
                 { value: 'direct_from_farm', label: label('Direct From Farm', 'నేరుగా పొలం నుండి') },
                 { value: 'crop_market', label: label('Crop Market', 'పంట మార్కెట్') },
@@ -234,16 +234,16 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                   type="button"
                   onClick={() => setCropData({ ...cropData, sellType: option.value })}
                   className={cn(
-                    "relative flex items-center justify-center gap-1.5 rounded-xl border-2 py-3 px-2 text-sm font-medium transition-all duration-200",
+                    "flex-1 flex items-center justify-center gap-1.5 rounded-xl border-2 py-3 px-1 font-medium transition-all duration-200 min-w-0",
                     cropData.sellType === option.value
                       ? "border-primary bg-primary text-primary-foreground shadow-md"
                       : "border-border bg-card text-foreground hover:border-primary/50"
                   )}
                 >
                   {cropData.sellType === option.value && (
-                    <Check className="h-4 w-4 shrink-0" />
+                    <Check className="h-3.5 w-3.5 shrink-0" />
                   )}
-                  <span className="truncate text-xs sm:text-sm">{option.label}</span>
+                  <span className="text-[11px] sm:text-sm leading-tight text-center">{option.label}</span>
                 </button>
               ))}
             </div>
