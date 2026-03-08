@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Layers, ShoppingCart, Sprout, User } from "lucide-react";
+import { Home, Layers, Leaf, Sprout, User } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const MobileBottomNav = () => {
@@ -25,9 +25,9 @@ const MobileBottomNav = () => {
           <Layers className={`h-6 w-6 ${isActive("/categories")}`} />
           <span className={`text-xs ${isActive("/categories")}`}>{translations.bottom_categories}</span>
         </Link>
-        <Link to="/cart" className="flex flex-col items-center">
-          <ShoppingCart className={`h-6 w-6 ${isActive("/cart")}`} />
-          <span className={`text-xs ${isActive("/cart")}`}>{translations.bottom_cart}</span>
+        <Link to="/direct-from-farm" className="flex flex-col items-center">
+          <Leaf className={`h-6 w-6 ${isActive("/direct-from-farm")}`} />
+          <span className={`text-xs ${isActive("/direct-from-farm")}`}>{translations.bottom_direct_farm || 'Farm'}</span>
         </Link>
         <Link to="/sell-crop" className="flex flex-col items-center">
           <Sprout className={`h-6 w-6 ${isActive("/sell-crop")}`} />

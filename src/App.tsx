@@ -28,6 +28,7 @@ import CropDetail from "./pages/CropDetail";
 import AddCropPage from "./pages/AddCropPage";
 import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
+import DirectFromFarm from "./pages/DirectFromFarm";
 import Loans from "./pages/Loans";
 import Categories from "./pages/Categories";
 import HelpCenter from "./pages/HelpCenter";
