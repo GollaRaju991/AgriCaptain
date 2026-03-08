@@ -39,6 +39,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, onC
   const [cropData, setCropData] = useState({
     cropName: '',
     quantity: '',
+    quantityUnit: 'Quintal',
     price: '',
     qualityGrade: 'Grade A',
     availabilityLocation: 'Marketplace',
