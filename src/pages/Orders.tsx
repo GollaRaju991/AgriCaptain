@@ -60,6 +60,7 @@ interface ShippingAddress {
 }
 
 const Orders = () => {
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
