@@ -388,12 +388,12 @@ const BecomeSeller = () => {
                         </Select>
                       </div>
 
-                      {/* Mandal Dropdown */}
-                      {availableMandals.length > 0 && (
-                        <div>
-                          <Label className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-muted-foreground" /> {t['seller_mandal'] || 'Mandal'}
-                          </Label>
+                      {/* Mandal Dropdown / Input */}
+                      <div>
+                        <Label className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-muted-foreground" /> {t['seller_mandal'] || 'Mandal'} *
+                        </Label>
+                        {availableMandals.length > 0 ? (
                           <Select value={formData.mandal} onValueChange={(v) => handleSelectChange('mandal', v)} disabled={!formData.district}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder={t['select_mandal'] || 'Select Mandal'} />
@@ -404,15 +404,17 @@ const BecomeSeller = () => {
                               ))}
                             </SelectContent>
                           </Select>
-                        </div>
-                      )}
+                        ) : (
+                          <Input name="mandal" value={formData.mandal} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_mandal'] || 'Enter mandal name'} disabled={!formData.district} />
+                        )}
+                      </div>
 
-                      {/* Village Dropdown */}
-                      {availableVillages.length > 0 && (
-                        <div>
-                          <Label className="flex items-center gap-2">
-                            <Home className="h-4 w-4 text-muted-foreground" /> {t['seller_village'] || 'Village'}
-                          </Label>
+                      {/* Village Dropdown / Input */}
+                      <div>
+                        <Label className="flex items-center gap-2">
+                          <Home className="h-4 w-4 text-muted-foreground" /> {t['seller_village'] || 'Village'} *
+                        </Label>
+                        {availableVillages.length > 0 ? (
                           <Select value={formData.village} onValueChange={(v) => handleSelectChange('village', v)} disabled={!formData.mandal}>
                             <SelectTrigger className="mt-1">
                               <SelectValue placeholder={t['select_village'] || 'Select Village'} />
@@ -423,8 +425,10 @@ const BecomeSeller = () => {
                               ))}
                             </SelectContent>
                           </Select>
-                        </div>
-                      )}
+                        ) : (
+                          <Input name="village" value={formData.village} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_village'] || 'Enter village name'} disabled={!formData.mandal} />
+                        )}
+                      </div>
                     </>
                   )}
 
