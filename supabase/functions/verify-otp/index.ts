@@ -128,6 +128,33 @@ const handler = async (req: Request): Promise<Response> => {
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
 
+    // Helper: update password and sign in for existing user
+    const signInExistingUser = async () => {
+      const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+      const existingUser = users?.find(u => u.email === testEmail);
+
+      if (existingUser && !listError) {
+        await supabase.auth.admin.updateUserById(existingUser.id, {
+          password: testPassword,
+          user_metadata: {
+            phone: phone,
+            name: name || existingUser.user_metadata?.name || 'User'
+          }
+        });
+
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: testEmail,
+          password: testPassword,
+        });
+
+        if (!signInError && signInData.session) {
+          await markVerified();
+          return sendSession(signInData.session, signInData.user);
+        }
+      }
+      return null;
+    };
+
     // Try to sign up
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: testEmail,
@@ -140,53 +167,21 @@ const handler = async (req: Request): Promise<Response> => {
       }
     });
 
-    // If user exists, sign in
-    if (signUpError?.message.includes('already registered')) {
-      const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
-      const existingUser = users?.find(u => u.email === testEmail);
-
-      if (existingUser && !listError) {
-        const { error: adminError } = await supabase.auth.admin.updateUserById(existingUser.id, {
-          password: testPassword,
-          user_metadata: {
-            phone: phone,
-            name: name || existingUser.user_metadata?.name || 'User'
-          }
-        });
-
-        if (!adminError) {
-          const { data: retrySignIn, error: retryError } = await supabase.auth.signInWithPassword({
-            email: testEmail,
-            password: testPassword,
-          });
-
-          if (!retryError && retrySignIn.session) {
-            await markVerified();
-            return sendSession(retrySignIn.session, retrySignIn.user);
-          }
-        }
-      }
-
-      // Fallback
-      const { data: signInData } = await supabase.auth.signInWithPassword({
-        email: testEmail,
-        password: testPassword
-      });
-
-      if (signInData?.session) {
-        await markVerified();
-        return sendSession(signInData.session, signInData.user);
-      }
-    }
-
-    if (signUpData?.session) {
+    // New user with session
+    if (!signUpError && signUpData?.session) {
       await markVerified();
       return sendSession(signUpData.session, signUpData.user);
     }
 
-    // If we get here, OTP was correct but session creation failed — don't mark as verified
+    // User already exists (either explicit error OR signup returned 200 with no session)
+    if (signUpError || !signUpData?.session) {
+      const result = await signInExistingUser();
+      if (result) return result;
+    }
+
+    // If we get here, OTP was correct but session creation failed
     return new Response(
-      JSON.stringify({ success: false, error: "OTP verified but session creation failed. Please try again." }),
+      JSON.stringify({ success: false, error: "OTP verified but session creation failed. Please request a new OTP." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 
