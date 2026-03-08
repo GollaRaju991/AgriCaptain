@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Loader2, Sprout, SlidersHorizontal, X } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Loader2, Sprout, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -155,24 +154,29 @@ const SellCrop: React.FC = () => {
       </div>
 
       <main className="container mx-auto px-4 py-4 max-w-2xl">
-        {/* Filter bar */}
-        <div className="flex gap-2 mb-4">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={() => { setFilters(appliedFilters); setActiveTab('crop'); setDrawerOpen(true); }}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            {t('Filter', 'ఫిల్టర్', 'फ़िल्टर')}
-            {activeFilterCount > 0 && (
-              <span className="ml-1 bg-primary text-primary-foreground rounded-full w-5 h-5 text-xs flex items-center justify-center">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
+        {/* Filter chips */}
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+          {[
+            { key: 'crop', label: t('Crop', 'పంట', 'फसल'), active: !!appliedFilters.cropName },
+            { key: 'location', label: t('Location', 'ప్రాంతం', 'स्थान'), active: !!appliedFilters.location },
+            { key: 'price', label: t('Price', 'ధర', 'कीमत'), active: !!(appliedFilters.minPrice || appliedFilters.maxPrice) },
+            { key: 'quantity', label: t('Qty', 'పరిమాణం', 'मात्रा'), active: !!appliedFilters.quantity },
+            { key: 'availability', label: t('Avail.', 'అందుబాటు', 'उपलब्ध.'), active: !!appliedFilters.availabilityLocation },
+          ].map((tab) => (
+            <Button
+              key={tab.key}
+              variant={tab.active ? 'default' : 'outline'}
+              size="sm"
+              className="flex-shrink-0 rounded-full"
+              onClick={() => { setFilters(appliedFilters); setActiveTab(tab.key); setDrawerOpen(true); }}
+            >
+              {tab.label}
+              {tab.active && <span className="ml-1 w-2 h-2 rounded-full bg-primary-foreground inline-block" />}
+            </Button>
+          ))}
           {activeFilterCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => setAppliedFilters(defaultFilters)}>
-              <X className="h-4 w-4 mr-1" />
+            <Button variant="ghost" size="sm" className="flex-shrink-0 rounded-full" onClick={() => setAppliedFilters(defaultFilters)}>
+              <X className="h-3 w-3 mr-1" />
               {t('Reset', 'రీసెట్', 'रीसेट')}
             </Button>
           )}
@@ -263,36 +267,12 @@ const SellCrop: React.FC = () => {
         )}
       </main>
 
-      {/* Filter Drawer with Tabs */}
+      {/* Filter Drawer - shows only active tab content */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerContent className="max-h-[85vh]">
-          <DrawerHeader>
-            <DrawerTitle>{t('Filters', 'ఫిల్టర్‌లు', 'फ़िल्टर')}</DrawerTitle>
-          </DrawerHeader>
-          <div className="px-4 pb-2 overflow-hidden flex flex-col flex-1">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1">
-              <TabsList className="w-full grid grid-cols-5 mb-4">
-                <TabsTrigger value="crop" className="text-xs px-1">
-                  {t('Crop', 'పంట', 'फसल')}
-                </TabsTrigger>
-                <TabsTrigger value="location" className="text-xs px-1">
-                  {t('Location', 'ప్రాంతం', 'स्थान')}
-                </TabsTrigger>
-                <TabsTrigger value="price" className="text-xs px-1">
-                  {t('Price', 'ధర', 'कीमत')}
-                </TabsTrigger>
-                <TabsTrigger value="quantity" className="text-xs px-1">
-                  {t('Qty', 'పరిమాణం', 'मात्रा')}
-                </TabsTrigger>
-                <TabsTrigger value="availability" className="text-xs px-1">
-                  {t('Avail.', 'అందుబాటు', 'उपलब्ध.')}
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Crop Name Tab */}
-              <TabsContent value="crop" className="mt-0 space-y-3 min-h-[180px]">
-                <Label className="text-base font-semibold">{t('Crop Name', 'పంట పేరు', 'फसल का नाम')}</Label>
-                <p className="text-sm text-muted-foreground">{t('Select a crop to filter results', 'ఫలితాలను ఫిల్టర్ చేయడానికి పంటను ఎంచుకోండి')}</p>
+        <DrawerContent>
+          <div className="px-4 py-4 space-y-3">
+            {activeTab === 'crop' && (
+              <>
                 <Select value={filters.cropName} onValueChange={(v) => setFilters({ ...filters, cropName: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select crop', 'పంట ఎంచుకోండి', 'फसल चुनें')} /></SelectTrigger>
                   <SelectContent>
@@ -306,12 +286,11 @@ const SellCrop: React.FC = () => {
                     <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
                   </Button>
                 )}
-              </TabsContent>
+              </>
+            )}
 
-              {/* Location Tab */}
-              <TabsContent value="location" className="mt-0 space-y-3 min-h-[180px]">
-                <Label className="text-base font-semibold">{t('Location', 'ప్రాంతం', 'स्थान')}</Label>
-                <p className="text-sm text-muted-foreground">{t('Search by village, district or state', 'గ్రామం, జిల్లా లేదా రాష్ట్రం ద్వారా వెతకండి')}</p>
+            {activeTab === 'location' && (
+              <>
                 <Input
                   placeholder={t('Village, District or State', 'గ్రామం, జిల్లా లేదా రాష్ట్రం', 'गाँव, जिला या राज्य')}
                   value={filters.location}
@@ -322,30 +301,19 @@ const SellCrop: React.FC = () => {
                     <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
                   </Button>
                 )}
-              </TabsContent>
+              </>
+            )}
 
-              {/* Price Tab */}
-              <TabsContent value="price" className="mt-0 space-y-3 min-h-[180px]">
-                <Label className="text-base font-semibold">{t('Price Range', 'ధర పరిధి', 'कीमत सीमा')}</Label>
-                <p className="text-sm text-muted-foreground">{t('Set min and max price (₹)', 'కనిష్ఠ మరియు గరిష్ఠ ధర సెట్ చేయండి (₹)')}</p>
+            {activeTab === 'price' && (
+              <>
                 <div className="flex gap-3">
                   <div className="flex-1 space-y-1">
                     <Label className="text-xs text-muted-foreground">{t('Min Price', 'కనిష్ఠ ధర', 'न्यूनतम')}</Label>
-                    <Input
-                      type="number"
-                      placeholder="₹ 0"
-                      value={filters.minPrice}
-                      onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
-                    />
+                    <Input type="number" placeholder="₹ 0" value={filters.minPrice} onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })} />
                   </div>
                   <div className="flex-1 space-y-1">
                     <Label className="text-xs text-muted-foreground">{t('Max Price', 'గరిష్ఠ ధర', 'अधिकतम')}</Label>
-                    <Input
-                      type="number"
-                      placeholder="₹ 99999"
-                      value={filters.maxPrice}
-                      onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                    />
+                    <Input type="number" placeholder="₹ 99999" value={filters.maxPrice} onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })} />
                   </div>
                 </div>
                 {(filters.minPrice || filters.maxPrice) && (
@@ -353,12 +321,11 @@ const SellCrop: React.FC = () => {
                     <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
                   </Button>
                 )}
-              </TabsContent>
+              </>
+            )}
 
-              {/* Quantity Tab */}
-              <TabsContent value="quantity" className="mt-0 space-y-3 min-h-[180px]">
-                <Label className="text-base font-semibold">{t('Quantity', 'పరిమాణం', 'मात्रा')}</Label>
-                <p className="text-sm text-muted-foreground">{t('Select a quantity range', 'పరిమాణ పరిధిని ఎంచుకోండి')}</p>
+            {activeTab === 'quantity' && (
+              <>
                 <Select value={filters.quantity} onValueChange={(v) => setFilters({ ...filters, quantity: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select range', 'పరిధి ఎంచుకోండి', 'सीमा चुनें')} /></SelectTrigger>
                   <SelectContent>
@@ -372,12 +339,11 @@ const SellCrop: React.FC = () => {
                     <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
                   </Button>
                 )}
-              </TabsContent>
+              </>
+            )}
 
-              {/* Availability Tab */}
-              <TabsContent value="availability" className="mt-0 space-y-3 min-h-[180px]">
-                <Label className="text-base font-semibold">{t('Availability Location', 'అందుబాటు ప్రాంతం', 'उपलब्धता स्थान')}</Label>
-                <p className="text-sm text-muted-foreground">{t('Where is the crop stored?', 'పంట ఎక్కడ నిల్వ చేయబడింది?')}</p>
+            {activeTab === 'availability' && (
+              <>
                 <Select value={filters.availabilityLocation} onValueChange={(v) => setFilters({ ...filters, availabilityLocation: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select location', 'ప్రాంతం ఎంచుకోండి', 'स्थान चुनें')} /></SelectTrigger>
                   <SelectContent>
@@ -388,25 +354,18 @@ const SellCrop: React.FC = () => {
                 </Select>
                 {filters.availabilityLocation && (
                   <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, availabilityLocation: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
+                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हటाएं')}
                   </Button>
                 )}
-              </TabsContent>
-            </Tabs>
+              </>
+            )}
           </div>
           <DrawerFooter className="flex-row gap-2">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => { setFilters(defaultFilters); setAppliedFilters(defaultFilters); setDrawerOpen(false); }}
-            >
+            <Button variant="outline" className="flex-1" onClick={() => { setFilters(defaultFilters); setAppliedFilters(defaultFilters); setDrawerOpen(false); }}>
               {t('Reset', 'రీసెట్', 'रीसेट')}
             </Button>
-            <Button
-              className="flex-1"
-              onClick={() => { setAppliedFilters(filters); setDrawerOpen(false); }}
-            >
-              {t('Apply Filter', 'ఫిల్టర్ వర్తించు', 'फ़िल्टर लागू करें')}
+            <Button className="flex-1" onClick={() => { setAppliedFilters(filters); setDrawerOpen(false); }}>
+              {t('Apply', 'వర్తించు', 'लागू करें')}
             </Button>
           </DrawerFooter>
         </DrawerContent>
