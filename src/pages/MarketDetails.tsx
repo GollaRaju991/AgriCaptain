@@ -306,24 +306,10 @@ const MarketDetails = () => {
     });
   }, [selectedMarket]);
 
-  // Get previous price based on selected period
-  const getPreviousPrice = (crop: CropData): number => {
+  // Always compare Today vs selected period
+  const getSelectedPeriodPrice = (crop: CropData): number => {
     switch (selectedPeriod) {
       case 'today': return crop.yesterday;
-      case 'yesterday': return crop.lastWeek;
-      case 'last_week': return crop.lastMonth;
-      case 'last_month': return crop.last3Months;
-      case 'last_3_months': return crop.last6Months;
-      case 'last_6_months': return crop.lastYear;
-      case 'last_year': return crop.last2Years;
-      case 'last_2_years': return crop.last2Years;
-      default: return crop.yesterday;
-    }
-  };
-
-  const getCurrentPrice = (crop: CropData): number => {
-    switch (selectedPeriod) {
-      case 'today': return crop.today;
       case 'yesterday': return crop.yesterday;
       case 'last_week': return crop.lastWeek;
       case 'last_month': return crop.lastMonth;
@@ -331,26 +317,15 @@ const MarketDetails = () => {
       case 'last_6_months': return crop.last6Months;
       case 'last_year': return crop.lastYear;
       case 'last_2_years': return crop.last2Years;
-      default: return crop.today;
+      default: return crop.yesterday;
     }
   };
 
-  const getPreviousLabel = (): string => {
-    const labels: Record<DatePeriod, { en: string; te: string; hi: string }> = {
-      today: { en: 'Yesterday', te: 'నిన్న', hi: 'कल' },
-      yesterday: { en: 'Last Week', te: 'గత వారం', hi: 'पिछला सप्ताह' },
-      last_week: { en: 'Last Month', te: 'గత నెల', hi: 'पिछला महीना' },
-      last_month: { en: 'Last 3 Mo', te: 'గత 3 నెలలు', hi: 'पिछले 3 मही' },
-      last_3_months: { en: 'Last 6 Mo', te: 'గత 6 నెలలు', hi: 'पिछले 6 मही' },
-      last_6_months: { en: 'Last Year', te: 'గత సం.', hi: 'पिछला साल' },
-      last_year: { en: 'Last 2 Yr', te: 'గత 2 సం.', hi: 'पिछले 2 साल' },
-      last_2_years: { en: 'Last 2 Yr', te: 'గత 2 సం.', hi: 'पिछले 2 साल' },
-    };
-    const l = labels[selectedPeriod];
-    return language === 'te' ? l.te : language === 'hi' ? l.hi : l.en;
-  };
-
-  const getCurrentLabel = (): string => {
+  const getSelectedPeriodLabel = (): string => {
+    if (selectedPeriod === 'today') {
+      const l = datePeriodLabels['yesterday'];
+      return language === 'te' ? l.te : language === 'hi' ? l.hi : l.en;
+    }
     const l = datePeriodLabels[selectedPeriod];
     return language === 'te' ? l.te : language === 'hi' ? l.hi : l.en;
   };
