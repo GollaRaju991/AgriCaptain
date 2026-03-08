@@ -380,8 +380,6 @@ const Header = () => {
 
       {/* ---------------------- POPUP COMPONENTS ---------------------- */}
       <LanguageSelector open={languageDialogOpen} onOpenChange={setLanguageDialogOpen} />
-      <FarmWorkerDialog open={farmWorkerDialogOpen} onOpenChange={setFarmWorkerDialogOpen} />
-      <RentVehicleDialog open={vehicleRentDialogOpen} onOpenChange={setVehicleRentDialogOpen} />
 
       <LogoutConfirmation
         isOpen={logoutDialogOpen}
