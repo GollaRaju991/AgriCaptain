@@ -472,18 +472,128 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_products: {
+        Row: {
+          brand: string | null
+          category: string
+          created_at: string
+          crop_type: string | null
+          delivery_available: boolean | null
+          delivery_charge: number | null
+          delivery_days: string | null
+          description: string | null
+          discount_percent: number | null
+          id: string
+          mrp_price: number
+          product_images: string[] | null
+          product_name: string
+          product_type: string | null
+          season: string | null
+          seller_id: string
+          selling_price: number
+          shelf_life: string | null
+          status: string
+          stock_quantity: number
+          sub_category: string | null
+          suitable_soil: string | null
+          unit_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          category: string
+          created_at?: string
+          crop_type?: string | null
+          delivery_available?: boolean | null
+          delivery_charge?: number | null
+          delivery_days?: string | null
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          mrp_price: number
+          product_images?: string[] | null
+          product_name: string
+          product_type?: string | null
+          season?: string | null
+          seller_id: string
+          selling_price: number
+          shelf_life?: string | null
+          status?: string
+          stock_quantity?: number
+          sub_category?: string | null
+          suitable_soil?: string | null
+          unit_type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          created_at?: string
+          crop_type?: string | null
+          delivery_available?: boolean | null
+          delivery_charge?: number | null
+          delivery_days?: string | null
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          mrp_price?: number
+          product_images?: string[] | null
+          product_name?: string
+          product_type?: string | null
+          season?: string | null
+          seller_id?: string
+          selling_price?: number
+          shelf_life?: string | null
+          status?: string
+          stock_quantity?: number
+          sub_category?: string | null
+          suitable_soil?: string | null
+          unit_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "public_sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sellers: {
         Row: {
+          aadhaar_document_url: string | null
           aadhaar_number: string
           address: string
+          bank_account_holder: string | null
+          bank_account_number: string | null
+          bank_ifsc: string | null
           created_at: string
           district: string | null
+          email: string | null
+          farm_location: string | null
+          google_map_location: string | null
           id: string
           name: string
+          pan_card_url: string | null
           phone: string
           photo_url: string | null
           pincode: string
+          seller_sub_type: string | null
           seller_type: string
+          shop_banner_url: string | null
+          shop_farm_name: string | null
           state: string | null
           status: string
           updated_at: string
@@ -491,16 +601,27 @@ export type Database = {
           village: string | null
         }
         Insert: {
+          aadhaar_document_url?: string | null
           aadhaar_number: string
           address: string
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
           created_at?: string
           district?: string | null
+          email?: string | null
+          farm_location?: string | null
+          google_map_location?: string | null
           id?: string
           name: string
+          pan_card_url?: string | null
           phone: string
           photo_url?: string | null
           pincode: string
+          seller_sub_type?: string | null
           seller_type: string
+          shop_banner_url?: string | null
+          shop_farm_name?: string | null
           state?: string | null
           status?: string
           updated_at?: string
@@ -508,16 +629,27 @@ export type Database = {
           village?: string | null
         }
         Update: {
+          aadhaar_document_url?: string | null
           aadhaar_number?: string
           address?: string
+          bank_account_holder?: string | null
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
           created_at?: string
           district?: string | null
+          email?: string | null
+          farm_location?: string | null
+          google_map_location?: string | null
           id?: string
           name?: string
+          pan_card_url?: string | null
           phone?: string
           photo_url?: string | null
           pincode?: string
+          seller_sub_type?: string | null
           seller_type?: string
+          shop_banner_url?: string | null
+          shop_farm_name?: string | null
           state?: string | null
           status?: string
           updated_at?: string
