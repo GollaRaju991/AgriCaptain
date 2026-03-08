@@ -269,7 +269,7 @@ const VehicleRent = () => {
 
         {/* Actions */}
         <div className="flex gap-3">
-          <Button onClick={handleSearch} disabled={!isFormValid} className="flex-1 bg-[hsl(var(--agri-green))] hover:bg-[hsl(var(--agri-green-dark))] text-white">
+          <Button onClick={handleSearch} disabled={!isFormValid} className="flex-1 bg-[#2d5a27] hover:bg-[#1e3d1a] text-white">
             {label('Search Vehicles', 'వాహనాలను వెతకండి')}
           </Button>
           <Button variant="outline" onClick={resetForm}>{label('Reset', 'రీసెట్')}</Button>
