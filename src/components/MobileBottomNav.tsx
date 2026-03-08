@@ -7,8 +7,9 @@ const MobileBottomNav = () => {
   const { pathname } = useLocation();
   const { translations } = useLanguage();
 
-  // Hide bottom nav on product details, cart, and auth pages
-  if (pathname.startsWith('/product/') || pathname === '/cart' || pathname === '/auth' || pathname === '/checkout') return null;
+  // Hide bottom nav on product details, cart, auth, checkout, and order detail pages
+  const isOrderDetailPage = /^\/orders\/[^/]+$/.test(pathname);
+  if (pathname.startsWith('/product/') || pathname === '/cart' || pathname === '/auth' || pathname === '/checkout' || isOrderDetailPage) return null;
 
   const isActive = (route: string) =>
     pathname === route ? "text-white font-semibold" : "text-green-100";
