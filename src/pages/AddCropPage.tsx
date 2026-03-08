@@ -73,18 +73,7 @@ const AddCropPage: React.FC = () => {
     if (!formData.district) return [];
     const districtObj = availableDistricts.find((d: any) => d.name === formData.district);
     if (!districtObj) return [];
-    const mandalList = (mandals as any)[districtObj.code];
-    if (mandalList) return mandalList;
-    const divisionList = (divisions as any)[districtObj.code];
-    if (divisionList) {
-      const allM: any[] = [];
-      divisionList.forEach((div: any) => {
-        const m = (mandals as any)[div.code];
-        if (m) allM.push(...m);
-      });
-      return allM;
-    }
-    return [];
+    return getMandalsForDistrict(districtObj.code);
   }, [formData.district, availableDistricts]);
 
   const availableVillages = useMemo(() => {
