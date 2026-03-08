@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CropDetailsForm from '@/components/CropDetailsForm';
-import { states, districts, mandals, villages } from '@/data/locationData';
+import { states, districts, divisions, mandals, villages } from '@/data/locationData';
 import agricultureImg from '@/assets/agriculture-products.png';
 import farmersMarketImg from '@/assets/farmers-market.png';
 
@@ -80,9 +80,8 @@ const BecomeSeller = () => {
     const mandalList = (mandals as any)[districtObj.code];
     if (mandalList) return mandalList;
     // Try via divisions -> mandals
-    const divisionList = (await_divisions as any)[districtObj.code];
+    const divisionList = (divisions as any)[districtObj.code];
     if (divisionList) {
-      // Flatten mandals from all divisions
       const allMandals: any[] = [];
       divisionList.forEach((div: any) => {
         const m = (mandals as any)[div.code];
