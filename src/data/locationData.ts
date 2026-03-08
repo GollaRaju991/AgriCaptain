@@ -1,4 +1,6 @@
 
+import { telanganaDistricts, telanganaMandals } from './telanganaLocationData';
+
 export const countries = [
   { code: 'IN', name: 'India' },
   { code: 'US', name: 'United States' },
@@ -41,232 +43,48 @@ export const states = {
   ]
 };
 
-export const districts = {
-  TG: [
-    { code: 'ADB', name: 'Adilabad' },
-{ code: 'BHK', name: 'Bhadradri Kothagudem' },
-{ code: 'HNK', name: 'Hanumakonda' },
-{ code: 'HYD', name: 'Hyderabad' },
-{ code: 'JGT', name: 'Jagtial' },
-{ code: 'JGN', name: 'Jangoan' },
-{ code: 'JAY', name: 'Jayashankar Bhoopalpally' },
-{ code: 'JGL', name: 'Jogulamba Gadwal' },
-{ code: 'KMR', name: 'Kamareddy' },
-{ code: 'KNR', name: 'Karimnagar' },
-{ code: 'KMM', name: 'Khammam' },
-{ code: 'KBA', name: 'Komaram Bheem Asifabad' },
-{ code: 'MBD', name: 'Mahabubabad' },
-{ code: 'MBN', name: 'Mahabubnagar' },
-{ code: 'MCL', name: 'Mancherial' },
-{ code: 'MDK', name: 'Medak' },
-{ code: 'MMK', name: 'Medchal-Malkajgiri' },
-{ code: 'MLG', name: 'Mulugu' },
-{ code: 'NGK', name: 'Nagarkurnool' },
-{ code: 'NGD', name: 'Nalgonda' },
-{ code: 'NPT', name: 'Narayanpet' },
-{ code: 'NRM', name: 'Nirmal' },
-{ code: 'NZB', name: 'Nizamabad' },
-{ code: 'PDP', name: 'Peddapalli' },
-{ code: 'RSL', name: 'Rajanna Sircilla' },
-{ code: 'RRD', name: 'Rangareddy' },
-{ code: 'SGD', name: 'Sangareddy' },
-{ code: 'SDP', name: 'Siddipet' },
-{ code: 'SRY', name: 'Suryapet' },
-{ code: 'VKB', name: 'Vikarabad' },
-{ code: 'WNP', name: 'Wanaparthy' },
-{ code: 'WRG', name: 'Warangal' },
-{ code: 'YBG', name: 'Yadadri Bhuvanagiri' }
-  ],
+// Districts by state code - Telangana uses comprehensive data from telanganaLocationData
+export const districts: Record<string, { code: string; name: string; nameTe?: string }[]> = {
+  TG: telanganaDistricts,
   AP: [
     { code: 'PMY', name: 'Parvathipuram Manyam' },
-{ code: 'VSP', name: 'Visakhapatnam' },
-{ code: 'VZM', name: 'Vizianagaram' },
-{ code: 'AKP', name: 'Anakapalli' },
-{ code: 'KAK', name: 'Kakinada' },
-{ code: 'KSM', name: 'Konaseema' },
-{ code: 'ASR', name: 'Alluri Sitaramaraju' },
-{ code: 'EGD', name: 'East Godavari' },
-{ code: 'ELR', name: 'Eluru' },
-{ code: 'NTR', name: 'NTR District' },
-{ code: 'GTR', name: 'Guntur' },
-{ code: 'WGD', name: 'West Godavari' },
-{ code: 'BPT', name: 'Bapatla' },
-{ code: 'PLD', name: 'Palnadu' },
-{ code: 'SPS', name: 'Sri Potti Sriramulu Nellore' },
-{ code: 'PKM', name: 'Prakasam' },
-{ code: 'TRP', name: 'Tirupati' },
-{ code: 'AMY', name: 'Annamayya' },
-{ code: 'YSR', name: 'YSR Kadapa' },
-{ code: 'CTR', name: 'Chittoor' },
-{ code: 'ATP', name: 'Anantpur' },
-{ code: 'KNL', name: 'Kurnool' },
-{ code: 'SSS', name: 'Sri Satyasai' },
-{ code: 'NDL', name: 'Nandyal' },
-{ code: 'SBD', name: 'Sri. Balaji Dist' }
+    { code: 'VSP', name: 'Visakhapatnam' },
+    { code: 'VZM', name: 'Vizianagaram' },
+    { code: 'AKP', name: 'Anakapalli' },
+    { code: 'KAK', name: 'Kakinada' },
+    { code: 'KSM', name: 'Konaseema' },
+    { code: 'ASR', name: 'Alluri Sitaramaraju' },
+    { code: 'EGD', name: 'East Godavari' },
+    { code: 'ELR', name: 'Eluru' },
+    { code: 'NTR', name: 'NTR District' },
+    { code: 'GTR', name: 'Guntur' },
+    { code: 'WGD', name: 'West Godavari' },
+    { code: 'BPT', name: 'Bapatla' },
+    { code: 'PLD', name: 'Palnadu' },
+    { code: 'SPS', name: 'Sri Potti Sriramulu Nellore' },
+    { code: 'PKM', name: 'Prakasam' },
+    { code: 'TRP', name: 'Tirupati' },
+    { code: 'AMY', name: 'Annamayya' },
+    { code: 'YSR', name: 'YSR Kadapa' },
+    { code: 'CTR', name: 'Chittoor' },
+    { code: 'ATP', name: 'Anantpur' },
+    { code: 'KNL', name: 'Kurnool' },
+    { code: 'SSS', name: 'Sri Satyasai' },
+    { code: 'NDL', name: 'Nandyal' },
+    { code: 'SBD', name: 'Sri. Balaji Dist' }
   ]
 };
 
-export const divisions = {
- HYD: [
+// Divisions (used as intermediate level for AP, optional for TG)
+export const divisions: Record<string, { code: string; name: string }[]> = {
+  HYD: [
     { code: 'SEC', name: 'Secunderabad' },
     { code: 'LBN', name: 'LB Nagar' },
     { code: 'KPH', name: 'Kukatpally' },
     { code: 'CHM', name: 'Charminar' },
     { code: 'HTC', name: 'Hi-Tech City' }
   ],
-  WGL: [
-    { code: 'HNM', name: 'Hanamkonda' },
-    { code: 'KZJ', name: 'Kazipet' },
-    { code: 'WRG', name: 'Warangal Rural' },
-    { code: 'PKL', name: 'Parkal' }
-  ],
-  VZG: [
-    { code: 'MVP', name: 'MVP Colony' },
-    { code: 'MDH', name: 'Madhurawada' },
-    { code: 'GJW', name: 'Gajuwaka' },
-    { code: 'ANK', name: 'Anakapalli' },
-    { code: 'VSK', name: 'Visakhapatnam Port' }
-  ],
-  VJA: [
-    { code: 'BZA', name: 'Bezawada' },
-    { code: 'GDR', name: 'Gudivada' },
-    { code: 'MKL', name: 'Machilipatnam' },
-    { code: 'NNR', name: 'Nandigama' }
-  ],
-  ADL: [
-    { code: 'ADL1', name: 'Adilabad Division 1' },
-    { code: 'ADL2', name: 'Adilabad Division 2' }
-  ],
-  BHK: [
-    { code: 'BHK1', name: 'Bhadradri Kothagudem Division 1' },
-    { code: 'BHK2', name: 'Bhadradri Kothagudem Division 2' }
-  ],
-  JGT: [
-    { code: 'JGT1', name: 'Jagtial Division 1' },
-    { code: 'JGT2', name: 'Jagtial Division 2' }
-  ],
-  JGN: [
-    { code: 'JGN1', name: 'Jangaon Division 1' },
-    { code: 'JGN2', name: 'Jangaon Division 2' }
-  ],
-  JBP: [
-    { code: 'JBP1', name: 'Jayashankar Bhoopalpally Division 1' },
-    { code: 'JBP2', name: 'Jayashankar Bhoopalpally Division 2' }
-  ],
-  JGD: [
-    { code: 'JGD1', name: 'Jogulamba Gadwal' },
-    { code: 'JGD2', name: 'Allampur' }
-  ],
-  KMR: [
-    { code: 'KMR', name: 'Kamareddy' },
-{ code: 'BSW', name: 'Banswada' },
-{ code: 'YLD', name: 'Yellareddy' }
-  ],
-  KNR: [
-   { code: 'KNR', name: 'Karimnagar' },
-{ code: 'HZB', name: 'Huzurabad' }
-  ],
-  KMM: [
-    { code: 'KMM', name: 'Khammam' },
-{ code: 'KLR', name: 'Kallur' }
-  ],
-  KBA: [
-    { code: 'ASF', name: 'Asifabad' },
-{ code: 'KGN', name: 'Kagaznagar' }
-  ],
-  MBD: [
-    { code: 'MBD', name: 'Mahabubabad' },
-{ code: 'THR', name: 'Thorrur' }
-  ],
-  MBN: [
-    { code: 'MBN1', name: 'Mahabubnagar Division 1' },
-    { code: 'MBN2', name: 'Mahabubnagar Division 2' }
-  ],
-  MCL: [
-    { code: 'MCL', name: 'Mancherial' },
-{ code: 'BLY', name: 'Bellampally' }
-  ],
-  MDK: [
-    { code: 'MDK', name: 'Medak' },
-{ code: 'NSP', name: 'Narsapur' },
-{ code: 'TPR', name: 'Toopran' }
-  ],
-  MMG: [
-    { code: 'KES', name: 'Keesara' },
-{ code: 'MLK', name: 'Malkajgiri' }
-  ],
-  MLG: [
-    { code: 'MLG1', name: 'Mulugu Division 1' },
-    { code: 'MLG2', name: 'Mulugu Division 2' }
-  ],
-  NGK: [
-    { code: 'NGK', name: 'Nagarkurnool' },
-{ code: 'ACP', name: 'Achampet' },
-{ code: 'KLK', name: 'Kalwakurthy' },
-{ code: 'KLP', name: 'Kollapur' }
-  ],
-  NGD: [
-    { code: 'NGD', name: 'Nalgonda' },
-{ code: 'MRG', name: 'Miryalaguda' },
-{ code: 'DVR', name: 'Devarakonda' },
-{ code: 'CND', name: 'Chandur' }
-  ],
-  NPT: [
-    { code: 'NPT', name: 'Narayanpet' },
-    { code: 'NPT2', name: 'Narayanpet Division 2' }
-  ],
-  NRM: [
-    { code: 'NRM', name: 'Nirmal' },
-{ code: 'BNS', name: 'Bhainsa' }
-  ],
-  NZB: [
-    { code: 'NZB', name: 'Nizamabad' },
-{ code: 'BDN', name: 'Bodhan' },
-{ code: 'ARM', name: 'Armoor' }
-  ],
-  PDP: [
-   { code: 'PDP', name: 'Peddapalli' },
-{ code: 'MNT', name: 'Manthani' }
-  ],
-  RSL: [
-    { code: 'RSL', name: 'Sircilla' },
-{ code: 'VML', name: 'Vemulawada' }
-  ],
-  RRD: [
-   { code: 'CHV', name: 'Chevella' },
-{ code: 'IBR', name: 'Ibrahimpatnam' },
-{ code: 'RJN', name: 'Rajendranagar' },
-{ code: 'SHD', name: 'Shadnagar' },
-{ code: 'KND', name: 'Kandukur' }
-
-  ],
-  SGD: [
-    { code: 'SGD', name: 'Sangareddy' },
-{ code: 'NKD', name: 'Narayankhed' },
-{ code: 'ZBD', name: 'Zaheerabad' },
-{ code: 'JPT', name: 'Jogipet' }
-  ],
-  SDP: [
-{ code: 'SDP', name: 'Siddipet' },
-{ code: 'GJW', name: 'Gajwel' },
-{ code: 'HSB', name: 'Husnabad' }
-  ],
-  SRY: [
-    { code: 'SRY', name: 'Suryapet' },
-{ code: 'KOD', name: 'Kodad' }
-  ],
-  VKB: [
-    { code: 'VKB', name: 'Vikarabad' },
-{ code: 'TND', name: 'Tandur' }
-  ],
-  WNP: [
-    { code: 'WRG', name: 'Warangal' },
-{ code: 'NSP', name: 'Narsampet' }
-  ],
-  YBG: [
-    { code: 'BGR', name: 'Bhongir' },
-{ code: 'CHT', name: 'Choutuppal' }
-  ],
+  // AP divisions
   PVM: [
     { code: 'PVM1', name: 'Parvathipuram Manyam Division 1' },
     { code: 'PVM2', name: 'Parvathipuram Manyam Division 2' }
@@ -369,7 +187,11 @@ export const divisions = {
   ],
 };
 
-export const mandals = {
+// Mandals - keyed by district code (for Telangana) or division code (for AP/others)
+export const mandals: Record<string, { code: string; name: string; nameTe?: string }[]> = {
+  // Telangana mandals by district code
+  ...telanganaMandals,
+  // Legacy mandals by division code (for AP etc.)
   SEC: [
     { code: 'ALW', name: 'Alwal' },
     { code: 'TRM', name: 'Trimulgherry' },
@@ -393,7 +215,7 @@ export const mandals = {
   ]
 };
 
-export const villages = {
+export const villages: Record<string, { code: string; name: string }[]> = {
   ALW: [
     { code: 'ALW1', name: 'Alwal Village 1' },
     { code: 'ALW2', name: 'Alwal Village 2' },
@@ -412,4 +234,33 @@ export const villages = {
     { code: 'VJA1V1', name: 'Vijayawada Central Village 1' },
     { code: 'VJA1V2', name: 'Vijayawada Central Village 2' }
   ]
+};
+
+/**
+ * Helper: Get mandals for a district code.
+ * Checks direct district→mandal mapping first, then falls back to division→mandal.
+ */
+export const getMandalsForDistrict = (districtCode: string): { code: string; name: string; nameTe?: string }[] => {
+  // Direct mandals by district code
+  if (mandals[districtCode]) {
+    return mandals[districtCode];
+  }
+  // Fallback: collect mandals from all divisions under this district
+  const divisionList = divisions[districtCode];
+  if (divisionList) {
+    const allMandals: { code: string; name: string; nameTe?: string }[] = [];
+    divisionList.forEach(div => {
+      const m = mandals[div.code];
+      if (m) allMandals.push(...m);
+    });
+    return allMandals;
+  }
+  return [];
+};
+
+/**
+ * Check if a district has divisions (intermediate level)
+ */
+export const hasDivisions = (districtCode: string): boolean => {
+  return !!(divisions[districtCode] && divisions[districtCode].length > 0);
 };
