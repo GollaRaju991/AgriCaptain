@@ -124,18 +124,18 @@ const Header = () => {
           <>
             {/* Row 1: Logo + actions - hides on scroll */}
             <div
-              className={`lg:hidden flex items-center px-3 py-2 bg-green-600 gap-2 transition-all duration-300 overflow-hidden ${
+              className={`lg:hidden flex items-center px-3 py-2 bg-white gap-2 transition-all duration-300 overflow-hidden ${
                 scrolled ? "max-h-0 py-0 opacity-0" : "max-h-20 opacity-100"
               }`}
             >
               <Link to="/" className="flex-shrink-0">
-                <span className="text-xl font-bold text-white">Agrizin</span>
+                <span className="text-xl font-bold text-green-700">Agrizin</span>
               </Link>
 
               <div className="flex items-center gap-2 ml-auto">
                 <Link
                   to="/become-seller"
-                  className="flex items-center gap-1.5 bg-white rounded-lg px-3 py-2"
+                  className="flex items-center gap-1.5 bg-white border border-gray-300 rounded-lg px-3 py-2"
                 >
                   <UserPlus className="h-5 w-5 text-green-700" />
                   <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.become_seller}</span>
@@ -143,7 +143,7 @@ const Header = () => {
 
                 <button
                   onClick={() => setLanguageDialogOpen(true)}
-                  className="flex items-center gap-1.5 bg-white rounded-lg px-3 py-2"
+                  className="flex items-center gap-1.5 bg-white border border-gray-300 rounded-lg px-3 py-2"
                 >
                   <Languages className="h-5 w-5 text-green-700" />
                   <span className="text-xs font-medium text-gray-800 whitespace-nowrap">{translations.language}</span>
@@ -152,16 +152,16 @@ const Header = () => {
                 {user ? (
                   <Link
                     to="/profile"
-                    className="relative flex items-center justify-center w-10 h-10 bg-white rounded-full"
+                    className="relative flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full border border-gray-300"
                   >
-                    <UserIcon className="h-6 w-6 text-blue-600" />
+                    <UserIcon className="h-6 w-6 text-green-700" />
                   </Link>
                 ) : (
                   <Link
                     to="/auth"
-                    className="relative flex items-center justify-center w-10 h-10 bg-white rounded-full"
+                    className="relative flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full border border-gray-300"
                   >
-                    <UserIcon className="h-6 w-6 text-blue-600" />
+                    <UserIcon className="h-6 w-6 text-green-700" />
                   </Link>
                 )}
               </div>
@@ -196,14 +196,15 @@ const Header = () => {
               </Button>
             </div>
 
-            {/* Row 3: Category menu - always visible (sticky on scroll) */}
-            <div className="lg:hidden overflow-x-auto bg-green-600 border-b border-green-500">
+            {/* Row 3: Category menu - white background with green icons */}
+            <div className="lg:hidden overflow-x-auto bg-white border-b border-gray-200">
               <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
                 {[
                   { name: translations.seeds, icon: Sprout, path: '/products?category=seeds' },
                   { name: translations.fertilizers, icon: Droplet, path: '/products?category=fertilizers' },
                   { name: translations.agri_products || translations.agriculture_products, icon: Wrench, path: '/products?category=agriculture' },
                   { name: translations.brands, icon: Award, path: '/products?category=brands' },
+                  { name: translations.tools || 'Tools', icon: Wrench, path: '/products?category=tools' },
                   { name: translations.market_details, icon: TrendingUp, path: '/market-details' },
                   { name: translations.farm_worker, icon: Users, isPopup: true, action: 'farmWorker' as const },
                   { name: translations.rent_vehicles, icon: Truck, isPopup: true, action: 'rentVehicle' as const },
@@ -219,12 +220,12 @@ const Header = () => {
                           if (category.action === 'farmWorker') setFarmWorkerDialogOpen(true);
                           else if (category.action === 'rentVehicle') setVehicleRentDialogOpen(true);
                         }}
-                        className="flex flex-col items-center min-w-[70px] px-2 py-1 text-white hover:text-green-100"
+                        className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-700"
                       >
-                        <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-1">
-                          <Icon className="h-5 w-5 text-white" />
+                        <div className="w-10 h-10 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center mb-1">
+                          <Icon className="h-5 w-5 text-green-600" />
                         </div>
-                        <span className="text-xs text-center whitespace-nowrap">{category.name}</span>
+                        <span className="text-xs text-center whitespace-nowrap text-gray-700">{category.name}</span>
                       </button>
                     );
                   }
@@ -233,12 +234,12 @@ const Header = () => {
                     <Link
                       key={index}
                       to={'path' in category ? category.path : '/'}
-                      className="flex flex-col items-center min-w-[70px] px-2 py-1 text-white hover:text-green-100"
+                      className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-700"
                     >
-                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mb-1">
-                        <Icon className="h-5 w-5 text-white" />
+                      <div className="w-10 h-10 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center mb-1">
+                        <Icon className="h-5 w-5 text-green-600" />
                       </div>
-                      <span className="text-xs text-center whitespace-nowrap">{category.name}</span>
+                      <span className="text-xs text-center whitespace-nowrap text-gray-700">{category.name}</span>
                     </Link>
                   );
                 })}
