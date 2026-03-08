@@ -209,7 +209,7 @@ const DirectFromFarm: React.FC = () => {
             <img
               src={getFirstImage(crop.crop_images)}
               alt={crop.crop_name}
-              className="w-full h-40 sm:h-48 object-cover"
+              className="w-full h-32 sm:h-48 object-cover"
               onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
             />
             {isPremium && (
@@ -222,13 +222,12 @@ const DirectFromFarm: React.FC = () => {
                 {crop.quality_grade.replace('Grade ', '')}
               </Badge>
             )}
-            {/* Farmer avatar */}
             {crop.seller && (
               <div className="absolute bottom-2 right-2">
                 {crop.seller.photo_url ? (
-                  <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-9 h-9 rounded-full border-2 border-white object-cover shadow" />
+                  <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white object-cover shadow" />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-sm border-2 border-white shadow">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm border-2 border-white shadow">
                     {crop.seller.name.charAt(0)}
                   </div>
                 )}
@@ -236,26 +235,26 @@ const DirectFromFarm: React.FC = () => {
             )}
           </div>
 
-          <div className="p-3">
+          <div className="p-2 sm:p-3">
             <div className="flex items-start justify-between gap-1">
-              <h3 className="font-semibold text-sm text-gray-900 line-clamp-1">{crop.crop_name}</h3>
-              {crop.seller && <span className="text-xs text-gray-500 flex-shrink-0">{crop.seller.name}</span>}
+              <h3 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-1">{crop.crop_name}</h3>
+              {crop.seller && <span className="text-[10px] sm:text-xs text-gray-500 flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
             </div>
 
-            <div className="flex items-baseline gap-1 mt-1">
-              <span className="text-lg font-bold text-gray-900">₹{crop.price}</span>
-              <span className="text-xs text-gray-500">/ {crop.quantity.includes('Quintal') || crop.quantity.includes('quintal') ? 'Quintal' : 'Kg'}</span>
+            <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
+              <span className="text-sm sm:text-lg font-bold text-gray-900">₹{crop.price}</span>
+              <span className="text-[10px] sm:text-xs text-gray-500">/ {crop.quantity.includes('Quintal') || crop.quantity.includes('quintal') ? 'Quintal' : 'Kg'}</span>
             </div>
 
-            <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+            <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-gray-500">
               <span className="flex items-center gap-0.5">
                 <span className="text-green-600">✓</span> {crop.quantity}
               </span>
             </div>
 
             {crop.seller && (
-              <div className="flex items-center justify-between mt-1.5">
-                <span className="text-xs text-gray-500">
+              <div className="flex items-center justify-between mt-1 sm:mt-1.5">
+                <span className="text-[10px] sm:text-xs text-gray-500 truncate max-w-[60px] sm:max-w-none">
                   {crop.seller.village || crop.seller.district || ''}
                 </span>
                 {renderStars(rating)}
@@ -265,37 +264,37 @@ const DirectFromFarm: React.FC = () => {
         </Link>
 
         {/* Action buttons */}
-        <div className="px-3 pb-3 flex gap-2">
+        <div className="px-2 pb-2 sm:px-3 sm:pb-3 flex gap-1.5 sm:gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 text-xs border-gray-300 rounded-lg"
+            className="flex-1 text-[10px] sm:text-xs px-1 sm:px-3 h-7 sm:h-9 border-gray-300 rounded-lg min-h-0"
             onClick={(e) => { e.preventDefault(); navigate(`/sell-crop/${crop.id}`); }}
           >
-            <Eye className="h-3.5 w-3.5 mr-1" />
-            {t('View Details', 'వివరాలు', 'विवरण')}
+            <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+            <span className="ml-0.5 sm:ml-1 truncate">{t('View', 'వివరాలు', 'विवरण')}</span>
           </Button>
           <Button
             size="sm"
-            className="flex-1 bg-green-700 hover:bg-green-800 text-xs rounded-lg"
+            className="flex-1 bg-green-700 hover:bg-green-800 text-[10px] sm:text-xs px-1 sm:px-3 h-7 sm:h-9 rounded-lg min-h-0"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
           >
-            <ShoppingCart className="h-3.5 w-3.5 mr-1" />
-            {t('Add to Cart', 'కార్ట్‌కు', 'कार्ट में')}
+            <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+            <span className="ml-0.5 sm:ml-1 truncate">{t('Add', 'కార్ట్', 'कार्ट')}</span>
           </Button>
         </div>
 
         {/* Contact farmer */}
         {crop.seller && (
-          <div className="border-t border-gray-100 px-3 py-2 flex items-center justify-between">
+          <div className="border-t border-gray-100 px-2 py-1.5 sm:px-3 sm:py-2 flex items-center justify-between">
             <button
               onClick={(e) => handleCallFarmer(crop.seller!.phone, e)}
-              className="flex items-center gap-1.5 text-xs text-green-700 font-medium"
+              className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-green-700 font-medium min-h-0"
             >
-              <Phone className="h-3.5 w-3.5" />
-              {t('Contact Farmer', 'రైతును సంప్రదించండి', 'किसान से संपर्क')}
+              <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+              {t('Contact', 'సంప్రదించు', 'संपर्क')}
             </button>
-            <span className="text-xs text-gray-400 font-medium">★ {rating.toFixed(1)}</span>
+            <span className="text-[10px] sm:text-xs text-gray-400 font-medium">★ {rating.toFixed(1)}</span>
           </div>
         )}
       </Card>
