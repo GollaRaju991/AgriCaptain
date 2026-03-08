@@ -1,242 +1,309 @@
 
-import React, { useState } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Truck, MapPin, Clock, Star, Phone, Calendar, Fuel } from 'lucide-react';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
+import LocationDetector from '@/components/LocationDetector';
+import SavedAddressPicker from '@/components/SavedAddressPicker';
+import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const VehicleRent = () => {
-  const { translations } = useLanguage();
-  const [selectedVehicle, setSelectedVehicle] = useState('');
-  const [location, setLocation] = useState('');
+  const navigate = useNavigate();
+  const { language } = useLanguage();
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedDivision, setSelectedDivision] = useState('');
+  const [selectedMandal, setSelectedMandal] = useState('');
+  const [selectedVillage, setSelectedVillage] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearched, setIsSearched] = useState(false);
+  const [autoDetectLocation, setAutoDetectLocation] = useState(true);
 
-  const vehicleTypes = [
-    { id: 'tractor', name: 'Tractor', price: '₹2,000/day', rating: 4.8 },
-    { id: 'harvester', name: 'Harvester', price: '₹5,000/day', rating: 4.9 },
-    { id: 'cultivator', name: 'Cultivator', price: '₹1,500/day', rating: 4.7 },
-    { id: 'plough', name: 'Plough', price: '₹800/day', rating: 4.6 },
-    { id: 'sprayer', name: 'Sprayer', price: '₹1,200/day', rating: 4.8 },
-    { id: 'truck', name: 'Transport Truck', price: '₹3,000/day', rating: 4.7 }
-  ];
+  const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
-  const vehicles = [
-    {
-      id: 1,
-      name: 'Mahindra 575 DI Tractor',
-      type: 'Tractor',
-      power: '47 HP',
-      rating: 4.9,
-      reviews: 156,
-      location: 'Hyderabad, Telangana',
-      owner: 'Rajesh Kumar',
-      phone: '+91 9876543210',
-      price: '₹2,000/day',
-      available: true,
-      fuel: 'Diesel',
-      image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=300&h=200&fit=crop'
-    },
-    {
-      id: 2,
-      name: 'John Deere Combine Harvester',
-      type: 'Harvester',
-      power: '120 HP',
-      rating: 4.8,
-      reviews: 203,
-      location: 'Warangal, Telangana',
-      owner: 'Suresh Reddy',
-      phone: '+91 9876543211',
-      price: '₹5,000/day',
-      available: true,
-      fuel: 'Diesel',
-      image: 'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=300&h=200&fit=crop'
-    },
-    {
-      id: 3,
-      name: 'Massey Ferguson Cultivator',
-      type: 'Cultivator',
-      power: '35 HP',
-      rating: 4.7,
-      reviews: 89,
-      location: 'Karimnagar, Telangana',
-      owner: 'Venkat Rao',
-      phone: '+91 9876543212',
-      price: '₹1,500/day',
-      available: false,
-      fuel: 'Diesel',
-      image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=300&h=200&fit=crop'
+  const getDisplayName = (item: { name: string; nameTe?: string }) => {
+    if (language === 'te' && item.nameTe) return item.nameTe;
+    return item.name;
+  };
+
+  useEffect(() => { setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedCountry]);
+  useEffect(() => { setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedState]);
+  useEffect(() => { setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedDistrict]);
+  useEffect(() => { setSelectedMandal(''); setSelectedVillage(''); }, [selectedDivision]);
+  useEffect(() => { setSelectedVillage(''); }, [selectedMandal]);
+
+  const vehicleTypes = ['Tractor', 'Harvester', 'Cultivator', 'Seed Drill', 'Thresher', 'Rotavator', 'Plough', 'Sprayer', 'Truck', 'Trailer'];
+
+  const getAvailableStates = () => selectedCountry ? states[selectedCountry as keyof typeof states] || [] : [];
+  const getAvailableDistricts = () => selectedState ? districts[selectedState as keyof typeof districts] || [] : [];
+  const getAvailableDivisions = () => selectedDistrict ? divisions[selectedDistrict as keyof typeof divisions] || [] : [];
+  const districtHasDivisions = selectedDistrict ? hasDivisions(selectedDistrict) : false;
+  const getAvailableMandals = () => {
+    if (districtHasDivisions) {
+      return selectedDivision ? mandals[selectedDivision as keyof typeof mandals] || [] : [];
     }
-  ];
+    return selectedDistrict ? getMandalsForDistrict(selectedDistrict) : [];
+  };
+  const getAvailableVillages = () => selectedMandal ? villages[selectedMandal as keyof typeof villages] || [] : [];
+
+  const handleSearch = () => {
+    if (!selectedCountry || !selectedState || !selectedDistrict || !vehicleType || !startDate || !endDate) return;
+    if (districtHasDivisions && !selectedDivision) return;
+
+    saveAddress({
+      country: selectedCountry,
+      state: selectedState,
+      district: selectedDistrict,
+      division: selectedDivision,
+      mandal: selectedMandal,
+      village: selectedVillage,
+      workType: vehicleType,
+      category: 'Vehicle',
+    });
+
+    const mockResults = [
+      { id: 1, name: 'John Deere 5050D', type: vehicleType, model: '2022', rate: '₹1500/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Ram Singh', condition: 'Excellent', availability: 'Available' },
+      { id: 2, name: 'Mahindra 575 DI', type: vehicleType, model: '2021', rate: '₹1200/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Suresh Kumar', condition: 'Good', availability: 'Available' }
+    ];
+    setSearchResults(mockResults);
+    setIsSearched(true);
+  };
+
+  const resetForm = () => {
+    setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
+    setVehicleType(''); setStartDate(undefined); setEndDate(undefined);
+    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true);
+  };
+
+  const findCodeByName = (list: { code: string; name: string }[], name: string) => {
+    if (!name || !list) return '';
+    const lower = name.toLowerCase();
+    const match = list.find(item => item.name.toLowerCase().includes(lower) || lower.includes(item.name.toLowerCase()));
+    return match?.code || '';
+  };
+
+  const handleLocationDetected = (location: any) => {
+    const countryMatch = countries.find(c => c.name.toLowerCase() === (location.country || '').toLowerCase());
+    const countryCode = countryMatch?.code || '';
+    if (countryCode) setSelectedCountry(countryCode);
+    const stateList = countryCode ? states[countryCode as keyof typeof states] || [] : [];
+    const stateCode = findCodeByName(stateList, location.state);
+    if (stateCode) setSelectedState(stateCode);
+    const districtList = stateCode ? districts[stateCode as keyof typeof districts] || [] : [];
+    const districtCode = findCodeByName(districtList, location.district);
+    if (districtCode) setSelectedDistrict(districtCode);
+    const divisionList = districtCode ? divisions[districtCode as keyof typeof divisions] || [] : [];
+    const divisionCode = findCodeByName(divisionList, location.division);
+    if (divisionCode) setSelectedDivision(divisionCode);
+    const mandalList = districtCode ? getMandalsForDistrict(districtCode) : [];
+    const mandalCode = findCodeByName(mandalList, location.mandal);
+    if (mandalCode) setSelectedMandal(mandalCode);
+    const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
+    const villageCode = findCodeByName(villageList, location.village);
+    if (villageCode) setSelectedVillage(villageCode);
+    setAutoDetectLocation(false);
+  };
+
+  const handleSelectSavedAddress = (addr: SavedFormAddress) => {
+    setSelectedCountry(addr.country);
+    setTimeout(() => {
+      setSelectedState(addr.state);
+      setTimeout(() => {
+        setSelectedDistrict(addr.district);
+        setTimeout(() => {
+          setSelectedDivision(addr.division);
+          setTimeout(() => {
+            setSelectedMandal(addr.mandal);
+            setTimeout(() => {
+              setSelectedVillage(addr.village);
+            }, 50);
+          }, 50);
+        }, 50);
+      }, 50);
+    }, 50);
+    setVehicleType(addr.workType);
+  };
+
+  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && vehicleType && startDate && endDate;
+
+  const label = (en: string, te: string) => language === 'te' ? te : en;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {translations.rent_vehicles}
-          </h1>
-          <p className="text-gray-600">
-            Rent agricultural vehicles and equipment for your farming needs
-          </p>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg p-6 shadow-sm mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="vehicle">Vehicle Type</Label>
-              <Select value={selectedVehicle} onValueChange={setSelectedVehicle}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select vehicle" />
-                </SelectTrigger>
-                <SelectContent>
-                  {vehicleTypes.map((vehicle) => (
-                    <SelectItem key={vehicle.id} value={vehicle.id}>
-                      {vehicle.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                placeholder="Enter your location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
-            <div className="flex items-end">
-              <Button className="w-full">
-                Search Vehicles
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Vehicle Types */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Available Vehicle Types</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {vehicleTypes.map((vehicle) => (
-              <Card key={vehicle.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold">{vehicle.name}</h3>
-                    <Badge variant="secondary">{vehicle.price}</Badge>
-                  </div>
-                  <div className="flex items-center space-x-1 mb-2">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm">{vehicle.rating}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Available Vehicles */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Available Vehicles</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {vehicles.map((vehicle) => (
-              <Card key={vehicle.id} className="hover:shadow-lg transition-shadow">
-                <div className="grid grid-cols-1 md:grid-cols-2">
-                  <div className="relative">
-                    <img
-                      src={vehicle.image}
-                      alt={vehicle.name}
-                      className="w-full h-48 md:h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none"
-                    />
-                    <Badge 
-                      variant={vehicle.available ? "default" : "secondary"}
-                      className="absolute top-3 right-3"
-                    >
-                      {vehicle.available ? "Available" : "Rented"}
-                    </Badge>
-                  </div>
-                  
-                  <div className="p-6">
-                    <CardHeader className="p-0 mb-4">
-                      <CardTitle className="flex items-center gap-2">
-                        <Truck className="h-5 w-5" />
-                        {vehicle.name}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600">{vehicle.type} • {vehicle.power}</p>
-                    </CardHeader>
-                    
-                    <CardContent className="p-0 space-y-3">
-                      <div className="flex items-center space-x-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium">{vehicle.rating}</span>
-                        <span className="text-sm text-gray-600">({vehicle.reviews} reviews)</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4" />
-                        <span>{vehicle.location}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Fuel className="h-4 w-4" />
-                        <span>{vehicle.fuel}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Phone className="h-4 w-4" />
-                        <span>{vehicle.owner} - {vehicle.phone}</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-4">
-                        <span className="text-lg font-bold text-green-600">{vehicle.price}</span>
-                        <div className="space-x-2">
-                          <Button variant="outline" size="sm">
-                            <Phone className="h-4 w-4 mr-1" />
-                            Call
-                          </Button>
-                          <Button size="sm" disabled={!vehicle.available}>
-                            <Calendar className="h-4 w-4 mr-1" />
-                            Rent Now
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Contact Information */}
-        <div className="mt-12 bg-green-50 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">Need Help?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <p className="font-medium">Contact:</p>
-              <p>9912365550</p>
-            </div>
-            <div>
-              <p className="font-medium">Email:</p>
-              <p>contactagricaptain@gmail.com</p>
-            </div>
-            <div>
-              <p className="font-medium">Address:</p>
-              <p>Nanakramguda Rd, Financial District, Serilingampalle (M), Hyderabad, Telangana 500032</p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-50 bg-[hsl(var(--agri-green))] text-white">
+        <div className="flex items-center justify-between px-4 py-4">
+          <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }} className="p-1">
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <h1 className="text-lg font-bold">{label('Rent Farm Vehicles', 'వ్యవసాయ వాహనాలు అద్దెకు తీసుకోండి')}</h1>
+          <div className="w-5" />
         </div>
       </div>
 
-      <Footer />
+      <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
+        <SavedAddressPicker
+          addresses={savedAddresses}
+          onSelect={handleSelectSavedAddress}
+          onDelete={deleteAddress}
+          isLimitReached={isLimitReached}
+        />
+
+        <LocationDetector 
+          enabled={autoDetectLocation} 
+          onLocationDetected={handleLocationDetected}
+        />
+
+        {/* Location Fields */}
+        <div className="space-y-4">
+          <div>
+            <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
+            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
+              <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm font-medium">{label('State *', 'రాష్ట్రం *')}</Label>
+            <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
+              <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-sm font-medium">{label('District *', 'జిల్లా *')}</Label>
+            <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
+              <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+
+          {districtHasDivisions && (
+            <div>
+              <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
+              <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
+                <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div>
+            <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
+            {getAvailableMandals().length > 0 ? (
+              <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
+                <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
+              </Select>
+            ) : (
+              <Input className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
+            )}
+          </div>
+          <div>
+            <Label className="text-sm font-medium">{label('Village', 'గ్రామం')}</Label>
+            {getAvailableVillages().length > 0 ? (
+              <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
+                <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
+              </Select>
+            ) : (
+              <Input className="mt-1" placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
+            )}
+          </div>
+
+          {/* Vehicle Type */}
+          <div>
+            <Label className="text-sm font-medium">{label('Vehicle Type *', 'వాహన రకం *')}</Label>
+            <Select value={vehicleType} onValueChange={setVehicleType}>
+              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select vehicle type', 'వాహన రకం ఎంచుకోండి')} /></SelectTrigger>
+              <SelectContent>{vehicleTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+
+          {/* Dates */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">{label('Start Date *', 'ప్రారంభ తేదీ *')}</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal mt-1", !startDate && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : <span>{label('Pick start date', 'ప్రారంభ తేదీ ఎంచుకోండి')}</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus className="pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">{label('End Date *', 'ముగింపు తేదీ *')}</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full justify-start text-left font-normal mt-1", !endDate && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "PPP") : <span>{label('Pick end date', 'ముగింపు తేదీ ఎంచుకోండి')}</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus className="pointer-events-auto" />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3">
+          <Button onClick={handleSearch} disabled={!isFormValid} className="flex-1 bg-[hsl(var(--agri-green))] hover:bg-[hsl(var(--agri-green-dark))] text-white">
+            {label('Search Vehicles', 'వాహనాలను వెతకండి')}
+          </Button>
+          <Button variant="outline" onClick={resetForm}>{label('Reset', 'రీసెట్')}</Button>
+        </div>
+
+        {/* Search Results */}
+        {isSearched && (
+          <div className="space-y-4 pb-8">
+            <h3 className="text-lg font-semibold">{label('Available Vehicles', 'అందుబాటులో ఉన్న వాహనాలు')} ({searchResults.length})</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {searchResults.map((vehicle) => (
+                <div key={vehicle.id} className="border border-border rounded-lg p-4 space-y-2 bg-card">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold">{vehicle.name}</h4>
+                      <p className="text-sm text-muted-foreground">{vehicle.type} - {vehicle.model}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-green-600">{vehicle.rate}</p>
+                    </div>
+                  </div>
+                  <div className="text-sm space-y-1">
+                    <p><strong>{label('Owner:', 'యజమాని:')}</strong> {vehicle.owner}</p>
+                    <p><strong>{label('Location:', 'ప్రాంతం:')}</strong> {vehicle.location}</p>
+                    <p><strong>{label('Condition:', 'పరిస్థితి:')}</strong> {vehicle.condition}</p>
+                    <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className={vehicle.availability === 'Available' ? 'text-green-600' : 'text-orange-600'}>{vehicle.availability}</span></p>
+                  </div>
+                  <Button className="w-full" size="sm">{label('Book Vehicle', 'వాహనాన్ని బుక్ చేయండి')}</Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
