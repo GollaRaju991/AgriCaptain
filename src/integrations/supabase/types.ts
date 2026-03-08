@@ -110,6 +110,13 @@ export type Database = {
             foreignKeyName: "farmer_crops_seller_id_fkey"
             columns: ["seller_id"]
             isOneToOne: false
+            referencedRelation: "public_sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "farmer_crops_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
             referencedRelation: "sellers"
             referencedColumns: ["id"]
           },
@@ -578,7 +585,57 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_sellers: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          district: string | null
+          id: string | null
+          name: string | null
+          phone: string | null
+          photo_url: string | null
+          pincode: string | null
+          seller_type: string | null
+          state: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          village: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          district?: string | null
+          id?: string | null
+          name?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          pincode?: string | null
+          seller_type?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          village?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          district?: string | null
+          id?: string | null
+          name?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          pincode?: string | null
+          seller_type?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          village?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_expired_otps: { Args: never; Returns: undefined }

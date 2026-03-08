@@ -1,1 +1,7 @@
 project_id = "vxbzggftzldttlhtvcej"
+
+[functions.wallet-recharge]
+verify_jwt = false
+
+[functions.process-referral]
+verify_jwt = false
