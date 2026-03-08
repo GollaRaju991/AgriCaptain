@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Loader2, Sprout, X, Plus, SlidersHorizontal } from 'lucide-react';
+import { ArrowLeft, MapPin, Loader2, Sprout, X, Plus, SlidersHorizontal, Filter } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
