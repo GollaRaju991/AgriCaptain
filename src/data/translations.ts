@@ -274,6 +274,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_categories': 'Categories',
     'bottom_cart': 'Cart',
     'bottom_wishlist': 'Wishlist',
+    'bottom_sell_crop': 'Sell Crop',
     'bottom_account': 'Account',
 
     // Profile
@@ -529,6 +530,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_categories': 'వర్గాలు',
     'bottom_cart': 'కార్ట్',
     'bottom_wishlist': 'విష్‌లిస్ట్',
+    'bottom_sell_crop': 'పంట అమ్మండి',
     'bottom_account': 'ఖాతా',
 
     // Profile
@@ -784,6 +786,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_categories': 'श्रेणियां',
     'bottom_cart': 'कार्ट',
     'bottom_wishlist': 'विशलिस्ट',
+    'bottom_sell_crop': 'फसल बेचें',
     'bottom_account': 'खाता',
 
     // Profile

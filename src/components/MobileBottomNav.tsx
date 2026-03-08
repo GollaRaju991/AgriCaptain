@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Layers, ShoppingCart, Heart, User } from "lucide-react";
+import { Home, Layers, ShoppingCart, Sprout, User } from "lucide-react";
 import { useLanguage } from '@/contexts/LanguageContext';
 
 const MobileBottomNav = () => {
@@ -25,9 +25,9 @@ const MobileBottomNav = () => {
           <ShoppingCart className={`h-6 w-6 ${isActive("/cart")}`} />
           <span className={`text-xs ${isActive("/cart")}`}>{translations.bottom_cart}</span>
         </Link>
-        <Link to="/wishlist" className="flex flex-col items-center">
-          <Heart className={`h-6 w-6 ${isActive("/wishlist")}`} />
-          <span className={`text-xs ${isActive("/wishlist")}`}>{translations.bottom_wishlist}</span>
+        <Link to="/sell-crop" className="flex flex-col items-center">
+          <Sprout className={`h-6 w-6 ${isActive("/sell-crop")}`} />
+          <span className={`text-xs ${isActive("/sell-crop")}`}>{translations.bottom_sell_crop}</span>
         </Link>
         <Link to="/profile" className="flex flex-col items-center">
           <User className={`h-6 w-6 ${isActive("/profile")}`} />

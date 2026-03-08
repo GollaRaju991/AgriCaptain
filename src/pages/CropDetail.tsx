@@ -1,0 +1,199 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import MobileBottomNav from '@/components/MobileBottomNav';
+
+interface CropDetail {
+  id: string;
+  crop_name: string;
+  quantity: string;
+  price: string;
+  crop_images: string[] | null;
+  harvest_date: string | null;
+  quality_grade: string;
+  availability_location: string;
+  location_address: string | null;
+  seller: {
+    name: string;
+    phone: string;
+    photo_url: string | null;
+  } | null;
+}
+
+const CropDetailPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { language } = useLanguage();
+  const [crop, setCrop] = useState<CropDetail | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState(0);
+
+  useEffect(() => {
+    const fetchCrop = async () => {
+      if (!id) return;
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('farmer_crops')
+        .select('*, seller:sellers!farmer_crops_seller_id_fkey(name, phone, photo_url)')
+        .eq('id', id)
+        .single();
+
+      if (!error && data) {
+        setCrop(data as unknown as CropDetail);
+      }
+      setLoading(false);
+    };
+    fetchCrop();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!crop) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-lg text-muted-foreground">Crop not found</p>
+        <Button onClick={() => navigate('/sell-crop')}>Go Back</Button>
+      </div>
+    );
+  }
+
+  const images = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images : ['/placeholder.svg'];
+
+  const label = (en: string, te: string) => language === 'te' ? te : en;
+
+  return (
+    <div className="min-h-screen bg-background pb-24">
+      {/* Mobile header */}
+      <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-3 px-4 py-3">
+        <button onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-6 w-6" />
+        </button>
+        <h1 className="text-lg font-bold truncate">{crop.crop_name}</h1>
+      </div>
+
+      <div className="hidden lg:block"><Header /></div>
+
+      <main className="container mx-auto px-4 py-4 max-w-2xl">
+        {/* Image gallery */}
+        <div className="rounded-xl overflow-hidden bg-muted mb-4">
+          <img
+            src={images[activeImage]}
+            alt={crop.crop_name}
+            className="w-full h-64 sm:h-80 object-contain bg-white"
+            onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
+          />
+          {images.length > 1 && (
+            <div className="flex gap-2 p-3 overflow-x-auto">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImage(i)}
+                  className={`w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border-2 ${i === activeImage ? 'border-green-600' : 'border-transparent'}`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Crop info */}
+        <Card className="mb-4">
+          <CardContent className="p-4 space-y-3">
+            <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground">{label('Quantity', 'పరిమాణం')}</p>
+                <p className="font-semibold text-foreground">{crop.quantity}</p>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-3">
+                <p className="text-xs text-muted-foreground">{label('Price', 'ధర')}</p>
+                <p className="font-semibold text-foreground">₹{crop.price}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
+                <Award className="h-4 w-4 text-green-600" />
+                <div>
+                  <p className="text-xs text-muted-foreground">{label('Quality', 'నాణ్యత')}</p>
+                  <p className="font-semibold text-sm text-foreground">{crop.quality_grade}</p>
+                </div>
+              </div>
+              {crop.harvest_date && (
+                <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
+                  <Calendar className="h-4 w-4 text-green-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">{label('Harvest Date', 'పంట తేదీ')}</p>
+                    <p className="font-semibold text-sm text-foreground">{new Date(crop.harvest_date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Location */}
+            <div className="flex items-start gap-2 bg-muted/50 rounded-lg p-3">
+              <Warehouse className="h-4 w-4 text-green-600 mt-0.5" />
+              <div>
+                <p className="text-xs text-muted-foreground">{label('Availability Location', 'అందుబాటు స్థానం')}</p>
+                <p className="font-semibold text-sm text-foreground">{crop.availability_location}</p>
+                {crop.location_address && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                    <MapPin className="h-3 w-3" /> {crop.location_address}
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Farmer info */}
+        {crop.seller && (
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-3">{label('Farmer Details', 'రైతు వివరాలు')}</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {crop.seller.photo_url ? (
+                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-12 h-12 rounded-full object-cover border-2 border-green-500" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg">
+                      {crop.seller.name.charAt(0)}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-bold text-foreground">{crop.seller.name}</p>
+                    <p className="text-sm text-muted-foreground">+91 {crop.seller.phone}</p>
+                  </div>
+                </div>
+                <a href={`tel:+91${crop.seller.phone}`}>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                    <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
+                  </Button>
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </main>
+
+      <div className="hidden lg:block"><Footer /></div>
+      <MobileBottomNav />
+    </div>
+  );
+};
+
+export default CropDetailPage;
