@@ -216,48 +216,6 @@ const ProductDetails = () => {
     );
   }
 
-
-  // Get related products - match by similar names or random selection
-  const relatedProducts = useMemo(() => {
-    const currentId = product.id;
-    // Get products with similar keywords in name
-    const keywords = product.name.toLowerCase().split(' ').filter(w => w.length > 3);
-    const similar = products.filter(p => {
-      if (p.id === currentId) return false;
-      const pName = p.name.toLowerCase();
-      return keywords.some(kw => pName.includes(kw));
-    });
-    
-    if (similar.length >= 4) return similar.slice(0, 8);
-    
-    // If not enough similar, add random products
-    const remaining = products.filter(p => p.id !== currentId && !similar.includes(p));
-    return [...similar, ...remaining].slice(0, 8);
-  }, [product.id, product.name]);
-
-  // Rating distribution
-  const ratingDistribution = useMemo(() => {
-    const reviews = product.reviewsList || [];
-    const total = reviews.length || 1;
-    const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    reviews.forEach(r => {
-      dist[r.rating as keyof typeof dist]++;
-    });
-    return Object.entries(dist).reverse().map(([stars, count]) => ({
-      stars: parseInt(stars),
-      count,
-      percentage: Math.round((count / total) * 100)
-    }));
-  }, [product.reviewsList]);
-
-  if (loadingSeller) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Loading product...</p>
-      </div>
-    );
-  }
-
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
       addToCart({
