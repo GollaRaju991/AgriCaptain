@@ -7,8 +7,8 @@ const MobileBottomNav = () => {
   const { pathname } = useLocation();
   const { translations } = useLanguage();
 
-  // Hide bottom nav on product details and cart pages
-  if (pathname.startsWith('/product/') || pathname === '/cart') return null;
+  // Hide bottom nav on product details, cart, and auth pages
+  if (pathname.startsWith('/product/') || pathname === '/cart' || pathname === '/auth') return null;
 
   const isActive = (route: string) =>
     pathname === route ? "text-white font-semibold" : "text-green-100";
