@@ -193,27 +193,10 @@ const Header = () => {
                   { name: translations.agri_products || translations.agriculture_products, image: catAgriIcon, path: '/products?category=agriculture', bg: 'bg-amber-50' },
                   { name: translations.brands, image: catBrandsIcon, path: '/products?category=brands', bg: 'bg-pink-50' },
                   { name: translations.market_details, image: catMarketIcon, path: '/market-details', bg: 'bg-cyan-50' },
-                  { name: translations.farm_worker, image: catFarmworkerIcon, isPopup: true, action: 'farmWorker' as const, bg: 'bg-orange-50' },
-                  { name: translations.rent_vehicles, image: catVehicleIcon, isPopup: true, action: 'rentVehicle' as const, bg: 'bg-lime-50' },
+                  { name: translations.farm_worker, image: catFarmworkerIcon, path: '/farm-worker', bg: 'bg-orange-50' },
+                  { name: translations.rent_vehicles, image: catVehicleIcon, path: '/vehicle-rent', bg: 'bg-lime-50' },
                   { name: translations.loans, image: catLoansIcon, path: '/loans', bg: 'bg-yellow-50' },
                 ].map((category, index) => {
-                  if ('isPopup' in category && category.isPopup) {
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          if (category.action === 'farmWorker') setFarmWorkerDialogOpen(true);
-                          else if (category.action === 'rentVehicle') setVehicleRentDialogOpen(true);
-                        }}
-                        className="flex flex-col items-center min-w-[70px] px-2 py-1 text-gray-700 hover:text-green-700"
-                      >
-                        <div className={`w-10 h-10 ${category.bg} rounded-xl flex items-center justify-center mb-1 overflow-hidden`}>
-                          <img src={category.image} alt={category.name} className="w-8 h-8 object-contain" />
-                        </div>
-                        <span className="text-xs text-center whitespace-nowrap text-gray-700">{category.name}</span>
-                      </button>
-                    );
-                  }
                   
                   return (
                     <Link
