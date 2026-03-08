@@ -10,10 +10,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { countries, states, districts, divisions, mandals, villages } from '@/data/locationData';
+import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
 import LocationDetector from './LocationDetector';
 import SavedAddressPicker from './SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FarmWorkerDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface FarmWorkerDialogProps {
 }
 
 const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange }) => {
+  const { language } = useLanguage();
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -38,6 +40,11 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
+  const getDisplayName = (item: { name: string; nameTe?: string }) => {
+    if (language === 'te' && item.nameTe) return item.nameTe;
+    return item.name;
+  };
+
   // Reset dependent selections when parent changes
   useEffect(() => { setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedCountry]);
   useEffect(() => { setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedState]);
@@ -52,14 +59,22 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
   const getAvailableStates = () => selectedCountry ? states[selectedCountry as keyof typeof states] || [] : [];
   const getAvailableDistricts = () => selectedState ? districts[selectedState as keyof typeof districts] || [] : [];
   const getAvailableDivisions = () => selectedDistrict ? divisions[selectedDistrict as keyof typeof divisions] || [] : [];
-  const getAvailableMandals = () => selectedDivision ? mandals[selectedDivision as keyof typeof mandals] || [] : [];
+  const districtHasDivisions = selectedDistrict ? hasDivisions(selectedDistrict) : false;
+  const getAvailableMandals = () => {
+    if (districtHasDivisions) {
+      // Use division-based mandals
+      return selectedDivision ? mandals[selectedDivision as keyof typeof mandals] || [] : [];
+    }
+    // Direct district→mandal
+    return selectedDistrict ? getMandalsForDistrict(selectedDistrict) : [];
+  };
   const getAvailableVillages = () => selectedMandal ? villages[selectedMandal as keyof typeof villages] || [] : [];
 
   const handleSearch = () => {
-    if (!selectedCountry || !selectedState || !selectedDistrict || !selectedDivision || !workerType || !workerCategory || !startDate || !endDate) return;
+    if (!selectedCountry || !selectedState || !selectedDistrict || !workerType || !workerCategory || !startDate || !endDate) return;
+    if (districtHasDivisions && !selectedDivision) return;
     if (workerCategory === 'Group' && !numberOfWorkers) return;
 
-    // Auto-save the address on search
     saveAddress({
       country: selectedCountry,
       state: selectedState,
@@ -103,10 +118,12 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
     const districtList = stateCode ? districts[stateCode as keyof typeof districts] || [] : [];
     const districtCode = findCodeByName(districtList, location.district);
     if (districtCode) setSelectedDistrict(districtCode);
+    // Try division
     const divisionList = districtCode ? divisions[districtCode as keyof typeof divisions] || [] : [];
     const divisionCode = findCodeByName(divisionList, location.division);
     if (divisionCode) setSelectedDivision(divisionCode);
-    const mandalList = divisionCode ? mandals[divisionCode as keyof typeof mandals] || [] : [];
+    // Try mandal from district directly or from division
+    const mandalList = districtCode ? getMandalsForDistrict(districtCode) : [];
     const mandalCode = findCodeByName(mandalList, location.mandal);
     if (mandalCode) setSelectedMandal(mandalCode);
     const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
@@ -117,7 +134,6 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
 
   const handleSelectSavedAddress = (addr: SavedFormAddress) => {
     setSelectedCountry(addr.country);
-    // Use setTimeout to allow cascading state updates
     setTimeout(() => {
       setSelectedState(addr.state);
       setTimeout(() => {
@@ -137,17 +153,18 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
     setWorkerCategory(addr.category);
   };
 
-  const isFormValid = selectedCountry && selectedState && selectedDistrict && selectedDivision && workerType && workerCategory && startDate && endDate && (workerCategory === 'Single' || numberOfWorkers);
+  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && workerType && workerCategory && startDate && endDate && (workerCategory === 'Single' || numberOfWorkers);
+
+  const label = (en: string, te: string) => language === 'te' ? te : en;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Find Farm Workers</DialogTitle>
+          <DialogTitle>{label('Find Farm Workers', 'వ్యవసాయ కార్మికులు కనుగొనండి')}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Saved Addresses */}
           <SavedAddressPicker
             addresses={savedAddresses}
             onSelect={handleSelectSavedAddress}
@@ -155,7 +172,6 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
             isLimitReached={isLimitReached}
           />
 
-          {/* Auto Location Detection */}
           <LocationDetector 
             enabled={autoDetectLocation} 
             onLocationDetected={handleLocationDetected}
@@ -164,78 +180,101 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
           {/* Location Selection */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label>Country *</Label>
+              <Label>{label('Country *', 'దేశం *')}</Label>
               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
                 <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>State *</Label>
+              <Label>{label('State *', 'రాష్ట్రం *')}</Label>
               <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
-                <SelectTrigger><SelectValue placeholder="Select state" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
                 <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>District *</Label>
+              <Label>{label('District *', 'జిల్లా *')}</Label>
               <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
-                <SelectTrigger><SelectValue placeholder="Select district" /></SelectTrigger>
-                <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
+                <SelectTrigger><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
+                <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+
+            {/* Show Division only if district has divisions */}
+            {districtHasDivisions && (
+              <div>
+                <Label>{label('Division *', 'డివిజన్ *')}</Label>
+                <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
+                  <SelectTrigger><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div>
-              <Label>Division *</Label>
-              <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
-                <SelectTrigger><SelectValue placeholder="Select division" /></SelectTrigger>
-                <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
-              </Select>
+              <Label>{label('Mandal', 'మండలం')}</Label>
+              {getAvailableMandals().length > 0 ? (
+                <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
+                  <SelectTrigger><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
+                </Select>
+              ) : (
+                <Input 
+                  placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} 
+                  value={selectedMandal} 
+                  onChange={(e) => setSelectedMandal(e.target.value)}
+                  disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}
+                />
+              )}
             </div>
             <div>
-              <Label>Mandal (Optional)</Label>
-              <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={!selectedDivision}>
-                <SelectTrigger><SelectValue placeholder="Select mandal" /></SelectTrigger>
-                <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{m.name}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Village (Optional)</Label>
-              <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
-                <SelectTrigger><SelectValue placeholder="Select village" /></SelectTrigger>
-                <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
-              </Select>
+              <Label>{label('Village', 'గ్రామం')}</Label>
+              {getAvailableVillages().length > 0 ? (
+                <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
+                  <SelectTrigger><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
+                </Select>
+              ) : (
+                <Input 
+                  placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} 
+                  value={selectedVillage} 
+                  onChange={(e) => setSelectedVillage(e.target.value)}
+                  disabled={!selectedMandal}
+                />
+              )}
             </div>
           </div>
 
           {/* Worker Type and Category */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <Label>Worker Type *</Label>
+              <Label>{label('Worker Type *', 'కార్మిక రకం *')}</Label>
               <Select value={workerType} onValueChange={setWorkerType}>
-                <SelectTrigger><SelectValue placeholder="Select worker type" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={label('Select worker type', 'కార్మిక రకం ఎంచుకోండి')} /></SelectTrigger>
                 <SelectContent>{workerTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Category *</Label>
+              <Label>{label('Category *', 'వర్గం *')}</Label>
               <Select value={workerCategory} onValueChange={setWorkerCategory}>
-                <SelectTrigger><SelectValue placeholder="Single or Group" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={label('Single or Group', 'ఒంటరి లేదా గ్రూపు')} /></SelectTrigger>
                 <SelectContent>{workerCategories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             {workerCategory === 'Group' && (
               <div>
-                <Label>Number of Workers *</Label>
-                <Input type="number" placeholder="Enter number" value={numberOfWorkers} onChange={(e) => setNumberOfWorkers(e.target.value)} min="2" max="50" />
+                <Label>{label('Number of Workers *', 'కార్మికుల సంఖ్య *')}</Label>
+                <Input type="number" placeholder={label('Enter number', 'సంఖ్య నమోదు చేయండి')} value={numberOfWorkers} onChange={(e) => setNumberOfWorkers(e.target.value)} min="2" max="50" />
               </div>
             )}
             <div>
-              <Label>Start Date *</Label>
+              <Label>{label('Start Date *', 'ప్రారంభ తేదీ *')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : <span>Pick start date</span>}
+                    {startDate ? format(startDate, "PPP") : <span>{label('Pick start date', 'ప్రారంభ తేదీ ఎంచుకోండి')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -245,15 +284,14 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
             </div>
           </div>
 
-          {/* End Date */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <Label>End Date *</Label>
+              <Label>{label('End Date *', 'ముగింపు తేదీ *')}</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP") : <span>Pick end date</span>}
+                    {endDate ? format(endDate, "PPP") : <span>{label('Pick end date', 'ముగింపు తేదీ ఎంచుకోండి')}</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -264,14 +302,13 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleSearch} disabled={!isFormValid}>Search Workers</Button>
-            <Button variant="outline" onClick={resetForm}>Reset</Button>
+            <Button onClick={handleSearch} disabled={!isFormValid}>{label('Search Workers', 'కార్మికులను వెతకండి')}</Button>
+            <Button variant="outline" onClick={resetForm}>{label('Reset', 'రీసెట్')}</Button>
           </div>
 
-          {/* Search Results */}
           {isSearched && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Available Workers ({searchResults.length})</h3>
+              <h3 className="text-lg font-semibold">{label('Available Workers', 'అందుబాటులో ఉన్న కార్మికులు')} ({searchResults.length})</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {searchResults.map((worker) => (
                   <div key={worker.id} className="border border-border rounded-lg p-4 space-y-2">
@@ -279,7 +316,7 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
                       <div>
                         <h4 className="font-semibold">{worker.name}</h4>
                         <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
-                        {workerCategory === 'Group' && <p className="text-sm text-primary">Available for {numberOfWorkers} workers</p>}
+                        {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
                       </div>
                       <div className="text-right">
                         <p className="font-semibold text-green-600">{worker.rate}</p>
@@ -287,11 +324,11 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
                       </div>
                     </div>
                     <div className="text-sm space-y-1">
-                      <p><strong>Experience:</strong> {worker.experience}</p>
-                      <p><strong>Location:</strong> {worker.location}</p>
-                      <p><strong>Status:</strong> <span className={worker.availability === 'Available' ? 'text-green-600' : 'text-orange-600'}>{worker.availability}</span></p>
+                      <p><strong>{label('Experience:', 'అనుభవం:')}</strong> {worker.experience}</p>
+                      <p><strong>{label('Location:', 'ప్రాంతం:')}</strong> {worker.location}</p>
+                      <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className={worker.availability === 'Available' ? 'text-green-600' : 'text-orange-600'}>{worker.availability}</span></p>
                     </div>
-                    <Button className="w-full" size="sm">Contact Worker</Button>
+                    <Button className="w-full" size="sm">{label('Contact Worker', 'కార్మికుడిని సంప్రదించండి')}</Button>
                   </div>
                 ))}
               </div>
