@@ -241,6 +241,17 @@ const mockProducts = [
 
 const categories = ['seeds', 'fertilizers', 'tools', 'equipment', 'agriculture'];
 
+// Map seller product categories to app categories
+const mapSellerCategory = (cat: string): string => {
+  const lower = cat.toLowerCase();
+  if (lower.includes('seed')) return 'seeds';
+  if (lower.includes('fertiliz')) return 'fertilizers';
+  if (lower.includes('pesticid') || lower.includes('insecticid') || lower.includes('herbicid') || lower.includes('fungicid')) return 'agriculture';
+  if (lower.includes('tool')) return 'tools';
+  if (lower.includes('irrigat') || lower.includes('equip') || lower.includes('tractor') || lower.includes('harvest')) return 'equipment';
+  return 'agriculture';
+};
+
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState('name');
@@ -249,12 +260,40 @@ const Products = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
+  const [sellerProducts, setSellerProducts] = useState<any[]>([]);
 
   const searchQuery = searchParams.get('search') || '';
   const selectedCategory = searchParams.get('category') || '';
 
+  // Fetch active seller products from DB
+  useEffect(() => {
+    const fetchSellerProducts = async () => {
+      const { data } = await (supabase.from('seller_products') as any)
+        .select('*')
+        .eq('status', 'active');
+      if (data) {
+        const mapped = data.map((p: any) => ({
+          id: `sp-${p.id}`,
+          name: p.product_name,
+          price: p.selling_price,
+          originalPrice: p.mrp_price,
+          image: p.product_images?.[0] || 'https://via.placeholder.com/200',
+          category: mapSellerCategory(p.category),
+          rating: 4.0,
+          reviews: 0,
+          discount: p.discount_percent || Math.round(((p.mrp_price - p.selling_price) / p.mrp_price) * 100),
+          inStock: p.stock_quantity > 0,
+          description: p.description || p.product_name,
+          forUse: p.sub_category || p.category,
+        }));
+        setSellerProducts(mapped);
+      }
+    };
+    fetchSellerProducts();
+  }, []);
+
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = mockProducts;
+    let filtered = [...mockProducts, ...sellerProducts];
 
     // Enhanced search functionality - search in name, description, and category
     if (searchQuery) {

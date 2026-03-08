@@ -86,10 +86,23 @@ const BecomeSeller = () => {
               <Card
                 key={option.type}
                 className="cursor-pointer group hover:shadow-lg transition-all duration-300 border hover:border-primary overflow-hidden rounded-xl"
-                onClick={() => {
+                onClick={async () => {
                   if (option.type === 'farmers_market') {
                     navigate('/sell-crop/add');
                     return;
+                  }
+                  // Check if already registered before showing form
+                  const { data: { user } } = await supabase.auth.getUser();
+                  if (user) {
+                    const { data } = await (supabase.from('sellers') as any)
+                      .select('id')
+                      .eq('user_id', user.id)
+                      .eq('seller_type', 'agriculture_products')
+                      .limit(1);
+                    if (data?.length) {
+                      navigate('/seller/dashboard');
+                      return;
+                    }
                   }
                   setSelectedType(option.type);
                 }}
