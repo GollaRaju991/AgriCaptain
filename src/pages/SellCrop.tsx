@@ -236,91 +236,58 @@ const SellCrop: React.FC = () => {
         )}
       </main>
 
-      {/* Filter Drawer */}
+      {/* Filter Drawer - All filters in one panel */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent>
-          <div className="px-4 py-4 space-y-3">
-            {activeTab === 'crop' && (
-              <>
+          <div className="px-4 pt-4 pb-2">
+            <h3 className="text-lg font-semibold text-foreground mb-4">{t('Filters', 'ఫిల్టర్‌లు', 'फ़िल्टर')}</h3>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">{t('Crop', 'పంట', 'फसल')}</Label>
                 <Select value={filters.cropName} onValueChange={(v) => setFilters({ ...filters, cropName: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select crop', 'పంట ఎంచుకోండి', 'फसल चुनें')} /></SelectTrigger>
                   <SelectContent>
                     {cropOptions.map((c) => (<SelectItem key={c} value={c}>{c}</SelectItem>))}
                   </SelectContent>
                 </Select>
-                {filters.cropName && (
-                  <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, cropName: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
-                  </Button>
-                )}
-              </>
-            )}
-            {activeTab === 'location' && (
-              <>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">{t('Location', 'ప్రాంతం', 'स्थान')}</Label>
                 <Input placeholder={t('Village, District or State', 'గ్రామం, జిల్లా లేదా రాష్ట్రం', 'गाँव, जिला या राज्य')} value={filters.location} onChange={(e) => setFilters({ ...filters, location: e.target.value })} />
-                {filters.location && (
-                  <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, location: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
-                  </Button>
-                )}
-              </>
-            )}
-            {activeTab === 'price' && (
-              <>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">{t('Price Range', 'ధర పరిధి', 'कीमत सीमा')}</Label>
                 <div className="flex gap-3">
-                  <div className="flex-1 space-y-1">
-                    <Label className="text-xs text-muted-foreground">{t('Min Price', 'కనిష్ఠ ధర', 'न्यूनतम')}</Label>
-                    <Input type="number" placeholder="₹ 0" value={filters.minPrice} onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })} />
-                  </div>
-                  <div className="flex-1 space-y-1">
-                    <Label className="text-xs text-muted-foreground">{t('Max Price', 'గరిష్ఠ ధర', 'अधिकतम')}</Label>
-                    <Input type="number" placeholder="₹ 99999" value={filters.maxPrice} onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })} />
-                  </div>
+                  <Input type="number" placeholder="₹ Min" value={filters.minPrice} onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })} />
+                  <Input type="number" placeholder="₹ Max" value={filters.maxPrice} onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })} />
                 </div>
-                {(filters.minPrice || filters.maxPrice) && (
-                  <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, minPrice: '', maxPrice: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
-                  </Button>
-                )}
-              </>
-            )}
-            {activeTab === 'quantity' && (
-              <>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">{t('Quantity', 'పరిమాణం', 'मात्रा')}</Label>
                 <Select value={filters.quantity} onValueChange={(v) => setFilters({ ...filters, quantity: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select range', 'పరిధి ఎంచుకోండి', 'सीमा चुनें')} /></SelectTrigger>
                   <SelectContent>
                     {quantityOptions.map((q) => (<SelectItem key={q.value} value={q.value}>{q.label}</SelectItem>))}
                   </SelectContent>
                 </Select>
-                {filters.quantity && (
-                  <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, quantity: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'हटाएं')}
-                  </Button>
-                )}
-              </>
-            )}
-            {activeTab === 'availability' && (
-              <>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">{t('Availability', 'అందుబాటు', 'उपलब्धता')}</Label>
                 <Select value={filters.availabilityLocation} onValueChange={(v) => setFilters({ ...filters, availabilityLocation: v })}>
                   <SelectTrigger><SelectValue placeholder={t('Select location', 'ప్రాంతం ఎంచుకోండి', 'स्थान चुनें')} /></SelectTrigger>
                   <SelectContent>
                     {availabilityOptions.map((a) => (<SelectItem key={a} value={a}>{a}</SelectItem>))}
                   </SelectContent>
                 </Select>
-                {filters.availabilityLocation && (
-                  <Button variant="ghost" size="sm" onClick={() => setFilters({ ...filters, availabilityLocation: '' })}>
-                    <X className="h-3 w-3 mr-1" /> {t('Clear', 'క్లియర్', 'హటాएं')}
-                  </Button>
-                )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
           <DrawerFooter className="flex-row gap-2">
             <Button variant="outline" className="flex-1" onClick={() => { setFilters(defaultFilters); setAppliedFilters(defaultFilters); setDrawerOpen(false); }}>
-              {t('Reset', 'రీసెట్', 'रीसेट')}
+              {t('Reset Filter', 'ఫిల్టర్ రీసెట్', 'फ़िल्टर रीसेट')}
             </Button>
             <Button className="flex-1" onClick={() => { setAppliedFilters(filters); setDrawerOpen(false); }}>
-              {t('Apply', 'వర్తించు', 'लागू करें')}
+              {t('Apply Filter', 'ఫిల్టర్ వర్తించు', 'फ़िल्टर लागू करें')}
             </Button>
           </DrawerFooter>
         </DrawerContent>
