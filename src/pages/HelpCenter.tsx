@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from '@/components/Header';
+import { useNavigate } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,12 +26,22 @@ const HelpCenter = () => {
     { icon: RotateCcw, title: 'Returns & Refunds', description: 'Return policy and refund process', href: '/faqs#returns' },
   ];
 
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+      {/* Mobile standalone header */}
+      <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <button onClick={() => navigate(-1)} className="p-1">
+            <span className="text-gray-700 text-xl">←</span>
+          </button>
+          <h1 className="text-lg font-bold text-gray-900">Help Center</h1>
+        </div>
+      </div>
       
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-8 hidden lg:block">
           <h1 className="text-2xl font-bold text-foreground mb-2">Help Center</h1>
           <p className="text-muted-foreground">How can we help you today?</p>
         </div>

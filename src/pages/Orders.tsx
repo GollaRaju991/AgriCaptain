@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar, Search, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import useScrollToTop from '@/hooks/useScrollToTop';
@@ -60,6 +60,7 @@ interface ShippingAddress {
 }
 
 const Orders = () => {
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -619,10 +620,10 @@ const Orders = () => {
                           variant="outline" 
                           size="sm" 
                           className="flex items-center space-x-1"
-                          onClick={() => toggleOrderDetails(order.id)}
+                          onClick={() => navigate(`/orders/${order.id}`)}
                         >
                           <Eye className="h-4 w-4" />
-                          <span>{isExpanded ? 'Hide Details' : 'View Details'}</span>
+                          <span>View Details</span>
                         </Button>
                         
                         {order.status !== 'cancelled' && order.status !== 'returned' && (

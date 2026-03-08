@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
+import OrderDetails from "./pages/OrderDetails";
 import Coupons from "./pages/Coupons";
 import Notifications from "./pages/Notifications";
 import FarmWorker from "./pages/FarmWorker";
@@ -71,6 +72,7 @@ const App = () => (
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/orders" element={<Orders />} />
+                    <Route path="/orders/:id" element={<OrderDetails />} />
                     <Route path="/coupons" element={<Coupons />} />
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/farm-worker" element={<FarmWorker />} />
