@@ -165,9 +165,6 @@ const CategoryNavigation = () => {
         </div>
       </div>
 
-      {/* Popup Dialogs */}
-      <FarmWorkerDialog open={farmWorkerOpen} onOpenChange={setFarmWorkerOpen} />
-      <RentVehicleDialog open={rentVehicleOpen} onOpenChange={setRentVehicleOpen} />
     </>
   );
 };
