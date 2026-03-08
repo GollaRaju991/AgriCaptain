@@ -59,6 +59,62 @@ export type Database = {
         }
         Relationships: []
       }
+      farmer_crops: {
+        Row: {
+          availability_location: string
+          created_at: string
+          crop_images: string[] | null
+          crop_name: string
+          harvest_date: string | null
+          id: string
+          location_address: string | null
+          price: string
+          quality_grade: string
+          quantity: string
+          seller_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          availability_location?: string
+          created_at?: string
+          crop_images?: string[] | null
+          crop_name: string
+          harvest_date?: string | null
+          id?: string
+          location_address?: string | null
+          price: string
+          quality_grade?: string
+          quantity: string
+          seller_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          availability_location?: string
+          created_at?: string
+          crop_images?: string[] | null
+          crop_name?: string
+          harvest_date?: string | null
+          id?: string
+          location_address?: string | null
+          price?: string
+          quality_grade?: string
+          quantity?: string
+          seller_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "farmer_crops_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gift_card_transactions: {
         Row: {
           amount: number
@@ -414,43 +470,52 @@ export type Database = {
           aadhaar_number: string
           address: string
           created_at: string
+          district: string | null
           id: string
           name: string
           phone: string
           photo_url: string | null
           pincode: string
           seller_type: string
+          state: string | null
           status: string
           updated_at: string
           user_id: string
+          village: string | null
         }
         Insert: {
           aadhaar_number: string
           address: string
           created_at?: string
+          district?: string | null
           id?: string
           name: string
           phone: string
           photo_url?: string | null
           pincode: string
           seller_type: string
+          state?: string | null
           status?: string
           updated_at?: string
           user_id: string
+          village?: string | null
         }
         Update: {
           aadhaar_number?: string
           address?: string
           created_at?: string
+          district?: string | null
           id?: string
           name?: string
           phone?: string
           photo_url?: string | null
           pincode?: string
           seller_type?: string
+          state?: string | null
           status?: string
           updated_at?: string
           user_id?: string
+          village?: string | null
         }
         Relationships: []
       }
