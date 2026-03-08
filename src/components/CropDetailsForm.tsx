@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2 } from 'lucide-react';
+import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -40,6 +40,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
   const [cropData, setCropData] = useState({
     cropName: '',
+    sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market' | 'both',
     quantity: '',
     quantityUnit: 'Quintal',
     price: '',
@@ -70,6 +71,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
 
         setCropData({
           cropName: crop.crop_name,
+          sellType: crop.sell_type || 'both',
           quantity: qtyNum,
           quantityUnit: qtyUnit,
           price: crop.price,
@@ -147,6 +149,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
         seller_id: sellerId,
         user_id: userId,
         crop_name: cropData.cropName,
+        sell_type: cropData.sellType,
         quantity: `${cropData.quantity} ${cropData.quantityUnit}`,
         price: cropData.price,
         harvest_date: harvestDate ? format(harvestDate, 'yyyy-MM-dd') : null,
@@ -213,6 +216,37 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Sell Type */}
+          <div>
+            <Label className="flex items-center gap-2 mb-2">
+              <Store className="h-4 w-4 text-muted-foreground" /> {label('Sell Type', 'అమ్మకం రకం')} *
+            </Label>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: 'direct_from_farm', label: label('Direct From Farm', 'నేరుగా పొలం నుండి') },
+                { value: 'crop_market', label: label('Crop Market', 'పంట మార్కెట్') },
+                { value: 'both', label: label('Both', 'రెండూ') },
+              ] as const).map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setCropData({ ...cropData, sellType: option.value })}
+                  className={cn(
+                    "relative flex items-center justify-center gap-1.5 rounded-xl border-2 py-3 px-2 text-sm font-medium transition-all duration-200",
+                    cropData.sellType === option.value
+                      ? "border-primary bg-primary text-primary-foreground shadow-md"
+                      : "border-border bg-card text-foreground hover:border-primary/50"
+                  )}
+                >
+                  {cropData.sellType === option.value && (
+                    <Check className="h-4 w-4 shrink-0" />
+                  )}
+                  <span className="truncate text-xs sm:text-sm">{option.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Quantity */}

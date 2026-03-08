@@ -71,6 +71,7 @@ export type Database = {
           price: string
           quality_grade: string
           quantity: string
+          sell_type: string
           seller_id: string
           updated_at: string
           user_id: string
@@ -86,6 +87,7 @@ export type Database = {
           price: string
           quality_grade?: string
           quantity: string
+          sell_type?: string
           seller_id: string
           updated_at?: string
           user_id: string
@@ -101,6 +103,7 @@ export type Database = {
           price?: string
           quality_grade?: string
           quantity?: string
+          sell_type?: string
           seller_id?: string
           updated_at?: string
           user_id?: string
@@ -729,6 +732,7 @@ export type Database = {
           price: string | null
           quality_grade: string | null
           quantity: string | null
+          sell_type: string | null
           seller_id: string | null
         }
         Insert: {
@@ -742,6 +746,7 @@ export type Database = {
           price?: string | null
           quality_grade?: string | null
           quantity?: string | null
+          sell_type?: string | null
           seller_id?: string | null
         }
         Update: {
@@ -755,6 +760,7 @@ export type Database = {
           price?: string | null
           quality_grade?: string | null
           quantity?: string | null
+          sell_type?: string | null
           seller_id?: string | null
         }
         Relationships: [
