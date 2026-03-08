@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -7,16 +7,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Upload, X, User, Phone, MapPin, CreditCard, Hash, Home, Building2, Map } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import CropDetailsForm from '@/components/CropDetailsForm';
+import { states, districts, divisions, mandals, villages } from '@/data/locationData';
 import agricultureImg from '@/assets/agriculture-products.png';
 import farmersMarketImg from '@/assets/farmers-market.png';
 
 type SellerType = 'agriculture_products' | 'farmers_market';
 type FarmerStep = 'details' | 'crops';
+
+// All Indian states for dropdown
+const allIndianStates = states.IN || [];
 
 const BecomeSeller = () => {
   const navigate = useNavigate();
@@ -38,12 +43,63 @@ const BecomeSeller = () => {
     village: '',
     district: '',
     state: '',
+    mandal: '',
     pincode: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  const handleSelectChange = (field: string, value: string) => {
+    const resets: Record<string, string[]> = {
+      state: ['district', 'mandal', 'village'],
+      district: ['mandal', 'village'],
+      mandal: ['village'],
+    };
+    const fieldsToReset = resets[field] || [];
+    const updated = { ...formData, [field]: value };
+    fieldsToReset.forEach(f => { updated[f as keyof typeof updated] = ''; });
+    setFormData(updated);
+  };
+
+  // Get available districts for selected state
+  const availableDistricts = useMemo(() => {
+    if (!formData.state) return [];
+    const stateObj = allIndianStates.find(s => s.name === formData.state);
+    if (!stateObj) return [];
+    return (districts as any)[stateObj.code] || [];
+  }, [formData.state]);
+
+  // Get available mandals for selected district
+  const availableMandals = useMemo(() => {
+    if (!formData.district) return [];
+    const districtObj = availableDistricts.find((d: any) => d.name === formData.district);
+    if (!districtObj) return [];
+    // Check mandals directly, or check divisions first
+    const mandalList = (mandals as any)[districtObj.code];
+    if (mandalList) return mandalList;
+    // Try via divisions -> mandals
+    const divisionList = (divisions as any)[districtObj.code];
+    if (divisionList) {
+      const allMandals: any[] = [];
+      divisionList.forEach((div: any) => {
+        const m = (mandals as any)[div.code];
+        if (m) allMandals.push(...m);
+      });
+      return allMandals;
+    }
+    return [];
+  }, [formData.district, availableDistricts]);
+
+  // Get available villages for selected mandal
+  const availableVillages = useMemo(() => {
+    if (!formData.mandal) return [];
+    // Find mandal code
+    const mandalObj = availableMandals.find((m: any) => m.name === formData.mandal);
+    if (!mandalObj) return [];
+    return (villages as any)[mandalObj.code] || [];
+  }, [formData.mandal, availableMandals]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -86,19 +142,24 @@ const BecomeSeller = () => {
         photoUrl = publicUrl;
       }
 
-      const { data, error } = await supabase.from('sellers').insert({
+      const insertData: any = {
         user_id: user.id,
         seller_type: selectedType,
         name: formData.name,
-        aadhaar_number: formData.aadhaarNumber,
+        aadhaar_number: selectedType === 'agriculture_products' ? formData.aadhaarNumber : 'N/A',
         phone: formData.phone,
         address: formData.address,
-        village: formData.village,
-        district: formData.district,
-        state: formData.state,
         pincode: formData.pincode,
         photo_url: photoUrl,
-      } as any).select().single();
+      };
+
+      if (selectedType === 'farmers_market') {
+        insertData.village = formData.village;
+        insertData.district = formData.district;
+        insertData.state = formData.state;
+      }
+
+      const { data, error } = await supabase.from('sellers').insert(insertData).select().single();
 
       if (error) throw error;
 
@@ -267,12 +328,15 @@ const BecomeSeller = () => {
                     <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_name'] || 'Enter your full name'} />
                   </div>
 
-                  <div>
-                    <Label htmlFor="aadhaarNumber" className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4 text-muted-foreground" /> {t['seller_aadhaar'] || 'Aadhaar Card Number'} *
-                    </Label>
-                    <Input id="aadhaarNumber" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_aadhaar'] || 'XXXX XXXX XXXX'} maxLength={14} />
-                  </div>
+                  {/* Show Aadhaar only for Agriculture Products */}
+                  {selectedType === 'agriculture_products' && (
+                    <div>
+                      <Label htmlFor="aadhaarNumber" className="flex items-center gap-2">
+                        <CreditCard className="h-4 w-4 text-muted-foreground" /> {t['seller_aadhaar'] || 'Aadhaar Card Number'} *
+                      </Label>
+                      <Input id="aadhaarNumber" name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleInputChange} required className="mt-1" placeholder={t['seller_enter_aadhaar'] || 'XXXX XXXX XXXX'} maxLength={14} />
+                    </div>
+                  )}
 
                   <div>
                     <Label htmlFor="phone" className="flex items-center gap-2">
@@ -290,26 +354,77 @@ const BecomeSeller = () => {
 
                   {selectedType === 'farmers_market' && (
                     <>
+                      {/* State Dropdown */}
                       <div>
-                        <Label htmlFor="village" className="flex items-center gap-2">
-                          <Home className="h-4 w-4 text-muted-foreground" /> {t['seller_village'] || 'Village'} *
-                        </Label>
-                        <Input id="village" name="village" value={formData.village} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_village'] || 'Enter village name'} />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="district" className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-muted-foreground" /> {t['seller_district'] || 'District'} *
-                        </Label>
-                        <Input id="district" name="district" value={formData.district} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_district'] || 'Enter district name'} />
-                      </div>
-
-                      <div>
-                        <Label htmlFor="state" className="flex items-center gap-2">
+                        <Label className="flex items-center gap-2">
                           <Map className="h-4 w-4 text-muted-foreground" /> {t['seller_state'] || 'State'} *
                         </Label>
-                        <Input id="state" name="state" value={formData.state} onChange={handleInputChange} required className="mt-1" placeholder={t['enter_state'] || 'Enter state name'} />
+                        <Select value={formData.state} onValueChange={(v) => handleSelectChange('state', v)}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder={t['select_state'] || 'Select State'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {allIndianStates.map((s) => (
+                              <SelectItem key={s.code} value={s.name}>{s.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
+
+                      {/* District Dropdown */}
+                      <div>
+                        <Label className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-muted-foreground" /> {t['seller_district'] || 'District'} *
+                        </Label>
+                        <Select value={formData.district} onValueChange={(v) => handleSelectChange('district', v)} disabled={!formData.state}>
+                          <SelectTrigger className="mt-1">
+                            <SelectValue placeholder={t['select_district'] || 'Select District'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableDistricts.map((d: any) => (
+                              <SelectItem key={d.code} value={d.name}>{d.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Mandal Dropdown */}
+                      {availableMandals.length > 0 && (
+                        <div>
+                          <Label className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4 text-muted-foreground" /> {t['seller_mandal'] || 'Mandal'}
+                          </Label>
+                          <Select value={formData.mandal} onValueChange={(v) => handleSelectChange('mandal', v)} disabled={!formData.district}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder={t['select_mandal'] || 'Select Mandal'} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableMandals.map((m: any) => (
+                                <SelectItem key={m.code} value={m.name}>{m.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+
+                      {/* Village Dropdown */}
+                      {availableVillages.length > 0 && (
+                        <div>
+                          <Label className="flex items-center gap-2">
+                            <Home className="h-4 w-4 text-muted-foreground" /> {t['seller_village'] || 'Village'}
+                          </Label>
+                          <Select value={formData.village} onValueChange={(v) => handleSelectChange('village', v)} disabled={!formData.mandal}>
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder={t['select_village'] || 'Select Village'} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableVillages.map((v: any) => (
+                                <SelectItem key={v.code} value={v.name}>{v.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </>
                   )}
 
