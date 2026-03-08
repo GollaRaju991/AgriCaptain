@@ -499,32 +499,6 @@ const ProductDetails = () => {
                   </Button>
                 </div>
               </div>
-              <div className="flex gap-2 lg:hidden">
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => {
-                    toggleWishlist({
-                      id: product.id,
-                      name: product.name,
-                      price: product.price,
-                      image: product.images[0],
-                      category: product.category
-                    });
-                    toast({
-                      title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
-                      description: isInWishlist(product.id) 
-                        ? `${product.name} removed from your wishlist.`
-                        : `${product.name} added to your wishlist.`
-                    });
-                  }}
-                  className={isInWishlist(product.id) ? 'border-red-500' : ''}
-                >
-                  <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                </Button>
-                <Button variant="outline" size="icon" onClick={() => setShareDialogOpen(true)}>
-                  <Share2 className="h-4 w-4" />
-                </Button>
               </div>
             </div>
 
