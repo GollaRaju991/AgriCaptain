@@ -247,7 +247,6 @@ const Products = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
   const searchQuery = searchParams.get('search') || '';
