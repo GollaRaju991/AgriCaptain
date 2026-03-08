@@ -104,7 +104,6 @@ const App = () => (
                     <Route path="/seller/add-product" element={<AddProduct />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="*" element={<NotFound />} />
-                    <Route path="*" element={<NotFound />} />
                   </Routes>
 
                   {/* ⭐ ALWAYS visible on mobile */}
