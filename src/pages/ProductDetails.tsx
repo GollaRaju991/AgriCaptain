@@ -95,8 +95,9 @@ const ProductDetails = () => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }, [id]);
 
-  // Find product from products data or use mock
-  const foundProduct = isSellerProduct ? null : products.find(p => p.id === id);
+  // Check mockProducts first (Products page data), then fall back to generated products
+  const foundMockProduct = isSellerProduct ? null : mockProducts.find(p => p.id === id);
+  const foundProduct = isSellerProduct ? null : (foundMockProduct || products.find(p => p.id === id));
 
   // Build product from seller DB data or static data
   const product = sellerProduct ? {
