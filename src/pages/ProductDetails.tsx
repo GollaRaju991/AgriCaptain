@@ -15,6 +15,7 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
 import { products } from '@/data/products';
+import { mockProducts } from '@/data/mockProducts';
 import ProductCard from '@/components/ProductCard';
 import ShareDialog from '@/components/ShareDialog';
 import ImageZoomModal from '@/components/ImageZoomModal';
