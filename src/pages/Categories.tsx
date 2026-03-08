@@ -246,8 +246,6 @@ const Categories = () => {
       </div>
 
       <MobileBottomNav />
-      <FarmWorkerDialog open={farmWorkerOpen} onOpenChange={setFarmWorkerOpen} />
-      <RentVehicleDialog open={rentVehicleOpen} onOpenChange={setRentVehicleOpen} />
     </div>
   );
 };
