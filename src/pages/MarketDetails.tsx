@@ -52,7 +52,7 @@ const MaizeIcon = () => (
 
 const GroundnutIcon = () => (
   <svg viewBox="0 0 40 40" className="w-8 h-8 flex-shrink-0">
-    <ellipse cx="16" cy="20" rx="6" ry="8" fill="#c4956a" rx="6"/>
+    <ellipse cx="16" cy="20" rx="6" ry="8" fill="#c4956a"/>
     <ellipse cx="26" cy="22" rx="5" ry="7" fill="#b8845a"/>
     <line x1="20" y1="14" x2="20" y2="28" stroke="#a07050" strokeWidth="1" strokeDasharray="2"/>
   </svg>
