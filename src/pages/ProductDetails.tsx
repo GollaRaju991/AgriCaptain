@@ -391,7 +391,7 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-3">
+              <div className="hidden lg:flex flex-col md:flex-row gap-3">
                 <Button onClick={handleAddToCart} className="flex-1 bg-white text-gray-900 border border-gray-300 hover:bg-gray-100">
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   {translations.add_to_cart}
@@ -426,6 +426,33 @@ const ProductDetails = () => {
                     <Share2 className="h-4 w-4" />
                   </Button>
                 </div>
+              </div>
+              <div className="flex gap-2 lg:hidden">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => {
+                    toggleWishlist({
+                      id: product.id,
+                      name: product.name,
+                      price: product.price,
+                      image: product.images[0],
+                      category: product.category
+                    });
+                    toast({
+                      title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
+                      description: isInWishlist(product.id) 
+                        ? `${product.name} removed from your wishlist.`
+                        : `${product.name} added to your wishlist.`
+                    });
+                  }}
+                  className={isInWishlist(product.id) ? 'border-red-500' : ''}
+                >
+                  <Heart className={`h-4 w-4 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => setShareDialogOpen(true)}>
+                  <Share2 className="h-4 w-4" />
+                </Button>
               </div>
             </div>
 
