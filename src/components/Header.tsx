@@ -50,8 +50,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 import LanguageSelector from "./LanguageSelector";
-import FarmWorkerDialog from "./FarmWorkerDialog";
-import RentVehicleDialog from "./RentVehicleDialog";
 import LogoutConfirmation from "./LogoutConfirmation";
 
 const Header = () => {
