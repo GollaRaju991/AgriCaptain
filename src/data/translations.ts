@@ -276,6 +276,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_wishlist': 'Wishlist',
     'bottom_sell_crop': 'Sell Crop',
     'bottom_account': 'Account',
+    'bottom_direct_farm': 'Farm',
 
     // Profile
     'my_profile': 'My Profile',
@@ -532,6 +533,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_wishlist': 'విష్‌లిస్ట్',
     'bottom_sell_crop': 'పంట అమ్మండి',
     'bottom_account': 'ఖాతా',
+    'bottom_direct_farm': 'పొలం',
 
     // Profile
     'my_profile': 'నా ప్రొఫైల్',
@@ -788,6 +790,7 @@ export const translations: Record<string, Record<string, string>> = {
     'bottom_wishlist': 'विशलिस्ट',
     'bottom_sell_crop': 'फसल बेचें',
     'bottom_account': 'खाता',
+    'bottom_direct_farm': 'खेत',
 
     // Profile
     'my_profile': 'मेरी प्रोफाइल',
