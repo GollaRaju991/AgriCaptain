@@ -1,7 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import MobileBottomNav from "@/components/MobileBottomNav";
 import { useLanguage } from '@/contexts/LanguageContext';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { MapPin, Calendar, TrendingUp, TrendingDown, Minus, Sprout, BarChart3, Users } from 'lucide-react';
 
@@ -306,24 +304,10 @@ const MarketDetails = () => {
     });
   }, [selectedMarket]);
 
-  // Get previous price based on selected period
-  const getPreviousPrice = (crop: CropData): number => {
+  // Always compare Today vs selected period
+  const getSelectedPeriodPrice = (crop: CropData): number => {
     switch (selectedPeriod) {
       case 'today': return crop.yesterday;
-      case 'yesterday': return crop.lastWeek;
-      case 'last_week': return crop.lastMonth;
-      case 'last_month': return crop.last3Months;
-      case 'last_3_months': return crop.last6Months;
-      case 'last_6_months': return crop.lastYear;
-      case 'last_year': return crop.last2Years;
-      case 'last_2_years': return crop.last2Years;
-      default: return crop.yesterday;
-    }
-  };
-
-  const getCurrentPrice = (crop: CropData): number => {
-    switch (selectedPeriod) {
-      case 'today': return crop.today;
       case 'yesterday': return crop.yesterday;
       case 'last_week': return crop.lastWeek;
       case 'last_month': return crop.lastMonth;
@@ -331,26 +315,15 @@ const MarketDetails = () => {
       case 'last_6_months': return crop.last6Months;
       case 'last_year': return crop.lastYear;
       case 'last_2_years': return crop.last2Years;
-      default: return crop.today;
+      default: return crop.yesterday;
     }
   };
 
-  const getPreviousLabel = (): string => {
-    const labels: Record<DatePeriod, { en: string; te: string; hi: string }> = {
-      today: { en: 'Yesterday', te: 'నిన్న', hi: 'कल' },
-      yesterday: { en: 'Last Week', te: 'గత వారం', hi: 'पिछला सप्ताह' },
-      last_week: { en: 'Last Month', te: 'గత నెల', hi: 'पिछला महीना' },
-      last_month: { en: 'Last 3 Mo', te: 'గత 3 నెలలు', hi: 'पिछले 3 मही' },
-      last_3_months: { en: 'Last 6 Mo', te: 'గత 6 నెలలు', hi: 'पिछले 6 मही' },
-      last_6_months: { en: 'Last Year', te: 'గత సం.', hi: 'पिछला साल' },
-      last_year: { en: 'Last 2 Yr', te: 'గత 2 సం.', hi: 'पिछले 2 साल' },
-      last_2_years: { en: 'Last 2 Yr', te: 'గత 2 సం.', hi: 'पिछले 2 साल' },
-    };
-    const l = labels[selectedPeriod];
-    return language === 'te' ? l.te : language === 'hi' ? l.hi : l.en;
-  };
-
-  const getCurrentLabel = (): string => {
+  const getSelectedPeriodLabel = (): string => {
+    if (selectedPeriod === 'today') {
+      const l = datePeriodLabels['yesterday'];
+      return language === 'te' ? l.te : language === 'hi' ? l.hi : l.en;
+    }
     const l = datePeriodLabels[selectedPeriod];
     return language === 'te' ? l.te : language === 'hi' ? l.hi : l.en;
   };
@@ -360,8 +333,8 @@ const MarketDetails = () => {
 
   // Summary calculations
   const summary = useMemo(() => {
-    const todayPrices = displayData.map(c => getCurrentPrice(c));
-    const prevPrices = displayData.map(c => getPreviousPrice(c));
+    const todayPrices = displayData.map(c => c.today);
+    const prevPrices = displayData.map(c => getSelectedPeriodPrice(c));
     const avgToday = Math.round(todayPrices.reduce((a, b) => a + b, 0) / todayPrices.length);
     const avgPrev = Math.round(prevPrices.reduce((a, b) => a + b, 0) / prevPrices.length);
     return { total: displayData.length, avgToday, avgPrev };
@@ -372,8 +345,6 @@ const MarketDetails = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f0fdf4]">
-      <Header />
-
       <main className="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Header Section */}
         <div className="mb-4 sm:mb-6">
@@ -381,9 +352,6 @@ const MarketDetails = () => {
             {t('Market', 'మార్కెట్', 'मार्केट')}{' '}
             <span className="text-green-600">{t('Rates', 'ధరలు', 'दरें')}</span>
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {t('Today vs Yesterday', 'ఈ రోజు vs నిన్న', 'आज vs कल')}
-          </p>
         </div>
 
         {/* Filters */}
@@ -416,17 +384,17 @@ const MarketDetails = () => {
         {/* Table */}
         <div className="bg-white rounded-2xl shadow-sm border border-green-100 overflow-hidden">
           {/* Table Header */}
-          <div className="grid grid-cols-[1fr_auto_auto_auto] sm:grid-cols-[2fr_1fr_1fr_1fr] bg-green-600 text-white font-semibold text-xs sm:text-sm">
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr] bg-green-600 text-white font-semibold text-xs sm:text-sm">
             <div className="flex items-center gap-2 px-3 sm:px-4 py-3">
               <Sprout className="w-4 h-4 hidden sm:block" />
               <span>{t('Crop', 'పంట', 'फसल')}</span>
             </div>
             <div className="px-2 sm:px-4 py-3 text-center">
-              <div>{getPreviousLabel()}</div>
+              <div>{getSelectedPeriodLabel()}</div>
               <div className="text-[10px] sm:text-xs font-normal opacity-80">(₹/{t('Quintal', 'క్వింటల్', 'क्विंटल')})</div>
             </div>
             <div className="px-2 sm:px-4 py-3 text-center">
-              <div>{getCurrentLabel()}</div>
+              <div>{t('Today', 'ఈ రోజు', 'आज')}</div>
               <div className="text-[10px] sm:text-xs font-normal opacity-80">(₹/{t('Quintal', 'క్వింటల్', 'क्विंटल')})</div>
             </div>
             <div className="px-2 sm:px-4 py-3 text-center">
@@ -437,10 +405,10 @@ const MarketDetails = () => {
 
           {/* Table Rows */}
           {displayData.map((crop, idx) => {
-            const current = getCurrentPrice(crop);
-            const previous = getPreviousPrice(crop);
-            const diff = current - previous;
-            const pct = previous > 0 ? ((diff / previous) * 100).toFixed(1) : '0.0';
+            const todayPrice = crop.today;
+            const periodPrice = getSelectedPeriodPrice(crop);
+            const diff = todayPrice - periodPrice;
+            const pct = periodPrice > 0 ? ((diff / periodPrice) * 100).toFixed(1) : '0.0';
             const isUp = diff > 0;
             const isDown = diff < 0;
             const IconComp = cropIconMap[crop.product.en];
@@ -448,39 +416,39 @@ const MarketDetails = () => {
             return (
               <div
                 key={idx}
-                className={`grid grid-cols-[1fr_auto_auto_auto] sm:grid-cols-[2fr_1fr_1fr_1fr] items-center border-b border-green-50 ${
+                className={`grid grid-cols-[2fr_1fr_1fr_1fr] items-center border-b border-green-50 ${
                   idx % 2 === 0 ? 'bg-white' : 'bg-green-50/30'
                 } hover:bg-green-50 transition-colors`}
               >
                 {/* Crop name */}
                 <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-4">
                   {IconComp && <IconComp />}
-                  <span className="font-medium text-sm sm:text-base text-foreground truncate">
+                  <span className="font-medium text-xs sm:text-base text-foreground truncate">
                     {getName(crop.product)}
                   </span>
                 </div>
-                {/* Previous Price */}
-                <div className="px-2 sm:px-4 py-3 text-center text-sm sm:text-base text-muted-foreground">
-                  ₹{previous.toLocaleString('en-IN')}
+                {/* Period Price */}
+                <div className="px-1 sm:px-4 py-3 text-center text-xs sm:text-base text-muted-foreground">
+                  ₹{periodPrice.toLocaleString('en-IN')}
                 </div>
-                {/* Current Price */}
-                <div className={`px-2 sm:px-4 py-3 text-center text-sm sm:text-base font-bold ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-foreground'}`}>
-                  ₹{current.toLocaleString('en-IN')}
+                {/* Today Price */}
+                <div className={`px-1 sm:px-4 py-3 text-center text-xs sm:text-base font-bold ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-foreground'}`}>
+                  ₹{todayPrice.toLocaleString('en-IN')}
                 </div>
                 {/* Change */}
-                <div className="px-2 sm:px-4 py-3 text-center">
+                <div className="px-1 sm:px-4 py-3 text-center">
                   <div className="flex flex-col items-center gap-0.5">
                     {isUp ? (
-                      <TrendingUp className="w-4 h-4 text-green-600" />
+                      <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600" />
                     ) : isDown ? (
-                      <TrendingDown className="w-4 h-4 text-red-600" />
+                      <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
                     ) : (
-                      <Minus className="w-4 h-4 text-muted-foreground" />
+                      <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                     )}
-                    <span className={`text-xs sm:text-sm font-semibold ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-muted-foreground'}`}>
-                      {isUp ? '+' : ''}₹{diff.toLocaleString('en-IN')}
+                    <span className={`text-[10px] sm:text-sm font-semibold ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-muted-foreground'}`}>
+                      {isUp ? '+' : ''}₹{Math.abs(diff).toLocaleString('en-IN')}
                     </span>
-                    <span className={`text-[10px] sm:text-xs ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-muted-foreground'}`}>
+                    <span className={`text-[9px] sm:text-xs ${isUp ? 'text-green-600' : isDown ? 'text-red-600' : 'text-muted-foreground'}`}>
                       ({isUp ? '+' : ''}{pct}%)
                     </span>
                   </div>
@@ -517,7 +485,6 @@ const MarketDetails = () => {
       </main>
 
       <div className="h-20 lg:hidden" />
-      <MobileBottomNav />
       <Footer />
     </div>
   );
