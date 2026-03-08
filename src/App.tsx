@@ -101,6 +101,9 @@ const App = () => (
                     <Route path="/refund-policy" element={<RefundPolicy />} />
                     <Route path="/shipping-policy" element={<ShippingPolicy />} />
                     <Route path="/agrizin-money" element={<AgrizinMoney />} />
+                    <Route path="/seller/add-product" element={<AddProduct />} />
+                    <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                    <Route path="*" element={<NotFound />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
