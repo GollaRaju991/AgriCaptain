@@ -39,6 +39,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, onC
   const [cropData, setCropData] = useState({
     cropName: '',
     quantity: '',
+    quantityUnit: 'Quintal',
     price: '',
     qualityGrade: 'Grade A',
     availabilityLocation: 'Marketplace',
@@ -82,7 +83,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, onC
         seller_id: sellerId,
         user_id: userId,
         crop_name: cropData.cropName,
-        quantity: cropData.quantity,
+        quantity: `${cropData.quantity} ${cropData.quantityUnit}`,
         price: cropData.price,
         harvest_date: harvestDate ? format(harvestDate, 'yyyy-MM-dd') : null,
         quality_grade: cropData.qualityGrade,
@@ -140,7 +141,19 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, onC
             <Label htmlFor="quantity" className="flex items-center gap-2">
               <Scale className="h-4 w-4 text-muted-foreground" /> {t['crop_quantity'] || 'Quantity Available'} *
             </Label>
-            <Input id="quantity" name="quantity" value={cropData.quantity} onChange={handleCropInputChange} required className="mt-1" placeholder={t['enter_quantity'] || 'e.g., 500 kg'} />
+            <div className="flex gap-2 mt-1">
+              <Input id="quantity" name="quantity" value={cropData.quantity} onChange={handleCropInputChange} required className="flex-1" placeholder={t['enter_quantity_number'] || 'e.g., 10'} type="number" min="0" />
+              <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Kg">Kg</SelectItem>
+                  <SelectItem value="Quintal">Quintal</SelectItem>
+                  <SelectItem value="Ton">Ton</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Price */}
