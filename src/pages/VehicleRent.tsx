@@ -145,7 +145,7 @@ const VehicleRent = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-50 bg-[hsl(var(--agri-green))] text-white">
+      <div className="sticky top-0 z-50 bg-[#2d5a27] text-white">
         <div className="flex items-center justify-between px-4 py-4">
           <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }} className="p-1">
             <ArrowLeft className="h-5 w-5" />
