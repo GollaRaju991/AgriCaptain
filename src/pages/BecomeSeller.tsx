@@ -99,11 +99,11 @@ const BecomeSeller = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-primary/60 to-primary/90 flex items-end p-5">
               <div>
                 <h2 className="text-2xl font-bold text-primary-foreground">
-                  Seller <span className="text-yellow-300">Registration</span>
+                  Seller <span className="text-accent">Registration</span>
                 </h2>
                 <p className="text-sm text-primary-foreground/80 mt-0.5">Start Selling on <strong>Agrizin</strong></p>
                 <p className="text-xs text-primary-foreground/70 mt-1 flex items-center gap-1">
-                  <BadgeCheck className="h-3.5 w-3.5 text-green-300" /> Grow Your Business • Reach Thousands of Buyers
+                  <BadgeCheck className="h-3.5 w-3.5 text-primary-foreground" /> Grow Your Business • Reach Thousands of Buyers
                 </p>
               </div>
             </div>
