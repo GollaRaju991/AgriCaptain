@@ -172,6 +172,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 620,
     image: 'https://i.postimg.cc/KzLq21MX/admire-insecticide-file-20004.jpg',
     category: 'seeds',
+    brand: 'Namdhari Seeds',
     rating: 4.6,
     reviews: 234,
     discount: 16,
