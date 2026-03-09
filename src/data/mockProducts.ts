@@ -52,6 +52,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 1599,
     image: 'https://i.postimg.cc/dtDsjvPM/bayer-nativo-fungicide-file-9643.png',
     category: 'tools',
+    brand: 'Bayer',
     rating: 4.3,
     reviews: 56,
     discount: 19,
