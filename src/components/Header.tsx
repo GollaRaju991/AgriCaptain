@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import ImageSearch from "./ImageSearch";
+import SearchSuggestions from "./SearchSuggestions";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
