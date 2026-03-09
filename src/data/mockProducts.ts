@@ -202,6 +202,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 520,
     image: 'https://i.postimg.cc/VLNq9SkY/exylon-dynemo-file-20821.png',
     category: 'equipment',
+    brand: 'Indofil',
     rating: 4.4,
     reviews: 899,
     discount: 13,
