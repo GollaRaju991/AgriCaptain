@@ -1,9 +1,203 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ScanLine, Camera, Loader2, Upload, X, Leaf } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Leaf, Camera, Upload, Loader2, X, ScanLine, Sun, Hand, Eye, ShieldCheck, ShoppingCart, Stethoscope, AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { products } from '@/data/products';
+
+/* ─── sub-components ─── */
+
+const ScannerHeader = ({ onBack }: { onBack: () => void }) => (
+  <div className="sticky top-0 z-20 bg-gradient-to-r from-green-700 to-emerald-600 text-white px-4 py-3 flex items-center gap-3 shadow-md">
+    <button onClick={onBack} className="p-1"><ArrowLeft className="h-5 w-5" /></button>
+    <div className="flex items-center gap-2">
+      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+        <Leaf className="h-4 w-4" />
+      </div>
+      <div>
+        <h1 className="text-base font-bold leading-tight">Crop Disease Scanner</h1>
+        <p className="text-[10px] text-green-100">Scan your plant leaf to detect diseases using AI</p>
+      </div>
+    </div>
+  </div>
+);
+
+const CameraView = ({
+  videoRef,
+  error,
+  isCameraActive,
+  onCapture,
+  onUpload,
+  onRetryCamera,
+  fileInputRef,
+}: {
+  videoRef: React.RefObject<HTMLVideoElement>;
+  error: string | null;
+  isCameraActive: boolean;
+  onCapture: () => void;
+  onUpload: () => void;
+  onRetryCamera: () => void;
+  fileInputRef: React.RefObject<HTMLInputElement>;
+}) => (
+  <div className="px-3 py-4">
+    {/* Scanner Frame */}
+    <div className="relative bg-gray-900 rounded-2xl overflow-hidden aspect-square max-w-sm mx-auto shadow-xl border-2 border-green-500/30">
+      {error ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 text-center">
+          <div className="w-16 h-16 bg-green-600/20 rounded-full flex items-center justify-center mb-3">
+            <Leaf className="h-8 w-8 text-green-400" />
+          </div>
+          <p className="text-sm text-gray-300 mb-4">{error}</p>
+          <div className="flex gap-2">
+            <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={onRetryCamera}>Try Camera</Button>
+            <Button size="sm" variant="outline" className="text-white border-white/40" onClick={onUpload}>
+              <Upload className="h-3.5 w-3.5 mr-1" /> Upload
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <>
+          <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
+          {/* Corner markers */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="w-56 h-56 relative">
+              <div className="absolute top-0 left-0 w-10 h-10 border-t-[3px] border-l-[3px] border-green-400 rounded-tl-2xl" />
+              <div className="absolute top-0 right-0 w-10 h-10 border-t-[3px] border-r-[3px] border-green-400 rounded-tr-2xl" />
+              <div className="absolute bottom-0 left-0 w-10 h-10 border-b-[3px] border-l-[3px] border-green-400 rounded-bl-2xl" />
+              <div className="absolute bottom-0 right-0 w-10 h-10 border-b-[3px] border-r-[3px] border-green-400 rounded-br-2xl" />
+              {/* Scan line animation */}
+              <div className="absolute left-3 right-3 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-[scan_2s_ease-in-out_infinite]" style={{ top: '50%' }} />
+            </div>
+          </div>
+          {/* Label */}
+          {!isCameraActive && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/80 text-white">
+              <Leaf className="h-12 w-12 text-green-400 mb-2" />
+              <p className="text-sm text-gray-300">Point your camera at the crop leaf</p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+
+    {/* Buttons */}
+    <div className="flex gap-3 mt-4 max-w-sm mx-auto">
+      {isCameraActive && (
+        <Button onClick={onCapture} className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-11 font-semibold shadow-lg">
+          <Camera className="h-4 w-4 mr-2" /> Scan Leaf
+        </Button>
+      )}
+      <Button onClick={onUpload} variant="outline" className={`${isCameraActive ? '' : 'flex-1'} rounded-xl h-11 border-green-300 text-green-700 hover:bg-green-50 font-semibold`}>
+        <Upload className="h-4 w-4 mr-2" /> Upload Image
+      </Button>
+    </div>
+
+    {/* Instructions */}
+    <div className="mt-5 max-w-sm mx-auto space-y-2">
+      {[
+        { icon: Eye, text: 'Ensure the leaf is clearly visible' },
+        { icon: Sun, text: 'Use natural light for better detection' },
+        { icon: Hand, text: 'Hold the camera steady' },
+      ].map((item, i) => (
+        <div key={i} className="flex items-center gap-2.5 bg-green-50 rounded-xl px-3 py-2">
+          <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
+            <item.icon className="h-3.5 w-3.5 text-green-600" />
+          </div>
+          <p className="text-xs text-green-800">{item.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const AnalyzingOverlay = () => (
+  <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl z-10">
+    <div className="text-center">
+      <Loader2 className="h-10 w-10 text-green-400 animate-spin mx-auto mb-2" />
+      <p className="text-white text-sm font-medium">Analyzing crop health...</p>
+      <p className="text-white/60 text-[10px] mt-1">This may take a few seconds</p>
+    </div>
+  </div>
+);
+
+const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: string }) => {
+  // Parse analysis for structured display
+  const lines = result.split('\n').filter(l => l.trim());
+
+  return (
+    <div className="px-3 py-4 space-y-3 animate-fade-in">
+      {/* Captured image */}
+      <div className="relative rounded-2xl overflow-hidden max-w-sm mx-auto shadow-lg">
+        <img src={capturedImage} alt="Scanned crop" className="w-full max-h-48 object-cover" />
+        <div className="absolute top-2 left-2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+          <CheckCircle2 className="w-3 h-3" /> Scan Complete
+        </div>
+      </div>
+
+      {/* Disease Analysis Report */}
+      <Card className="max-w-sm mx-auto border-green-200 shadow-md rounded-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-green-600 to-emerald-500 px-4 py-2.5 flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-white" />
+          <h2 className="text-sm font-bold text-white">Disease Analysis Report</h2>
+        </div>
+        <CardContent className="p-4">
+          <div className="text-sm text-gray-700 leading-relaxed space-y-1">
+            {lines.map((line, i) => {
+              const parts = line.split(/(\*\*.*?\*\*)/g).map((part, j) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                  return <strong key={j} className="text-green-700">{part.slice(2, -2)}</strong>;
+                }
+                return <span key={j}>{part}</span>;
+              });
+              return <p key={i} className={line.trim() === '' ? 'h-1' : 'mb-0.5'}>{parts}</p>;
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Recommended Products */}
+      <div className="max-w-sm mx-auto">
+        <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1.5">
+          <ShoppingCart className="h-4 w-4 text-green-600" />
+          Recommended Products
+        </h3>
+        <div className="grid grid-cols-3 gap-2">
+          {products.slice(0, 3).map((product) => (
+            <Link key={product.id} to={`/product/${product.id}`}>
+              <Card className="rounded-xl overflow-hidden border-green-100 hover:shadow-md transition-shadow">
+                <img src={product.image} alt={product.name} className="w-full h-20 object-cover" />
+                <div className="p-2">
+                  <p className="text-[10px] font-semibold text-gray-800 line-clamp-2 leading-tight">{product.name}</p>
+                  <p className="text-[11px] font-bold text-green-700 mt-0.5">₹{product.price}</p>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="max-w-sm mx-auto flex gap-2">
+        <Link to="/scanner" className="flex-1">
+          <Button className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-semibold">
+            <Stethoscope className="h-3.5 w-3.5 mr-1.5" />
+            Consult Agrizin Doctor
+          </Button>
+        </Link>
+        <Link to="/products" className="flex-1">
+          <Button variant="outline" className="w-full border-green-300 text-green-700 hover:bg-green-50 rounded-xl h-10 text-xs font-semibold">
+            <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
+            Buy Product
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Main Scanner Page ─── */
 
 const Scanner = () => {
   const navigate = useNavigate();
@@ -27,9 +221,7 @@ const Scanner = () => {
     setCapturedImage(null);
     setAnalysisResult(null);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         videoRef.current.play();
@@ -42,7 +234,7 @@ const Scanner = () => {
 
   const stopCamera = useCallback(() => {
     if (videoRef.current?.srcObject) {
-      (videoRef.current.srcObject as MediaStream).getTracks().forEach((t) => t.stop());
+      (videoRef.current.srcObject as MediaStream).getTracks().forEach(t => t.stop());
       videoRef.current.srcObject = null;
       setIsCameraActive(false);
     }
@@ -86,12 +278,9 @@ const Scanner = () => {
       const { data, error: fnError } = await supabase.functions.invoke('crop-diagnosis', {
         body: { image: imageDataUrl },
       });
-
       if (fnError) throw fnError;
-
       if (data?.error) {
         toast({ title: 'Analysis Error', description: data.error, variant: 'destructive' });
-        setAnalysisResult(null);
       } else {
         setAnalysisResult(data.analysis);
       }
@@ -109,133 +298,55 @@ const Scanner = () => {
     startCamera();
   };
 
-  // Simple markdown-like rendering for bold text
-  const renderAnalysis = (text: string) => {
-    return text.split('\n').map((line, i) => {
-      // Bold **text**
-      const parts = line.split(/(\*\*.*?\*\*)/g).map((part, j) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={j} className="text-green-700">{part.slice(2, -2)}</strong>;
-        }
-        return <span key={j}>{part}</span>;
-      });
-      return <p key={i} className={`${line.trim() === '' ? 'h-2' : 'mb-1'}`}>{parts}</p>;
-    });
-  };
+  const goBack = () => { stopCamera(); navigate(-1); };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <canvas ref={canvasRef} className="hidden" />
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
 
-      {/* Top bar */}
-      <div className="flex items-center p-4 bg-black/80 z-10">
-        <button onClick={() => { stopCamera(); navigate(-1); }} className="text-white p-1">
-          <ArrowLeft className="h-6 w-6" />
-        </button>
-        <div className="ml-3 flex items-center gap-2">
-          <Leaf className="h-5 w-5 text-green-400" />
-          <h1 className="text-white text-lg font-semibold">Crop Disease Detection</h1>
-        </div>
-      </div>
+      <ScannerHeader onBack={goBack} />
 
-      {/* Main content */}
-      {!capturedImage ? (
-        <>
-          {/* Camera view */}
-          <div className="flex-1 relative flex items-center justify-center">
-            {error ? (
-              <div className="text-white text-center p-6">
-                <ScanLine className="h-16 w-16 mx-auto mb-4 text-green-400" />
-                <p className="text-sm mb-4">{error}</p>
-                <div className="flex gap-3 justify-center">
-                  <Button className="bg-green-600" onClick={startCamera}>Try Camera</Button>
-                  <Button variant="outline" className="text-white border-white" onClick={() => fileInputRef.current?.click()}>
-                    <Upload className="h-4 w-4 mr-2" /> Upload Image
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <video ref={videoRef} className="w-full h-full object-cover" autoPlay playsInline muted />
-                {/* Scanner overlay */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-64 h-64 border-2 border-green-400 rounded-2xl relative">
-                    <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-400 rounded-tl-xl" />
-                    <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-400 rounded-tr-xl" />
-                    <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-400 rounded-bl-xl" />
-                    <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-400 rounded-br-xl" />
-                    <div className="absolute left-2 right-2 h-0.5 bg-green-400 animate-pulse top-1/2" />
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Bottom controls */}
-          <div className="p-4 bg-black/80 flex items-center justify-center gap-6">
-            <Button
-              variant="outline"
-              className="text-white border-white/40 rounded-full h-12 w-12 p-0"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Upload className="h-5 w-5" />
-            </Button>
-            {isCameraActive && (
-              <button
-                onClick={capturePhoto}
-                className="w-16 h-16 rounded-full border-4 border-green-400 bg-white/20 flex items-center justify-center active:scale-95 transition-transform"
-              >
-                <Camera className="h-7 w-7 text-white" />
-              </button>
-            )}
-            <div className="w-12" /> {/* spacer */}
-          </div>
-
-          <div className="pb-4 bg-black/80 text-center">
-            <p className="text-white/70 text-xs">Point at a crop leaf and capture to detect diseases</p>
-          </div>
-        </>
-      ) : (
-        /* Results view */
-        <div className="flex-1 overflow-y-auto">
-          {/* Captured image */}
+      <div className="flex-1 overflow-y-auto pb-20">
+        {!capturedImage ? (
+          <CameraView
+            videoRef={videoRef}
+            error={error}
+            isCameraActive={isCameraActive}
+            onCapture={capturePhoto}
+            onUpload={() => fileInputRef.current?.click()}
+            onRetryCamera={startCamera}
+            fileInputRef={fileInputRef}
+          />
+        ) : (
           <div className="relative">
-            <img src={capturedImage} alt="Captured" className="w-full max-h-64 object-cover" />
-            {analyzing && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <div className="text-center">
-                  <Loader2 className="h-10 w-10 text-green-400 animate-spin mx-auto mb-2" />
-                  <p className="text-white text-sm">Analyzing crop health...</p>
-                </div>
-              </div>
-            )}
+            {analyzing && <AnalyzingOverlay />}
+            {analysisResult ? (
+              <ResultCard result={analysisResult} capturedImage={capturedImage} />
+            ) : !analyzing ? (
+              <div className="p-4 text-center text-gray-500 text-sm">Processing...</div>
+            ) : null}
           </div>
+        )}
 
-          {/* Analysis result */}
-          {analysisResult && (
-            <div className="bg-white p-4 mx-3 mt-3 rounded-xl shadow-lg mb-4">
-              <div className="flex items-center gap-2 mb-3 pb-2 border-b border-green-100">
-                <Leaf className="h-5 w-5 text-green-600" />
-                <h2 className="text-base font-bold text-green-800">Disease Analysis Report</h2>
-              </div>
-              <div className="text-sm text-gray-700 leading-relaxed">
-                {renderAnalysis(analysisResult)}
-              </div>
-            </div>
-          )}
-
-          {/* Action buttons */}
-          <div className="p-4 flex gap-3">
-            <Button onClick={retake} className="flex-1 bg-green-600 hover:bg-green-700 text-white">
+        {capturedImage && (
+          <div className="px-3 pb-4 flex gap-2 max-w-sm mx-auto">
+            <Button onClick={retake} className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 font-semibold">
               <Camera className="h-4 w-4 mr-2" /> Scan Again
             </Button>
-            <Button variant="outline" onClick={() => { stopCamera(); navigate(-1); }} className="flex-1">
+            <Button variant="outline" onClick={goBack} className="flex-1 rounded-xl h-10 border-green-300 text-green-700">
               <X className="h-4 w-4 mr-2" /> Close
             </Button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      <style>{`
+        @keyframes scan {
+          0%, 100% { top: 10%; }
+          50% { top: 85%; }
+        }
+      `}</style>
     </div>
   );
 };

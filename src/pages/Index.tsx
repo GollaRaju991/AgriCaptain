@@ -14,6 +14,7 @@ import CategoryNavigation from "@/components/CategoryNavigation";
 import WeatherReport from "@/components/WeatherReport";
 import AgrizinDoctorBanner from "@/components/AgrizinDoctorBanner";
 import ProductAdBanner from "@/components/ProductAdBanner";
+import ScannerPromoBanner from "@/components/ScannerPromoBanner";
 import { products } from "@/data/products";
 import {
   Pagination,
