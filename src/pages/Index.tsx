@@ -12,6 +12,7 @@ import PromoBanners from "@/components/PromoBanners";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import CategoryNavigation from "@/components/CategoryNavigation";
 import WeatherReport from "@/components/WeatherReport";
+import AgrizinDoctorBanner from "@/components/AgrizinDoctorBanner";
 import { products } from "@/data/products";
 import {
   Pagination,
