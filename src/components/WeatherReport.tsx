@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Cloud, CloudRain, Sun, CloudSun, MapPin, Loader2, Wind, Droplets, Sunrise, CloudDrizzle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Cloud, CloudRain, Sun, CloudSun, MapPin, Loader2, Wind, Droplets, Sunrise, RefreshCw } from 'lucide-react';
 
 interface WeatherData {
   temperature: number;
@@ -8,6 +8,7 @@ interface WeatherData {
   humidity: number;
   wind: number;
   sunrise: string;
+  lastUpdated: string;
   forecast: {
     day: string;
     high: number;
@@ -53,87 +54,103 @@ const getDayName = (dateStr: string): string => {
   return date.toLocaleDateString('en-US', { weekday: 'short' });
 };
 
+const AUTO_REFRESH_MS = 30 * 60 * 1000; // 30 minutes
+
 const WeatherReport: React.FC = () => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [locationName, setLocationName] = useState('Your Location');
+  const coordsRef = useRef<{ lat: number; lon: number }>({ lat: 17.385, lon: 78.4867 });
 
-  useEffect(() => {
-    const fetchWeather = async (lat: number, lon: number) => {
+  const fetchWeather = useCallback(async (lat: number, lon: number, isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    try {
       try {
-        // Reverse geocode for location name
-        try {
-          const geoRes = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=en`,
-            { headers: { 'User-Agent': 'AgriCaptainApp/1.0' } }
-          );
-          const geoData = await geoRes.json();
-          const addr = geoData.address || {};
-          setLocationName(addr.city || addr.town || addr.state_district || addr.state || 'Your Location');
-        } catch { /* ignore */ }
-
-        const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise&timezone=auto&forecast_days=6`
+        const geoRes = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1&accept-language=en`,
+          { headers: { 'User-Agent': 'AgriCaptainApp/1.0' } }
         );
-        const data = await res.json();
+        const geoData = await geoRes.json();
+        const addr = geoData.address || {};
+        setLocationName(addr.city || addr.town || addr.state_district || addr.state || 'Your Location');
+      } catch { /* ignore */ }
 
-        const current = data.current;
-        const daily = data.daily;
+      const res = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise&timezone=auto&forecast_days=6`
+      );
+      const data = await res.json();
+      const current = data.current;
+      const daily = data.daily;
 
-        setWeather({
-          temperature: Math.round(current.temperature_2m),
-          condition: getWeatherCondition(current.weather_code),
-          rainChance: daily.precipitation_probability_max?.[0] ?? 0,
-          humidity: current.relative_humidity_2m,
-          wind: Math.round(current.wind_speed_10m),
-          sunrise: new Date(daily.sunrise[0]).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
-          forecast: daily.weather_code.slice(1, 6).map((code: number, i: number) => ({
-            day: getDayName(daily.time[i + 1]),
-            high: Math.round(daily.temperature_2m_max[i + 1]),
-            low: Math.round(daily.temperature_2m_min[i + 1]),
-            condition: getWeatherCondition(code),
-          })),
-        });
-      } catch (err) {
-        console.error('Weather fetch failed:', err);
-        // Fallback mock data
-        setWeather({
-          temperature: 32,
-          condition: 'Sunny / Partly Cloudy',
-          rainChance: 20,
-          humidity: 65,
-          wind: 12,
-          sunrise: '6:05 AM',
-          forecast: [
-            { day: 'Mon', high: 32, low: 26, condition: 'Sunny' },
-            { day: 'Tue', high: 31, low: 25, condition: 'Cloudy' },
-            { day: 'Wed', high: 30, low: 24, condition: 'Rain' },
-            { day: 'Thu', high: 29, low: 24, condition: 'Rain' },
-            { day: 'Fri', high: 31, low: 25, condition: 'Sunny' },
-          ],
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+      setWeather({
+        temperature: Math.round(current.temperature_2m),
+        condition: getWeatherCondition(current.weather_code),
+        rainChance: daily.precipitation_probability_max?.[0] ?? 0,
+        humidity: current.relative_humidity_2m,
+        wind: Math.round(current.wind_speed_10m),
+        sunrise: new Date(daily.sunrise[0]).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        lastUpdated: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
+        forecast: daily.weather_code.slice(1, 6).map((code: number, i: number) => ({
+          day: getDayName(daily.time[i + 1]),
+          high: Math.round(daily.temperature_2m_max[i + 1]),
+          low: Math.round(daily.temperature_2m_min[i + 1]),
+          condition: getWeatherCondition(code),
+        })),
+      });
+    } catch (err) {
+      console.error('Weather fetch failed:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
 
+  const handleRefresh = useCallback(() => {
+    // Try to get fresh GPS location on each refresh
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => fetchWeather(17.385, 78.4867), // Fallback: Hyderabad
+        (pos) => {
+          coordsRef.current = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          fetchWeather(pos.coords.latitude, pos.coords.longitude, true);
+        },
+        () => fetchWeather(coordsRef.current.lat, coordsRef.current.lon, true),
+        { timeout: 5000 }
+      );
+    } else {
+      fetchWeather(coordsRef.current.lat, coordsRef.current.lon, true);
+    }
+  }, [fetchWeather]);
+
+  useEffect(() => {
+    // Initial fetch
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          coordsRef.current = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          fetchWeather(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => fetchWeather(17.385, 78.4867),
         { timeout: 5000 }
       );
     } else {
       fetchWeather(17.385, 78.4867);
     }
-  }, []);
+
+    // Auto-refresh every 30 minutes
+    const interval = setInterval(() => {
+      fetchWeather(coordsRef.current.lat, coordsRef.current.lon, true);
+    }, AUTO_REFRESH_MS);
+
+    return () => clearInterval(interval);
+  }, [fetchWeather]);
 
   if (loading) {
     return (
       <div className="w-full px-2 md:px-4 py-4">
         <div className="bg-card rounded-xl shadow-sm p-6 flex items-center justify-center gap-2">
           <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          <span className="text-sm text-muted-foreground">Loading weather...</span>
+          <span className="text-sm text-muted-foreground">Loading live weather...</span>
         </div>
       </div>
     );
@@ -150,9 +167,19 @@ const WeatherReport: React.FC = () => {
             <CloudSun className="h-6 w-6 text-yellow-300" />
             <h3 className="text-white font-bold text-base md:text-lg">Weather Report</h3>
           </div>
-          <div className="flex items-center gap-1 text-white/90 text-xs md:text-sm">
-            <MapPin className="h-3.5 w-3.5" />
-            <span>{locationName}</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="p-1 rounded-full hover:bg-white/20 transition-colors"
+              title="Refresh weather"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 text-white/90 ${refreshing ? 'animate-spin' : ''}`} />
+            </button>
+            <div className="flex items-center gap-1 text-white/90 text-xs md:text-sm">
+              <MapPin className="h-3.5 w-3.5" />
+              <span>{locationName}</span>
+            </div>
           </div>
         </div>
 
@@ -166,9 +193,12 @@ const WeatherReport: React.FC = () => {
               <div className="text-3xl md:text-4xl font-bold text-foreground">{weather.temperature}°C</div>
               <div className="text-sm text-muted-foreground">{weather.condition}</div>
             </div>
-            <div className="ml-auto sm:ml-4 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Sunrise className="h-4 w-4 text-orange-400" />
-              <span>Sunrise: <strong className="text-foreground">{weather.sunrise}</strong></span>
+            <div className="ml-auto sm:ml-4 flex flex-col items-end gap-1 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Sunrise className="h-4 w-4 text-orange-400" />
+                <span>Sunrise: <strong className="text-foreground">{weather.sunrise}</strong></span>
+              </div>
+              <span className="text-[10px] text-muted-foreground">Updated: {weather.lastUpdated}</span>
             </div>
           </div>
 
@@ -182,7 +212,7 @@ const WeatherReport: React.FC = () => {
               <span className="text-xs md:text-sm text-muted-foreground">Humidity: <strong className="text-foreground">{weather.humidity}%</strong></span>
             </div>
             <div className="flex items-center gap-2">
-              <Wind className="h-4 w-4 text-gray-400" />
+              <Wind className="h-4 w-4 text-muted-foreground" />
               <span className="text-xs md:text-sm text-muted-foreground">Wind: <strong className="text-foreground">{weather.wind} km/h</strong></span>
             </div>
             <div className="flex items-center gap-2">
