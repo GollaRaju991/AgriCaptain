@@ -162,7 +162,7 @@ const Products = () => {
   };
 
   // Count active filters
-  const activeFilterCount = [searchQuery, selectedCategory, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
+  const activeFilterCount = [searchQuery, selectedCategory, selectedBrand, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
 
   return (
     <div className="min-h-screen bg-background">
