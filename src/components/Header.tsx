@@ -89,7 +89,14 @@ const Header = () => {
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
+      setSearchFocused(false);
     }
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    navigate(`/products?search=${encodeURIComponent(suggestion)}`);
+    setSearchQuery("");
+    setSearchFocused(false);
   };
 
   return (
