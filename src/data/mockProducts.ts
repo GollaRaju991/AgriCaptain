@@ -22,6 +22,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 399,
     image: 'https://i.postimg.cc/BQHGZv2C/katyayani-npk-20-20-20-fertilizer-with-2-sample-mix-micronutrients-and-organic-humic-acid-file-10642.jpg',
     category: 'seeds',
+    brand: 'Seminis',
     rating: 4.5,
     reviews: 124,
     discount: 25,
