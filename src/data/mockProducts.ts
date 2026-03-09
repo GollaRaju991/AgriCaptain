@@ -112,6 +112,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 580,
     image: 'https://i.postimg.cc/ncVyv1mC/tractor.png',
     category: 'equipment',
+    brand: 'Bali Yaan',
     rating: 4.9,
     reviews: 312,
     discount: 5,
