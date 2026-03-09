@@ -37,6 +37,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 799,
     image: 'https://i.postimg.cc/gkwfS2MW/Compost.png',
     category: 'fertilizers',
+    brand: 'Multiplex',
     rating: 4.8,
     reviews: 89,
     discount: 25,
