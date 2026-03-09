@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const BrandsSection = () => {
   const { translations } = useLanguage();
+  const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
 
   const brands = [
