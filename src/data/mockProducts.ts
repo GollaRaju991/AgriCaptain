@@ -127,6 +127,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 450,
     image: 'https://i.postimg.cc/bv6gfQJF/rice-bag.png',
     category: 'seeds',
+    brand: 'VNR Seeds',
     rating: 4.7,
     reviews: 189,
     discount: 16,
