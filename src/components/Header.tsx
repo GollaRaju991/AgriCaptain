@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import ImageSearch from "./ImageSearch";
+import SearchSuggestions from "./SearchSuggestions";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -71,6 +72,7 @@ const Header = () => {
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -87,7 +89,14 @@ const Header = () => {
     if (searchQuery.trim()) {
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
+      setSearchFocused(false);
     }
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    navigate(`/products?search=${encodeURIComponent(suggestion)}`);
+    setSearchQuery("");
+    setSearchFocused(false);
   };
 
   return (
@@ -102,21 +111,26 @@ const Header = () => {
             <button onClick={() => navigate(-1)} className="p-1">
               <ArrowLeft className="h-5 w-5 text-gray-700" />
             </button>
-            <form
-              onSubmit={handleSearch}
-              className="flex flex-1 items-center bg-gray-100 rounded-lg overflow-hidden"
-            >
-              <div className="flex items-center pl-3">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <Input
-                type="text"
-                placeholder={translations.search_products || 'Search products...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-            </form>
+            <div className="relative flex-1">
+              <form
+                onSubmit={handleSearch}
+                className="flex items-center bg-gray-100 rounded-lg overflow-hidden"
+              >
+                <div className="flex items-center pl-3">
+                  <Search className="h-4 w-4 text-gray-400" />
+                </div>
+                <Input
+                  type="text"
+                  placeholder={translations.search_products || 'Search products...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                  className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </form>
+              <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
+            </div>
             <Link to="/cart" className="relative p-1">
               <ShoppingCart className="h-5 w-5 text-gray-700" />
               {totalItems > 0 && (
@@ -165,31 +179,36 @@ const Header = () => {
 
               {/* Row 2: Search bar */}
               <div className="flex items-center px-3 pb-3 pt-1">
-                <form
-                  onSubmit={handleSearch}
-                  className="flex flex-1 items-center bg-white rounded-full overflow-hidden shadow-md"
-                >
-                  <div className="flex items-center pl-4">
-                    <Search className="h-4 w-4 text-gray-400" />
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder={translations.search_products || 'Search products...'}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
-                  />
-                  <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-10 px-3 text-green-700 hover:bg-green-50 rounded-none"
-                    onClick={() => navigate('/scanner')}
+                <div className="relative flex-1">
+                  <form
+                    onSubmit={handleSearch}
+                    className="flex items-center bg-white rounded-full overflow-hidden shadow-md"
                   >
-                    <ScanLine className="h-5 w-5" />
-                  </Button>
-                </form>
+                    <div className="flex items-center pl-4">
+                      <Search className="h-4 w-4 text-gray-400" />
+                    </div>
+                    <Input
+                      type="text"
+                      placeholder={translations.search_products || 'Search products...'}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onFocus={() => setSearchFocused(true)}
+                      onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                      className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
+                    />
+                    <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-10 px-3 text-green-700 hover:bg-green-50 rounded-none"
+                      onClick={() => navigate('/scanner')}
+                    >
+                      <ScanLine className="h-5 w-5" />
+                    </Button>
+                  </form>
+                  <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
+                </div>
               </div>
             </div>
 
@@ -238,18 +257,23 @@ const Header = () => {
               <span className="text-3xl font-bold text-green-700">Agrizin</span>
             </Link>
 
-            <form onSubmit={handleSearch} className="flex flex-1 mx-8 max-w-xl">
-              <Input
-                type="text"
-                placeholder={`${translations.search} for seeds, fertilizers…`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="rounded-r-none border-r-0"
-              />
-              <Button type="submit" className="rounded-none bg-green-600 text-white">
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
+            <div className="relative flex-1 mx-8 max-w-xl">
+              <form onSubmit={handleSearch} className="flex">
+                <Input
+                  type="text"
+                  placeholder={`${translations.search} for seeds, fertilizers…`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                  className="rounded-r-none border-r-0"
+                />
+                <Button type="submit" className="rounded-none bg-green-600 text-white">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </form>
+              <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
+            </div>
 
             <div className="flex items-center space-x-5">
               <Button
@@ -344,18 +368,23 @@ const Header = () => {
               <span className="text-xl font-bold text-green-700">Agrizin</span>
             </Link>
 
-            <form onSubmit={handleSearch} className="flex flex-1 max-w-xl">
-              <Input
-                type="text"
-                placeholder={`${translations.search} for seeds, fertilizers…`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="rounded-r-none border-r-0"
-              />
-              <Button type="submit" className="rounded-none bg-green-600 text-white">
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
+            <div className="relative flex-1 max-w-xl">
+              <form onSubmit={handleSearch} className="flex">
+                <Input
+                  type="text"
+                  placeholder={`${translations.search} for seeds, fertilizers…`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                  className="rounded-r-none border-r-0"
+                />
+                <Button type="submit" className="rounded-none bg-green-600 text-white">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </form>
+              <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
+            </div>
 
             <div className="flex items-center space-x-4 ml-4">
               <Link to="/cart" className="relative">
