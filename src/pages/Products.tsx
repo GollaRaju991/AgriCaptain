@@ -53,6 +53,7 @@ const Products = () => {
 
   const searchQuery = searchParams.get('search') || '';
   const selectedCategory = searchParams.get('category') || '';
+  const selectedBrand = searchParams.get('brand') || '';
 
   // Fetch active seller products from DB
   useEffect(() => {
