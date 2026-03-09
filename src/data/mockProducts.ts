@@ -217,6 +217,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 500,
     image: 'https://i.postimg.cc/zfptDsd7/Brafe.png',
     category: 'seeds',
+    brand: 'East-West Seed',
     rating: 4.5,
     reviews: 145,
     discount: 16,
