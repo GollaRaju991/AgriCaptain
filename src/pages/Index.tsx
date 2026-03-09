@@ -66,21 +66,34 @@ const Index = () => {
           {/* Product Grid - Tighter gaps like Flipkart */}
           {(() => {
             const pageProducts = products.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
-            const firstBatch = pageProducts.slice(0, 4);
-            const secondBatch = pageProducts.slice(4);
+            const batch1 = pageProducts.slice(0, 4);
+            const batch2 = pageProducts.slice(4, 8);
+            const batch3 = pageProducts.slice(8);
             return (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
-                  {firstBatch.map((product) => (
+                  {batch1.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
-                {/* Weather Report - between product rows */}
-                <WeatherReport />
+                {/* Ad Banner 1 - between first and second batch */}
+                <ProductAdBanner index={0} />
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
-                  {secondBatch.map((product) => (
+                  {batch2.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Weather Report */}
+                <WeatherReport />
+
+                {/* Ad Banner 2 - between second and third batch */}
+                <ProductAdBanner index={1} />
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
+                  {batch3.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
