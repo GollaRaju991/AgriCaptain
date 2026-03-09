@@ -134,7 +134,7 @@ const Products = () => {
     });
 
     return filtered;
-  }, [searchQuery, selectedCategory, priceRange, sortBy, sellerProducts]);
+  }, [searchQuery, selectedCategory, selectedBrand, priceRange, sortBy, sellerProducts]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage);
