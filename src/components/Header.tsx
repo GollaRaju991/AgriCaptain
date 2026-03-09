@@ -180,6 +180,15 @@ const Header = () => {
                     className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
                   />
                   <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-10 px-3 text-green-700 hover:bg-green-50 rounded-none"
+                    onClick={() => navigate('/scanner')}
+                  >
+                    <ScanLine className="h-5 w-5" />
+                  </Button>
                 </form>
               </div>
             </div>
