@@ -82,6 +82,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 550,
     image: 'https://i.postimg.cc/tgFv016K/Screenshot-2025-07-19-182830.png',
     category: 'seeds',
+    brand: 'Syngenta',
     rating: 4.6,
     reviews: 203,
     discount: 18,
