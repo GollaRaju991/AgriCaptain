@@ -5,6 +5,7 @@ export interface MockProduct {
   originalPrice: number;
   image: string;
   category: string;
+  brand?: string;
   rating: number;
   reviews: number;
   discount: number;
