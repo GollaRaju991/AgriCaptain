@@ -97,6 +97,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 999,
     image: 'https://i.postimg.cc/3RPsjMgh/antracol-file-659.jpg',
     category: 'fertilizers',
+    brand: 'Dhanuka',
     rating: 4.4,
     reviews: 145,
     discount: 20,
