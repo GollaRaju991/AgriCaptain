@@ -51,6 +51,9 @@ const Index = () => {
       {/* Brands Section */}
       <BrandsSection />
 
+      {/* Agrizin Doctor Banner */}
+      <AgrizinDoctorBanner />
+
       {/* Featured Products */}
       <section className="py-4 md:py-8 bg-white">
         <div className="w-full px-2 md:px-4 pb-24">
