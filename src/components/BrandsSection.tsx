@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -7,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 const BrandsSection = () => {
   const { translations } = useLanguage();
+  const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
 
   const brands = [
@@ -57,7 +59,7 @@ const BrandsSection = () => {
         
         <div className={`grid ${showAll ? 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1 md:gap-2' : 'grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-1 md:gap-2'}`}>
           {displayedBrands.map((brand, index) => (
-            <Card key={index} className="hover:shadow-sm transition-all cursor-pointer border border-gray-100 bg-white">
+            <Card key={index} className="hover:shadow-sm transition-all cursor-pointer border border-gray-100 bg-white" onClick={() => navigate(`/products?brand=${encodeURIComponent(brand.name)}`)}>
               <CardContent className="p-1.5 md:p-2">
                 <div className="w-full h-10 md:h-12 flex items-center justify-center">
                   <img 

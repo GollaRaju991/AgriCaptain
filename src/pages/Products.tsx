@@ -53,6 +53,7 @@ const Products = () => {
 
   const searchQuery = searchParams.get('search') || '';
   const selectedCategory = searchParams.get('category') || '';
+  const selectedBrand = searchParams.get('brand') || '';
 
   // Fetch active seller products from DB
   useEffect(() => {
@@ -98,6 +99,13 @@ const Products = () => {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
+    // Filter by brand
+    if (selectedBrand) {
+      filtered = filtered.filter(product => 
+        (product as any).brand?.toLowerCase() === selectedBrand.toLowerCase()
+      );
+    }
+
     // Filter by price range
     if (priceRange !== 'all') {
       const [min, max] = priceRange.split('-').map(Number);
@@ -126,7 +134,7 @@ const Products = () => {
     });
 
     return filtered;
-  }, [searchQuery, selectedCategory, priceRange, sortBy, sellerProducts]);
+  }, [searchQuery, selectedCategory, selectedBrand, priceRange, sortBy, sellerProducts]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage);
@@ -154,7 +162,7 @@ const Products = () => {
   };
 
   // Count active filters
-  const activeFilterCount = [searchQuery, selectedCategory, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
+  const activeFilterCount = [searchQuery, selectedCategory, selectedBrand, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -165,7 +173,7 @@ const Products = () => {
         {/* Page Title */}
         <div className="px-4 pt-4 pb-2">
           <h1 className="text-2xl font-bold text-foreground">
-            {selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
+            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
         </div>
 
@@ -350,9 +358,9 @@ const Products = () => {
       <div className="hidden md:block container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-4">
-            {selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
+            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
-          {(searchQuery || selectedCategory) && (
+          {(searchQuery || selectedCategory || selectedBrand) && (
             <div className="flex flex-wrap items-center gap-2 mb-4">
               <span className="text-sm text-muted-foreground">Active filters:</span>
               {searchQuery && (
@@ -365,6 +373,12 @@ const Products = () => {
                 <Badge variant="secondary" className="flex items-center gap-1">
                   Category: {selectedCategory}
                   <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('category')} />
+                </Badge>
+              )}
+              {selectedBrand && (
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  Brand: {selectedBrand}
+                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter('brand')} />
                 </Badge>
               )}
               <Button variant="ghost" size="sm" onClick={clearFilters}>Clear all</Button>
