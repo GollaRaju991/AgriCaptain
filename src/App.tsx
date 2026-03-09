@@ -61,7 +61,7 @@ const App = () => (
           <CartProvider>
             <WishlistProvider>
               {/* ⭐ Add bottom padding so content is not hidden */}
-              <div className="w-full min-h-screen overflow-x-hidden pb-24">
+              <div className="w-full min-h-screen overflow-x-hidden pb-16 lg:pb-0">
                 
                 <Toaster />
                 <Sonner />
