@@ -232,6 +232,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 420,
     image: 'https://i.postimg.cc/kXt4d9jQ/velum-prime-nematicide-file-4770.jpg',
     category: 'agriculture',
+    brand: 'Geolife',
     rating: 4.3,
     reviews: 112,
     discount: 17,
