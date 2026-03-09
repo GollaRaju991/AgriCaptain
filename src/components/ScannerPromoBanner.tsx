@@ -1,9 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import scannerPhoneMockup from '@/assets/scanner-phone-mockup.png';
 
 const ScannerPromoBanner = () => {
+  const { translations } = useLanguage();
+
   return (
     <div className="w-full px-2 md:px-4 py-3">
       <Link to="/scanner">
@@ -11,18 +14,16 @@ const ScannerPromoBanner = () => {
           {/* Left Content */}
           <div className="flex-1 p-4 md:p-6 flex flex-col justify-center z-10">
             <h3 className="text-2xl md:text-3xl font-extrabold leading-tight">
-              <span className="text-gray-800">Crop Disease</span>
+              <span className="text-gray-800">{translations.scanner_crop_disease?.split(' ').slice(0, -1).join(' ') || 'Crop Disease'}</span>
               <br />
-              <span className="text-green-600">Scanner</span>
+              <span className="text-green-600">{translations.scanner_crop_disease?.split(' ').slice(-1)[0] || 'Scanner'}</span>
             </h3>
             <p className="text-xs md:text-sm text-gray-600 mt-1.5 leading-snug">
-              Detect plant diseases
-              <br className="sm:hidden" />
-              {' '}using AI in seconds
+              {translations.scanner_detect_subtitle}
             </p>
             <div className="mt-3">
               <span className="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs md:text-sm font-bold px-5 py-2 rounded-full transition-colors shadow-md">
-                Scan Now
+                {translations.scanner_scan_now}
                 <ArrowRight className="w-3.5 h-3.5" />
               </span>
             </div>
