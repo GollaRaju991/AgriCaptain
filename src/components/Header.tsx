@@ -368,18 +368,23 @@ const Header = () => {
               <span className="text-xl font-bold text-green-700">Agrizin</span>
             </Link>
 
-            <form onSubmit={handleSearch} className="flex flex-1 max-w-xl">
-              <Input
-                type="text"
-                placeholder={`${translations.search} for seeds, fertilizers…`}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="rounded-r-none border-r-0"
-              />
-              <Button type="submit" className="rounded-none bg-green-600 text-white">
-                <Search className="h-4 w-4" />
-              </Button>
-            </form>
+            <div className="relative flex-1 max-w-xl">
+              <form onSubmit={handleSearch} className="flex">
+                <Input
+                  type="text"
+                  placeholder={`${translations.search} for seeds, fertilizers…`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                  className="rounded-r-none border-r-0"
+                />
+                <Button type="submit" className="rounded-none bg-green-600 text-white">
+                  <Search className="h-4 w-4" />
+                </Button>
+              </form>
+              <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
+            </div>
 
             <div className="flex items-center space-x-4 ml-4">
               <Link to="/cart" className="relative">
