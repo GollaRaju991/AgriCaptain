@@ -187,6 +187,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 1099,
     image: 'https://i.postimg.cc/0Q24pk6h/Fertilizer.png',
     category: 'fertilizers',
+    brand: 'BASF',
     rating: 4.7,
     reviews: 156,
     discount: 18,
