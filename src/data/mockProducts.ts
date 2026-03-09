@@ -67,6 +67,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 2999,
     image: 'https://i.postimg.cc/cJ7tGZL9/roundup-herbicide-file-2203.jpg',
     category: 'equipment',
+    brand: 'UPL',
     rating: 4.7,
     reviews: 78,
     discount: 17,
