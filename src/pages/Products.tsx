@@ -99,6 +99,13 @@ const Products = () => {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
+    // Filter by brand
+    if (selectedBrand) {
+      filtered = filtered.filter(product => 
+        (product as any).brand?.toLowerCase() === selectedBrand.toLowerCase()
+      );
+    }
+
     // Filter by price range
     if (priceRange !== 'all') {
       const [min, max] = priceRange.split('-').map(Number);
