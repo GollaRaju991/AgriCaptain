@@ -142,6 +142,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 350,
     image: 'https://i.postimg.cc/FH5nTgdy/Adhitya.png',
     category: 'agriculture',
+    brand: 'FMC',
     rating: 4.5,
     reviews: 98,
     discount: 15,
