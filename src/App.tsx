@@ -48,6 +48,7 @@ import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 // ⭐ ADD THIS
 import MobileBottomNav from "@/components/MobileBottomNav";
