@@ -28,6 +28,7 @@ import CropDetail from "./pages/CropDetail";
 import AddCropPage from "./pages/AddCropPage";
 import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
+import Scanner from "./pages/Scanner";
 import DirectFromFarm from "./pages/DirectFromFarm";
 import Loans from "./pages/Loans";
 import Categories from "./pages/Categories";
@@ -107,6 +108,7 @@ const App = () => (
                     <Route path="/seller/add-product" element={<AddProduct />} />
                     <Route path="/seller/edit-product/:id" element={<EditProduct />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                    <Route path="/scanner" element={<Scanner />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
