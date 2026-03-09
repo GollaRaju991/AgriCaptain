@@ -6,10 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { products } from '@/data/products';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 /* ─── sub-components ─── */
 
-const ScannerHeader = ({ onBack }: { onBack: () => void }) => (
+const ScannerHeader = ({ onBack, translations }: { onBack: () => void; translations: any }) => (
   <div className="sticky top-0 z-20 bg-gradient-to-r from-green-700 to-emerald-600 text-white px-4 py-3 flex items-center gap-3 shadow-md">
     <button onClick={onBack} className="p-1"><ArrowLeft className="h-5 w-5" /></button>
     <div className="flex items-center gap-2">
@@ -17,8 +18,8 @@ const ScannerHeader = ({ onBack }: { onBack: () => void }) => (
         <Leaf className="h-4 w-4" />
       </div>
       <div>
-        <h1 className="text-base font-bold leading-tight">Crop Disease Scanner</h1>
-        <p className="text-[10px] text-green-100">Scan your plant leaf to detect diseases using AI</p>
+        <h1 className="text-base font-bold leading-tight">{translations.scanner_crop_disease}</h1>
+        <p className="text-[10px] text-green-100">{translations.scanner_subtitle}</p>
       </div>
     </div>
   </div>
@@ -32,6 +33,7 @@ const CameraView = ({
   onUpload,
   onRetryCamera,
   fileInputRef,
+  translations,
 }: {
   videoRef: React.RefObject<HTMLVideoElement>;
   error: string | null;
@@ -40,6 +42,7 @@ const CameraView = ({
   onUpload: () => void;
   onRetryCamera: () => void;
   fileInputRef: React.RefObject<HTMLInputElement>;
+  translations: any;
 }) => (
   <div className="px-3 py-4">
     {/* Scanner Frame */}
@@ -51,9 +54,9 @@ const CameraView = ({
           </div>
           <p className="text-sm text-gray-300 mb-4">{error}</p>
           <div className="flex gap-2">
-            <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={onRetryCamera}>Try Camera</Button>
+            <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={onRetryCamera}>{translations.scanner_try_camera}</Button>
             <Button size="sm" variant="outline" className="text-white border-white/40" onClick={onUpload}>
-              <Upload className="h-3.5 w-3.5 mr-1" /> Upload
+              <Upload className="h-3.5 w-3.5 mr-1" /> {translations.scanner_upload}
             </Button>
           </div>
         </div>
@@ -75,7 +78,7 @@ const CameraView = ({
           {!isCameraActive && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/80 text-white">
               <Leaf className="h-12 w-12 text-green-400 mb-2" />
-              <p className="text-sm text-gray-300">Point your camera at the crop leaf</p>
+              <p className="text-sm text-gray-300">{translations.scanner_point_camera}</p>
             </div>
           )}
         </>
@@ -86,20 +89,20 @@ const CameraView = ({
     <div className="flex gap-3 mt-4 max-w-sm mx-auto">
       {isCameraActive && (
         <Button onClick={onCapture} className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-11 font-semibold shadow-lg">
-          <Camera className="h-4 w-4 mr-2" /> Scan Leaf
+          <Camera className="h-4 w-4 mr-2" /> {translations.scanner_scan_leaf}
         </Button>
       )}
       <Button onClick={onUpload} variant="outline" className={`${isCameraActive ? '' : 'flex-1'} rounded-xl h-11 border-green-300 text-green-700 hover:bg-green-50 font-semibold`}>
-        <Upload className="h-4 w-4 mr-2" /> Upload Image
+        <Upload className="h-4 w-4 mr-2" /> {translations.scanner_upload_image}
       </Button>
     </div>
 
     {/* Instructions */}
     <div className="mt-5 max-w-sm mx-auto space-y-2">
       {[
-        { icon: Eye, text: 'Ensure the leaf is clearly visible' },
-        { icon: Sun, text: 'Use natural light for better detection' },
-        { icon: Hand, text: 'Hold the camera steady' },
+        { icon: Eye, text: translations.scanner_leaf_visible },
+        { icon: Sun, text: translations.scanner_natural_light },
+        { icon: Hand, text: translations.scanner_hold_steady },
       ].map((item, i) => (
         <div key={i} className="flex items-center gap-2.5 bg-green-50 rounded-xl px-3 py-2">
           <div className="w-7 h-7 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
@@ -112,18 +115,17 @@ const CameraView = ({
   </div>
 );
 
-const AnalyzingOverlay = () => (
+const AnalyzingOverlay = ({ translations }: { translations: any }) => (
   <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-2xl z-10">
     <div className="text-center">
       <Loader2 className="h-10 w-10 text-green-400 animate-spin mx-auto mb-2" />
-      <p className="text-white text-sm font-medium">Analyzing crop health...</p>
-      <p className="text-white/60 text-[10px] mt-1">This may take a few seconds</p>
+      <p className="text-white text-sm font-medium">{translations.scanner_analyzing}</p>
+      <p className="text-white/60 text-[10px] mt-1">{translations.scanner_analyzing_wait}</p>
     </div>
   </div>
 );
 
-const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: string }) => {
-  // Parse analysis for structured display
+const ResultCard = ({ result, capturedImage, translations }: { result: string; capturedImage: string; translations: any }) => {
   const lines = result.split('\n').filter(l => l.trim());
 
   return (
@@ -132,7 +134,7 @@ const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: 
       <div className="relative rounded-2xl overflow-hidden max-w-sm mx-auto shadow-lg">
         <img src={capturedImage} alt="Scanned crop" className="w-full max-h-48 object-cover" />
         <div className="absolute top-2 left-2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-          <CheckCircle2 className="w-3 h-3" /> Scan Complete
+          <CheckCircle2 className="w-3 h-3" /> {translations.scanner_scan_complete}
         </div>
       </div>
 
@@ -140,7 +142,7 @@ const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: 
       <Card className="max-w-sm mx-auto border-green-200 shadow-md rounded-2xl overflow-hidden">
         <div className="bg-gradient-to-r from-green-600 to-emerald-500 px-4 py-2.5 flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-white" />
-          <h2 className="text-sm font-bold text-white">Disease Analysis Report</h2>
+          <h2 className="text-sm font-bold text-white">{translations.scanner_disease_report}</h2>
         </div>
         <CardContent className="p-4">
           <div className="text-sm text-gray-700 leading-relaxed space-y-1">
@@ -161,7 +163,7 @@ const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: 
       <div className="max-w-sm mx-auto">
         <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1.5">
           <ShoppingCart className="h-4 w-4 text-green-600" />
-          Recommended Products
+          {translations.scanner_recommended_products}
         </h3>
         <div className="grid grid-cols-3 gap-2">
           {products.slice(0, 3).map((product) => (
@@ -183,13 +185,13 @@ const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: 
         <Link to="/scanner" className="flex-1">
           <Button className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-semibold">
             <Stethoscope className="h-3.5 w-3.5 mr-1.5" />
-            Consult Agrizin Doctor
+            {translations.scanner_consult_doctor}
           </Button>
         </Link>
         <Link to="/products" className="flex-1">
           <Button variant="outline" className="w-full border-green-300 text-green-700 hover:bg-green-50 rounded-xl h-10 text-xs font-semibold">
             <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-            Buy Product
+            {translations.scanner_buy_product}
           </Button>
         </Link>
       </div>
@@ -202,6 +204,7 @@ const ResultCard = ({ result, capturedImage }: { result: string; capturedImage: 
 const Scanner = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { translations } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -228,7 +231,7 @@ const Scanner = () => {
         setIsCameraActive(true);
       }
     } catch {
-      setError('Unable to access camera. Please grant camera permissions or upload an image.');
+      setError(translations.scanner_camera_error);
     }
   };
 
@@ -258,7 +261,7 @@ const Scanner = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !file.type.startsWith('image/')) {
-      toast({ title: 'Invalid file', description: 'Please select an image.', variant: 'destructive' });
+      toast({ title: translations.scanner_invalid_file, description: translations.scanner_select_image, variant: 'destructive' });
       return;
     }
     const reader = new FileReader();
@@ -280,13 +283,13 @@ const Scanner = () => {
       });
       if (fnError) throw fnError;
       if (data?.error) {
-        toast({ title: 'Analysis Error', description: data.error, variant: 'destructive' });
+        toast({ title: translations.scanner_analysis_error, description: data.error, variant: 'destructive' });
       } else {
         setAnalysisResult(data.analysis);
       }
     } catch (err: any) {
       console.error('Analysis error:', err);
-      toast({ title: 'Error', description: 'Failed to analyze image. Please try again.', variant: 'destructive' });
+      toast({ title: translations.scanner_error, description: translations.scanner_failed_analyze, variant: 'destructive' });
     } finally {
       setAnalyzing(false);
     }
@@ -305,7 +308,7 @@ const Scanner = () => {
       <canvas ref={canvasRef} className="hidden" />
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
 
-      <ScannerHeader onBack={goBack} />
+      <ScannerHeader onBack={goBack} translations={translations} />
 
       <div className="flex-1 overflow-y-auto pb-20">
         {!capturedImage ? (
@@ -317,14 +320,15 @@ const Scanner = () => {
             onUpload={() => fileInputRef.current?.click()}
             onRetryCamera={startCamera}
             fileInputRef={fileInputRef}
+            translations={translations}
           />
         ) : (
           <div className="relative">
-            {analyzing && <AnalyzingOverlay />}
+            {analyzing && <AnalyzingOverlay translations={translations} />}
             {analysisResult ? (
-              <ResultCard result={analysisResult} capturedImage={capturedImage} />
+              <ResultCard result={analysisResult} capturedImage={capturedImage} translations={translations} />
             ) : !analyzing ? (
-              <div className="p-4 text-center text-gray-500 text-sm">Processing...</div>
+              <div className="p-4 text-center text-gray-500 text-sm">{translations.scanner_processing}</div>
             ) : null}
           </div>
         )}
@@ -332,10 +336,10 @@ const Scanner = () => {
         {capturedImage && (
           <div className="px-3 pb-4 flex gap-2 max-w-sm mx-auto">
             <Button onClick={retake} className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 font-semibold">
-              <Camera className="h-4 w-4 mr-2" /> Scan Again
+              <Camera className="h-4 w-4 mr-2" /> {translations.scanner_scan_again}
             </Button>
             <Button variant="outline" onClick={goBack} className="flex-1 rounded-xl h-10 border-green-300 text-green-700">
-              <X className="h-4 w-4 mr-2" /> Close
+              <X className="h-4 w-4 mr-2" /> {translations.scanner_close}
             </Button>
           </div>
         )}
