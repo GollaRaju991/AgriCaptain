@@ -111,21 +111,26 @@ const Header = () => {
             <button onClick={() => navigate(-1)} className="p-1">
               <ArrowLeft className="h-5 w-5 text-gray-700" />
             </button>
-            <form
-              onSubmit={handleSearch}
-              className="flex flex-1 items-center bg-gray-100 rounded-lg overflow-hidden"
-            >
-              <div className="flex items-center pl-3">
-                <Search className="h-4 w-4 text-gray-400" />
-              </div>
-              <Input
-                type="text"
-                placeholder={translations.search_products || 'Search products...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-            </form>
+            <div className="relative flex-1">
+              <form
+                onSubmit={handleSearch}
+                className="flex items-center bg-gray-100 rounded-lg overflow-hidden"
+              >
+                <div className="flex items-center pl-3">
+                  <Search className="h-4 w-4 text-gray-400" />
+                </div>
+                <Input
+                  type="text"
+                  placeholder={translations.search_products || 'Search products...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+                  className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </form>
+              <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
+            </div>
             <Link to="/cart" className="relative p-1">
               <ShoppingCart className="h-5 w-5 text-gray-700" />
               {totalItems > 0 && (
