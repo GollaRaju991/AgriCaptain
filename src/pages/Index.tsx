@@ -51,6 +51,9 @@ const Index = () => {
         <ProductCategories />
       </div>
 
+      {/* Services Section - Market Details, Farm Worker, Rent Vehicles, Loans */}
+      <ServicesSection />
+
       {/* Promo Banners */}
       <PromoBanners />
 
