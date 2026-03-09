@@ -72,6 +72,7 @@ const Header = () => {
   const [languageDialogOpen, setLanguageDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
