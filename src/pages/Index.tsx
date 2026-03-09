@@ -15,6 +15,7 @@ import WeatherReport from "@/components/WeatherReport";
 import AgrizinDoctorBanner from "@/components/AgrizinDoctorBanner";
 import ProductAdBanner from "@/components/ProductAdBanner";
 import ScannerPromoBanner from "@/components/ScannerPromoBanner";
+import ServicesSection from "@/components/ServicesSection";
 import { products } from "@/data/products";
 import {
   Pagination,
@@ -49,6 +50,9 @@ const Index = () => {
       <div className="w-full px-2 md:px-4 py-4 md:py-6 bg-white">
         <ProductCategories />
       </div>
+
+      {/* Services Section - Market Details, Farm Worker, Rent Vehicles, Loans */}
+      <ServicesSection />
 
       {/* Promo Banners */}
       <PromoBanners />
