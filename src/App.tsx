@@ -108,6 +108,7 @@ const App = () => (
                     <Route path="/seller/add-product" element={<AddProduct />} />
                     <Route path="/seller/edit-product/:id" element={<EditProduct />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                    <Route path="/scanner" element={<Scanner />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
