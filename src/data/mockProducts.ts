@@ -157,6 +157,7 @@ export const mockProducts: MockProduct[] = [
     originalPrice: 200,
     image: 'https://i.postimg.cc/W4vSwWkr/exylon-qsar-herbicide-file-20897.png',
     category: 'equipment',
+    brand: 'Rallis India',
     rating: 4.8,
     reviews: 67,
     discount: 11,
