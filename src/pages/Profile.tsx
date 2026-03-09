@@ -324,8 +324,6 @@ const Profile = () => {
           onProfileUpdate={fetchProfile}
         />
       )}
-      <div className="h-20 lg:hidden"></div>
-
 <MobileBottomNav />
       <Footer />
     </div>
