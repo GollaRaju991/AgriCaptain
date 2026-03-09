@@ -59,13 +59,29 @@ const Index = () => {
           </div>
 
           {/* Product Grid - Tighter gaps like Flipkart */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
-            {products
-              .slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage)
-              .map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-          </div>
+          {(() => {
+            const pageProducts = products.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
+            const firstBatch = pageProducts.slice(0, 4);
+            const secondBatch = pageProducts.slice(4);
+            return (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
+                  {firstBatch.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Weather Report - between product rows */}
+                <WeatherReport />
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
+                  {secondBatch.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </>
+            );
+          })()}
 
           {/* Pagination */}
           <div className="flex flex-col items-center gap-4 mt-8">
