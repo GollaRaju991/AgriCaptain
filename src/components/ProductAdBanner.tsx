@@ -19,7 +19,7 @@ const ProductAdBanner: React.FC = () => {
 
   return (
     <div className="w-full my-3 px-0.5">
-      <div className="relative rounded-xl overflow-hidden shadow-sm border border-border h-[100px] md:h-[140px] lg:h-[160px]">
+      <div className="relative rounded-xl overflow-hidden shadow-sm border border-border h-[140px] md:h-[200px] lg:h-[240px]">
         <span className="absolute top-2 left-3 z-20 text-[10px] font-medium text-muted-foreground bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded">
           Advertisement
         </span>
