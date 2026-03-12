@@ -266,19 +266,21 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile top bar - Flipkart Style with Search & Cart */}
+      {/* Mobile top bar - Flipkart Style */}
       <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
-        <div className="flex items-center gap-2 px-3 py-2.5">
-          <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }}>
+        <div className="flex items-center gap-2 px-2 py-2">
+          <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }} className="p-1.5">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
-          <h1 className="text-sm font-medium truncate flex-1 text-foreground">
-            {translateProductName(product.name, language)}
-          </h1>
-          <button onClick={() => navigate('/products')} className="p-2">
-            <Search className="h-5 w-5 text-foreground" />
+          {/* Flipkart-style search bar */}
+          <button
+            onClick={() => navigate('/products')}
+            className="flex-1 flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2"
+          >
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground truncate">Search for products</span>
           </button>
-          <button onClick={() => navigate('/cart')} className="p-2 relative">
+          <button onClick={() => navigate('/cart')} className="p-1.5 relative">
             <ShoppingCart className="h-5 w-5 text-foreground" />
             {totalItems > 0 && (
               <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
