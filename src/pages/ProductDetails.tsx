@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn, Search } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -19,6 +19,7 @@ import { mockProducts } from '@/data/mockProducts';
 import ProductCard from '@/components/ProductCard';
 import ShareDialog from '@/components/ShareDialog';
 import ImageZoomModal from '@/components/ImageZoomModal';
+import ProductReviewForm from '@/components/ProductReviewForm';
 import {
   Pagination,
   PaginationContent,
@@ -56,7 +57,7 @@ const ProductSection = ({ title, defaultOpen = false, bgColor, borderColor, chil
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, totalItems } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { toast } = useToast();
   const { language, translations } = useLanguage();
@@ -66,6 +67,7 @@ const ProductDetails = () => {
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
   const [sellerProduct, setSellerProduct] = useState<any>(null);
   const [loadingSeller, setLoadingSeller] = useState(false);
+  const [userReviews, setUserReviews] = useState<any[]>([]);
 
   const isSellerProduct = id?.startsWith('sp-');
 
@@ -165,7 +167,7 @@ const ProductDetails = () => {
     ]
   } : null;
 
-  // Get related products - match by similar names or random selection
+  // Get related products
   const relatedProducts = useMemo(() => {
     if (!product) return [];
     const currentId = product.id;
@@ -182,13 +184,17 @@ const ProductDetails = () => {
     return [...similar, ...remaining].slice(0, 8);
   }, [product?.id, product?.name]);
 
+  // All reviews (static + user submitted)
+  const allReviews = useMemo(() => {
+    const staticReviews = product?.reviewsList || [];
+    return [...userReviews, ...staticReviews];
+  }, [product?.reviewsList, userReviews]);
+
   // Rating distribution
   const ratingDistribution = useMemo(() => {
-    if (!product) return [];
-    const reviews = product.reviewsList || [];
-    const total = reviews.length || 1;
+    const total = allReviews.length || 1;
     const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    reviews.forEach(r => {
+    allReviews.forEach(r => {
       dist[r.rating as keyof typeof dist]++;
     });
     return Object.entries(dist).reverse().map(([stars, count]) => ({
@@ -196,7 +202,11 @@ const ProductDetails = () => {
       count,
       percentage: Math.round((count / total) * 100)
     }));
-  }, [product?.reviewsList]);
+  }, [allReviews]);
+
+  const handleReviewSubmit = (review: any) => {
+    setUserReviews(prev => [review, ...prev]);
+  };
 
   // If no product found at all, show not found
   if (!product && !loadingSeller) {
@@ -256,17 +266,32 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile top bar */}
-      <div className="lg:hidden sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
-        <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }}>
-          <ArrowLeft className="h-6 w-6" />
-        </button>
-        <h1 className="text-lg font-bold truncate flex-1">{translateProductName(product.name, language)}</h1>
+      {/* Mobile top bar - Flipkart Style with Search & Cart */}
+      <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
+        <div className="flex items-center gap-2 px-3 py-2.5">
+          <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }}>
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          <h1 className="text-sm font-medium truncate flex-1 text-foreground">
+            {translateProductName(product.name, language)}
+          </h1>
+          <button onClick={() => navigate('/products')} className="p-2">
+            <Search className="h-5 w-5 text-foreground" />
+          </button>
+          <button onClick={() => navigate('/cart')} className="p-2 relative">
+            <ShoppingCart className="h-5 w-5 text-foreground" />
+            {totalItems > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       <div className="hidden lg:block"><Header /></div>
       
-      <div className="container mx-auto px-2 md:px-4 py-4 md:py-8 pb-32 md:pb-8">
+      <div className="container mx-auto px-0 lg:px-4 py-0 lg:py-8 pb-32 md:pb-8">
         {/* Back Button & Breadcrumb - Desktop only */}
         <div className="hidden lg:block mb-4 md:mb-6">
           <Button 
@@ -288,20 +313,20 @@ const ProductDetails = () => {
           </nav>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Enhanced Product Images Gallery */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12">
+          {/* Product Images - Flipkart Style on Mobile */}
           <div>
             <div 
-              className="relative mb-4 cursor-zoom-in group"
+              className="relative cursor-zoom-in group bg-white"
               onClick={() => setZoomModalOpen(true)}
             >
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
-                className="w-full h-80 md:h-96 object-contain rounded-lg bg-muted"
+                className="w-full h-[350px] md:h-[420px] lg:h-96 object-contain bg-white p-4"
               />
               
-              {/* Wishlist & Share overlay on image */}
+              {/* Wishlist & Share - floating on right side like Flipkart */}
               <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
                 <button
                   onClick={(e) => {
@@ -317,22 +342,31 @@ const ProductDetails = () => {
                       title: isInWishlist(product.id) ? "Removed from wishlist" : "Added to wishlist",
                     });
                   }}
-                  className="bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white transition-colors"
+                  className="bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-shadow border border-gray-100"
                 >
                   <Heart className={`h-5 w-5 ${isInWishlist(product.id) ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); setShareDialogOpen(true); }}
-                  className="bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-md hover:bg-white transition-colors"
+                  className="bg-white p-2.5 rounded-full shadow-md hover:shadow-lg transition-shadow border border-gray-100"
                 >
                   <Share2 className="h-5 w-5 text-muted-foreground" />
                 </button>
               </div>
 
-              {/* Zoom Hint */}
-              <div className="absolute top-3 left-3 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              {/* Zoom Hint - Desktop only */}
+              <div className="hidden lg:flex absolute top-3 left-3 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 <ZoomIn className="h-4 w-4" />
                 <span>Click to zoom</span>
+              </div>
+
+              {/* Rating badge on image - Flipkart style */}
+              <div className="absolute bottom-3 left-3 lg:hidden">
+                <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1 border border-gray-100">
+                  <span className="font-bold text-sm text-foreground">{product.rating}</span>
+                  <Star className="h-3.5 w-3.5 fill-green-600 text-green-600" />
+                  <span className="text-xs text-muted-foreground ml-0.5">| {product.reviews?.toLocaleString() || allReviews.length}</span>
+                </div>
               </div>
               
               {/* Navigation Arrows */}
@@ -340,27 +374,42 @@ const ProductDetails = () => {
                 <>
                   <button
                     onClick={(e) => { e.stopPropagation(); prevImage(); }}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/75 transition-opacity"
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition-colors"
                   >
-                    <ChevronLeft className="h-6 w-6" />
+                    <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); nextImage(); }}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/75 transition-opacity"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition-colors"
                   >
-                    <ChevronRight className="h-6 w-6" />
+                    <ChevronRight className="h-5 w-5" />
                   </button>
                 </>
               )}
               
               {/* Image Counter */}
-              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+              <div className="absolute bottom-3 right-3 bg-black/50 text-white px-3 py-1 rounded-full text-xs">
                 {selectedImage + 1} / {product.images.length}
               </div>
             </div>
             
-            {/* Thumbnail Images */}
-            <div className="flex gap-3 overflow-x-auto pb-2">
+            {/* Dot indicators on mobile, thumbnails on desktop */}
+            <div className="flex justify-center gap-1.5 py-3 lg:hidden">
+              {product.images.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`rounded-full transition-all ${
+                    selectedImage === index 
+                      ? 'w-2.5 h-2.5 bg-primary' 
+                      : 'w-2 h-2 bg-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Thumbnail Images - Desktop */}
+            <div className="hidden lg:flex gap-3 overflow-x-auto pb-2 mt-4">
               {product.images.map((image, index) => (
                 <button
                   key={index}
@@ -391,15 +440,18 @@ const ProductDetails = () => {
             />
           </div>
 
-          {/* Enhanced Product Info */}
-          <div>
-            <div className="mb-4">
-              <Badge className="bg-green-100 text-green-800 mb-2">
+          {/* Product Info - Flipkart Style on Mobile */}
+          <div className="px-4 lg:px-0">
+            <div className="mb-3 lg:mb-4">
+              <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-xs">
                 {product.category.toUpperCase()}
               </Badge>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{translateProductName(product.name, language)}</h1>
+              <h1 className="text-lg lg:text-3xl font-medium lg:font-bold text-foreground mb-1 lg:mb-2">
+                {translateProductName(product.name, language)}
+              </h1>
               
-              <div className="flex items-center mb-4">
+              {/* Rating - Desktop */}
+              <div className="hidden lg:flex items-center mb-4">
                 <div className="flex items-center mr-4">
                   {[...Array(5)].map((_, i) => (
                     <Star
@@ -411,60 +463,78 @@ const ProductDetails = () => {
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-sm text-gray-600">
-                    {product.rating} ({product.reviews} reviews)
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    {product.rating} ({product.reviews || allReviews.length} reviews)
                   </span>
                 </div>
               </div>
-              
-              {/* Short Description */}
-              <p className="text-gray-600 mb-4">{product.shortDescription}</p>
+
+              {/* Short Description - Desktop */}
+              <p className="hidden lg:block text-muted-foreground mb-4">{product.shortDescription}</p>
             </div>
 
-            <div className="mb-6">
-              <div className="flex items-center space-x-4 mb-4">
-                <span className="text-3xl font-bold text-green-600">₹{product.price}</span>
+            {/* Price Section - Flipkart Style */}
+            <div className="mb-4 lg:mb-6">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="text-2xl lg:text-3xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
                 {product.originalPrice > product.price && (
                   <>
-                    <span className="text-xl text-gray-500 line-through">
-                      ₹{product.originalPrice}
+                    <span className="text-base lg:text-xl text-muted-foreground line-through">
+                      ₹{product.originalPrice.toLocaleString()}
                     </span>
-                    <Badge className="bg-red-100 text-red-800">
-                      {product.discount}% OFF
-                    </Badge>
+                    <span className="text-green-600 font-semibold text-sm lg:text-base">
+                      {product.discount}% off
+                    </span>
                   </>
                 )}
               </div>
-              <p className="text-green-600 font-medium">✓ {translations.in_stock} • {translations.free_delivery_short} • {translations.day_returns}</p>
+              <p className="text-xs text-muted-foreground">inclusive of all taxes</p>
             </div>
 
-            <div className="mb-6">
-              <p className="text-gray-700 leading-relaxed">{product.shortDescription}</p>
+            {/* Delivery Info - Flipkart compact style on mobile */}
+            <div className="flex flex-wrap gap-3 mb-4 lg:mb-6 py-3 border-y border-border lg:border-0 lg:p-4 lg:bg-green-50 lg:rounded-lg">
+              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
+                <Truck className="h-4 w-4 text-green-600" />
+                <span className="font-medium">Free Delivery</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
+                <RotateCcw className="h-4 w-4 text-green-600" />
+                <span className="font-medium">7 Day Returns</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
+                <Shield className="h-4 w-4 text-green-600" />
+                <span className="font-medium">Quality Assured</span>
+              </div>
             </div>
 
-            {/* Quantity and Actions */}
-            <div className="mb-6">
+            {/* Short description on mobile */}
+            <div className="lg:hidden mb-4">
+              <p className="text-sm text-muted-foreground leading-relaxed">{product.shortDescription}</p>
+            </div>
+
+            {/* Quantity and Actions - Desktop only */}
+            <div className="hidden lg:block mb-6">
               <div className="flex items-center space-x-4 mb-4">
                 <label className="text-sm font-medium">{translations.quantity}:</label>
                 <div className="flex items-center border rounded">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-1 hover:bg-gray-100"
+                    className="px-3 py-1 hover:bg-muted"
                   >
                     -
                   </button>
                   <span className="px-4 py-1 border-x">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-1 hover:bg-gray-100"
+                    className="px-3 py-1 hover:bg-muted"
                   >
                     +
                   </button>
                 </div>
               </div>
 
-              <div className="hidden lg:flex flex-col md:flex-row gap-3">
-                <Button onClick={handleAddToCart} className="flex-1 bg-white text-gray-900 border border-gray-300 hover:bg-gray-100">
+              <div className="flex flex-col md:flex-row gap-3">
+                <Button onClick={handleAddToCart} className="flex-1 bg-white text-foreground border border-border hover:bg-muted">
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   {translations.add_to_cart}
                 </Button>
@@ -508,36 +578,11 @@ const ProductDetails = () => {
               productName={product.name}
               productUrl={window.location.href}
             />
-
-            {/* Enhanced Delivery Info */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 p-4 bg-green-50 rounded-lg">
-              <div className="flex items-center space-x-2 text-sm">
-                <Truck className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="font-medium">Free Delivery</p>
-                  <p className="text-gray-600">Within 24 hours</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <RotateCcw className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="font-medium">Easy Returns</p>
-                  <p className="text-gray-600">7 days policy</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <Shield className="h-5 w-5 text-green-600" />
-                <div>
-                  <p className="font-medium">Quality Assured</p>
-                  <p className="text-gray-600">95%+ germination</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Product Details - Stacked Collapsible Sections */}
-        <div className="mt-8 md:mt-12 space-y-3">
+        <div className="mt-4 lg:mt-12 px-4 lg:px-0 space-y-3">
           {/* Description Section */}
           <ProductSection 
             title="Description" 
@@ -595,11 +640,16 @@ const ProductDetails = () => {
 
           {/* Reviews Section */}
           <ProductSection 
-            title="Reviews" 
+            title={`Reviews (${allReviews.length})`}
             defaultOpen={false}
             bgColor="bg-purple-50 dark:bg-purple-950/30"
             borderColor="border-purple-200 dark:border-purple-800"
           >
+            {/* Review Form */}
+            <div className="mb-6">
+              <ProductReviewForm productId={product.id} onReviewSubmit={handleReviewSubmit} />
+            </div>
+
             <div className="flex flex-col md:flex-row gap-6 mb-6">
               {/* Rating Summary */}
               <div className="flex-shrink-0 text-center md:text-left">
@@ -607,7 +657,7 @@ const ProductDetails = () => {
                   <span className="text-3xl md:text-4xl font-bold text-purple-800 dark:text-purple-300">{product.rating}</span>
                   <Star className="h-6 w-6 md:h-8 md:w-8 fill-yellow-400 text-yellow-400" />
                 </div>
-                <p className="text-muted-foreground text-sm">{product.reviews || product.reviewsList?.length || 0} Reviews</p>
+                <p className="text-muted-foreground text-sm">{allReviews.length} Reviews</p>
               </div>
               
               {/* Rating Distribution */}
@@ -629,7 +679,10 @@ const ProductDetails = () => {
             
             <h4 className="text-base md:text-lg font-semibold mb-4 text-purple-800 dark:text-purple-300">Customer Reviews</h4>
             <div className="space-y-4">
-              {(product.reviewsList || []).map((review) => (
+              {allReviews.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No reviews yet. Be the first to review!</p>
+              )}
+              {allReviews.map((review) => (
                 <div key={review.id} className="border-b border-purple-200 dark:border-purple-700 pb-4 last:border-b-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -643,7 +696,9 @@ const ProductDetails = () => {
                         <p className="text-xs text-muted-foreground">{review.date}</p>
                       </div>
                     </div>
-                    <div className="flex items-center bg-purple-600 text-white px-2 py-0.5 rounded text-sm">
+                    <div className={`flex items-center px-2 py-0.5 rounded text-sm text-white ${
+                      review.rating >= 4 ? 'bg-green-600' : review.rating >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}>
                       <span>{review.rating}</span>
                       <Star className="h-3 w-3 fill-current ml-0.5" />
                     </div>
@@ -667,11 +722,11 @@ const ProductDetails = () => {
 
         {/* Related Products Section */}
         {relatedProducts.length > 0 && (
-          <div className="mt-12 mb-8">
-            <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+          <div className="mt-8 lg:mt-12 mb-8 px-4 lg:px-0">
+            <h2 className="text-lg lg:text-2xl font-bold mb-4 lg:mb-6">Related Products</h2>
             
             {/* Mobile: 2 column grid */}
-            <div className="grid grid-cols-2 gap-3 md:hidden">
+            <div className="grid grid-cols-2 gap-2 md:hidden">
               {relatedProducts.slice(0, 6).map(relProduct => (
                 <ProductCard key={relProduct.id} product={relProduct} variant="grid" />
               ))}
@@ -687,7 +742,7 @@ const ProductDetails = () => {
         )}
 
         {/* Product Pagination at Bottom */}
-        <div className="mt-8 mb-8 flex justify-center">
+        <div className="mt-8 mb-8 flex justify-center px-4 lg:px-0">
           <Pagination>
             <PaginationContent className="flex-wrap justify-center">
               <PaginationItem>
@@ -702,7 +757,6 @@ const ProductDetails = () => {
                 />
               </PaginationItem>
               
-              {/* Show first page if not visible */}
               {currentIndex > 2 && (
                 <>
                   <PaginationItem>
@@ -721,7 +775,6 @@ const ProductDetails = () => {
                 </>
               )}
               
-              {/* Show pages around current */}
               {Array.from({ length: 5 }, (_, i) => {
                 const pageIndex = Math.max(0, currentIndex - 2) + i;
                 if (pageIndex >= products.length) return null;
@@ -740,7 +793,6 @@ const ProductDetails = () => {
                 );
               })}
               
-              {/* Show last page if not visible */}
               {currentIndex < products.length - 3 && (
                 <>
                   {currentIndex < products.length - 4 && (
@@ -775,22 +827,22 @@ const ProductDetails = () => {
         </div>
       </div>
       
-      {/* Mobile Sticky Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-3 flex gap-2 lg:hidden z-40 shadow-lg">
-        <Button 
-          variant="outline" 
-          className="flex-1"
+      {/* Mobile Sticky Bottom Bar - Flipkart Style */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border flex lg:hidden z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
+        <button 
           onClick={handleAddToCart}
+          className="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold text-foreground border-r border-border active:bg-muted"
         >
-          <ShoppingCart className="h-4 w-4 mr-2" />
+          <ShoppingCart className="h-4 w-4" />
           Add to Cart
-        </Button>
-        <Button 
-          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+        </button>
+        <button 
           onClick={handleBuyNow}
+          className="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold bg-amber-500 text-white active:bg-amber-600"
         >
           Buy Now
-        </Button>
+          <span className="text-xs font-normal">at ₹{product.price.toLocaleString()}</span>
+        </button>
       </div>
 
       <div className="hidden lg:block">

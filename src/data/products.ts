@@ -241,7 +241,7 @@ export const products: Product[] = Array.from({ length: 500 }, (_, index) => {
   const originalPrice = Math.floor(basePrice / (1 - discount / 100));
   
   return {
-    id: String(index + 1),
+    id: String(index + 101),
     name: `${productNames[index % productNames.length]} - ${Math.floor(index / productNames.length) + 1}`,
     price: basePrice,
     originalPrice: originalPrice,
