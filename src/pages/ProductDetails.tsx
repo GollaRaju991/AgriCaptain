@@ -395,16 +395,17 @@ const ProductDetails = () => {
               </div>
             </div>
             
-            {/* Dot indicators on mobile, thumbnails on desktop */}
-            <div className="flex justify-center gap-1.5 py-3 lg:hidden">
+            {/* Dot indicators on mobile - Flipkart style */}
+            <div className="flex justify-center items-center gap-1.5 py-2 lg:hidden">
               {product.images.map((_, index) => (
-                <button
+                <div
                   key={index}
+                  role="button"
                   onClick={() => setSelectedImage(index)}
-                  className={`rounded-full transition-all ${
+                  className={`rounded-full transition-all cursor-pointer !min-h-0 !min-w-0 ${
                     selectedImage === index 
-                      ? 'w-2.5 h-2.5 bg-primary' 
-                      : 'w-2 h-2 bg-gray-300'
+                      ? 'w-[7px] h-[7px] bg-blue-600' 
+                      : 'w-[6px] h-[6px] bg-gray-300'
                   }`}
                 />
               ))}
