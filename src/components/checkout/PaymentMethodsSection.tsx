@@ -393,7 +393,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 </div>
               </RadioGroup>
               {selectedEMI && (
-                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden">
+                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden" onClick={onPayment}>
                   Pay ₹{finalTotal.toLocaleString()}
                 </Button>
               )}
