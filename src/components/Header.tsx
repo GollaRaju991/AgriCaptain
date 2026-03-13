@@ -87,6 +87,7 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      addToSearchHistory(searchQuery.trim());
       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
       setSearchFocused(false);
@@ -94,6 +95,7 @@ const Header = () => {
   };
 
   const handleSuggestionSelect = (suggestion: string) => {
+    addToSearchHistory(suggestion);
     navigate(`/products?search=${encodeURIComponent(suggestion)}`);
     setSearchQuery("");
     setSearchFocused(false);
