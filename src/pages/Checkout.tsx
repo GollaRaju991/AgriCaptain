@@ -409,6 +409,7 @@ const Checkout = () => {
               codAdvancePaid={codAdvancePaid}
               onCodAdvancePayment={handleCodAdvancePayment}
               codPaymentProcessing={codPaymentProcessing}
+              onPayment={handlePayment}
             />
           </div>
 
