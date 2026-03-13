@@ -21,6 +21,7 @@ import ShareDialog from '@/components/ShareDialog';
 import ImageZoomModal from '@/components/ImageZoomModal';
 import ProductReviewForm from '@/components/ProductReviewForm';
 import SearchSuggestions from '@/components/SearchSuggestions';
+import { addToSearchHistory } from '@/hooks/useSearchHistory';
 import {
   Pagination,
   PaginationContent,
