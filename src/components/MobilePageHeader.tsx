@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, ShoppingCart, X } from 'lucide-react';
+import { ArrowLeft, Search, ShoppingCart, X, Camera } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import SearchSuggestions from '@/components/SearchSuggestions';
+import { addToSearchHistory } from '@/hooks/useSearchHistory';
 
 interface MobilePageHeaderProps {
   title: string;
@@ -45,6 +46,7 @@ const MobilePageHeader: React.FC<MobilePageHeaderProps> = ({
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
+      addToSearchHistory(query.trim());
       navigate(`/products?search=${encodeURIComponent(query.trim())}`);
       setSearchActive(false);
       setSearchQuery('');
@@ -63,7 +65,7 @@ const MobilePageHeader: React.FC<MobilePageHeaderProps> = ({
         {showSearch ? (
           <div className="flex-1 relative">
             {searchActive ? (
-              <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2 border border-gray-200">
                 <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <input
                   ref={searchInputRef}
@@ -91,10 +93,11 @@ const MobilePageHeader: React.FC<MobilePageHeaderProps> = ({
                   setSearchActive(true);
                   setTimeout(() => searchInputRef.current?.focus(), 100);
                 }}
-                className="w-full flex items-center gap-2 bg-gray-100 rounded-lg px-3 py-2"
+                className="w-full flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2 border border-gray-200"
               >
                 <Search className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">{title}</span>
+                <span className="text-sm text-muted-foreground flex-1 text-left">{title}</span>
+                <Camera className="h-4 w-4 text-muted-foreground" />
               </button>
             )}
             {searchActive && (

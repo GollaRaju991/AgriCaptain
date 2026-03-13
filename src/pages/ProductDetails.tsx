@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn, Search, Tag, CreditCard, Smartphone, Zap, X } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn, Search, Tag, CreditCard, Smartphone, Zap, X, Camera } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -21,6 +21,7 @@ import ShareDialog from '@/components/ShareDialog';
 import ImageZoomModal from '@/components/ImageZoomModal';
 import ProductReviewForm from '@/components/ProductReviewForm';
 import SearchSuggestions from '@/components/SearchSuggestions';
+import { addToSearchHistory } from '@/hooks/useSearchHistory';
 import {
   Pagination,
   PaginationContent,
@@ -280,7 +281,7 @@ const ProductDetails = () => {
           {/* Functional Flipkart-style search bar */}
           <div className="flex-1 relative">
             {searchActive ? (
-              <div className="flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2 border border-gray-200">
                 <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 <input
                   ref={searchInputRef}
@@ -291,6 +292,7 @@ const ProductDetails = () => {
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && searchQuery.trim()) {
+                      addToSearchHistory(searchQuery.trim());
                       navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
                     }
                   }}
@@ -307,15 +309,17 @@ const ProductDetails = () => {
             ) : (
               <button
                 onClick={() => { setSearchActive(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
-                className="w-full flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2"
+                className="w-full flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2 border border-gray-200"
               >
                 <Search className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground truncate">Search for products</span>
+                <span className="text-sm text-muted-foreground truncate flex-1 text-left">Search for products</span>
+                <Camera className="h-4 w-4 text-muted-foreground" />
               </button>
             )}
             <SearchSuggestions
               query={searchQuery}
               onSelect={(suggestion) => {
+                addToSearchHistory(suggestion);
                 setSearchQuery(suggestion);
                 navigate(`/products?search=${encodeURIComponent(suggestion)}`);
               }}
