@@ -42,6 +42,7 @@ interface PaymentMethodsSectionProps {
   codAdvancePaid: boolean;
   onCodAdvancePayment: (method: string) => void;
   codPaymentProcessing: boolean;
+  onPayment?: () => void;
 }
 
 const COD_ADVANCE_AMOUNT = 99;
@@ -66,7 +67,8 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
   finalTotal,
   codAdvancePaid,
   onCodAdvancePayment,
-  codPaymentProcessing
+  codPaymentProcessing,
+  onPayment
 }) => {
   const { user } = useAuth();
   const [timeLeft, setTimeLeft] = useState(10 * 60);
@@ -193,7 +195,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 <Button variant="outline" size="sm" className="text-primary">VERIFY</Button>
               </div>
               <div className="ml-6">
-                <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold">
+                <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold" onClick={onPayment}>
                   Pay ₹{finalTotal.toLocaleString()}
                 </Button>
               </div>
@@ -255,7 +257,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                                 <HelpCircle className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
-                            <Button className="bg-amber-400 hover:bg-amber-500 text-foreground font-semibold mt-4">
+                            <Button className="bg-amber-400 hover:bg-amber-500 text-foreground font-semibold mt-4" onClick={onPayment}>
                               Pay ₹{finalTotal.toLocaleString()}
                             </Button>
                           </div>
@@ -322,7 +324,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
 
                   <Button
                     className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3"
-                    onClick={() => { if (saveNewCard) handleSaveNewCard(); }}
+                    onClick={() => { if (saveNewCard) handleSaveNewCard(); onPayment?.(); }}
                   >
                     {saveNewCard ? 'Save & Pay' : 'Pay'} ₹{finalTotal.toLocaleString()}
                   </Button>
@@ -339,22 +341,29 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
             isOpen={paymentMethod === 'netbanking'}
             onToggle={() => setPaymentMethod(paymentMethod === 'netbanking' ? '' : 'netbanking')}
           >
-            <div>
-              <Label className="text-sm">Select Your Bank</Label>
-              <select
-                value={selectedBank}
-                onChange={(e) => setSelectedBank(e.target.value)}
-                className="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-primary text-sm"
-              >
-                <option value="">Choose Bank</option>
-                <option value="sbi">State Bank of India</option>
-                <option value="hdfc">HDFC Bank</option>
-                <option value="icici">ICICI Bank</option>
-                <option value="axis">Axis Bank</option>
-                <option value="pnb">Punjab National Bank</option>
-                <option value="bob">Bank of Baroda</option>
-                <option value="other">Other Banks</option>
-              </select>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-sm">Select Your Bank</Label>
+                <select
+                  value={selectedBank}
+                  onChange={(e) => setSelectedBank(e.target.value)}
+                  className="w-full mt-1 p-2 border rounded focus:ring-2 focus:ring-primary text-sm"
+                >
+                  <option value="">Choose Bank</option>
+                  <option value="sbi">State Bank of India</option>
+                  <option value="hdfc">HDFC Bank</option>
+                  <option value="icici">ICICI Bank</option>
+                  <option value="axis">Axis Bank</option>
+                  <option value="pnb">Punjab National Bank</option>
+                  <option value="bob">Bank of Baroda</option>
+                  <option value="other">Other Banks</option>
+                </select>
+              </div>
+              {selectedBank && (
+                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden" onClick={onPayment}>
+                  Pay ₹{finalTotal.toLocaleString()}
+                </Button>
+              )}
             </div>
           </PaymentAccordion>
 
@@ -366,22 +375,29 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
             isOpen={paymentMethod === 'emi'}
             onToggle={() => setPaymentMethod(paymentMethod === 'emi' ? '' : 'emi')}
           >
-            <RadioGroup value={selectedEMI} onValueChange={setSelectedEMI}>
-              <div className="space-y-2">
-                {[
-                  { value: '3months', label: '3 Months', divisor: 3 },
-                  { value: '6months', label: '6 Months', divisor: 6 },
-                  { value: '12months', label: '12 Months', divisor: 12 },
-                ].map((emi) => (
-                  <div key={emi.value} className="flex items-center space-x-2">
-                    <RadioGroupItem value={emi.value} id={emi.value} />
-                    <Label htmlFor={emi.value} className="text-sm">
-                      {emi.label} - ₹{Math.ceil(finalTotal / emi.divisor)}/month
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </RadioGroup>
+            <div className="space-y-3">
+              <RadioGroup value={selectedEMI} onValueChange={setSelectedEMI}>
+                <div className="space-y-2">
+                  {[
+                    { value: '3months', label: '3 Months', divisor: 3 },
+                    { value: '6months', label: '6 Months', divisor: 6 },
+                    { value: '12months', label: '12 Months', divisor: 12 },
+                  ].map((emi) => (
+                    <div key={emi.value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={emi.value} id={emi.value} />
+                      <Label htmlFor={emi.value} className="text-sm">
+                        {emi.label} - ₹{Math.ceil(finalTotal / emi.divisor)}/month
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+              {selectedEMI && (
+                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden" onClick={onPayment}>
+                  Pay ₹{finalTotal.toLocaleString()}
+                </Button>
+              )}
+            </div>
           </PaymentAccordion>
 
           {/* Cash on Delivery */}
