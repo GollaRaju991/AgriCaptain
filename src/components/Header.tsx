@@ -180,15 +180,15 @@ const Header = () => {
                 </div>
               </div>
 
-              {/* Row 2: Search bar */}
-              <div className="flex items-center px-3 pb-3 pt-1">
+              {/* Row 2: Search bar + Scanner button */}
+              <div className="flex items-center gap-2 px-3 pb-3 pt-1">
                 <div className="relative flex-1">
                   <form
                     onSubmit={handleSearch}
-                    className="flex items-center bg-white rounded-full overflow-hidden shadow-md"
+                    className="flex items-center bg-white rounded-full overflow-hidden shadow-md border border-gray-200"
                   >
-                    <div className="flex items-center pl-4">
-                      <Search className="h-4 w-4 text-gray-400" />
+                    <div className="flex items-center pl-3.5">
+                      <Search className="h-5 w-5 text-gray-400" />
                     </div>
                     <Input
                       type="text"
@@ -197,21 +197,19 @@ const Header = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onFocus={() => setSearchFocused(true)}
                       onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
-                      className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-10"
+                      className="border-none bg-transparent text-sm flex-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-11"
                     />
                     <ImageSearch onImageSearch={(file) => console.log("Image search:", file.name)} />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="h-10 px-3 text-green-700 hover:bg-green-50 rounded-none"
-                      onClick={() => navigate('/scanner')}
-                    >
-                      <ScanLine className="h-5 w-5" />
-                    </Button>
                   </form>
                   <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
                 </div>
+                {/* Separate Scanner Button */}
+                <button
+                  onClick={() => navigate('/scanner')}
+                  className="flex-shrink-0 w-11 h-11 bg-green-700 rounded-xl flex items-center justify-center shadow-md"
+                >
+                  <ScanLine className="h-5 w-5 text-white" />
+                </button>
               </div>
             </div>
 
