@@ -75,6 +75,17 @@ const ProductDetails = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Reset state when product changes
+  useEffect(() => {
+    setSelectedImage(0);
+    setQuantity(1);
+    setSearchActive(false);
+    setSearchQuery('');
+    setShowSuggestions(false);
+    setUserReviews([]);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [id]);
+
   const isSellerProduct = id?.startsWith('sp-');
 
   // Fetch seller product from DB
