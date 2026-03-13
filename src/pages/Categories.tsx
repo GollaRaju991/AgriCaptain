@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Camera, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import MobilePageHeader from '@/components/MobilePageHeader';
 
 // Sidebar icons
 import catSeedsIcon from '@/assets/cat-seeds-icon.png';
