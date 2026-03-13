@@ -145,28 +145,7 @@ const Categories = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="bg-white border-b border-border p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <Link to="/">
-            <ArrowLeft className="h-6 w-6 text-foreground" />
-          </Link>
-          <h1 className="text-lg font-semibold text-foreground">All Categories</h1>
-        </div>
-        
-        {/* Search Bar */}
-        <div className="flex gap-2">
-          <div className="flex-1 bg-muted rounded-lg flex items-center px-3 py-2.5 border border-border">
-            <Search className="h-5 w-5 text-muted-foreground" />
-            <input 
-              type="text" 
-              placeholder="Search products..." 
-              className="flex-1 ml-2 text-foreground bg-transparent outline-none text-sm placeholder:text-muted-foreground"
-            />
-            <Camera className="h-5 w-5 text-muted-foreground" />
-          </div>
-        </div>
-      </div>
+      <MobilePageHeader title="Search products..." fallbackPath="/" />
 
       {/* Two Column Layout */}
       <div className="flex min-h-[calc(100vh-140px)]">

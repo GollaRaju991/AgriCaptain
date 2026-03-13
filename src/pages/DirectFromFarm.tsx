@@ -298,35 +298,34 @@ const DirectFromFarm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
-      {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-50">
-        <div className="bg-[#2d5a27] text-white px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-6 w-6" />
-            </button>
-            <h1 className="text-lg font-bold">{t('Direct From Farm', 'నేరుగా పొలం నుండి', 'सीधे खेत से')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setDrawerOpen(true)}>
-              <SlidersHorizontal className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+      <MobilePageHeader
+        title={t('Search fresh products...', 'తాజా ఉత్పత్తులు శోధించండి...', 'ताज़ा उत्पाद खोजें...')}
+        fallbackPath="/"
+        rightContent={
+          <button onClick={() => setDrawerOpen(true)} className="p-1.5">
+            <SlidersHorizontal className="h-5 w-5 text-foreground" />
+          </button>
+        }
+      />
 
-        {/* Search bar */}
-        <div className="bg-white px-4 py-2 shadow-sm">
+      {/* Mobile filter chips */}
+      <div className="lg:hidden sticky top-[52px] z-40 bg-white px-4 py-2 flex gap-2 overflow-x-auto border-b border-gray-100 no-scrollbar shadow-sm">
+        {/* Inline search for filtering crops */}
+        <div className="flex-1 min-w-[120px]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder={t('Search fresh products from farmers...', 'రైతుల నుండి తాజా ఉత్పత్తులు శోధించండి...', 'किसानों से ताज़ा उत्पाद खोजें...')}
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+            <input
+              placeholder={t('Filter crops...', 'పంటలు ఫిల్టర్...', 'फसल फ़िल्टर...')}
               value={appliedFilters.search}
               onChange={(e) => setAppliedFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="pl-9 pr-4 h-10 rounded-full border-gray-200 bg-gray-50 text-sm"
+              className="w-full pl-8 pr-3 py-1.5 rounded-full border border-gray-200 bg-gray-50 text-xs outline-none"
             />
           </div>
         </div>
+      </div>
 
+      {/* Mobile filter chips row 2 */}
+      <div className="lg:hidden bg-white px-4 py-1.5 flex gap-2 overflow-x-auto border-b border-gray-100 no-scrollbar">
         {/* Filter chips */}
         <div className="bg-white px-4 py-2 flex gap-2 overflow-x-auto border-b border-gray-100 no-scrollbar">
           <button

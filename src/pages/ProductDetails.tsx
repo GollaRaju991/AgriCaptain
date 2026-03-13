@@ -274,7 +274,7 @@ const ProductDetails = () => {
       {/* Mobile top bar - Flipkart Style */}
       <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
         <div className="flex items-center gap-2 px-2 py-2">
-          <button onClick={() => { if (searchActive) { setSearchActive(false); setSearchQuery(''); } else if (window.history.length > 1) navigate(-1); else navigate('/products'); }} className="p-1.5">
+          <button onClick={() => { if (searchActive) { setSearchActive(false); setSearchQuery(''); } else if (window.history.length > 2) navigate(-1); else navigate('/'); }} className="p-1.5">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           {/* Functional Flipkart-style search bar */}
