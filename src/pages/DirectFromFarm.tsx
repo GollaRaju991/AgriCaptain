@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Eye, Filter, X, ChevronDown } from 'lucide-react';
+import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
