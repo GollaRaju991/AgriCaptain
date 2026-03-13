@@ -195,7 +195,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 <Button variant="outline" size="sm" className="text-primary">VERIFY</Button>
               </div>
               <div className="ml-6">
-                <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold">
+                <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold" onClick={onPayment}>
                   Pay ₹{finalTotal.toLocaleString()}
                 </Button>
               </div>
