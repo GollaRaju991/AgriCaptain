@@ -49,6 +49,7 @@ import SearchSuggestions from "./SearchSuggestions";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { addToSearchHistory } from "@/hooks/useSearchHistory";
 
 import LanguageSelector from "./LanguageSelector";
 import LogoutConfirmation from "./LogoutConfirmation";
