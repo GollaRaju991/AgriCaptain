@@ -114,10 +114,6 @@ const ProductDetails = () => {
   const prevProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
   const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
 
-  // Scroll to top when product ID changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [id]);
 
   // Check mockProducts first (Products page data), then fall back to generated products
   const foundMockProduct = isSellerProduct ? null : mockProducts.find(p => p.id === id);
