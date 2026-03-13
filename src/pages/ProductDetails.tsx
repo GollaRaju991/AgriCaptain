@@ -883,7 +883,7 @@ const ProductDetails = () => {
         </button>
         <button 
           onClick={handleBuyNow}
-          className="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold bg-amber-500 text-white active:bg-amber-600"
+          className="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold bg-green-600 text-white active:bg-green-700"
         >
           Buy Now
           <span className="text-xs font-normal">at ₹{product.price.toLocaleString()}</span>
