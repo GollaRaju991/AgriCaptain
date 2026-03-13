@@ -324,7 +324,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
 
                   <Button
                     className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3"
-                    onClick={() => { if (saveNewCard) handleSaveNewCard(); }}
+                    onClick={() => { if (saveNewCard) handleSaveNewCard(); onPayment?.(); }}
                   >
                     {saveNewCard ? 'Save & Pay' : 'Pay'} ₹{finalTotal.toLocaleString()}
                   </Button>
