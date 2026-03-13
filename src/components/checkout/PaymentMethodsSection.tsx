@@ -257,7 +257,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                                 <HelpCircle className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
-                            <Button className="bg-amber-400 hover:bg-amber-500 text-foreground font-semibold mt-4">
+                            <Button className="bg-amber-400 hover:bg-amber-500 text-foreground font-semibold mt-4" onClick={onPayment}>
                               Pay ₹{finalTotal.toLocaleString()}
                             </Button>
                           </div>
