@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Loader2, Sprout, X, Plus, SlidersHorizontal, Filter } from 'lucide-react';
+import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -195,12 +196,15 @@ const SellCrop: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-3 px-4 py-3">
-        <button onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-6 w-6" />
-        </button>
-        <h1 className="text-lg font-bold flex-1">{t('Sell Crop', 'పంట అమ్మండి', 'फसल बेचें')}</h1>
-      </div>
+      <MobilePageHeader
+        title={t('Search crops...', 'పంటలు శోధించండి...', 'फसल खोजें...')}
+        fallbackPath="/"
+        rightContent={
+          <button onClick={() => setDrawerOpen(true)} className="p-1.5">
+            <SlidersHorizontal className="h-5 w-5 text-foreground" />
+          </button>
+        }
+      />
 
       <div className="hidden lg:block"><Header /></div>
 
