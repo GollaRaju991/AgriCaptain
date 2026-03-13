@@ -69,6 +69,10 @@ const ProductDetails = () => {
   const [sellerProduct, setSellerProduct] = useState<any>(null);
   const [loadingSeller, setLoadingSeller] = useState(false);
   const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const isSellerProduct = id?.startsWith('sp-');
 
