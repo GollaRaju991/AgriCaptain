@@ -615,14 +615,14 @@ const Orders = () => {
                         </div>
                       )}
 
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-4">
+                      <div className="flex items-center gap-1.5 sm:gap-3 pt-4 overflow-x-auto">
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          className="flex items-center space-x-1"
+                          className="flex items-center gap-1 text-xs h-8 px-2.5 shrink-0"
                           onClick={() => navigate(`/orders/${order.id}`)}
                         >
-                          <Eye className="h-4 w-4" />
+                          <Eye className="h-3.5 w-3.5" />
                           <span>View Details</span>
                         </Button>
                         
@@ -630,16 +630,16 @@ const Orders = () => {
                           <Button 
                             variant="outline" 
                             size="sm" 
-                            className="flex items-center space-x-1"
+                            className="flex items-center gap-1 text-xs h-8 px-2.5 shrink-0"
                             onClick={() => setTrackingOrderId(order.id)}
                           >
-                            <Truck className="h-4 w-4" />
+                            <Truck className="h-3.5 w-3.5" />
                             <span>Track Order</span>
                           </Button>
                         )}
                         
                         {order.status === 'delivered' && (
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="text-xs h-8 px-2.5 shrink-0">
                             Reorder
                           </Button>
                         )}
@@ -650,15 +650,15 @@ const Orders = () => {
                               <Button 
                                 variant="destructive" 
                                 size="sm" 
-                                className="flex items-center space-x-1"
+                                className="flex items-center gap-1 text-xs h-8 px-2.5 shrink-0"
                                 disabled={cancellingOrderId === order.id}
                               >
                                 {cancellingOrderId === order.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                 ) : (
-                                  <XCircle className="h-4 w-4" />
+                                  <XCircle className="h-3.5 w-3.5" />
                                 )}
-                                <span>Cancel Order</span>
+                                <span>Cancel</span>
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
