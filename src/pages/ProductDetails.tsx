@@ -274,17 +274,54 @@ const ProductDetails = () => {
       {/* Mobile top bar - Flipkart Style */}
       <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
         <div className="flex items-center gap-2 px-2 py-2">
-          <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }} className="p-1.5">
+          <button onClick={() => { if (searchActive) { setSearchActive(false); setSearchQuery(''); } else if (window.history.length > 1) navigate(-1); else navigate('/products'); }} className="p-1.5">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
-          {/* Flipkart-style search bar */}
-          <button
-            onClick={() => navigate('/products')}
-            className="flex-1 flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2"
-          >
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground truncate">Search for products</span>
-          </button>
+          {/* Functional Flipkart-style search bar */}
+          <div className="flex-1 relative">
+            {searchActive ? (
+              <div className="flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2">
+                <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                    }
+                  }}
+                  placeholder="Search for products"
+                  className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
+                  autoFocus
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="!min-h-0 !min-w-0">
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => { setSearchActive(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
+                className="w-full flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2"
+              >
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground truncate">Search for products</span>
+              </button>
+            )}
+            <SearchSuggestions
+              query={searchQuery}
+              onSelect={(suggestion) => {
+                setSearchQuery(suggestion);
+                navigate(`/products?search=${encodeURIComponent(suggestion)}`);
+              }}
+              visible={showSuggestions && searchActive}
+            />
+          </div>
           <button onClick={() => navigate('/cart')} className="p-1.5 relative">
             <ShoppingCart className="h-5 w-5 text-foreground" />
             {totalItems > 0 && (
