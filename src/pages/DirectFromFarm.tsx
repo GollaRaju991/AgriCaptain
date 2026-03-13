@@ -324,36 +324,33 @@ const DirectFromFarm: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile filter chips row 2 */}
+      {/* Mobile filter chips */}
       <div className="lg:hidden bg-white px-4 py-1.5 flex gap-2 overflow-x-auto border-b border-gray-100 no-scrollbar">
-        {/* Filter chips */}
-        <div className="bg-white px-4 py-2 flex gap-2 overflow-x-auto border-b border-gray-100 no-scrollbar">
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
-          >
-            <MapPin className="h-3 w-3 text-green-600" /> {t('All Locations', 'అన్ని స్థానాలు', 'सभी स्थान')}
-          </button>
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
-          >
-            <Filter className="h-3 w-3 text-green-600" /> {t('All Categories', 'అన్ని వర్గాలు', 'सभी श्रेणियां')} <ChevronDown className="h-3 w-3" />
-          </button>
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
-          >
-            {t('Price', 'ధర', 'कीमत')} <ChevronDown className="h-3 w-3" />
-          </button>
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap flex-shrink-0 ${activeFilterCount > 0 ? 'border-green-600 bg-green-50 text-green-700' : 'border-gray-200 text-gray-700'}`}
-          >
-            <SlidersHorizontal className="h-3 w-3" /> {t('More Filters', 'మరిన్ని ఫిల్టర్లు', 'अधिक फिल्टर')}
-            {activeFilterCount > 0 && <span className="bg-green-600 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center">{activeFilterCount}</span>}
-          </button>
-        </div>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
+        >
+          <MapPin className="h-3 w-3 text-green-600" /> {t('All Locations', 'అన్ని స్థానాలు', 'सभी स्थान')}
+        </button>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
+        >
+          <Filter className="h-3 w-3 text-green-600" /> {t('All Categories', 'అన్ని వర్గాలు', 'सभी श्रेणियां')} <ChevronDown className="h-3 w-3" />
+        </button>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
+        >
+          {t('Price', 'ధర', 'कीमत')} <ChevronDown className="h-3 w-3" />
+        </button>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap flex-shrink-0 ${activeFilterCount > 0 ? 'border-green-600 bg-green-50 text-green-700' : 'border-gray-200 text-gray-700'}`}
+        >
+          <SlidersHorizontal className="h-3 w-3" /> {t('More Filters', 'మరిన్ని ఫిల్టర్లు', 'अधिक फिल्टर')}
+          {activeFilterCount > 0 && <span className="bg-green-600 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center">{activeFilterCount}</span>}
+        </button>
       </div>
 
       {/* Desktop Header */}
