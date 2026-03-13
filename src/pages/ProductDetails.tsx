@@ -75,15 +75,20 @@ const ProductDetails = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset state when product changes
+  // Reset state and scroll instantly when product changes (Flipkart-style instant land)
   useEffect(() => {
+    // Scroll instantly before paint — no visible animation
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
     setSelectedImage(0);
     setQuantity(1);
     setSearchActive(false);
     setSearchQuery('');
     setShowSuggestions(false);
     setUserReviews([]);
-    window.scrollTo({ top: 0, behavior: 'auto' });
   }, [id]);
 
   const isSellerProduct = id?.startsWith('sp-');
@@ -109,10 +114,6 @@ const ProductDetails = () => {
   const prevProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
   const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
 
-  // Scroll to top when product ID changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [id]);
 
   // Check mockProducts first (Products page data), then fall back to generated products
   const foundMockProduct = isSellerProduct ? null : mockProducts.find(p => p.id === id);
