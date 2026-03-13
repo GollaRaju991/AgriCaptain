@@ -373,22 +373,29 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
             isOpen={paymentMethod === 'emi'}
             onToggle={() => setPaymentMethod(paymentMethod === 'emi' ? '' : 'emi')}
           >
-            <RadioGroup value={selectedEMI} onValueChange={setSelectedEMI}>
-              <div className="space-y-2">
-                {[
-                  { value: '3months', label: '3 Months', divisor: 3 },
-                  { value: '6months', label: '6 Months', divisor: 6 },
-                  { value: '12months', label: '12 Months', divisor: 12 },
-                ].map((emi) => (
-                  <div key={emi.value} className="flex items-center space-x-2">
-                    <RadioGroupItem value={emi.value} id={emi.value} />
-                    <Label htmlFor={emi.value} className="text-sm">
-                      {emi.label} - ₹{Math.ceil(finalTotal / emi.divisor)}/month
-                    </Label>
-                  </div>
-                ))}
-              </div>
-            </RadioGroup>
+            <div className="space-y-3">
+              <RadioGroup value={selectedEMI} onValueChange={setSelectedEMI}>
+                <div className="space-y-2">
+                  {[
+                    { value: '3months', label: '3 Months', divisor: 3 },
+                    { value: '6months', label: '6 Months', divisor: 6 },
+                    { value: '12months', label: '12 Months', divisor: 12 },
+                  ].map((emi) => (
+                    <div key={emi.value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={emi.value} id={emi.value} />
+                      <Label htmlFor={emi.value} className="text-sm">
+                        {emi.label} - ₹{Math.ceil(finalTotal / emi.divisor)}/month
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </RadioGroup>
+              {selectedEMI && (
+                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden">
+                  Pay ₹{finalTotal.toLocaleString()}
+                </Button>
+              )}
+            </div>
           </PaymentAccordion>
 
           {/* Cash on Delivery */}
