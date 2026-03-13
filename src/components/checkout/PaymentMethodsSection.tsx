@@ -67,7 +67,8 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
   finalTotal,
   codAdvancePaid,
   onCodAdvancePayment,
-  codPaymentProcessing
+  codPaymentProcessing,
+  onPayment
 }) => {
   const { user } = useAuth();
   const [timeLeft, setTimeLeft] = useState(10 * 60);
