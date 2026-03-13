@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn, Search } from 'lucide-react';
+import { Star, ShoppingCart, Heart, Share2, Truck, Shield, RotateCcw, ChevronLeft, ChevronRight, ThumbsUp, ThumbsDown, ChevronDown, ArrowLeft, ZoomIn, Search, Tag, CreditCard, Smartphone, Zap, X } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
@@ -20,6 +20,7 @@ import ProductCard from '@/components/ProductCard';
 import ShareDialog from '@/components/ShareDialog';
 import ImageZoomModal from '@/components/ImageZoomModal';
 import ProductReviewForm from '@/components/ProductReviewForm';
+import SearchSuggestions from '@/components/SearchSuggestions';
 import {
   Pagination,
   PaginationContent,
@@ -68,6 +69,10 @@ const ProductDetails = () => {
   const [sellerProduct, setSellerProduct] = useState<any>(null);
   const [loadingSeller, setLoadingSeller] = useState(false);
   const [userReviews, setUserReviews] = useState<any[]>([]);
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const isSellerProduct = id?.startsWith('sp-');
 
@@ -269,17 +274,54 @@ const ProductDetails = () => {
       {/* Mobile top bar - Flipkart Style */}
       <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
         <div className="flex items-center gap-2 px-2 py-2">
-          <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }} className="p-1.5">
+          <button onClick={() => { if (searchActive) { setSearchActive(false); setSearchQuery(''); } else if (window.history.length > 1) navigate(-1); else navigate('/products'); }} className="p-1.5">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
-          {/* Flipkart-style search bar */}
-          <button
-            onClick={() => navigate('/products')}
-            className="flex-1 flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2"
-          >
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground truncate">Search for products</span>
-          </button>
+          {/* Functional Flipkart-style search bar */}
+          <div className="flex-1 relative">
+            {searchActive ? (
+              <div className="flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2">
+                <Search className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim()) {
+                      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+                    }
+                  }}
+                  placeholder="Search for products"
+                  className="flex-1 bg-transparent text-sm outline-none text-foreground placeholder:text-muted-foreground"
+                  autoFocus
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="!min-h-0 !min-w-0">
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => { setSearchActive(true); setTimeout(() => searchInputRef.current?.focus(), 100); }}
+                className="w-full flex items-center gap-2 bg-gray-100 rounded-md px-3 py-2"
+              >
+                <Search className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground truncate">Search for products</span>
+              </button>
+            )}
+            <SearchSuggestions
+              query={searchQuery}
+              onSelect={(suggestion) => {
+                setSearchQuery(suggestion);
+                navigate(`/products?search=${encodeURIComponent(suggestion)}`);
+              }}
+              visible={showSuggestions && searchActive}
+            />
+          </div>
           <button onClick={() => navigate('/cart')} className="p-1.5 relative">
             <ShoppingCart className="h-5 w-5 text-foreground" />
             {totalItems > 0 && (
@@ -492,6 +534,54 @@ const ProductDetails = () => {
                 )}
               </div>
               <p className="text-xs text-muted-foreground">inclusive of all taxes</p>
+            </div>
+
+            {/* Offers Section - Flipkart Style */}
+            <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
+              <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  <span className="font-semibold text-sm">Available Offers</span>
+                </div>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950/20 divide-y divide-blue-100 dark:divide-blue-900">
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <Tag className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Coupon Discount</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Use code <span className="font-bold text-green-700">AGRI100</span> to get ₹100 off on orders above ₹999
+                    </p>
+                  </div>
+                </div>
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <CreditCard className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Bank Offer</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      10% off on SBI Credit Card, up to ₹500 on orders above ₹2,000
+                    </p>
+                  </div>
+                </div>
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <Smartphone className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">UPI Offer</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Pay via UPI and get ₹50 cashback on first order
+                    </p>
+                  </div>
+                </div>
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <Zap className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Special Offer</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Buy 2 or more items and get extra 5% off
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Delivery Info - Flipkart compact style on mobile */}
@@ -841,7 +931,7 @@ const ProductDetails = () => {
         </button>
         <button 
           onClick={handleBuyNow}
-          className="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold bg-amber-500 text-white active:bg-amber-600"
+          className="flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-semibold bg-green-600 text-white active:bg-green-700"
         >
           Buy Now
           <span className="text-xs font-normal">at ₹{product.price.toLocaleString()}</span>
