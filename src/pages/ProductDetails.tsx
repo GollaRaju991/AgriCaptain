@@ -536,6 +536,54 @@ const ProductDetails = () => {
               <p className="text-xs text-muted-foreground">inclusive of all taxes</p>
             </div>
 
+            {/* Offers Section - Flipkart Style */}
+            <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
+              <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
+                  <span className="font-semibold text-sm">Available Offers</span>
+                </div>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950/20 divide-y divide-blue-100 dark:divide-blue-900">
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <Tag className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Coupon Discount</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Use code <span className="font-bold text-green-700">AGRI100</span> to get ₹100 off on orders above ₹999
+                    </p>
+                  </div>
+                </div>
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <CreditCard className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Bank Offer</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      10% off on SBI Credit Card, up to ₹500 on orders above ₹2,000
+                    </p>
+                  </div>
+                </div>
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <Smartphone className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">UPI Offer</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Pay via UPI and get ₹50 cashback on first order
+                    </p>
+                  </div>
+                </div>
+                <div className="px-4 py-3 flex items-start gap-3">
+                  <Zap className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Special Offer</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Buy 2 or more items and get extra 5% off
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Delivery Info - Flipkart compact style on mobile */}
             <div className="flex flex-wrap gap-3 mb-4 lg:mb-6 py-3 border-y border-border lg:border-0 lg:p-4 lg:bg-green-50 lg:rounded-lg">
               <div className="flex items-center gap-1.5 text-xs lg:text-sm">
