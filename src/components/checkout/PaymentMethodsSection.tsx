@@ -42,6 +42,7 @@ interface PaymentMethodsSectionProps {
   codAdvancePaid: boolean;
   onCodAdvancePayment: (method: string) => void;
   codPaymentProcessing: boolean;
+  onPayment?: () => void;
 }
 
 const COD_ADVANCE_AMOUNT = 99;
