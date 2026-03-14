@@ -578,7 +578,7 @@ const OrderDetails = () => {
                 </div>
               ))}
 
-              {/* Timeline & Order Info Card - Desktop */}
+              {/* Timeline Card - Desktop */}
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="overflow-x-auto pb-2">
                   <div className="flex items-start min-w-max">
@@ -612,77 +612,52 @@ const OrderDetails = () => {
                   </div>
                 )}
 
-                <div className="mt-4 pt-4 border-t text-center">
-                  <button onClick={() => navigate('/help-center')} className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900">
-                    <MessageCircle className="h-4 w-4" /> Chat with us
-                  </button>
-                </div>
-
-                {order.status === 'delivered' && (
-                  <div className="mt-4 pt-4 border-t">
-                    <h3 className="font-semibold text-gray-900 mb-3">Rate your experience</h3>
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
-                      <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm text-gray-700">How was your delivery experience?</span>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-gray-400" />
-                    </div>
-                  </div>
-                )}
-
+                {/* Order Number */}
                 <div className="mt-4 pt-4 border-t flex items-center gap-2">
                   <span className="text-sm text-gray-500">Order #{order.order_number}</span>
                   <button onClick={copyOrderNumber} className="text-gray-400 hover:text-gray-600"><Copy className="h-3.5 w-3.5" /></button>
                 </div>
+
+                {/* Order Date */}
+                <div className="flex items-center gap-2 text-sm text-gray-500 mt-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Ordered on {formatFullDate(order.created_at)}</span>
+                </div>
+
+                {/* Estimated Delivery */}
+                {estimatedDelivery && order.status !== 'delivered' && order.status !== 'cancelled' && order.status !== 'returned' && (
+                  <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 rounded-lg px-4 py-2.5 mt-3">
+                    <Truck className="h-4 w-4" />
+                    <span className="font-medium">Estimated delivery: {formatFullDate(estimatedDelivery)}</span>
+                  </div>
+                )}
+
+                {order.status === 'delivered' && (
+                  <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 rounded-lg px-4 py-2.5 mt-3">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">Delivered on {formatDate(order.updated_at)}</span>
+                  </div>
+                )}
               </div>
 
-              {/* Desktop Action Buttons */}
-              <div className="flex gap-3">
-                {canCancelOrder() && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="destructive" disabled={cancellingOrder}>
-                        {cancellingOrder ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <XCircle className="h-4 w-4 mr-2" />}
-                        Cancel Order
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Cancel Order #{order.order_number}?</AlertDialogTitle>
-                        <AlertDialogDescription className="space-y-2">
-                          <p>Are you sure you want to cancel this order?</p>
-                          {getRefundAmount() > 0 && <p className="font-medium text-green-600">₹{getRefundAmount()} will be refunded within 5-7 business days.</p>}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Keep Order</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleCancelOrder} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Yes, Cancel Order</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-
-                {canReturnOrder() && (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-50" disabled={returningOrder}>
-                        {returningOrder ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <RotateCcw className="h-4 w-4 mr-2" />}
-                        Return Order
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Return Order #{order.order_number}?</AlertDialogTitle>
-                        <AlertDialogDescription>₹{order.total_amount} will be refunded within 5-7 business days.</AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Keep Order</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleReturnOrder} className="bg-orange-500 text-white hover:bg-orange-600">Yes, Return Order</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
+              {/* Need Help? Section - Desktop */}
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h3 className="text-base font-bold text-gray-900 mb-4">Need Help?</h3>
+                <div className="space-y-0">
+                  {helpOptions.primary.map((option, idx) => (
+                    <button
+                      key={idx}
+                      onClick={option.action}
+                      className="flex items-center justify-between w-full py-3.5 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 px-2 rounded transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-500">{option.icon}</span>
+                        <span className="text-sm text-gray-700 font-medium">{option.label}</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
