@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import AddressSection from '@/components/checkout/AddressSection';
 import PaymentMethodsSection from '@/components/checkout/PaymentMethodsSection';
 import OrderSummary from '@/components/checkout/OrderSummary';
+import PaymentProcessingDialog from '@/components/checkout/PaymentProcessingDialog';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Shield } from 'lucide-react';
