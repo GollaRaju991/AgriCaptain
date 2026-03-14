@@ -57,7 +57,7 @@ const OrderDetails = () => {
   useScrollToTop();
 
   const formatStatusLabel = (status: string) =>
-    status.replaceAll('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
+    status.split('_').join(' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
 
   useEffect(() => {
     if (user && id) {
