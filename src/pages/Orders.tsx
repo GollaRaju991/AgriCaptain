@@ -354,19 +354,22 @@ const Orders = () => {
 
             {/* Mobile Filter Chips */}
             <div className="lg:hidden flex gap-2 overflow-x-auto pb-3 mb-3">
-              {['shipped', 'delivered', 'cancelled', 'returned'].map(status => (
-                <button
-                  key={status}
-                  onClick={() => toggleStatusFilter(status)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
-                    statusFilters.includes(status)
-                      ? 'bg-green-50 border-green-300 text-green-700'
-                      : 'bg-white border-gray-200 text-gray-600'
-                  }`}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </button>
-              ))}
+              {['shipped', 'out_for_delivery', 'delivered', 'cancelled', 'returned'].map(status => {
+                const labels: Record<string, string> = { shipped: 'Shipped', out_for_delivery: 'Out for Delivery', delivered: 'Delivered', cancelled: 'Cancelled', returned: 'Returned' };
+                return (
+                  <button
+                    key={status}
+                    onClick={() => toggleStatusFilter(status)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
+                      statusFilters.includes(status)
+                        ? 'bg-green-50 border-green-300 text-green-700'
+                        : 'bg-white border-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {labels[status] || status}
+                  </button>
+                );
+              })}
               {hasActiveFilters && (
                 <button onClick={clearAllFilters} className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-red-50 border border-red-200 text-red-600">
                   Clear All
