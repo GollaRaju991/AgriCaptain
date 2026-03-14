@@ -152,7 +152,7 @@ const Profile = () => {
               <span className="text-sm font-medium text-foreground">Wishlist</span>
             </a>
             <a href="/coupons" className="flex items-center space-x-2 border rounded-lg px-3 py-3 hover:bg-gray-50">
-              <Ticket className="h-5 w-5 text-blue-600" />
+              <Ticket className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Coupons</span>
             </a>
             <a href="/help-center" className="flex items-center space-x-2 border rounded-lg px-3 py-3 hover:bg-gray-50">
