@@ -57,7 +57,22 @@ const OrderDetails = () => {
   useScrollToTop();
 
   useEffect(() => {
-    if (user && id) fetchOrder();
+    if (user && id) {
+      fetchOrder();
+      // Poll every 15 seconds for real-time status updates
+      const interval = setInterval(fetchOrder, 15000);
+      // Subscribe to real-time changes
+      const channel = supabase
+        .channel(`order-${id}`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
+          setOrder(payload.new as Order);
+        })
+        .subscribe();
+      return () => {
+        clearInterval(interval);
+        supabase.removeChannel(channel);
+      };
+    }
   }, [user, id]);
 
   const fetchOrder = async () => {
