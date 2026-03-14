@@ -162,7 +162,7 @@ const Profile = () => {
           </div>
 
           {/* Blue divider */}
-          <div className="h-2 bg-blue-50"></div>
+          <div className="h-2 bg-primary/5"></div>
 
           {/* Account Settings Section */}
           <div className="bg-white">
@@ -170,7 +170,7 @@ const Profile = () => {
             <div className="divide-y divide-gray-100">
               <a href="/profile/edit" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <User className="h-5 w-5 text-blue-600" />
+                  <User className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Edit Profile</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -178,7 +178,7 @@ const Profile = () => {
 
               <a href="/agrizin-money" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <Wallet className="h-5 w-5 text-blue-600" />
+                  <Wallet className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Agrizin Money</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -186,7 +186,7 @@ const Profile = () => {
 
               <a href="/profile/saved-cards" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <CreditCard className="h-5 w-5 text-blue-600" />
+                  <CreditCard className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Saved Credit / Debit Cards</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -194,7 +194,7 @@ const Profile = () => {
 
               <a href="/profile/saved-upi" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <Wallet className="h-5 w-5 text-blue-600" />
+                  <Wallet className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Saved UPI</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -202,7 +202,7 @@ const Profile = () => {
 
               <a href="/profile/saved-addresses" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <MapPin className="h-5 w-5 text-blue-600" />
+                  <MapPin className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Saved Addresses</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -218,7 +218,7 @@ const Profile = () => {
                 className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100"
               >
                 <div className="flex items-center space-x-3">
-                  <Languages className="h-5 w-5 text-blue-600" />
+                  <Languages className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Select Language</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -226,7 +226,7 @@ const Profile = () => {
 
               <a href="/notifications" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <BellRing className="h-5 w-5 text-blue-600" />
+                  <BellRing className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Notification Settings</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -234,7 +234,7 @@ const Profile = () => {
 
               <a href="#" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <ShieldCheck className="h-5 w-5 text-blue-600" />
+                  <ShieldCheck className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Privacy Center</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -242,8 +242,8 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Blue divider */}
-          <div className="h-2 bg-blue-50"></div>
+          {/* Green divider */}
+          <div className="h-2 bg-primary/5"></div>
 
           {/* Finance Options Section */}
           <div className="bg-white">
@@ -251,7 +251,7 @@ const Profile = () => {
             <div className="divide-y divide-gray-100">
               <a href="/loans" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <IndianRupee className="h-5 w-5 text-blue-600" />
+                  <IndianRupee className="h-5 w-5 text-primary" />
                   <div>
                     <span className="text-sm font-medium text-foreground">Agricultural Loans</span>
                     <p className="text-xs text-muted-foreground">Apply for farm loans & equipment finance</p>
@@ -262,8 +262,8 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Blue divider */}
-          <div className="h-2 bg-blue-50"></div>
+          {/* Green divider */}
+          <div className="h-2 bg-primary/5"></div>
 
           {/* Earn with Agrizin */}
           <div className="bg-white">
@@ -271,7 +271,7 @@ const Profile = () => {
             <div className="divide-y divide-gray-100">
               <a href="/become-seller" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <Store className="h-5 w-5 text-blue-600" />
+                  <Store className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Sell on Agrizin</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -279,8 +279,8 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Blue divider */}
-          <div className="h-2 bg-blue-50"></div>
+          {/* Green divider */}
+          <div className="h-2 bg-primary/5"></div>
 
           {/* Feedback & Information */}
           <div className="bg-white">
@@ -288,14 +288,14 @@ const Profile = () => {
             <div className="divide-y divide-gray-100">
               <a href="/terms-policies" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <FileText className="h-5 w-5 text-blue-600" />
+                  <FileText className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Terms, Policies and Licenses</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
               <a href="/faqs" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
                 <div className="flex items-center space-x-3">
-                  <MessageCircleQuestion className="h-5 w-5 text-blue-600" />
+                  <MessageCircleQuestion className="h-5 w-5 text-primary" />
                   <span className="text-sm text-foreground">Browse FAQs</span>
                 </div>
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
@@ -307,7 +307,7 @@ const Profile = () => {
           <div className="bg-gray-100 px-4 py-4">
             <Button
               variant="outline"
-              className="w-full border-gray-300 text-blue-600 font-semibold hover:bg-gray-50"
+              className="w-full border-gray-300 text-primary font-semibold hover:bg-gray-50"
               onClick={handleSignOut}
             >
               Log Out
