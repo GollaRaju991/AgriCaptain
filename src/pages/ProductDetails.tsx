@@ -564,8 +564,8 @@ const ProductDetails = () => {
                 <div className="px-4 py-3 flex items-start gap-3">
                   <Tag className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Coupon Discount</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">Coupon Discount</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       Use code <span className="font-bold text-green-700">AGRI100</span> to get ₹100 off on orders above ₹999
                     </p>
                   </div>
