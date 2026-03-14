@@ -156,7 +156,7 @@ const Profile = () => {
               <span className="text-sm font-medium text-foreground">Coupons</span>
             </a>
             <a href="/help-center" className="flex items-center space-x-2 border rounded-lg px-3 py-3 hover:bg-gray-50">
-              <Headphones className="h-5 w-5 text-blue-600" />
+              <Headphones className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Help Center</span>
             </a>
           </div>
