@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeft, Package, Truck, CheckCircle, Clock, XCircle,
-  Loader2, RotateCcw, Copy, Home, User, Phone, ChevronRight, CreditCard, MessageCircle, MapPin, Calendar
+  Loader2, RotateCcw, Copy, Home, User, Phone, ChevronRight, CreditCard, MessageCircle, MapPin, Calendar, IndianRupee, Banknote, CircleDollarSign, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
