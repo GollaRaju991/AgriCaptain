@@ -556,8 +556,8 @@ const ProductDetails = () => {
             <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
               <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Tag className="h-4 w-4" />
-                  <span className="font-semibold text-sm">Available Offers</span>
+                  <Tag className="h-5 w-5" />
+                  <span className="font-semibold text-sm lg:text-base">Available Offers</span>
                 </div>
               </div>
               <div className="bg-blue-50 dark:bg-blue-950/20 divide-y divide-blue-100 dark:divide-blue-900">
