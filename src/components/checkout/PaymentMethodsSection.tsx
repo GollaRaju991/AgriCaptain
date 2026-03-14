@@ -329,9 +329,22 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <div>
                       <Label className="text-sm text-muted-foreground">Valid Thru</Label>
                       <Input
-                        placeholder="MM / YY"
+                        placeholder="MM/YY"
                         value={expiryDate}
-                        onChange={(e) => setExpiryDate(e.target.value)}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/[^\d/]/g, '');
+                          // Auto-add slash after 2 digits
+                          if (val.length === 2 && !val.includes('/') && expiryDate.length < val.length) {
+                            val = val + '/';
+                          }
+                          // Limit to MM/YY format
+                          if (val.length > 5) return;
+                          // Validate month (01-12)
+                          const month = parseInt(val.substring(0, 2));
+                          if (val.length >= 2 && (month < 1 || month > 12)) return;
+                          setExpiryDate(val);
+                        }}
+                        maxLength={5}
                         className="mt-1"
                       />
                     </div>
