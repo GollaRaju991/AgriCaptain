@@ -52,6 +52,9 @@ const Checkout = () => {
   const [selectedBank, setSelectedBank] = useState('');
   const [selectedEMI, setSelectedEMI] = useState('');
   
+  // Payment processing dialog state
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  
   // COD advance payment state
   const [codAdvancePaid, setCodAdvancePaid] = useState(false);
   const [codPaymentMethod, setCodPaymentMethod] = useState('');
