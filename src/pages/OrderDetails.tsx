@@ -249,8 +249,10 @@ const OrderDetails = () => {
               </div>
             ))}
 
+            {/* Timeline & Order Info Card */}
+            <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6">
               {/* Timeline */}
-              <div className="mt-6 pt-4 border-t">
+              <div>
                 <div className="space-y-0">
                   {timelineEvents.map((event, index) => (
                     <div key={index} className="flex items-start gap-3 relative">
