@@ -59,6 +59,62 @@ export type Database = {
         }
         Relationships: []
       }
+      delivery_tracking: {
+        Row: {
+          courier_name: string | null
+          created_at: string
+          delivered_at: string | null
+          delivery_notes: string | null
+          id: string
+          order_id: string
+          out_for_delivery_at: string | null
+          shipped_at: string | null
+          status: string
+          tracking_number: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          courier_name?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          delivery_notes?: string | null
+          id?: string
+          order_id: string
+          out_for_delivery_at?: string | null
+          shipped_at?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          courier_name?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          delivery_notes?: string | null
+          id?: string
+          order_id?: string
+          out_for_delivery_at?: string | null
+          shipped_at?: string | null
+          status?: string
+          tracking_number?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       farmer_crops: {
         Row: {
           availability_location: string
@@ -402,6 +458,62 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      return_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          order_id: string
+          picked_up_at: string | null
+          pickup_scheduled_at: string | null
+          reason: string
+          refund_amount: number
+          refund_completed_at: string | null
+          refund_status: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          order_id: string
+          picked_up_at?: string | null
+          pickup_scheduled_at?: string | null
+          reason?: string
+          refund_amount?: number
+          refund_completed_at?: string | null
+          refund_status?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          order_id?: string
+          picked_up_at?: string | null
+          pickup_scheduled_at?: string | null
+          reason?: string
+          refund_amount?: number
+          refund_completed_at?: string | null
+          refund_status?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "return_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_cards: {
         Row: {
