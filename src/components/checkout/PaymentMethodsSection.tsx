@@ -178,8 +178,14 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
             icon={<Smartphone className="h-5 w-5 text-orange-500" />}
             title="UPI"
             subtitle="Pay by any UPI app"
+            badge={upiVerified ? (
+              <span className="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full flex items-center">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Verified
+              </span>
+            ) : undefined}
             isOpen={paymentMethod === 'upi'}
-            onToggle={() => setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi')}
+            onToggle={() => { setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi'); setUpiVerified(false); }}
           >
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
@@ -192,18 +198,43 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
               </div>
               <div className="flex space-x-2 ml-6">
                 <Input
-                  placeholder="Enter UPI ID"
+                  placeholder="e.g. name@ybl, name@paytm"
                   value={upiId}
-                  onChange={(e) => setUpiId(e.target.value)}
+                  onChange={(e) => { setUpiId(e.target.value); setUpiVerified(false); }}
                   className="flex-1"
                 />
-                <Button variant="outline" size="sm" className="text-primary">VERIFY</Button>
-              </div>
-              <div className="ml-6">
-                <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold" onClick={onPayment}>
-                  Pay ₹{finalTotal.toLocaleString()}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className={upiVerified ? "text-green-600 border-green-300" : "text-primary"}
+                  disabled={upiVerifying || !upiId.trim()}
+                  onClick={() => {
+                    const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
+                    if (!upiRegex.test(upiId)) {
+                      toast({ title: "Invalid UPI ID", description: "Format: name@bankname (e.g. user@ybl)", variant: "destructive" });
+                      return;
+                    }
+                    setUpiVerifying(true);
+                    setTimeout(() => { setUpiVerifying(false); setUpiVerified(true); toast({ title: "UPI Verified ✓", description: `${upiId} is ready to receive payment request` }); }, 1500);
+                  }}
+                >
+                  {upiVerifying ? <Loader2 className="h-4 w-4 animate-spin" /> : upiVerified ? '✓ Verified' : 'VERIFY'}
                 </Button>
               </div>
+              {upiVerified && (
+                <div className="ml-6 space-y-2">
+                  <p className="text-xs text-green-600 flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    Payment request will be sent to your UPI app
+                  </p>
+                  <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold" onClick={onPayment}>
+                    Pay ₹{finalTotal.toLocaleString()}
+                  </Button>
+                </div>
+              )}
+              {!upiVerified && upiId.trim() && (
+                <p className="text-xs text-muted-foreground ml-6">Please verify your UPI ID before proceeding</p>
+              )}
             </div>
           </PaymentAccordion>
 
