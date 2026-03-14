@@ -624,7 +624,7 @@ const ProductDetails = () => {
             {/* Quantity and Actions - Desktop only */}
             <div className="hidden lg:block mb-6">
               <div className="flex items-center space-x-4 mb-4">
-                <label className="text-sm font-medium">{translations.quantity}:</label>
+                <label className="text-base font-medium">{translations.quantity}:</label>
                 <div className="flex items-center border rounded">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
