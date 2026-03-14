@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.crop-diagnosis]
 verify_jwt = false
+
+[functions.simulate-delivery]
+verify_jwt = false
