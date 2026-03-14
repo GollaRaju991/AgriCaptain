@@ -602,16 +602,16 @@ const ProductDetails = () => {
 
             {/* Delivery Info - Flipkart compact style on mobile */}
             <div className="flex flex-wrap gap-3 mb-4 lg:mb-6 py-3 border-y border-border lg:border-0 lg:p-4 lg:bg-green-50 lg:rounded-lg">
-              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
-                <Truck className="h-4 w-4 text-green-600" />
+              <div className="flex items-center gap-1.5 text-xs lg:text-base">
+                <Truck className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="font-medium">Free Delivery</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
-                <RotateCcw className="h-4 w-4 text-green-600" />
+              <div className="flex items-center gap-1.5 text-xs lg:text-base">
+                <RotateCcw className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="font-medium">7 Day Returns</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
-                <Shield className="h-4 w-4 text-green-600" />
+              <div className="flex items-center gap-1.5 text-xs lg:text-base">
+                <Shield className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="font-medium">Quality Assured</span>
               </div>
             </div>
