@@ -198,7 +198,6 @@ const Orders = () => {
     finally { setReturningOrderId(null); }
   };
 
-  const getOrderItems = (items: Json): any[] => Array.isArray(items) ? items : [];
 
   const getEstimatedDelivery = (order: Order): string | null => {
     if (order.estimated_delivery) return order.estimated_delivery;
