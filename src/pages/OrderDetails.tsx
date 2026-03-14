@@ -56,16 +56,25 @@ const OrderDetails = () => {
 
   useScrollToTop();
 
+  const formatStatusLabel = (status: string) =>
+    status.replaceAll('_', ' ').replace(/\b\w/g, (ch) => ch.toUpperCase());
+
   useEffect(() => {
     if (user && id) {
       fetchOrder();
-      // Poll every 15 seconds for real-time status updates
-      const interval = setInterval(fetchOrder, 15000);
+      // Poll every 5 seconds for faster UI sync during testing
+      const interval = setInterval(fetchOrder, 5000);
       // Subscribe to real-time changes
       const channel = supabase
         .channel(`order-${id}`)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
-          setOrder(payload.new as Order);
+          const next = payload.new as Order;
+          setOrder((prev) => {
+            if (prev && prev.status !== next.status) {
+              toast.success(`Order status changed to ${formatStatusLabel(next.status)}`);
+            }
+            return next;
+          });
         })
         .subscribe();
       return () => {
@@ -80,7 +89,14 @@ const OrderDetails = () => {
       const { data, error } = await supabase
         .from('orders').select('*').eq('id', id).eq('user_id', user?.id).single();
       if (error) { toast.error('Order not found'); navigate('/orders'); }
-      else setOrder(data);
+      else {
+        setOrder((prev) => {
+          if (prev && prev.status !== data.status) {
+            toast.success(`Order status changed to ${formatStatusLabel(data.status)}`);
+          }
+          return data;
+        });
+      }
     } catch (error) { console.error('Error:', error); }
     finally { setLoading(false); }
   };
