@@ -160,9 +160,6 @@ const Cart = () => {
                 </div>
               </div>
 
-              <div className="mt-4 bg-green-700 text-white rounded-xl py-3 px-4 text-center font-semibold text-base">
-                {translations.with_upi || 'With UPI'}: <span className="text-lg font-bold">₹{totalWithUPI}</span>
-              </div>
             </CardContent>
           </Card>
 
