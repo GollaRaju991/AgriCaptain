@@ -112,6 +112,7 @@ const App = () => (
                     <Route path="/seller/edit-product/:id" element={<EditProduct />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="/scanner" element={<Scanner />} />
+                    <Route path="/admin/orders" element={<AdminOrders />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
