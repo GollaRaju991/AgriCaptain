@@ -10,6 +10,16 @@ import {
   Bell,
   Heart,
   Ticket,
+  Wallet,
+  MapPin,
+  Languages,
+  BellRing,
+  ShieldCheck,
+  IndianRupee,
+  Store,
+  FileText,
+  MessageCircleQuestion,
+  Headphones,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileInformation from './sections/ProfileInformation';
@@ -109,35 +119,55 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
           {sectionHeader(<CreditCard className="h-5 w-5" />, 'Payments')}
           <div className="border-b pb-1">
             <span className={sidebarLinkClass('agrizin-money')} onClick={() => setActiveSection('agrizin-money')}>Agrizin Money</span>
-            <span className={sidebarLinkClass('gift-cards')} onClick={() => setActiveSection('gift-cards')}>Gift Cards</span>
+            <span className={sidebarLinkClass('saved-cards')} onClick={() => setActiveSection('saved-cards')}>Saved Credit / Debit Cards</span>
             <span className={sidebarLinkClass('saved-upi')} onClick={() => setActiveSection('saved-upi')}>Saved UPI</span>
-            <span className={sidebarLinkClass('saved-cards')} onClick={() => setActiveSection('saved-cards')}>Saved Cards</span>
+            <span className={sidebarLinkClass('gift-cards')} onClick={() => setActiveSection('gift-cards')}>Gift Cards</span>
           </div>
 
           {/* MY STUFF */}
           {sectionHeader(<Gift className="h-5 w-5" />, 'My Stuff')}
           <div className="border-b pb-1">
             <span className={sidebarLinkClass('coupons')} onClick={() => setActiveSection('coupons')}>My Coupons</span>
-            <span className={sidebarLinkClass('notifications')} onClick={() => setActiveSection('notifications')}>All Notifications</span>
             <span className={sidebarLinkClass('wishlist')} onClick={() => setActiveSection('wishlist')}>My Wishlist</span>
+            <span className={sidebarLinkClass('notifications')} onClick={() => setActiveSection('notifications')}>All Notifications</span>
+          </div>
+
+          {/* EARN WITH AGRIZIN */}
+          {sectionHeader(<Store className="h-5 w-5" />, 'Earn with Agrizin')}
+          <div className="border-b pb-1">
+            <span
+              className="block px-6 py-3.5 text-sm cursor-pointer hover:bg-primary/5 transition-colors text-foreground"
+              onClick={() => navigate('/become-seller')}
+            >
+              Sell on Agrizin
+            </span>
+          </div>
+
+          {/* FEEDBACK & INFO */}
+          {sectionHeader(<FileText className="h-5 w-5" />, 'Feedback & Information')}
+          <div className="border-b pb-1">
+            <span
+              className="block px-6 py-3.5 text-sm cursor-pointer hover:bg-primary/5 transition-colors text-foreground"
+              onClick={() => navigate('/terms-policies')}
+            >
+              Terms, Policies and Licenses
+            </span>
+            <span className={sidebarLinkClass('faqs')} onClick={() => setActiveSection('faqs')}>Browse FAQs</span>
+            <span
+              className="block px-6 py-3.5 text-sm cursor-pointer hover:bg-primary/5 transition-colors text-foreground"
+              onClick={() => navigate('/help-center')}
+            >
+              Help Center
+            </span>
           </div>
 
           {/* LOGOUT */}
           <div
-            className="flex items-center gap-3 px-6 py-5 cursor-pointer hover:bg-destructive/10 border-b transition-colors"
+            className="flex items-center gap-3 px-6 py-5 cursor-pointer hover:bg-destructive/10 transition-colors"
             onClick={onSignOut}
           >
             <LogOut className="h-5 w-5 text-primary" />
             <span className="text-sm font-semibold text-foreground">Logout</span>
-          </div>
-
-          {/* Frequently Visited */}
-          <div className="px-6 py-5">
-            <p className="text-xs font-semibold text-muted-foreground mb-2">Frequently Visited:</p>
-            <div className="flex gap-4 text-xs text-primary">
-              <span className="cursor-pointer hover:underline" onClick={() => navigate('/orders')}>Track Order</span>
-              <span className="cursor-pointer hover:underline" onClick={() => navigate('/help-center')}>Help Center</span>
-            </div>
           </div>
         </div>
 
