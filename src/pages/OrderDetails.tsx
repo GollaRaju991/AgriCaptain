@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeft, Package, Truck, CheckCircle, Clock, XCircle,
-  Loader2, RotateCcw, Copy, Home, User, Phone, ChevronRight, CreditCard, MessageCircle, MapPin, Calendar
+  Loader2, RotateCcw, Copy, Home, User, Phone, ChevronRight, CreditCard, MessageCircle, MapPin, Calendar, IndianRupee, Banknote, CircleDollarSign, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -60,6 +60,8 @@ const OrderDetails = () => {
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [returnReason, setReturnReason] = useState('');
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [refundDialogOpen, setRefundDialogOpen] = useState(false);
+  const [returnRequest, setReturnRequest] = useState<any>(null);
 
   useScrollToTop();
 
@@ -69,6 +71,7 @@ const OrderDetails = () => {
   useEffect(() => {
     if (user && id) {
       fetchOrder();
+      fetchReturnRequest();
       const interval = setInterval(fetchOrder, 5000);
       const channel = supabase
         .channel(`order-${id}`)
@@ -88,6 +91,19 @@ const OrderDetails = () => {
       };
     }
   }, [user, id]);
+
+  const fetchReturnRequest = async () => {
+    if (!id || !user) return;
+    const { data } = await supabase
+      .from('return_requests')
+      .select('*')
+      .eq('order_id', id)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data) setReturnRequest(data);
+  };
 
   const fetchOrder = async () => {
     try {
@@ -178,6 +194,7 @@ const OrderDetails = () => {
         action_url: '/orders'
       });
       await fetchOrder();
+      await fetchReturnRequest();
       toast.success(`Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`, { duration: 6000 });
     } catch { toast.error('Failed to initiate return.'); }
     finally { setReturningOrder(false); setReturnReason(''); }
@@ -297,8 +314,14 @@ const OrderDetails = () => {
     }
 
     if (order.status === 'cancelled' || order.status === 'returned') {
+      const refundOption = (order.payment_status === 'refunded' || returnRequest) 
+        ? { label: 'Refund Details', icon: <IndianRupee className="h-4 w-4" />, action: () => setRefundDialogOpen(true), hasArrow: true }
+        : null;
       return {
-        primary: [chatOption],
+        primary: [
+          ...(refundOption ? [refundOption] : []),
+          chatOption,
+        ],
       };
     }
 
@@ -788,6 +811,123 @@ const OrderDetails = () => {
               Submit Return Request
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refund Details Dialog */}
+      <Dialog open={refundDialogOpen} onOpenChange={setRefundDialogOpen}>
+        <DialogContent className="max-w-md mx-auto rounded-xl p-0 overflow-hidden">
+          <div className="bg-green-50 px-5 py-4 border-b">
+            <DialogHeader>
+              <DialogTitle className="text-base font-bold text-gray-900 flex items-center gap-2">
+                <IndianRupee className="h-5 w-5 text-green-600" />
+                Refund Details
+              </DialogTitle>
+              <DialogDescription className="text-sm text-gray-600 mt-1">
+                Track the status of your refund for order #{order.order_number}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <div className="px-5 py-4 space-y-4">
+            {/* Refund Amount Card */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-500">Refund Amount</p>
+                <p className="text-xl font-bold text-green-700">₹{(returnRequest?.refund_amount || order.total_amount).toLocaleString()}</p>
+              </div>
+              <CircleDollarSign className="h-8 w-8 text-green-500" />
+            </div>
+
+            {/* Refund Method */}
+            <div className="flex items-center justify-between text-sm bg-gray-50 rounded-lg px-4 py-3">
+              <span className="text-gray-500">Refund to</span>
+              <span className="font-medium text-gray-800">
+                {order.payment_method === 'cod' ? 'Original Payment Method (UPI)' :
+                 order.payment_method === 'upi' ? 'Original UPI Account' :
+                 order.payment_method === 'card' ? 'Original Card' :
+                 order.payment_method === 'netbanking' ? 'Original Bank Account' : 'Original Payment Method'}
+              </span>
+            </div>
+
+            {/* Refund Status Timeline */}
+            {(() => {
+              const refundStatus = returnRequest?.refund_status || 'processing';
+              const refundSteps = [
+                { key: 'approved', label: 'Return Approved', description: 'Your return request has been approved', icon: <CheckCircle className="h-4 w-4" /> },
+                { key: 'processing', label: 'Refund Initiated', description: 'Refund is being processed by our team', icon: <Clock className="h-4 w-4" /> },
+                { key: 'in_transit', label: 'Sent to Bank', description: 'Refund has been sent to your bank/payment provider', icon: <Banknote className="h-4 w-4" /> },
+                { key: 'completed', label: 'Refund Completed', description: 'Amount credited to your account', icon: <ShieldCheck className="h-4 w-4" /> },
+              ];
+
+              const statusOrder = ['approved', 'processing', 'in_transit', 'completed'];
+              const currentIdx = statusOrder.indexOf(refundStatus);
+              // If status is 'processing', show first two as complete
+              const activeIdx = refundStatus === 'processing' ? 1 : currentIdx;
+
+              return (
+                <div className="space-y-0">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Refund Progress</p>
+                  {refundSteps.map((step, idx) => {
+                    const isCompleted = idx < activeIdx;
+                    const isCurrent = idx === activeIdx;
+                    const isPending = idx > activeIdx;
+
+                    return (
+                      <div key={step.key} className="flex gap-3 relative">
+                        {/* Vertical line */}
+                        <div className="flex flex-col items-center">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            isCompleted ? 'bg-green-100 text-green-600' :
+                            isCurrent ? 'bg-green-500 text-white ring-2 ring-green-200' :
+                            'bg-gray-100 text-gray-400'
+                          }`}>
+                            {step.icon}
+                          </div>
+                          {idx < refundSteps.length - 1 && (
+                            <div className={`w-0.5 h-8 my-1 ${
+                              isCompleted ? 'bg-green-400' : 'bg-gray-200'
+                            }`} />
+                          )}
+                        </div>
+                        {/* Content */}
+                        <div className="pb-4 pt-1">
+                          <p className={`text-sm font-semibold ${
+                            isCompleted || isCurrent ? 'text-gray-900' : 'text-gray-400'
+                          }`}>{step.label}</p>
+                          <p className={`text-xs mt-0.5 ${
+                            isCompleted || isCurrent ? 'text-gray-500' : 'text-gray-300'
+                          }`}>{step.description}</p>
+                          {isCompleted && returnRequest?.created_at && (
+                            <p className="text-[10px] text-green-600 mt-0.5">{formatDate(returnRequest.created_at)}</p>
+                          )}
+                          {isCurrent && (
+                            <span className="inline-block text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full mt-1 font-medium">In Progress</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+
+            {/* Estimated refund timeline */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 flex items-start gap-2">
+              <Clock className="h-4 w-4 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold">Estimated refund timeline</p>
+                <p className="mt-0.5">Refunds typically take 5-7 business days to reflect in your account after processing.</p>
+              </div>
+            </div>
+
+            {/* Reason */}
+            {returnRequest?.reason && (
+              <div className="text-xs text-gray-500">
+                <span className="font-medium text-gray-700">Return reason:</span> {returnRequest.reason}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
