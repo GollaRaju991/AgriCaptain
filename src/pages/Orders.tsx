@@ -244,7 +244,7 @@ const Orders = () => {
 
       {/* Breadcrumb - Desktop */}
       <div className="hidden lg:block bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-2">
+        <div className="w-full px-4 lg:px-6 py-2">
           <nav className="text-sm text-gray-500">
             <span className="hover:text-blue-600 cursor-pointer" onClick={() => navigate('/')}>Home</span>
             <span className="mx-1">›</span>
@@ -262,8 +262,8 @@ const Orders = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
-        <div className="flex gap-6">
+      <div className="w-full px-4 lg:px-6 py-4 lg:py-6">
+        <div className="flex gap-4 lg:gap-6">
           {/* Sidebar Filters - Desktop Only */}
           <div className="hidden lg:block w-60 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm p-4 sticky top-20">

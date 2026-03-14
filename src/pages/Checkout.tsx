@@ -200,7 +200,8 @@ const Checkout = () => {
           id: item.id,
           name: item.name,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
+          image: item.image
         })),
         totalAmount: finalTotal,
         paymentMethod: paymentMethod,
@@ -326,7 +327,8 @@ const Checkout = () => {
         items: items.map(item => ({
           name: item.name,
           quantity: item.quantity,
-          price: item.price
+          price: item.price,
+          image: item.image
         })),
         shippingAddress: selectedAddress,
         paymentSummary: {
