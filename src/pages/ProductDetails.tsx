@@ -504,10 +504,10 @@ const ProductDetails = () => {
           {/* Product Info - Flipkart Style on Mobile */}
           <div className="px-4 lg:px-0">
             <div className="mb-3 lg:mb-4">
-              <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-xs">
+              <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-sm">
                 {product.category.toUpperCase()}
               </Badge>
-              <h1 className="text-lg lg:text-3xl font-medium lg:font-bold text-foreground mb-1 lg:mb-2">
+              <h1 className="text-lg lg:text-4xl font-medium lg:font-bold text-foreground mb-1 lg:mb-3">
                 {translateProductName(product.name, language)}
               </h1>
               
@@ -524,48 +524,48 @@ const ProductDetails = () => {
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-sm text-muted-foreground">
+                  <span className="ml-2 text-base text-muted-foreground">
                     {product.rating} ({product.reviews || allReviews.length} reviews)
                   </span>
                 </div>
               </div>
 
               {/* Short Description - Desktop */}
-              <p className="hidden lg:block text-muted-foreground mb-4">{product.shortDescription}</p>
+              <p className="hidden lg:block text-base text-muted-foreground mb-4">{product.shortDescription}</p>
             </div>
 
             {/* Price Section - Flipkart Style */}
             <div className="mb-4 lg:mb-6">
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-2xl lg:text-3xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
+                <span className="text-2xl lg:text-4xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
                 {product.originalPrice > product.price && (
                   <>
                     <span className="text-base lg:text-xl text-muted-foreground line-through">
                       ₹{product.originalPrice.toLocaleString()}
                     </span>
-                    <span className="text-green-600 font-semibold text-sm lg:text-base">
+                    <span className="text-green-600 font-semibold text-sm lg:text-lg">
                       {product.discount}% off
                     </span>
                   </>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">inclusive of all taxes</p>
+              <p className="text-xs lg:text-sm text-muted-foreground">inclusive of all taxes</p>
             </div>
 
             {/* Offers Section - Flipkart Style */}
             <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
               <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Tag className="h-4 w-4" />
-                  <span className="font-semibold text-sm">Available Offers</span>
+                  <Tag className="h-5 w-5" />
+                  <span className="font-semibold text-sm lg:text-base">Available Offers</span>
                 </div>
               </div>
               <div className="bg-blue-50 dark:bg-blue-950/20 divide-y divide-blue-100 dark:divide-blue-900">
                 <div className="px-4 py-3 flex items-start gap-3">
                   <Tag className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Coupon Discount</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">Coupon Discount</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       Use code <span className="font-bold text-green-700">AGRI100</span> to get ₹100 off on orders above ₹999
                     </p>
                   </div>
@@ -573,8 +573,8 @@ const ProductDetails = () => {
                 <div className="px-4 py-3 flex items-start gap-3">
                   <CreditCard className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Bank Offer</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">Bank Offer</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       10% off on SBI Credit Card, up to ₹500 on orders above ₹2,000
                     </p>
                   </div>
@@ -582,8 +582,8 @@ const ProductDetails = () => {
                 <div className="px-4 py-3 flex items-start gap-3">
                   <Smartphone className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">UPI Offer</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">UPI Offer</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       Pay via UPI and get ₹50 cashback on first order
                     </p>
                   </div>
@@ -591,8 +591,8 @@ const ProductDetails = () => {
                 <div className="px-4 py-3 flex items-start gap-3">
                   <Zap className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Special Offer</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">Special Offer</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       Buy 2 or more items and get extra 5% off
                     </p>
                   </div>
@@ -602,16 +602,16 @@ const ProductDetails = () => {
 
             {/* Delivery Info - Flipkart compact style on mobile */}
             <div className="flex flex-wrap gap-3 mb-4 lg:mb-6 py-3 border-y border-border lg:border-0 lg:p-4 lg:bg-green-50 lg:rounded-lg">
-              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
-                <Truck className="h-4 w-4 text-green-600" />
+              <div className="flex items-center gap-1.5 text-xs lg:text-base">
+                <Truck className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="font-medium">Free Delivery</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
-                <RotateCcw className="h-4 w-4 text-green-600" />
+              <div className="flex items-center gap-1.5 text-xs lg:text-base">
+                <RotateCcw className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="font-medium">7 Day Returns</span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs lg:text-sm">
-                <Shield className="h-4 w-4 text-green-600" />
+              <div className="flex items-center gap-1.5 text-xs lg:text-base">
+                <Shield className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
                 <span className="font-medium">Quality Assured</span>
               </div>
             </div>
@@ -624,7 +624,7 @@ const ProductDetails = () => {
             {/* Quantity and Actions - Desktop only */}
             <div className="hidden lg:block mb-6">
               <div className="flex items-center space-x-4 mb-4">
-                <label className="text-sm font-medium">{translations.quantity}:</label>
+                <label className="text-base font-medium">{translations.quantity}:</label>
                 <div className="flex items-center border rounded">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
