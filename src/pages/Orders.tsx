@@ -262,8 +262,8 @@ const Orders = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
-        <div className="flex gap-6">
+      <div className="w-full px-4 lg:px-6 py-4 lg:py-6">
+        <div className="flex gap-4 lg:gap-6">
           {/* Sidebar Filters - Desktop Only */}
           <div className="hidden lg:block w-60 flex-shrink-0">
             <div className="bg-white rounded-lg shadow-sm p-4 sticky top-20">
