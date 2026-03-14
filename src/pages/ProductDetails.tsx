@@ -573,8 +573,8 @@ const ProductDetails = () => {
                 <div className="px-4 py-3 flex items-start gap-3">
                   <CreditCard className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">Bank Offer</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">Bank Offer</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       10% off on SBI Credit Card, up to ₹500 on orders above ₹2,000
                     </p>
                   </div>
