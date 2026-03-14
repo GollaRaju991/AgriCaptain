@@ -159,7 +159,7 @@ const Orders = () => {
   if (!user) return <Navigate to="/auth" replace />;
 
   const canCancelOrder = (order: Order): boolean => {
-    if (['cancelled', 'delivered', 'shipped', 'returned'].includes(order.status)) return false;
+    if (['cancelled', 'delivered', 'shipped', 'out_for_delivery', 'returned'].includes(order.status)) return false;
     return (Date.now() - new Date(order.created_at).getTime()) / (1000 * 60 * 60) <= 24;
   };
 
