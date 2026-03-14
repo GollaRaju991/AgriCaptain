@@ -10,7 +10,7 @@ const ScannerPromoBanner = () => {
   return (
     <div className="w-full px-2 md:px-4 py-3">
       <Link to="/scanner">
-        <div className="relative bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 rounded-2xl overflow-hidden shadow-sm border border-green-100 flex items-stretch min-h-[120px] md:min-h-[140px]">
+        <div className="relative bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 rounded-2xl overflow-hidden shadow-sm border border-green-100 flex items-stretch min-h-[100px] md:min-h-[100px] md:max-h-[120px]">
           {/* Left Content */}
           <div className="flex-1 p-3 md:p-5 flex flex-col justify-center z-10">
             <h3 className="text-xl md:text-2xl font-extrabold leading-tight">
