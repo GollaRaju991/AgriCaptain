@@ -200,7 +200,8 @@ const Checkout = () => {
           id: item.id,
           name: item.name,
           price: item.price,
-          quantity: item.quantity
+          quantity: item.quantity,
+          image: item.image
         })),
         totalAmount: finalTotal,
         paymentMethod: paymentMethod,
