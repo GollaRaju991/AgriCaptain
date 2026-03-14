@@ -144,7 +144,7 @@ const Profile = () => {
           {/* Quick Action Buttons - 2x2 grid */}
           <div className="bg-white px-4 py-3 grid grid-cols-2 gap-3 border-b">
             <a href="/orders" className="flex items-center space-x-2 border rounded-lg px-3 py-3 hover:bg-gray-50">
-              <Package className="h-5 w-5 text-blue-600" />
+              <Package className="h-5 w-5 text-primary" />
               <span className="text-sm font-medium text-foreground">Orders</span>
             </a>
             <a href="/wishlist" className="flex items-center space-x-2 border rounded-lg px-3 py-3 hover:bg-gray-50">
