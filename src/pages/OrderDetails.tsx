@@ -125,6 +125,15 @@ const OrderDetails = () => {
     try {
       const { error } = await supabase.from('orders').update({ status: 'returned', payment_status: 'refunded' }).eq('id', order.id);
       if (error) { toast.error('Failed to initiate return.'); return; }
+      // Create return request record
+      await supabase.from('return_requests').insert({
+        order_id: order.id,
+        user_id: user?.id,
+        reason: 'Customer requested return',
+        status: 'approved',
+        refund_amount: order.total_amount,
+        refund_status: 'processing'
+      });
       await supabase.from('notifications').insert({
         user_id: user?.id, order_id: order.id, type: 'order', title: 'Return Initiated',
         message: `Return initiated for order #${order.order_number}. ₹${order.total_amount} will be refunded within 5-7 business days.`,
