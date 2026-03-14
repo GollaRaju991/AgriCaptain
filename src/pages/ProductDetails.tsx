@@ -582,8 +582,8 @@ const ProductDetails = () => {
                 <div className="px-4 py-3 flex items-start gap-3">
                   <Smartphone className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-foreground">UPI Offer</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-sm lg:text-base font-medium text-foreground">UPI Offer</p>
+                    <p className="text-xs lg:text-sm text-muted-foreground mt-0.5">
                       Pay via UPI and get ₹50 cashback on first order
                     </p>
                   </div>
