@@ -32,7 +32,7 @@ const ProductCategories = () => {
 
   return (
     <section className="py-4 md:py-8 bg-background">
-      <div className="max-w-7xl mx-auto px-3 md:px-4">
+      <div className="w-full px-3 md:px-4">
         {/* Header with View All */}
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <h2 className="text-lg md:text-2xl font-bold text-foreground">
