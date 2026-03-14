@@ -16,13 +16,14 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get active orders - limit batch to prevent timeout
+    // Get active orders. Keep a high cap so newly created test orders also progress quickly.
+    // (Older hard limit of 10 caused newer orders to wait behind backlog.)
     const { data: orders, error } = await supabase
       .from("orders")
       .select("*")
       .in("status", ["pending", "processing", "shipped", "out_for_delivery"])
       .order("created_at", { ascending: true })
-      .limit(10);
+      .limit(200);
 
     
 
