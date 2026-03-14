@@ -71,6 +71,7 @@ const OrderDetails = () => {
   useEffect(() => {
     if (user && id) {
       fetchOrder();
+      fetchReturnRequest();
       const interval = setInterval(fetchOrder, 5000);
       const channel = supabase
         .channel(`order-${id}`)
@@ -90,6 +91,19 @@ const OrderDetails = () => {
       };
     }
   }, [user, id]);
+
+  const fetchReturnRequest = async () => {
+    if (!id || !user) return;
+    const { data } = await supabase
+      .from('return_requests')
+      .select('*')
+      .eq('order_id', id)
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data) setReturnRequest(data);
+  };
 
   const fetchOrder = async () => {
     try {
