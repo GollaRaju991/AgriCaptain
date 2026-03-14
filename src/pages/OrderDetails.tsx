@@ -381,7 +381,7 @@ const OrderDetails = () => {
           </div>
 
           {/* Right Sidebar - Delivery & Price Details */}
-          <div className="w-full lg:w-[360px] flex-shrink-0 space-y-4">
+          <div className="w-full lg:w-[400px] flex-shrink-0 space-y-4">
             {/* Delivery Details */}
             {shippingAddress && (
               <div className="bg-white rounded-lg shadow-sm p-4 lg:p-5">

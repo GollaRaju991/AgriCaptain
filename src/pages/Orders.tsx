@@ -328,7 +328,7 @@ const Orders = () => {
                   className="w-full h-11 pl-4 pr-4 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 />
               </div>
-              <Button className="h-11 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+              <Button className="h-11 px-6 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium">
                 <Search className="h-4 w-4 mr-2" />
                 Search Orders
               </Button>
