@@ -316,7 +316,12 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <Input
                       placeholder="XXXX XXXX XXXX XXXX"
                       value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\D/g, '').slice(0, 16);
+                        const formatted = raw.replace(/(.{4})/g, '$1 ').trim();
+                        setCardNumber(formatted);
+                      }}
+                      maxLength={19}
                       className="mt-1"
                     />
                   </div>
