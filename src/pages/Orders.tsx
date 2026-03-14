@@ -237,19 +237,6 @@ const Orders = () => {
 
   const trackingOrder = orders.find(o => o.id === trackingOrderId);
 
-  // Flatten orders into individual product rows
-  const productRows = useMemo(() => {
-    const rows: { order: Order; item: any; itemIndex: number }[] = [];
-    filteredOrders.forEach(order => {
-      const items = getOrderItems(order.items);
-      if (items.length === 0) {
-        rows.push({ order, item: { name: 'Order Item', price: order.total_amount, quantity: 1 }, itemIndex: 0 });
-      } else {
-        items.forEach((item, idx) => rows.push({ order, item, itemIndex: idx }));
-      }
-    });
-    return rows;
-  }, [filteredOrders]);
 
   return (
     <div className="min-h-screen bg-gray-50">
