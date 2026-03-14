@@ -213,12 +213,13 @@ const AdminOrders = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           {[
             { key: 'all', label: 'All', icon: Package, color: 'text-gray-700 bg-gray-100' },
             { key: 'pending', label: 'Pending', icon: Clock, color: 'text-gray-700 bg-gray-50' },
             { key: 'processing', label: 'Processing', icon: RefreshCw, color: 'text-yellow-700 bg-yellow-50' },
             { key: 'shipped', label: 'Shipped', icon: Truck, color: 'text-blue-700 bg-blue-50' },
+            { key: 'out_for_delivery', label: 'Out for Delivery', icon: Truck, color: 'text-purple-700 bg-purple-50' },
             { key: 'delivered', label: 'Delivered', icon: CheckCircle, color: 'text-green-700 bg-green-50' },
             { key: 'cancelled', label: 'Cancelled', icon: XCircle, color: 'text-red-700 bg-red-50' },
             { key: 'returned', label: 'Returned', icon: RotateCcw, color: 'text-orange-700 bg-orange-50' },

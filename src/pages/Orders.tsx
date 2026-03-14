@@ -292,6 +292,7 @@ const Orders = () => {
                 <div className="space-y-2.5">
                   {[
                     { key: 'shipped', label: 'On the way' },
+                    { key: 'out_for_delivery', label: 'Out for Delivery' },
                     { key: 'delivered', label: 'Delivered' },
                     { key: 'cancelled', label: 'Cancelled' },
                     { key: 'returned', label: 'Returned' },
