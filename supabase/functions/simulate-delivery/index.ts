@@ -24,7 +24,7 @@ serve(async (req) => {
       .order("created_at", { ascending: true })
       .limit(10);
 
-    console.log("Query result:", orders?.length, "orders, error:", error?.message);
+    
 
     if (error) throw error;
 
