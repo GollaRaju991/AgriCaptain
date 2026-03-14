@@ -537,19 +537,19 @@ const ProductDetails = () => {
             {/* Price Section - Flipkart Style */}
             <div className="mb-4 lg:mb-6">
               <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-2xl lg:text-3xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
+                <span className="text-2xl lg:text-4xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
                 {product.originalPrice > product.price && (
                   <>
                     <span className="text-base lg:text-xl text-muted-foreground line-through">
                       ₹{product.originalPrice.toLocaleString()}
                     </span>
-                    <span className="text-green-600 font-semibold text-sm lg:text-base">
+                    <span className="text-green-600 font-semibold text-sm lg:text-lg">
                       {product.discount}% off
                     </span>
                   </>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">inclusive of all taxes</p>
+              <p className="text-xs lg:text-sm text-muted-foreground">inclusive of all taxes</p>
             </div>
 
             {/* Offers Section - Flipkart Style */}
