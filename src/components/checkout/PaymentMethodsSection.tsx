@@ -73,12 +73,15 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
   onPayment
 }) => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [timeLeft, setTimeLeft] = useState(10 * 60);
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [selectedSavedCard, setSelectedSavedCard] = useState<string>('');
   const [savedCardCvv, setSavedCardCvv] = useState('');
   const [showNewCardForm, setShowNewCardForm] = useState(false);
   const [saveNewCard, setSaveNewCard] = useState(false);
+  const [upiVerified, setUpiVerified] = useState(false);
+  const [upiVerifying, setUpiVerifying] = useState(false);
 
   useEffect(() => {
     if (user) fetchSavedCards();
