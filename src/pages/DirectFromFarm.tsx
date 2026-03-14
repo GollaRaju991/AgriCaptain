@@ -341,7 +341,7 @@ const DirectFromFarm: React.FC = () => {
       {/* Desktop Header */}
       <div className="hidden lg:block"><Header /></div>
 
-      <div className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
+      <div className="w-full px-4 py-4 lg:py-6">
         {/* Desktop search & filters */}
         <div className="hidden lg:block mb-6">
           <div className="flex items-center justify-between mb-4">
