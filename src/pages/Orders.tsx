@@ -234,6 +234,8 @@ const Orders = () => {
     switch (status) {
       case 'delivered':
         return { color: 'text-green-600', dot: 'bg-green-500', label: `Delivered on ${formattedDate}`, sub: 'Your item has been delivered' };
+      case 'out_for_delivery':
+        return { color: 'text-purple-600', dot: 'bg-purple-500 animate-pulse', label: `Out for Delivery`, sub: 'Your item is on its way to you 🚚' };
       case 'shipped':
         return { color: 'text-blue-600', dot: 'bg-blue-500', label: `Shipped on ${formattedDate}`, sub: 'Your item is on the way' };
       case 'processing':

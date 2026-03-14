@@ -185,6 +185,7 @@ const AdminOrders = () => {
     pending: orders.filter(o => o.status === 'pending').length,
     processing: orders.filter(o => o.status === 'processing').length,
     shipped: orders.filter(o => o.status === 'shipped').length,
+    out_for_delivery: orders.filter(o => o.status === 'out_for_delivery').length,
     delivered: orders.filter(o => o.status === 'delivered').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length,
     returned: orders.filter(o => o.status === 'returned').length,

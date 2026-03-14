@@ -289,13 +289,15 @@ const OrderDetails = () => {
                   {timelineEvents.map((event, index) => (
                     <div key={index} className="flex items-start gap-3 relative">
                       {index < timelineEvents.length - 1 && (
-                        <div className="absolute left-[15px] top-8 w-0.5 h-6 bg-gray-300" />
+                        <div className={`absolute left-[15px] top-8 w-0.5 h-6 ${event.isActive ? 'bg-green-400' : 'bg-gray-200'}`} />
                       )}
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${event.color}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${event.color} ${(event as any).isCurrent ? 'ring-2 ring-offset-1 ring-blue-400 animate-pulse' : ''}`}>
                         {event.icon}
                       </div>
                       <div className="pb-4">
-                        <p className="text-sm font-semibold text-gray-900">{event.label}, {event.date}</p>
+                        <p className={`text-sm font-semibold ${event.isActive ? 'text-gray-900' : 'text-gray-400'}`}>{event.label}</p>
+                        {event.date && <p className="text-xs text-gray-500">{event.date}</p>}
+                        {(event as any).isCurrent && <span className="text-xs text-blue-600 font-medium">Current</span>}
                       </div>
                     </div>
                   ))}
