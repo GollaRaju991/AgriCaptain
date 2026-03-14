@@ -220,6 +220,15 @@ const Checkout = () => {
     }
   };
 
+  const getPaymentDetail = () => {
+    if (paymentMethod === 'upi') return `UPI: ${upiId}`;
+    if (paymentMethod === 'card') return `Card ending ****${cardNumber.replace(/\s/g, '').slice(-4)}`;
+    if (paymentMethod === 'netbanking') return `Net Banking: ${selectedBank.toUpperCase()}`;
+    if (paymentMethod === 'emi') return `EMI: ${selectedEMI}`;
+    if (paymentMethod === 'cod') return 'Cash on Delivery';
+    return '';
+  };
+
   const handlePayment = async () => {
     if (!user || !session) {
       toast({
@@ -250,43 +259,62 @@ const Checkout = () => {
       return;
     }
 
-    // Validation for different payment methods
-    if (paymentMethod === 'upi' && !upiId) {
-      toast({
-        title: "Enter UPI ID",
-        description: "Please enter your UPI ID",
-        variant: "destructive",
-      });
+    // Validation for UPI
+    if (paymentMethod === 'upi') {
+      if (!upiId) {
+        toast({ title: "Enter UPI ID", description: "Please enter your UPI ID", variant: "destructive" });
+        return;
+      }
+      const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
+      if (!upiRegex.test(upiId)) {
+        toast({ title: "Invalid UPI ID", description: "Enter a valid UPI ID like name@bank", variant: "destructive" });
+        return;
+      }
+    }
+
+    // Validation for card
+    if (paymentMethod === 'card' && (!cardNumber || !expiryDate || !cvv || !nameOnCard)) {
+      toast({ title: "Complete card details", description: "Please fill in all card details", variant: "destructive" });
       return;
     }
 
-    if (paymentMethod === 'card' && (!cardNumber || !expiryDate || !cvv || !nameOnCard)) {
-      toast({
-        title: "Complete card details",
-        description: "Please fill in all card details",
-        variant: "destructive",
-      });
-      return;
+    if (paymentMethod === 'card') {
+      const cleanCard = cardNumber.replace(/\s/g, '');
+      if (cleanCard.length < 13 || cleanCard.length > 19 || !/^\d+$/.test(cleanCard)) {
+        toast({ title: "Invalid card number", description: "Please enter a valid card number", variant: "destructive" });
+        return;
+      }
+      if (!/^\d{2}\s?\/\s?\d{2}$/.test(expiryDate)) {
+        toast({ title: "Invalid expiry", description: "Use MM/YY format", variant: "destructive" });
+        return;
+      }
+      if (cvv.length < 3) {
+        toast({ title: "Invalid CVV", description: "CVV must be 3-4 digits", variant: "destructive" });
+        return;
+      }
     }
 
     if (paymentMethod === 'netbanking' && !selectedBank) {
-      toast({
-        title: "Select Bank",
-        description: "Please select your bank for Net Banking",
-        variant: "destructive",
-      });
+      toast({ title: "Select Bank", description: "Please select your bank for Net Banking", variant: "destructive" });
       return;
     }
 
     if (paymentMethod === 'emi' && !selectedEMI) {
-      toast({
-        title: "Select EMI Option",
-        description: "Please select an EMI option",
-        variant: "destructive",
-      });
+      toast({ title: "Select EMI Option", description: "Please select an EMI option", variant: "destructive" });
       return;
     }
 
+    // For COD, skip payment dialog
+    if (paymentMethod === 'cod') {
+      await completeOrder();
+      return;
+    }
+
+    // Show payment processing dialog for all online methods
+    setShowPaymentDialog(true);
+  };
+
+  const completeOrder = async () => {
     try {
       const orderDetails = {
         orderNumber: '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase(),
@@ -314,7 +342,7 @@ const Checkout = () => {
 
       const paymentMessage = paymentMethod === 'cod' 
         ? "Order placed successfully! You can pay when your order is delivered."
-        : `Order placed successfully! Payment will be processed using ${paymentMethod.toUpperCase()}`;
+        : `Order placed successfully! Payment of ₹${finalTotal} processed via ${paymentMethod.toUpperCase()}`;
 
       toast({
         title: "Order placed successfully!",
@@ -332,7 +360,6 @@ const Checkout = () => {
       });
     }
   };
-
   // Show loading while checking authentication
   if (authLoading) {
     return (
