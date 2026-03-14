@@ -16,12 +16,15 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all active orders (not delivered/cancelled/returned)
+    // Get active orders - limit batch to prevent timeout
     const { data: orders, error } = await supabase
       .from("orders")
       .select("*")
       .in("status", ["pending", "processing", "shipped", "out_for_delivery"])
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .limit(10);
+
+    
 
     if (error) throw error;
 
@@ -51,59 +54,52 @@ serve(async (req) => {
       }
 
       if (newStatus) {
-        const updateData: any = { status: newStatus, updated_at: now.toISOString() };
+        try {
+          const updateData: any = { status: newStatus, updated_at: now.toISOString() };
 
-        // Build tracking updates array
-        const existingUpdates = Array.isArray(order.tracking_updates) ? order.tracking_updates : [];
-        const trackingEntry = {
-          status: newStatus,
-          title: getStatusTitle(newStatus),
-          description: getStatusDescription(newStatus, order.order_number),
-          timestamp: now.toISOString(),
-          location: getStatusLocation(newStatus),
-        };
-        updateData.tracking_updates = [...existingUpdates, trackingEntry];
-
-        if (newStatus === "delivered" && order.payment_method === "cod") {
-          updateData.payment_status = "completed";
-        }
-
-        await supabase.from("orders").update(updateData).eq("id", order.id);
-
-        // Add delivery tracking entry
-        if (["shipped", "out_for_delivery", "delivered"].includes(newStatus)) {
-          await supabase.from("delivery_tracking").insert({
-            order_id: order.id,
-            user_id: order.user_id,
+          const existingUpdates = Array.isArray(order.tracking_updates) ? order.tracking_updates : [];
+          const trackingEntry = {
             status: newStatus,
-            shipped_at: newStatus === "shipped" ? now.toISOString() : null,
-            out_for_delivery_at: newStatus === "out_for_delivery" ? now.toISOString() : null,
-            delivered_at: newStatus === "delivered" ? now.toISOString() : null,
-            courier_name: "Agrizin Logistics",
-            updated_by: "auto-simulation",
-          });
+            title: getStatusTitle(newStatus),
+            description: getStatusDescription(newStatus, order.order_number),
+            timestamp: now.toISOString(),
+            location: getStatusLocation(newStatus),
+          };
+          updateData.tracking_updates = [...existingUpdates, trackingEntry];
+
+          if (newStatus === "delivered" && order.payment_method === "cod") {
+            updateData.payment_status = "completed";
+          }
+
+          const { error: updateError } = await supabase.from("orders").update(updateData).eq("id", order.id);
+          if (updateError) {
+            console.error(`Failed to update order ${order.order_number}:`, updateError);
+            continue;
+          }
+
+          // Notification (fire and forget)
+          const messages: Record<string, string> = {
+            processing: `Your order #${order.order_number} is being processed.`,
+            shipped: `Your order #${order.order_number} has been shipped!`,
+            out_for_delivery: `Your order #${order.order_number} is out for delivery! 🚚`,
+            delivered: `Your order #${order.order_number} has been delivered! ✅`,
+          };
+
+          if (messages[newStatus]) {
+            supabase.from("notifications").insert({
+              user_id: order.user_id,
+              order_id: order.id,
+              type: "order",
+              title: `Order ${getStatusTitle(newStatus)}`,
+              message: messages[newStatus],
+              action_url: "/orders",
+            }).then(() => {});
+          }
+
+          results.push(`Order ${order.order_number}: ${order.status} → ${newStatus}`);
+        } catch (e) {
+          console.error(`Error processing order ${order.order_number}:`, e);
         }
-
-        // Send notification
-        const messages: Record<string, string> = {
-          processing: `Your order #${order.order_number} is being processed.`,
-          shipped: `Your order #${order.order_number} has been shipped!`,
-          out_for_delivery: `Your order #${order.order_number} is out for delivery! 🚚`,
-          delivered: `Your order #${order.order_number} has been delivered! ✅`,
-        };
-
-        if (messages[newStatus]) {
-          await supabase.from("notifications").insert({
-            user_id: order.user_id,
-            order_id: order.id,
-            type: "order",
-            title: `Order ${getStatusTitle(newStatus)}`,
-            message: messages[newStatus],
-            action_url: "/orders",
-          });
-        }
-
-        results.push(`Order ${order.order_number}: ${order.status} → ${newStatus}`);
       }
     }
 

@@ -283,35 +283,38 @@ const OrderDetails = () => {
 
             {/* Timeline & Order Info Card */}
             <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6">
-              {/* Timeline */}
-              <div>
-                <div className="space-y-0">
+              {/* Timeline - Horizontal */}
+              <div className="overflow-x-auto pb-2">
+                <div className="flex items-start min-w-max">
                   {timelineEvents.map((event, index) => (
-                    <div key={index} className="flex items-start gap-3 relative">
-                      {index < timelineEvents.length - 1 && (
-                        <div className={`absolute left-[15px] top-8 w-0.5 h-6 ${event.isActive ? 'bg-green-400' : 'bg-gray-200'}`} />
-                      )}
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${event.color} ${(event as any).isCurrent ? 'ring-2 ring-offset-1 ring-blue-400 animate-pulse' : ''}`}>
-                        {event.icon}
-                      </div>
-                      <div className="pb-4">
-                        <p className={`text-sm font-semibold ${event.isActive ? 'text-gray-900' : 'text-gray-400'}`}>{event.label}</p>
-                        {event.date && <p className="text-xs text-gray-500">{event.date}</p>}
-                        {(event as any).isCurrent && <span className="text-xs text-blue-600 font-medium">Current</span>}
+                    <div key={index} className="flex items-start flex-1 min-w-[100px] lg:min-w-[120px]">
+                      <div className="flex flex-col items-center text-center w-full relative">
+                        {/* Connector Line */}
+                        {index < timelineEvents.length - 1 && (
+                          <div className={`absolute top-4 left-1/2 w-full h-0.5 ${event.isActive ? 'bg-green-400' : 'bg-gray-200'}`} />
+                        )}
+                        {/* Icon */}
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 relative z-10 ${event.color} ${(event as any).isCurrent ? 'ring-2 ring-offset-1 ring-blue-400 animate-pulse' : ''}`}>
+                          {event.icon}
+                        </div>
+                        {/* Label */}
+                        <p className={`text-xs font-semibold mt-2 ${event.isActive ? 'text-gray-900' : 'text-gray-400'}`}>{event.label}</p>
+                        {event.date && <p className="text-[10px] text-gray-500">{event.date}</p>}
+                        {(event as any).isCurrent && <span className="text-[10px] text-blue-600 font-medium">Current</span>}
                       </div>
                     </div>
                   ))}
                 </div>
-
-                {order.status !== 'cancelled' && order.status !== 'returned' && (
-                  <button
-                    onClick={() => setTrackingOpen(true)}
-                    className="text-sm text-blue-600 font-medium flex items-center gap-1 mt-2 hover:underline"
-                  >
-                    See All Updates <ChevronRight className="h-4 w-4" />
-                  </button>
-                )}
               </div>
+
+              {order.status !== 'cancelled' && order.status !== 'returned' && (
+                <button
+                  onClick={() => setTrackingOpen(true)}
+                  className="text-sm text-blue-600 font-medium flex items-center gap-1 mt-2 hover:underline"
+                >
+                  See All Updates <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
 
               {/* Cancelled/Returned message */}
               {order.status === 'cancelled' && (
