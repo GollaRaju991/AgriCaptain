@@ -116,6 +116,22 @@ const Orders = () => {
   const hasActiveFilters = statusFilters.length > 0 || timeFilter !== '';
   const clearAllFilters = () => { setStatusFilters([]); setTimeFilter(''); setSearchQuery(''); };
 
+  const getOrderItems = (items: Json): any[] => Array.isArray(items) ? items : [];
+
+  // Flatten orders into individual product rows (must be before early returns)
+  const productRows = useMemo(() => {
+    const rows: { order: Order; item: any; itemIndex: number }[] = [];
+    filteredOrders.forEach(order => {
+      const items = getOrderItems(order.items);
+      if (items.length === 0) {
+        rows.push({ order, item: { name: 'Order Item', price: order.total_amount, quantity: 1 }, itemIndex: 0 });
+      } else {
+        items.forEach((item, idx) => rows.push({ order, item, itemIndex: idx }));
+      }
+    });
+    return rows;
+  }, [filteredOrders]);
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -182,7 +198,6 @@ const Orders = () => {
     finally { setReturningOrderId(null); }
   };
 
-  const getOrderItems = (items: Json): any[] => Array.isArray(items) ? items : [];
 
   const getEstimatedDelivery = (order: Order): string | null => {
     if (order.estimated_delivery) return order.estimated_delivery;
@@ -222,19 +237,6 @@ const Orders = () => {
 
   const trackingOrder = orders.find(o => o.id === trackingOrderId);
 
-  // Flatten orders into individual product rows
-  const productRows = useMemo(() => {
-    const rows: { order: Order; item: any; itemIndex: number }[] = [];
-    filteredOrders.forEach(order => {
-      const items = getOrderItems(order.items);
-      if (items.length === 0) {
-        rows.push({ order, item: { name: 'Order Item', price: order.total_amount, quantity: 1 }, itemIndex: 0 });
-      } else {
-        items.forEach((item, idx) => rows.push({ order, item, itemIndex: idx }));
-      }
-    });
-    return rows;
-  }, [filteredOrders]);
 
   return (
     <div className="min-h-screen bg-gray-50">
