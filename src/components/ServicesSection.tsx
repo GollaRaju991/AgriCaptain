@@ -6,8 +6,8 @@ import catMarketIcon from '@/assets/cat-market-icon.png';
 import catFarmworkerIcon from '@/assets/cat-farmworker-icon.png';
 import catVehicleIcon from '@/assets/cat-vehicle-icon.png';
 import catLoansIcon from '@/assets/cat-loans-icon.png';
-import catDirectFarmIcon from '@/assets/cat-direct-farm-icon.png';
-import catSellCropIcon from '@/assets/cat-sell-crop-icon.png';
+import catDirectFarmIcon from '@/assets/direct-from-farm-hero.jpeg';
+import catSellCropIcon from '@/assets/sell-crop-hero.jpeg';
 
 const ServicesSection = () => {
   const { translations } = useLanguage();
