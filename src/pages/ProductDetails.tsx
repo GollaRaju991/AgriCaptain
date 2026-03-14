@@ -504,10 +504,10 @@ const ProductDetails = () => {
           {/* Product Info - Flipkart Style on Mobile */}
           <div className="px-4 lg:px-0">
             <div className="mb-3 lg:mb-4">
-              <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-xs">
+              <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-sm">
                 {product.category.toUpperCase()}
               </Badge>
-              <h1 className="text-lg lg:text-3xl font-medium lg:font-bold text-foreground mb-1 lg:mb-2">
+              <h1 className="text-lg lg:text-4xl font-medium lg:font-bold text-foreground mb-1 lg:mb-3">
                 {translateProductName(product.name, language)}
               </h1>
               
