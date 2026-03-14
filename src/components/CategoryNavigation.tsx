@@ -54,6 +54,7 @@ const CategoryNavigation = () => {
         { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting', icon: Scissors },
       ]
     },
+    { name: 'Direct From Farm', icon: Leaf, path: '/direct-from-farm' },
     { name: 'Sell Crop', icon: Wheat, path: '/sell-crop' },
     { 
       name: 'Brands', 
