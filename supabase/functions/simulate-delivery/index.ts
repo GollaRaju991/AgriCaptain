@@ -16,12 +16,13 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all active orders (not delivered/cancelled/returned)
+    // Get active orders - limit batch to prevent timeout
     const { data: orders, error } = await supabase
       .from("orders")
       .select("*")
       .in("status", ["pending", "processing", "shipped", "out_for_delivery"])
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .limit(10);
 
     if (error) throw error;
 
