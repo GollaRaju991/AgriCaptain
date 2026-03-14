@@ -14,6 +14,7 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    console.log("URL:", supabaseUrl ? "SET" : "MISSING", "KEY:", supabaseKey ? "SET" : "MISSING");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get active orders - limit batch to prevent timeout
@@ -23,6 +24,8 @@ serve(async (req) => {
       .in("status", ["pending", "processing", "shipped", "out_for_delivery"])
       .order("created_at", { ascending: true })
       .limit(10);
+
+    console.log("Query result:", orders?.length, "orders, error:", error?.message);
 
     if (error) throw error;
 
