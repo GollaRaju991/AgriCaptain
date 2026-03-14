@@ -95,11 +95,11 @@ const ServicesSection = () => {
         <div className="hidden md:grid md:grid-cols-6 gap-4">
           {/* Direct From Farm - left side card */}
           <Link to={sideCards.directFromFarm.path}>
-            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.directFromFarm.borderColor} cursor-pointer h-full flex flex-col items-center justify-center p-4`}>
-              <div className="w-20 h-20 mb-3">
-                <img src={sideCards.directFromFarm.icon} alt={sideCards.directFromFarm.name} className="w-full h-full object-contain" loading="lazy" />
+            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.directFromFarm.borderColor} cursor-pointer h-full flex flex-col items-center justify-center`}>
+              <div className="w-full aspect-square overflow-hidden">
+                <img src={sideCards.directFromFarm.icon} alt={sideCards.directFromFarm.name} className="w-full h-full object-cover" loading="lazy" />
               </div>
-              <h3 className="font-bold text-sm text-foreground text-center">{sideCards.directFromFarm.name}</h3>
+              <h3 className="font-bold text-sm text-foreground text-center py-2">{sideCards.directFromFarm.name}</h3>
             </div>
           </Link>
 
