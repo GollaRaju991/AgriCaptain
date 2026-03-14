@@ -5,10 +5,12 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { CreditCard, Smartphone, Building, Truck, CheckCircle, ChevronDown, ChevronUp, HelpCircle, Lock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { CreditCard, Smartphone, Building, Truck, CheckCircle, ChevronDown, ChevronUp, HelpCircle, Lock, Loader2 } from 'lucide-react';
 import CODAdvancePayment from './CODAdvancePayment';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface SavedCard {
   id: string;
