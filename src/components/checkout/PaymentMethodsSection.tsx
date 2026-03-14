@@ -368,13 +368,14 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                   </div>
 
                   {/* Save Card Checkbox */}
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <Checkbox
                       id="save-card"
                       checked={saveNewCard}
                       onCheckedChange={(checked) => setSaveNewCard(!!checked)}
+                      className="shrink-0"
                     />
-                    <Label htmlFor="save-card" className="text-sm text-muted-foreground cursor-pointer">
+                    <Label htmlFor="save-card" className="text-sm text-muted-foreground cursor-pointer leading-none">
                       Save this card for future payments
                     </Label>
                   </div>
