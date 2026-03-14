@@ -60,6 +60,8 @@ const OrderDetails = () => {
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [returnReason, setReturnReason] = useState('');
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [refundDialogOpen, setRefundDialogOpen] = useState(false);
+  const [returnRequest, setReturnRequest] = useState<any>(null);
 
   useScrollToTop();
 
