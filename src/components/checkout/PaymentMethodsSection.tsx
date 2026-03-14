@@ -227,7 +227,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <CheckCircle className="h-3 w-3" />
                     Payment request will be sent to your UPI app
                   </p>
-                  <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold" onClick={onPayment}>
+                  <Button size="sm" className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold" onClick={onPayment}>
                     Pay ₹{finalTotal.toLocaleString()}
                   </Button>
                 </div>
@@ -284,16 +284,19 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                               <div className="relative">
                                 <Input
                                   type="password"
-                                  placeholder="CVV"
+                                  placeholder="•••"
                                   value={savedCardCvv}
-                                  onChange={(e) => setSavedCardCvv(e.target.value)}
-                                  maxLength={4}
+                                  onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, '').slice(0, 3);
+                                    setSavedCardCvv(val);
+                                  }}
+                                  maxLength={3}
                                   className="pr-8"
                                 />
                                 <HelpCircle className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                               </div>
                             </div>
-                            <Button className="bg-amber-400 hover:bg-amber-500 text-foreground font-semibold mt-4" onClick={onPayment}>
+                            <Button className="bg-green-600 hover:bg-green-700 text-white font-semibold mt-4" onClick={onPayment}>
                               Pay ₹{finalTotal.toLocaleString()}
                             </Button>
                           </div>
@@ -316,7 +319,12 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <Input
                       placeholder="XXXX XXXX XXXX XXXX"
                       value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value.replace(/\D/g, '').slice(0, 16);
+                        const formatted = raw.replace(/(.{4})/g, '$1 ').trim();
+                        setCardNumber(formatted);
+                      }}
+                      maxLength={19}
                       className="mt-1"
                     />
                   </div>
@@ -324,9 +332,22 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <div>
                       <Label className="text-sm text-muted-foreground">Valid Thru</Label>
                       <Input
-                        placeholder="MM / YY"
+                        placeholder="MM/YY"
                         value={expiryDate}
-                        onChange={(e) => setExpiryDate(e.target.value)}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/[^\d/]/g, '');
+                          // Auto-add slash after 2 digits
+                          if (val.length === 2 && !val.includes('/') && expiryDate.length < val.length) {
+                            val = val + '/';
+                          }
+                          // Limit to MM/YY format
+                          if (val.length > 5) return;
+                          // Validate month (01-12)
+                          const month = parseInt(val.substring(0, 2));
+                          if (val.length >= 2 && (month < 1 || month > 12)) return;
+                          setExpiryDate(val);
+                        }}
+                        maxLength={5}
                         className="mt-1"
                       />
                     </div>
@@ -335,10 +356,13 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                       <div className="relative">
                         <Input
                           type="password"
-                          placeholder="CVV"
+                          placeholder="•••"
                           value={cvv}
-                          onChange={(e) => setCvv(e.target.value)}
-                          maxLength={4}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 3);
+                            setCvv(val);
+                          }}
+                          maxLength={3}
                           className="mt-1 pr-8"
                         />
                         <HelpCircle className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground mt-0.5" />
@@ -347,19 +371,20 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                   </div>
 
                   {/* Save Card Checkbox */}
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <Checkbox
                       id="save-card"
                       checked={saveNewCard}
                       onCheckedChange={(checked) => setSaveNewCard(!!checked)}
+                      className="shrink-0"
                     />
-                    <Label htmlFor="save-card" className="text-sm text-muted-foreground cursor-pointer">
+                    <Label htmlFor="save-card" className="text-sm text-muted-foreground cursor-pointer leading-none">
                       Save this card for future payments
                     </Label>
                   </div>
 
                   <Button
-                    className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3"
                     onClick={() => { if (saveNewCard) handleSaveNewCard(); onPayment?.(); }}
                   >
                     {saveNewCard ? 'Save & Pay' : 'Pay'} ₹{finalTotal.toLocaleString()}
@@ -396,7 +421,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 </select>
               </div>
               {selectedBank && (
-                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden" onClick={onPayment}>
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 lg:hidden" onClick={onPayment}>
                   Pay ₹{finalTotal.toLocaleString()}
                 </Button>
               )}
@@ -429,7 +454,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                 </div>
               </RadioGroup>
               {selectedEMI && (
-                <Button className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold py-3 lg:hidden" onClick={onPayment}>
+                <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 lg:hidden" onClick={onPayment}>
                   Pay ₹{finalTotal.toLocaleString()}
                 </Button>
               )}

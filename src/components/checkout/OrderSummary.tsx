@@ -151,7 +151,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <div className="mt-6 hidden lg:block">
             <Button 
               onClick={onPayment} 
-              className="w-full h-12 text-base font-medium bg-orange-500 hover:bg-orange-600 text-white"
+              className="w-full h-12 text-base font-medium bg-green-600 hover:bg-green-700 text-white"
               disabled={!paymentMethod || !selectedAddress || (isCOD && !codAdvancePaid)}
             >
               {isCOD 
