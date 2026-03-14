@@ -14,7 +14,6 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    console.log("URL:", supabaseUrl ? "SET" : "MISSING", "KEY:", supabaseKey ? "SET" : "MISSING");
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get active orders - limit batch to prevent timeout
