@@ -175,33 +175,41 @@ const OrderDetails = () => {
 
   // Timeline events
   const timelineEvents = (() => {
-    const events: { icon: React.ReactNode; label: string; date: string; isActive: boolean; color: string }[] = [];
-    events.push({
-      icon: <CheckCircle className="h-5 w-5" />,
-      label: 'Order Confirmed',
-      date: `Today, ${new Date(order.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`,
-      isActive: true,
-      color: 'text-green-600 bg-green-100'
-    });
+    const allSteps = [
+      { status: 'pending', label: 'Order Confirmed', icon: <CheckCircle className="h-5 w-5" />, color: 'text-green-600 bg-green-100' },
+      { status: 'processing', label: 'Processing', icon: <Package className="h-5 w-5" />, color: 'text-yellow-600 bg-yellow-100' },
+      { status: 'shipped', label: 'Shipped', icon: <Truck className="h-5 w-5" />, color: 'text-blue-600 bg-blue-100' },
+      { status: 'out_for_delivery', label: 'Out for Delivery', icon: <Truck className="h-5 w-5" />, color: 'text-purple-600 bg-purple-100' },
+      { status: 'delivered', label: 'Delivered', icon: <CheckCircle className="h-5 w-5" />, color: 'text-green-600 bg-green-100' },
+    ];
+
     if (order.status === 'cancelled') {
-      events.push({
-        icon: <XCircle className="h-5 w-5" />,
-        label: 'Cancelled',
-        date: `Today, ${new Date(order.updated_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`,
-        isActive: true,
-        color: 'text-red-600 bg-red-100'
-      });
+      return [
+        { ...allSteps[0], isActive: true, date: formatDate(order.created_at) },
+        { status: 'cancelled', label: 'Cancelled', icon: <XCircle className="h-5 w-5" />, color: 'text-red-600 bg-red-100', isActive: true, date: formatDate(order.updated_at) },
+      ];
     }
     if (order.status === 'returned') {
-      events.push({
-        icon: <RotateCcw className="h-5 w-5" />,
-        label: 'Returned',
-        date: formatDate(order.updated_at),
-        isActive: true,
-        color: 'text-orange-600 bg-orange-100'
-      });
+      return [
+        { ...allSteps[0], isActive: true, date: formatDate(order.created_at) },
+        { status: 'returned', label: 'Returned', icon: <RotateCcw className="h-5 w-5" />, color: 'text-orange-600 bg-orange-100', isActive: true, date: formatDate(order.updated_at) },
+      ];
     }
-    return events;
+
+    const statusOrder = ['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+    const currentIdx = statusOrder.indexOf(order.status);
+
+    return allSteps.map((step, idx) => {
+      const isActive = idx <= currentIdx;
+      const isCurrent = idx === currentIdx;
+      return {
+        ...step,
+        isActive,
+        isCurrent,
+        date: isActive ? (idx === 0 ? formatDate(order.created_at) : formatDate(order.updated_at)) : '',
+        color: isActive ? step.color : 'text-gray-400 bg-gray-100',
+      };
+    });
   })();
 
   const paymentMethodLabel = (() => {
