@@ -140,9 +140,10 @@ const AdminOrders = () => {
 
   const simulateDelivery = async (order: Order) => {
     setUpdatingId(order.id);
-    const steps = ['processing', 'shipped', 'delivered'];
+    const steps = ['processing', 'shipped', 'out_for_delivery', 'delivered'];
     for (const step of steps) {
-      if (['shipped', 'delivered'].includes(order.status) && step !== 'delivered') continue;
+      if (['shipped', 'out_for_delivery', 'delivered'].includes(order.status) && 
+          steps.indexOf(step) <= steps.indexOf(order.status === 'out_for_delivery' ? 'out_for_delivery' : order.status)) continue;
       if (order.status === 'delivered') break;
       await updateOrderStatus(order, step);
       await new Promise(r => setTimeout(r, 1500));
