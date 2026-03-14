@@ -284,10 +284,13 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                               <div className="relative">
                                 <Input
                                   type="password"
-                                  placeholder="CVV"
+                                  placeholder="•••"
                                   value={savedCardCvv}
-                                  onChange={(e) => setSavedCardCvv(e.target.value)}
-                                  maxLength={4}
+                                  onChange={(e) => {
+                                    const val = e.target.value.replace(/\D/g, '').slice(0, 3);
+                                    setSavedCardCvv(val);
+                                  }}
+                                  maxLength={3}
                                   className="pr-8"
                                 />
                                 <HelpCircle className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
