@@ -6,8 +6,8 @@ import catMarketIcon from '@/assets/cat-market-icon.png';
 import catFarmworkerIcon from '@/assets/cat-farmworker-icon.png';
 import catVehicleIcon from '@/assets/cat-vehicle-icon.png';
 import catLoansIcon from '@/assets/cat-loans-icon.png';
-import catDirectFarmIcon from '@/assets/cat-direct-farm-icon.png';
-import catSellCropIcon from '@/assets/cat-sell-crop-icon.png';
+import catDirectFarmIcon from '@/assets/direct-from-farm-hero.jpeg';
+import catSellCropIcon from '@/assets/sell-crop-hero.jpeg';
 
 const ServicesSection = () => {
   const { translations } = useLanguage();
@@ -68,7 +68,7 @@ const ServicesSection = () => {
 
   return (
     <section className="py-4 md:py-6 bg-background">
-      <div className="max-w-7xl mx-auto px-3 md:px-4">
+      <div className="w-full px-3 md:px-4">
         {/* Mobile: 2x2 grid of services only */}
         <div className="grid grid-cols-2 gap-3 md:hidden">
           {services.map((service, index) => (
@@ -95,11 +95,11 @@ const ServicesSection = () => {
         <div className="hidden md:grid md:grid-cols-6 gap-4">
           {/* Direct From Farm - left side card */}
           <Link to={sideCards.directFromFarm.path}>
-            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.directFromFarm.borderColor} cursor-pointer h-full flex flex-col items-center justify-center p-4`}>
-              <div className="w-20 h-20 mb-3">
-                <img src={sideCards.directFromFarm.icon} alt={sideCards.directFromFarm.name} className="w-full h-full object-contain" loading="lazy" />
+            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.directFromFarm.borderColor} cursor-pointer h-full flex flex-col items-center justify-center`}>
+              <div className="w-full aspect-square overflow-hidden">
+                <img src={sideCards.directFromFarm.icon} alt={sideCards.directFromFarm.name} className="w-full h-full object-cover" loading="lazy" />
               </div>
-              <h3 className="font-bold text-sm text-foreground text-center">{sideCards.directFromFarm.name}</h3>
+              <h3 className="font-bold text-sm text-foreground text-center py-2">{sideCards.directFromFarm.name}</h3>
             </div>
           </Link>
 
@@ -125,11 +125,11 @@ const ServicesSection = () => {
 
           {/* Sell Crop - right side card */}
           <Link to={sideCards.sellCrop.path}>
-            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.sellCrop.borderColor} cursor-pointer h-full flex flex-col items-center justify-center p-4`}>
-              <div className="w-20 h-20 mb-3">
-                <img src={sideCards.sellCrop.icon} alt={sideCards.sellCrop.name} className="w-full h-full object-contain" loading="lazy" />
+            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.sellCrop.borderColor} cursor-pointer h-full flex flex-col items-center justify-center`}>
+              <div className="w-full aspect-square overflow-hidden">
+                <img src={sideCards.sellCrop.icon} alt={sideCards.sellCrop.name} className="w-full h-full object-cover" loading="lazy" />
               </div>
-              <h3 className="font-bold text-sm text-foreground text-center">{sideCards.sellCrop.name}</h3>
+              <h3 className="font-bold text-sm text-foreground text-center py-2">{sideCards.sellCrop.name}</h3>
             </div>
           </Link>
         </div>
