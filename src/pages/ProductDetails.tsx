@@ -524,14 +524,14 @@ const ProductDetails = () => {
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-sm text-muted-foreground">
+                  <span className="ml-2 text-base text-muted-foreground">
                     {product.rating} ({product.reviews || allReviews.length} reviews)
                   </span>
                 </div>
               </div>
 
               {/* Short Description - Desktop */}
-              <p className="hidden lg:block text-muted-foreground mb-4">{product.shortDescription}</p>
+              <p className="hidden lg:block text-base text-muted-foreground mb-4">{product.shortDescription}</p>
             </div>
 
             {/* Price Section - Flipkart Style */}
