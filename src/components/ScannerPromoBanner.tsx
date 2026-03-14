@@ -12,8 +12,8 @@ const ScannerPromoBanner = () => {
       <Link to="/scanner">
         <div className="relative bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 rounded-2xl overflow-hidden shadow-sm border border-green-100 flex items-stretch min-h-[120px] md:min-h-[140px]">
           {/* Left Content */}
-          <div className="flex-1 p-4 md:p-6 flex flex-col justify-center z-10">
-            <h3 className="text-2xl md:text-3xl font-extrabold leading-tight">
+          <div className="flex-1 p-3 md:p-5 flex flex-col justify-center z-10">
+            <h3 className="text-xl md:text-2xl font-extrabold leading-tight">
               <span className="text-gray-800">{translations.scanner_crop_disease?.split(' ').slice(0, -1).join(' ') || 'Crop Disease'}</span>
               <br />
               <span className="text-green-600">{translations.scanner_crop_disease?.split(' ').slice(-1)[0] || 'Scanner'}</span>

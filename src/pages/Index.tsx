@@ -71,40 +71,33 @@ const Index = () => {
             <p className="text-sm text-gray-600">{translations.discover_products}</p>
           </div>
 
-          {/* Product Grid - Tighter gaps like Flipkart */}
+          {/* Product Grid - Full width */}
           {(() => {
             const pageProducts = products.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
-            const batch1 = pageProducts.slice(0, 4);
-            const batch2 = pageProducts.slice(4, 8);
-            const batch3 = pageProducts.slice(8);
+            const batch1 = pageProducts.slice(0, 6);
+            const batch2 = pageProducts.slice(6, 12);
             return (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 md:gap-2">
                   {batch1.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
-                {/* Ad Banner 1 - between first and second batch */}
+                {/* Ad Banner 1 */}
                 <ProductAdBanner />
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
+                {/* Weather Report */}
+                <WeatherReport />
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 md:gap-2">
                   {batch2.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
 
-                {/* Weather Report */}
-                <WeatherReport />
-
-                {/* Ad Banner 2 - between second and third batch */}
+                {/* Ad Banner 2 */}
                 <ProductAdBanner />
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-3">
-                  {batch3.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
               </>
             );
           })()}

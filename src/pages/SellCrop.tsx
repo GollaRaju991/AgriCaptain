@@ -212,7 +212,7 @@ const SellCrop: React.FC = () => {
         <CategoryNavigation />
       </div>
 
-      <main className="container mx-auto px-4 py-6 max-w-5xl">
+      <main className="w-full px-4 py-6">
         {/* Filter + Add Crop inline row */}
         <div className="flex gap-2 mb-4">
           <Button
