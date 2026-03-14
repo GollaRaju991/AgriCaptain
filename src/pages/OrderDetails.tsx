@@ -194,6 +194,7 @@ const OrderDetails = () => {
         action_url: '/orders'
       });
       await fetchOrder();
+      await fetchReturnRequest();
       toast.success(`Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`, { duration: 6000 });
     } catch { toast.error('Failed to initiate return.'); }
     finally { setReturningOrder(false); setReturnReason(''); }
