@@ -226,27 +226,28 @@ const OrderDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
+      <div className="w-full px-4 lg:px-8 py-4 lg:py-6">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {/* Left Column - Product & Tracking */}
           <div className="flex-1 min-w-0 space-y-4">
-            {/* Product Card */}
-            <div className="bg-white rounded-lg shadow-sm p-4 lg:p-6">
-              {orderItems.map((item: any, index: number) => (
-                <div key={index} className={`flex gap-4 ${index > 0 ? 'mt-4 pt-4 border-t' : ''}`}>
+            {/* Product Cards */}
+            {orderItems.map((item: any, index: number) => (
+              <div key={index} className="bg-white rounded-lg shadow-sm p-4 lg:p-6">
+                <div className="flex gap-4">
+                  <div className="w-24 h-24 lg:w-28 lg:h-28 flex-shrink-0 border border-gray-200 rounded-lg overflow-hidden bg-white">
+                    <img src={item.image || '/placeholder.svg'} alt={item.name || 'Product'} className="w-full h-full object-contain p-2" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <h2 className="text-base lg:text-lg font-medium text-gray-900 line-clamp-2">{item.name || `Item ${index + 1}`}</h2>
+                    <h2 className="text-base lg:text-lg font-semibold text-gray-900 line-clamp-2">{item.name || `Item ${index + 1}`}</h2>
                     {item.color && <p className="text-sm text-gray-500 mt-0.5">Color: {item.color}</p>}
                     {item.size && <p className="text-sm text-gray-500">Size: {item.size}</p>}
-                    {item.seller && <p className="text-sm text-gray-500">Seller: {item.seller}</p>}
+                    {item.seller && <p className="text-sm text-gray-500 mt-0.5">Seller: {item.seller}</p>}
                     <p className="text-lg font-bold text-gray-900 mt-2">₹{((item.quantity || 1) * (item.price || 0)).toLocaleString()}</p>
                     <p className="text-xs text-gray-500 mt-0.5">Qty: {item.quantity || 1}</p>
                   </div>
-                  <div className="w-20 h-20 lg:w-24 lg:h-24 flex-shrink-0 border rounded overflow-hidden bg-white">
-                    <img src={item.image || '/placeholder.svg'} alt={item.name || 'Product'} className="w-full h-full object-contain p-1" />
-                  </div>
                 </div>
-              ))}
+              </div>
+            ))}
 
               {/* Timeline */}
               <div className="mt-6 pt-4 border-t">
