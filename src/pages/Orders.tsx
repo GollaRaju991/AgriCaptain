@@ -83,6 +83,22 @@ const Orders = () => {
     }
   };
 
+  // Real-time subscription + polling for live status updates
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(fetchOrders, 15000);
+    const channel = supabase
+      .channel('orders-list')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` }, () => {
+        fetchOrders();
+      })
+      .subscribe();
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const filteredOrders = useMemo(() => {
     let result = orders;
     if (searchQuery.trim()) {
