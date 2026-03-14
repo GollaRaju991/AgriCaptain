@@ -57,7 +57,22 @@ const OrderDetails = () => {
   useScrollToTop();
 
   useEffect(() => {
-    if (user && id) fetchOrder();
+    if (user && id) {
+      fetchOrder();
+      // Poll every 15 seconds for real-time status updates
+      const interval = setInterval(fetchOrder, 15000);
+      // Subscribe to real-time changes
+      const channel = supabase
+        .channel(`order-${id}`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
+          setOrder(payload.new as Order);
+        })
+        .subscribe();
+      return () => {
+        clearInterval(interval);
+        supabase.removeChannel(channel);
+      };
+    }
   }, [user, id]);
 
   const fetchOrder = async () => {
@@ -87,7 +102,7 @@ const OrderDetails = () => {
   };
 
   const canCancelOrder = (): boolean => {
-    if (['cancelled', 'delivered', 'shipped', 'returned'].includes(order.status)) return false;
+    if (['cancelled', 'delivered', 'shipped', 'out_for_delivery', 'returned'].includes(order.status)) return false;
     return (Date.now() - new Date(order.created_at).getTime()) / (1000 * 60 * 60) <= 24;
   };
 
@@ -160,33 +175,41 @@ const OrderDetails = () => {
 
   // Timeline events
   const timelineEvents = (() => {
-    const events: { icon: React.ReactNode; label: string; date: string; isActive: boolean; color: string }[] = [];
-    events.push({
-      icon: <CheckCircle className="h-5 w-5" />,
-      label: 'Order Confirmed',
-      date: `Today, ${new Date(order.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`,
-      isActive: true,
-      color: 'text-green-600 bg-green-100'
-    });
+    const allSteps = [
+      { status: 'pending', label: 'Order Confirmed', icon: <CheckCircle className="h-5 w-5" />, color: 'text-green-600 bg-green-100' },
+      { status: 'processing', label: 'Processing', icon: <Package className="h-5 w-5" />, color: 'text-yellow-600 bg-yellow-100' },
+      { status: 'shipped', label: 'Shipped', icon: <Truck className="h-5 w-5" />, color: 'text-blue-600 bg-blue-100' },
+      { status: 'out_for_delivery', label: 'Out for Delivery', icon: <Truck className="h-5 w-5" />, color: 'text-purple-600 bg-purple-100' },
+      { status: 'delivered', label: 'Delivered', icon: <CheckCircle className="h-5 w-5" />, color: 'text-green-600 bg-green-100' },
+    ];
+
     if (order.status === 'cancelled') {
-      events.push({
-        icon: <XCircle className="h-5 w-5" />,
-        label: 'Cancelled',
-        date: `Today, ${new Date(order.updated_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}`,
-        isActive: true,
-        color: 'text-red-600 bg-red-100'
-      });
+      return [
+        { ...allSteps[0], isActive: true, date: formatDate(order.created_at) },
+        { status: 'cancelled', label: 'Cancelled', icon: <XCircle className="h-5 w-5" />, color: 'text-red-600 bg-red-100', isActive: true, date: formatDate(order.updated_at) },
+      ];
     }
     if (order.status === 'returned') {
-      events.push({
-        icon: <RotateCcw className="h-5 w-5" />,
-        label: 'Returned',
-        date: formatDate(order.updated_at),
-        isActive: true,
-        color: 'text-orange-600 bg-orange-100'
-      });
+      return [
+        { ...allSteps[0], isActive: true, date: formatDate(order.created_at) },
+        { status: 'returned', label: 'Returned', icon: <RotateCcw className="h-5 w-5" />, color: 'text-orange-600 bg-orange-100', isActive: true, date: formatDate(order.updated_at) },
+      ];
     }
-    return events;
+
+    const statusOrder = ['pending', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+    const currentIdx = statusOrder.indexOf(order.status);
+
+    return allSteps.map((step, idx) => {
+      const isActive = idx <= currentIdx;
+      const isCurrent = idx === currentIdx;
+      return {
+        ...step,
+        isActive,
+        isCurrent,
+        date: isActive ? (idx === 0 ? formatDate(order.created_at) : formatDate(order.updated_at)) : '',
+        color: isActive ? step.color : 'text-gray-400 bg-gray-100',
+      };
+    });
   })();
 
   const paymentMethodLabel = (() => {
@@ -266,13 +289,15 @@ const OrderDetails = () => {
                   {timelineEvents.map((event, index) => (
                     <div key={index} className="flex items-start gap-3 relative">
                       {index < timelineEvents.length - 1 && (
-                        <div className="absolute left-[15px] top-8 w-0.5 h-6 bg-gray-300" />
+                        <div className={`absolute left-[15px] top-8 w-0.5 h-6 ${event.isActive ? 'bg-green-400' : 'bg-gray-200'}`} />
                       )}
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${event.color}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${event.color} ${(event as any).isCurrent ? 'ring-2 ring-offset-1 ring-blue-400 animate-pulse' : ''}`}>
                         {event.icon}
                       </div>
                       <div className="pb-4">
-                        <p className="text-sm font-semibold text-gray-900">{event.label}, {event.date}</p>
+                        <p className={`text-sm font-semibold ${event.isActive ? 'text-gray-900' : 'text-gray-400'}`}>{event.label}</p>
+                        {event.date && <p className="text-xs text-gray-500">{event.date}</p>}
+                        {(event as any).isCurrent && <span className="text-xs text-blue-600 font-medium">Current</span>}
                       </div>
                     </div>
                   ))}

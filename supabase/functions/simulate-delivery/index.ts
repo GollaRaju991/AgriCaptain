@@ -16,11 +16,11 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all pending/processing orders older than 2 minutes (for demo speed)
+    // Get all active orders (not delivered/cancelled/returned)
     const { data: orders, error } = await supabase
       .from("orders")
       .select("*")
-      .in("status", ["pending", "processing", "shipped"])
+      .in("status", ["pending", "processing", "shipped", "out_for_delivery"])
       .order("created_at", { ascending: true });
 
     if (error) throw error;
@@ -34,30 +34,50 @@ serve(async (req) => {
 
       let newStatus: string | null = null;
 
-      // Auto-progress based on age
-      if (order.status === "pending" && minutesOld >= 2) {
+      // Auto-progress every 1 minute:
+      // 0-1 min: pending
+      // 1 min: processing
+      // 2 min: shipped
+      // 3 min: out_for_delivery
+      // 4 min: delivered
+      if (order.status === "pending" && minutesOld >= 1) {
         newStatus = "processing";
-      } else if (order.status === "processing" && minutesOld >= 5) {
+      } else if (order.status === "processing" && minutesOld >= 2) {
         newStatus = "shipped";
-      } else if (order.status === "shipped" && minutesOld >= 10) {
+      } else if (order.status === "shipped" && minutesOld >= 3) {
+        newStatus = "out_for_delivery";
+      } else if (order.status === "out_for_delivery" && minutesOld >= 4) {
         newStatus = "delivered";
       }
 
       if (newStatus) {
         const updateData: any = { status: newStatus, updated_at: now.toISOString() };
+
+        // Build tracking updates array
+        const existingUpdates = Array.isArray(order.tracking_updates) ? order.tracking_updates : [];
+        const trackingEntry = {
+          status: newStatus,
+          title: getStatusTitle(newStatus),
+          description: getStatusDescription(newStatus, order.order_number),
+          timestamp: now.toISOString(),
+          location: getStatusLocation(newStatus),
+        };
+        updateData.tracking_updates = [...existingUpdates, trackingEntry];
+
         if (newStatus === "delivered" && order.payment_method === "cod") {
           updateData.payment_status = "completed";
         }
 
         await supabase.from("orders").update(updateData).eq("id", order.id);
 
-        // Add delivery tracking
-        if (newStatus === "shipped" || newStatus === "delivered") {
+        // Add delivery tracking entry
+        if (["shipped", "out_for_delivery", "delivered"].includes(newStatus)) {
           await supabase.from("delivery_tracking").insert({
             order_id: order.id,
             user_id: order.user_id,
             status: newStatus,
             shipped_at: newStatus === "shipped" ? now.toISOString() : null,
+            out_for_delivery_at: newStatus === "out_for_delivery" ? now.toISOString() : null,
             delivered_at: newStatus === "delivered" ? now.toISOString() : null,
             courier_name: "Agrizin Logistics",
             updated_by: "auto-simulation",
@@ -68,7 +88,8 @@ serve(async (req) => {
         const messages: Record<string, string> = {
           processing: `Your order #${order.order_number} is being processed.`,
           shipped: `Your order #${order.order_number} has been shipped!`,
-          delivered: `Your order #${order.order_number} has been delivered!`,
+          out_for_delivery: `Your order #${order.order_number} is out for delivery! 🚚`,
+          delivered: `Your order #${order.order_number} has been delivered! ✅`,
         };
 
         if (messages[newStatus]) {
@@ -76,7 +97,7 @@ serve(async (req) => {
             user_id: order.user_id,
             order_id: order.id,
             type: "order",
-            title: `Order ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}`,
+            title: `Order ${getStatusTitle(newStatus)}`,
             message: messages[newStatus],
             action_url: "/orders",
           });
@@ -96,3 +117,33 @@ serve(async (req) => {
     });
   }
 });
+
+function getStatusTitle(status: string): string {
+  const titles: Record<string, string> = {
+    processing: "Processing",
+    shipped: "Shipped",
+    out_for_delivery: "Out for Delivery",
+    delivered: "Delivered",
+  };
+  return titles[status] || status;
+}
+
+function getStatusDescription(status: string, orderNumber: string): string {
+  const descriptions: Record<string, string> = {
+    processing: "Your order is being packed and prepared for shipping",
+    shipped: "Your package has been handed to the courier",
+    out_for_delivery: "Your package is on its way to your doorstep",
+    delivered: "Your package has been delivered successfully",
+  };
+  return descriptions[status] || "";
+}
+
+function getStatusLocation(status: string): string {
+  const locations: Record<string, string> = {
+    processing: "Agrizin Warehouse, Hyderabad",
+    shipped: "Sorting Facility, Hyderabad",
+    out_for_delivery: "Local Delivery Hub",
+    delivered: "Delivered to Customer",
+  };
+  return locations[status] || "";
+}

@@ -35,6 +35,7 @@ const statusOptions = [
   { value: 'pending', label: 'Pending', color: 'bg-gray-500' },
   { value: 'processing', label: 'Processing', color: 'bg-yellow-500' },
   { value: 'shipped', label: 'Shipped', color: 'bg-blue-500' },
+  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-purple-500' },
   { value: 'delivered', label: 'Delivered', color: 'bg-green-500' },
   { value: 'cancelled', label: 'Cancelled', color: 'bg-red-500' },
   { value: 'returned', label: 'Returned', color: 'bg-orange-500' },
@@ -139,9 +140,10 @@ const AdminOrders = () => {
 
   const simulateDelivery = async (order: Order) => {
     setUpdatingId(order.id);
-    const steps = ['processing', 'shipped', 'delivered'];
+    const steps = ['processing', 'shipped', 'out_for_delivery', 'delivered'];
     for (const step of steps) {
-      if (['shipped', 'delivered'].includes(order.status) && step !== 'delivered') continue;
+      if (['shipped', 'out_for_delivery', 'delivered'].includes(order.status) && 
+          steps.indexOf(step) <= steps.indexOf(order.status === 'out_for_delivery' ? 'out_for_delivery' : order.status)) continue;
       if (order.status === 'delivered') break;
       await updateOrderStatus(order, step);
       await new Promise(r => setTimeout(r, 1500));
@@ -168,6 +170,7 @@ const AdminOrders = () => {
       pending: 'bg-gray-100 text-gray-700',
       processing: 'bg-yellow-100 text-yellow-700',
       shipped: 'bg-blue-100 text-blue-700',
+      out_for_delivery: 'bg-purple-100 text-purple-700',
       delivered: 'bg-green-100 text-green-700',
       cancelled: 'bg-red-100 text-red-700',
       returned: 'bg-orange-100 text-orange-700',
@@ -182,6 +185,7 @@ const AdminOrders = () => {
     pending: orders.filter(o => o.status === 'pending').length,
     processing: orders.filter(o => o.status === 'processing').length,
     shipped: orders.filter(o => o.status === 'shipped').length,
+    out_for_delivery: orders.filter(o => o.status === 'out_for_delivery').length,
     delivered: orders.filter(o => o.status === 'delivered').length,
     cancelled: orders.filter(o => o.status === 'cancelled').length,
     returned: orders.filter(o => o.status === 'returned').length,
@@ -209,12 +213,13 @@ const AdminOrders = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           {[
             { key: 'all', label: 'All', icon: Package, color: 'text-gray-700 bg-gray-100' },
             { key: 'pending', label: 'Pending', icon: Clock, color: 'text-gray-700 bg-gray-50' },
             { key: 'processing', label: 'Processing', icon: RefreshCw, color: 'text-yellow-700 bg-yellow-50' },
             { key: 'shipped', label: 'Shipped', icon: Truck, color: 'text-blue-700 bg-blue-50' },
+            { key: 'out_for_delivery', label: 'Out for Delivery', icon: Truck, color: 'text-purple-700 bg-purple-50' },
             { key: 'delivered', label: 'Delivered', icon: CheckCircle, color: 'text-green-700 bg-green-50' },
             { key: 'cancelled', label: 'Cancelled', icon: XCircle, color: 'text-red-700 bg-red-50' },
             { key: 'returned', label: 'Returned', icon: RotateCcw, color: 'text-orange-700 bg-orange-50' },

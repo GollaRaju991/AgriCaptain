@@ -83,6 +83,22 @@ const Orders = () => {
     }
   };
 
+  // Real-time subscription + polling for live status updates
+  useEffect(() => {
+    if (!user) return;
+    const interval = setInterval(fetchOrders, 15000);
+    const channel = supabase
+      .channel('orders-list')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` }, () => {
+        fetchOrders();
+      })
+      .subscribe();
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const filteredOrders = useMemo(() => {
     let result = orders;
     if (searchQuery.trim()) {
@@ -143,7 +159,7 @@ const Orders = () => {
   if (!user) return <Navigate to="/auth" replace />;
 
   const canCancelOrder = (order: Order): boolean => {
-    if (['cancelled', 'delivered', 'shipped', 'returned'].includes(order.status)) return false;
+    if (['cancelled', 'delivered', 'shipped', 'out_for_delivery', 'returned'].includes(order.status)) return false;
     return (Date.now() - new Date(order.created_at).getTime()) / (1000 * 60 * 60) <= 24;
   };
 
@@ -218,6 +234,8 @@ const Orders = () => {
     switch (status) {
       case 'delivered':
         return { color: 'text-green-600', dot: 'bg-green-500', label: `Delivered on ${formattedDate}`, sub: 'Your item has been delivered' };
+      case 'out_for_delivery':
+        return { color: 'text-purple-600', dot: 'bg-purple-500 animate-pulse', label: `Out for Delivery`, sub: 'Your item is on its way to you 🚚' };
       case 'shipped':
         return { color: 'text-blue-600', dot: 'bg-blue-500', label: `Shipped on ${formattedDate}`, sub: 'Your item is on the way' };
       case 'processing':
@@ -274,6 +292,7 @@ const Orders = () => {
                 <div className="space-y-2.5">
                   {[
                     { key: 'shipped', label: 'On the way' },
+                    { key: 'out_for_delivery', label: 'Out for Delivery' },
                     { key: 'delivered', label: 'Delivered' },
                     { key: 'cancelled', label: 'Cancelled' },
                     { key: 'returned', label: 'Returned' },
@@ -336,19 +355,22 @@ const Orders = () => {
 
             {/* Mobile Filter Chips */}
             <div className="lg:hidden flex gap-2 overflow-x-auto pb-3 mb-3">
-              {['shipped', 'delivered', 'cancelled', 'returned'].map(status => (
-                <button
-                  key={status}
-                  onClick={() => toggleStatusFilter(status)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
-                    statusFilters.includes(status)
-                      ? 'bg-green-50 border-green-300 text-green-700'
-                      : 'bg-white border-gray-200 text-gray-600'
-                  }`}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                </button>
-              ))}
+              {['shipped', 'out_for_delivery', 'delivered', 'cancelled', 'returned'].map(status => {
+                const labels: Record<string, string> = { shipped: 'Shipped', out_for_delivery: 'Out for Delivery', delivered: 'Delivered', cancelled: 'Cancelled', returned: 'Returned' };
+                return (
+                  <button
+                    key={status}
+                    onClick={() => toggleStatusFilter(status)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
+                      statusFilters.includes(status)
+                        ? 'bg-green-50 border-green-300 text-green-700'
+                        : 'bg-white border-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {labels[status] || status}
+                  </button>
+                );
+              })}
               {hasActiveFilters && (
                 <button onClick={clearAllFilters} className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-red-50 border border-red-200 text-red-600">
                   Clear All
