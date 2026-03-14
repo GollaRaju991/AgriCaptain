@@ -130,8 +130,8 @@ const Profile = () => {
         <div className="pb-24">
           {/* User Profile Header */}
           <div className="bg-white px-4 py-4 flex items-center space-x-3 border-b">
-            <Avatar className="h-12 w-12">
-              <AvatarFallback className="bg-blue-100 text-blue-600 font-bold text-lg">
+             <Avatar className="h-12 w-12">
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">
                 {profile.name?.charAt(0).toUpperCase() || '?'}
               </AvatarFallback>
             </Avatar>
