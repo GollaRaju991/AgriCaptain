@@ -2,10 +2,9 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, CheckCircle, Clock, Eye, Loader2, MapPin, Phone, User, XCircle, AlertCircle, Calendar, Search, RotateCcw } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, Loader2, XCircle, Search, RotateCcw, Star, ChevronRight } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,7 +12,6 @@ import type { Json } from '@/integrations/supabase/types';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { toast } from 'sonner';
 import OrderTracking from '@/components/OrderTracking';
-import OrderFilters from '@/components/OrderFilters';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,21 +48,11 @@ interface Order {
   tracking_updates?: Json;
 }
 
-interface ShippingAddress {
-  name: string;
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-}
-
 const Orders = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [trackingOrderId, setTrackingOrderId] = useState<string | null>(null);
   const [returningOrderId, setReturningOrderId] = useState<string | null>(null);
@@ -72,13 +60,10 @@ const Orders = () => {
   const [statusFilters, setStatusFilters] = useState<string[]>([]);
   const [timeFilter, setTimeFilter] = useState('');
 
-  // Make scroll to top optional - only scroll when coming from external navigation
   useScrollToTop(false);
 
   useEffect(() => {
-    if (user) {
-      fetchOrders();
-    }
+    if (user) fetchOrders();
   }, [user]);
 
   const fetchOrders = async () => {
@@ -89,12 +74,8 @@ const Orders = () => {
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching orders:', error);
-      } else {
-        console.log('Fetched orders:', data);
-        setOrders(data || []);
-      }
+      if (error) console.error('Error fetching orders:', error);
+      else setOrders(data || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
     } finally {
@@ -102,7 +83,6 @@ const Orders = () => {
     }
   };
 
-  // Filter + search logic (must be before early returns)
   const filteredOrders = useMemo(() => {
     let result = orders;
     if (searchQuery.trim()) {
@@ -110,9 +90,7 @@ const Orders = () => {
       result = result.filter(order => {
         const matchesNumber = order.order_number.toLowerCase().includes(q);
         const items = Array.isArray(order.items) ? order.items : [];
-        const matchesItem = items.some((item: any) =>
-          item?.name?.toLowerCase?.()?.includes(q)
-        );
+        const matchesItem = items.some((item: any) => item?.name?.toLowerCase?.()?.includes(q));
         return matchesNumber || matchesItem;
       });
     }
@@ -124,11 +102,7 @@ const Orders = () => {
       result = result.filter(order => {
         const orderDate = new Date(order.created_at);
         switch (timeFilter) {
-          case 'last30': {
-            const thirtyDaysAgo = new Date(now);
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            return orderDate >= thirtyDaysAgo;
-          }
+          case 'last30': { const d = new Date(now); d.setDate(d.getDate() - 30); return orderDate >= d; }
           case '2026': return orderDate.getFullYear() === 2026;
           case '2025': return orderDate.getFullYear() === 2025;
           case 'older': return orderDate.getFullYear() < 2025;
@@ -150,629 +124,340 @@ const Orders = () => {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
+  if (!user) return <Navigate to="/auth" replace />;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'delivered':
-        return 'bg-green-100 text-green-800';
-      case 'shipped':
-        return 'bg-blue-100 text-blue-800';
-      case 'processing':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'pending':
-        return 'bg-gray-100 text-gray-800';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800';
-      case 'returned':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'delivered':
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case 'shipped':
-        return <Truck className="h-4 w-4 text-blue-600" />;
-      case 'processing':
-        return <Clock className="h-4 w-4 text-yellow-600" />;
-      case 'cancelled':
-        return <XCircle className="h-4 w-4 text-red-600" />;
-      case 'returned':
-        return <RotateCcw className="h-4 w-4 text-orange-600" />;
-      default:
-        return <Package className="h-4 w-4 text-gray-600" />;
-    }
-  };
-
-  // Check if order can be cancelled (within 24 hours)
   const canCancelOrder = (order: Order): boolean => {
-    if (order.status === 'cancelled' || order.status === 'delivered' || order.status === 'shipped' || order.status === 'returned') {
-      return false;
-    }
-    const orderDate = new Date(order.created_at);
-    const now = new Date();
-    const hoursDiff = (now.getTime() - orderDate.getTime()) / (1000 * 60 * 60);
-    return hoursDiff <= 24;
+    if (['cancelled', 'delivered', 'shipped', 'returned'].includes(order.status)) return false;
+    return (Date.now() - new Date(order.created_at).getTime()) / (1000 * 60 * 60) <= 24;
   };
 
-  // Get time remaining for cancellation
-  const getCancellationTimeRemaining = (order: Order): string => {
-    const orderDate = new Date(order.created_at);
-    const deadline = new Date(orderDate.getTime() + 24 * 60 * 60 * 1000);
-    const now = new Date();
-    const hoursRemaining = Math.max(0, (deadline.getTime() - now.getTime()) / (1000 * 60 * 60));
-    
-    if (hoursRemaining <= 0) return 'Cancellation window expired';
-    if (hoursRemaining < 1) return `${Math.round(hoursRemaining * 60)} minutes left to cancel`;
-    return `${Math.round(hoursRemaining)} hours left to cancel`;
-  };
-
-  // Calculate refund amount
-  const getRefundAmount = (order: Order): number => {
-    if (order.payment_status !== 'completed') return 0;
-    if (order.payment_method === 'cod') return 99; // COD advance payment
-    return order.total_amount; // Full refund for online payments
-  };
-
-  // Handle order cancellation
-  const handleCancelOrder = async (order: Order) => {
-    setCancellingOrderId(order.id);
-    
-    try {
-      const refundAmount = getRefundAmount(order);
-      
-      const { error } = await supabase
-        .from('orders')
-        .update({ 
-          status: 'cancelled',
-          payment_status: order.payment_status === 'completed' ? 'refunded' : order.payment_status
-        })
-        .eq('id', order.id);
-
-      if (error) {
-        console.error('Error cancelling order:', error);
-        toast.error('Failed to cancel order. Please try again.');
-        return;
-      }
-
-      // Create notification for order cancellation
-      const notificationMessage = refundAmount > 0 
-        ? `Your order #${order.order_number} has been cancelled. ₹${refundAmount} will be refunded within 5-7 business days.`
-        : `Your order #${order.order_number} has been cancelled.`;
-
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: user?.id,
-          order_id: order.id,
-          type: 'order',
-          title: 'Order Cancelled',
-          message: notificationMessage,
-          action_url: '/orders'
-        });
-
-      // Refresh orders
-      await fetchOrders();
-
-      if (refundAmount > 0) {
-        toast.success(
-          `Order cancelled successfully! ₹${refundAmount} will be refunded to your original payment method within 5-7 business days.`,
-          { duration: 6000 }
-        );
-      } else {
-        toast.success('Order cancelled successfully!');
-      }
-    } catch (error) {
-      console.error('Error cancelling order:', error);
-      toast.error('Failed to cancel order. Please try again.');
-    } finally {
-      setCancellingOrderId(null);
-    }
-  };
-
-  // Check if order can be returned (delivered within 7 days)
   const canReturnOrder = (order: Order): boolean => {
     if (order.status !== 'delivered') return false;
-    const deliveredDate = new Date(order.updated_at);
-    const now = new Date();
-    const daysDiff = (now.getTime() - deliveredDate.getTime()) / (1000 * 60 * 60 * 24);
-    return daysDiff <= 7;
+    return (Date.now() - new Date(order.updated_at).getTime()) / (1000 * 60 * 60 * 24) <= 7;
   };
 
-  const getReturnTimeRemaining = (order: Order): string => {
-    const deliveredDate = new Date(order.updated_at);
-    const deadline = new Date(deliveredDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const now = new Date();
-    const daysRemaining = Math.max(0, Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
-    if (daysRemaining <= 0) return 'Return window expired';
-    return `${daysRemaining} day${daysRemaining > 1 ? 's' : ''} left to return`;
+  const getRefundAmount = (order: Order): number => {
+    if (order.payment_status !== 'completed') return 0;
+    return order.payment_method === 'cod' ? 99 : order.total_amount;
   };
 
-  // Handle order return
+  const handleCancelOrder = async (order: Order) => {
+    setCancellingOrderId(order.id);
+    try {
+      const refundAmount = getRefundAmount(order);
+      const { error } = await supabase.from('orders').update({
+        status: 'cancelled',
+        payment_status: order.payment_status === 'completed' ? 'refunded' : order.payment_status
+      }).eq('id', order.id);
+
+      if (error) { toast.error('Failed to cancel order.'); return; }
+
+      await supabase.from('notifications').insert({
+        user_id: user?.id, order_id: order.id, type: 'order', title: 'Order Cancelled',
+        message: refundAmount > 0
+          ? `Your order #${order.order_number} has been cancelled. ₹${refundAmount} will be refunded within 5-7 business days.`
+          : `Your order #${order.order_number} has been cancelled.`,
+        action_url: '/orders'
+      });
+
+      await fetchOrders();
+      toast.success(refundAmount > 0 ? `Order cancelled! ₹${refundAmount} will be refunded within 5-7 business days.` : 'Order cancelled!', { duration: 6000 });
+    } catch { toast.error('Failed to cancel order.'); }
+    finally { setCancellingOrderId(null); }
+  };
+
   const handleReturnOrder = async (order: Order) => {
     setReturningOrderId(order.id);
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({
-          status: 'returned',
-          payment_status: 'refunded'
-        })
-        .eq('id', order.id);
-
-      if (error) {
-        toast.error('Failed to initiate return. Please try again.');
-        return;
-      }
-
-      await supabase
-        .from('notifications')
-        .insert({
-          user_id: user?.id,
-          order_id: order.id,
-          type: 'order',
-          title: 'Return Initiated',
-          message: `Return initiated for order #${order.order_number}. ₹${order.total_amount} will be refunded within 5-7 business days.`,
-          action_url: '/orders'
-        });
-
+      const { error } = await supabase.from('orders').update({ status: 'returned', payment_status: 'refunded' }).eq('id', order.id);
+      if (error) { toast.error('Failed to initiate return.'); return; }
+      await supabase.from('notifications').insert({
+        user_id: user?.id, order_id: order.id, type: 'order', title: 'Return Initiated',
+        message: `Return initiated for order #${order.order_number}. ₹${order.total_amount} will be refunded within 5-7 business days.`,
+        action_url: '/orders'
+      });
       await fetchOrders();
-      toast.success(
-        `Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`,
-        { duration: 6000 }
-      );
-    } catch (error) {
-      toast.error('Failed to initiate return. Please try again.');
-    } finally {
-      setReturningOrderId(null);
-    }
+      toast.success(`Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`, { duration: 6000 });
+    } catch { toast.error('Failed to initiate return.'); }
+    finally { setReturningOrderId(null); }
   };
 
-  const getItemsCount = (items: Json): number => {
-    if (Array.isArray(items)) {
-      return items.length;
-    }
-    return 0;
-  };
+  const getOrderItems = (items: Json): any[] => Array.isArray(items) ? items : [];
 
-  const getShippingAddress = (address: Json): ShippingAddress | null => {
-    try {
-      if (typeof address === 'object' && address !== null && !Array.isArray(address)) {
-        const addr = address as { [key: string]: any };
-        if (addr.name && addr.phone && addr.address && addr.city && addr.state && addr.pincode) {
-          return {
-            name: addr.name,
-            phone: addr.phone,
-            address: addr.address,
-            city: addr.city,
-            state: addr.state,
-            pincode: addr.pincode
-          };
-        }
-      }
-    } catch (error) {
-      console.error('Error parsing shipping address:', error);
-    }
-    return null;
-  };
-
-  const getOrderItems = (items: Json): any[] => {
-    if (Array.isArray(items)) {
-      return items;
-    }
-    return [];
-  };
-
-  const toggleOrderDetails = (orderId: string) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId);
-  };
-
-  // Calculate estimated delivery date (5-7 days from order date)
   const getEstimatedDelivery = (order: Order): string | null => {
     if (order.estimated_delivery) return order.estimated_delivery;
     if (order.status === 'delivered' || order.status === 'cancelled') return null;
-    const orderDate = new Date(order.created_at);
-    orderDate.setDate(orderDate.getDate() + 5); // Default: 5 days from order
-    return orderDate.toISOString();
+    const d = new Date(order.created_at); d.setDate(d.getDate() + 5);
+    return d.toISOString();
   };
 
-  // Parse tracking updates from JSON
   const getTrackingUpdates = (order: Order): TrackingUpdate[] => {
-    if (!order.tracking_updates || !Array.isArray(order.tracking_updates)) {
-      return [];
-    }
+    if (!order.tracking_updates || !Array.isArray(order.tracking_updates)) return [];
     return order.tracking_updates as unknown as TrackingUpdate[];
+  };
+
+  const getStatusInfo = (status: string, order: Order) => {
+    const date = new Date(order.status === 'delivered' || order.status === 'cancelled' ? order.updated_at : order.created_at);
+    const formattedDate = date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' });
+    
+    switch (status) {
+      case 'delivered':
+        return { color: 'text-green-600', dot: 'bg-green-500', label: `Delivered on ${formattedDate}`, sub: 'Your item has been delivered' };
+      case 'shipped':
+        return { color: 'text-blue-600', dot: 'bg-blue-500', label: `Shipped on ${formattedDate}`, sub: 'Your item is on the way' };
+      case 'processing':
+        return { color: 'text-yellow-600', dot: 'bg-yellow-500', label: `Processing`, sub: 'Your order is being prepared' };
+      case 'cancelled':
+        return { color: 'text-red-600', dot: 'bg-red-500', label: `Cancelled on ${formattedDate}`, sub: 'Your order was cancelled as per your request.' };
+      case 'returned':
+        return { color: 'text-orange-600', dot: 'bg-orange-500', label: `Returned on ${formattedDate}`, sub: 'Return initiated — refund processing' };
+      default:
+        return { color: 'text-gray-600', dot: 'bg-gray-500', label: `Placed on ${formattedDate}`, sub: 'Order is pending' };
+    }
+  };
+
+  const toggleStatusFilter = (status: string) => {
+    setStatusFilters(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]);
   };
 
   const trackingOrder = orders.find(o => o.id === trackingOrderId);
 
+  // Flatten orders into individual product rows
+  const productRows = useMemo(() => {
+    const rows: { order: Order; item: any; itemIndex: number }[] = [];
+    filteredOrders.forEach(order => {
+      const items = getOrderItems(order.items);
+      if (items.length === 0) {
+        rows.push({ order, item: { name: 'Order Item', price: order.total_amount, quantity: 1 }, itemIndex: 0 });
+      } else {
+        items.forEach((item, idx) => rows.push({ order, item, itemIndex: idx }));
+      }
+    });
+    return rows;
+  }, [filteredOrders]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Your Orders</h1>
-          <p className="text-muted-foreground">Track and manage your AgriCaptain orders securely</p>
+
+      {/* Breadcrumb - Desktop */}
+      <div className="hidden lg:block bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-2">
+          <nav className="text-sm text-gray-500">
+            <span className="hover:text-blue-600 cursor-pointer" onClick={() => navigate('/')}>Home</span>
+            <span className="mx-1">›</span>
+            <span className="hover:text-blue-600 cursor-pointer" onClick={() => navigate('/profile')}>My Account</span>
+            <span className="mx-1">›</span>
+            <span className="text-gray-900 font-medium">My Orders</span>
+          </nav>
         </div>
-
-        <OrderFilters
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          statusFilters={statusFilters}
-          onStatusFiltersChange={setStatusFilters}
-          timeFilter={timeFilter}
-          onTimeFilterChange={setTimeFilter}
-          onClearFilters={clearAllFilters}
-          hasActiveFilters={hasActiveFilters}
-        />
-
-        {filteredOrders.length > 0 ? (
-          <div className="space-y-6">
-            {filteredOrders.map((order) => {
-              const shippingAddress = getShippingAddress(order.shipping_address);
-              const orderItems = getOrderItems(order.items);
-              const isExpanded = expandedOrder === order.id;
-
-              return (
-                <Card key={order.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-lg">Order #{order.order_number}</CardTitle>
-                        <p className="text-sm text-gray-600">
-                          Placed on {new Date(order.created_at).toLocaleDateString('en-IN', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(order.status)}
-                        <Badge className={getStatusColor(order.status)}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </Badge>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {/* Estimated Delivery Date */}
-                      {getEstimatedDelivery(order) && order.status !== 'delivered' && order.status !== 'cancelled' && (
-                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                          <Calendar className="h-4 w-4 shrink-0" />
-                          <span className="text-sm">
-                            <strong>Estimated Delivery:</strong>{' '}
-                            {new Date(getEstimatedDelivery(order)!).toLocaleDateString('en-IN', {
-                              weekday: 'short',
-                              day: 'numeric',
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Flipkart-style individual product items */}
-                      <div className="space-y-3">
-                        {orderItems.length > 0 ? orderItems.map((item: any, index: number) => (
-                          <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                            <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-white rounded-md border border-gray-100 overflow-hidden">
-                              <img 
-                                src={item.image || '/placeholder.svg'} 
-                                alt={item.name || 'Product'} 
-                                className="w-full h-full object-contain p-1"
-                              />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm md:text-base text-gray-900 line-clamp-2">{item.name || `Item ${index + 1}`}</p>
-                              <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
-                                Qty: {item.quantity || 1} × ₹{(item.price || 0).toLocaleString()}
-                              </p>
-                              <p className="font-semibold text-sm md:text-base mt-1">₹{((item.quantity || 1) * (item.price || 0)).toLocaleString()}</p>
-                            </div>
-                          </div>
-                        )) : (
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">Items Ordered:</p>
-                              <div className="text-sm text-muted-foreground">{getItemsCount(order.items)} item(s)</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                        <p className="text-sm text-muted-foreground">
-                          {getItemsCount(order.items)} item(s) · Payment: {order.payment_status}
-                        </p>
-                        <p className="font-bold text-lg">₹{order.total_amount.toLocaleString()}</p>
-                      </div>
-
-                      {isExpanded && (
-                        <div className="border-t pt-4 space-y-4">
-                          {orderItems.length > 0 && (
-                            <div>
-                              <h4 className="font-medium mb-2">Order Items</h4>
-                              <div className="space-y-2">
-                                {orderItems.map((item: any, index: number) => (
-                                  <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                                    <div>
-                                      <p className="font-medium">{item.name || `Item ${index + 1}`}</p>
-                                      <p className="text-sm text-gray-600">
-                                        Quantity: {item.quantity || 1} × ₹{item.price || 0}
-                                      </p>
-                                    </div>
-                                    <p className="font-medium">₹{(item.quantity || 1) * (item.price || 0)}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {shippingAddress && (
-                            <div>
-                              <h4 className="font-medium mb-2 flex items-center">
-                                <MapPin className="h-4 w-4 mr-1" />
-                                Shipping Address
-                              </h4>
-                              <div className="bg-gray-50 p-3 rounded">
-                                <div className="flex items-center mb-1">
-                                  <User className="h-4 w-4 mr-1 text-gray-500" />
-                                  <span className="font-medium">{shippingAddress.name}</span>
-                                </div>
-                                <div className="flex items-center mb-1">
-                                  <Phone className="h-4 w-4 mr-1 text-gray-500" />
-                                  <span>{shippingAddress.phone}</span>
-                                </div>
-                                <p className="text-sm">{shippingAddress.address}</p>
-                                <p className="text-sm">
-                                  {shippingAddress.city}, {shippingAddress.state} - {shippingAddress.pincode}
-                                </p>
-                              </div>
-                            </div>
-                          )}
-
-                          <div>
-                            <h4 className="font-medium mb-2">Payment Details</h4>
-                            <div className="bg-gray-50 p-3 rounded space-y-2">
-                              <div className="flex justify-between">
-                                <span>Payment Method:</span>
-                                <span className="font-medium uppercase">{order.payment_method}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>Payment Status:</span>
-                                <span className={`font-medium ${
-                                  order.payment_status === 'completed' ? 'text-green-600' : 
-                                  order.payment_status === 'failed' ? 'text-red-600' : 'text-yellow-600'
-                                }`}>
-                                  {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
-                                </span>
-                              </div>
-                              
-                              {order.payment_method === 'cod' && (
-                                <>
-                                  <div className="border-t pt-2 mt-2">
-                                    <div className="flex justify-between text-green-600">
-                                      <span>Advance Paid (Online):</span>
-                                      <span className="font-medium">₹99</span>
-                                    </div>
-                                    <div className="flex justify-between text-orange-600">
-                                      <span>Due on Delivery:</span>
-                                      <span className="font-medium">₹{order.total_amount - 99}</span>
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-                              
-                              <div className="flex justify-between text-lg font-bold border-t pt-2 mt-2">
-                                <span>Total Amount:</span>
-                                <span>₹{order.total_amount}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Cancellation info banner */}
-                      {canCancelOrder(order) && (
-                        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
-                          <AlertCircle className="h-4 w-4 shrink-0" />
-                          <span>{getCancellationTimeRemaining(order)}</span>
-                        </div>
-                      )}
-
-                      {order.status === 'cancelled' && (
-                        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-                          <XCircle className="h-4 w-4 shrink-0" />
-                          <span className="font-medium">
-                            Order was Cancelled
-                            {order.payment_status === 'refunded' && ' — Refund has been initiated.'}
-                          </span>
-                        </div>
-                      )}
-
-                      {order.status === 'returned' && (
-                        <div className="flex items-center gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-sm">
-                          <RotateCcw className="h-4 w-4 shrink-0" />
-                          <span className="font-medium">
-                            Order was Returned — Refund has been initiated.
-                          </span>
-                        </div>
-                      )}
-
-                      {canReturnOrder(order) && (
-                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm">
-                          <RotateCcw className="h-4 w-4 shrink-0" />
-                          <span>{getReturnTimeRemaining(order)}</span>
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-1.5 sm:gap-3 pt-4 overflow-x-auto">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="flex items-center gap-1 text-xs h-8 px-2.5 shrink-0"
-                          onClick={() => navigate(`/orders/${order.id}`)}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          <span>View Details</span>
-                        </Button>
-                        
-                        {order.status !== 'cancelled' && order.status !== 'returned' && (
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="flex items-center gap-1 text-xs h-8 px-2.5 shrink-0"
-                            onClick={() => setTrackingOrderId(order.id)}
-                          >
-                            <Truck className="h-3.5 w-3.5" />
-                            <span>Track Order</span>
-                          </Button>
-                        )}
-                        
-                        {order.status === 'delivered' && (
-                          <Button variant="outline" size="sm" className="text-xs h-8 px-2.5 shrink-0">
-                            Reorder
-                          </Button>
-                        )}
-
-                        {canCancelOrder(order) && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="destructive" 
-                                size="sm" 
-                                className="flex items-center gap-1 text-xs h-8 px-2.5 shrink-0"
-                                disabled={cancellingOrderId === order.id}
-                              >
-                                {cancellingOrderId === order.id ? (
-                                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : (
-                                  <XCircle className="h-3.5 w-3.5" />
-                                )}
-                                <span>Cancel</span>
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Cancel Order #{order.order_number}?</AlertDialogTitle>
-                                <AlertDialogDescription className="space-y-2">
-                                  <p>Are you sure you want to cancel this order?</p>
-                                  {getRefundAmount(order) > 0 && (
-                                    <p className="font-medium text-green-600">
-                                      ₹{getRefundAmount(order)} will be refunded to your {order.payment_method === 'cod' ? 'payment method' : 'original payment method'} within 5-7 business days.
-                                    </p>
-                                  )}
-                                  {order.payment_method === 'cod' && order.payment_status === 'completed' && (
-                                    <p className="text-sm text-muted-foreground">
-                                      (Advance payment of ₹99 will be refunded)
-                                    </p>
-                                  )}
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Keep Order</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleCancelOrder(order)}
-                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                >
-                                  Yes, Cancel Order
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-
-                        {canReturnOrder(order) && (
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="flex items-center space-x-1 border-orange-300 text-orange-700 hover:bg-orange-50"
-                                disabled={returningOrderId === order.id}
-                              >
-                                {returningOrderId === order.id ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                  <RotateCcw className="h-4 w-4" />
-                                )}
-                                <span>Return Order</span>
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Return Order #{order.order_number}?</AlertDialogTitle>
-                                <AlertDialogDescription className="space-y-2">
-                                  <p>Are you sure you want to return this order?</p>
-                                  <p className="font-medium text-green-600">
-                                    ₹{order.total_amount} will be refunded to your original payment method within 5-7 business days.
-                                  </p>
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Keep Order</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleReturnOrder(order)}
-                                  className="bg-orange-500 text-white hover:bg-orange-600"
-                                >
-                                  Yes, Return Order
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        ) : orders.length > 0 ? (
-          <Card>
-            <CardContent className="text-center py-16">
-              <Search className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">No matching orders</h3>
-              <p className="text-muted-foreground mb-6">Try adjusting your search or filters.</p>
-              <Button variant="outline" onClick={clearAllFilters}>Clear Filters</Button>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="text-center py-16">
-              <Package className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">No orders yet</h3>
-              <p className="text-muted-foreground mb-6">You haven't placed any orders with AgriCaptain yet.</p>
-              <Button>Start Shopping</Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Order Tracking Dialog */}
-        {trackingOrder && (
-          <OrderTracking
-            isOpen={!!trackingOrderId}
-            onClose={() => setTrackingOrderId(null)}
-            orderNumber={trackingOrder.order_number}
-            currentStatus={trackingOrder.status}
-            estimatedDelivery={getEstimatedDelivery(trackingOrder)}
-            trackingUpdates={getTrackingUpdates(trackingOrder)}
-            createdAt={trackingOrder.created_at}
-          />
-        )}
       </div>
-      <div className="h-20 lg:hidden"></div>
 
-<MobileBottomNav />
+      {/* Mobile Header */}
+      <div className="lg:hidden sticky top-0 z-50 bg-white border-b shadow-sm">
+        <div className="px-4 py-3">
+          <h1 className="text-lg font-bold text-gray-900">My Orders</h1>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-4 lg:py-6">
+        <div className="flex gap-6">
+          {/* Sidebar Filters - Desktop Only */}
+          <div className="hidden lg:block w-60 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-20">
+              <h2 className="text-base font-bold text-gray-900 mb-4">Filters</h2>
+
+              <div className="mb-6">
+                <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Order Status</h3>
+                <div className="space-y-2.5">
+                  {[
+                    { key: 'shipped', label: 'On the way' },
+                    { key: 'delivered', label: 'Delivered' },
+                    { key: 'cancelled', label: 'Cancelled' },
+                    { key: 'returned', label: 'Returned' },
+                  ].map(f => (
+                    <label key={f.key} className="flex items-center gap-2.5 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={statusFilters.includes(f.key)}
+                        onChange={() => toggleStatusFilter(f.key)}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700 group-hover:text-gray-900">{f.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t pt-4">
+                <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3">Order Time</h3>
+                <div className="space-y-2.5">
+                  {[
+                    { key: 'last30', label: 'Last 30 days' },
+                    { key: '2026', label: '2026' },
+                    { key: '2025', label: '2025' },
+                    { key: 'older', label: 'Older' },
+                  ].map(f => (
+                    <label key={f.key} className="flex items-center gap-2.5 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={timeFilter === f.key}
+                        onChange={() => setTimeFilter(timeFilter === f.key ? '' : f.key)}
+                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-gray-700 group-hover:text-gray-900">{f.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 min-w-0">
+            {/* Search Bar */}
+            <div className="flex gap-3 mb-4">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  placeholder="Search your orders here"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full h-11 pl-4 pr-4 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+              <Button className="h-11 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+                <Search className="h-4 w-4 mr-2" />
+                Search Orders
+              </Button>
+            </div>
+
+            {/* Mobile Filter Chips */}
+            <div className="lg:hidden flex gap-2 overflow-x-auto pb-3 mb-3">
+              {['shipped', 'delivered', 'cancelled', 'returned'].map(status => (
+                <button
+                  key={status}
+                  onClick={() => toggleStatusFilter(status)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border transition-colors ${
+                    statusFilters.includes(status)
+                      ? 'bg-green-50 border-green-300 text-green-700'
+                      : 'bg-white border-gray-200 text-gray-600'
+                  }`}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </button>
+              ))}
+              {hasActiveFilters && (
+                <button onClick={clearAllFilters} className="px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-red-50 border border-red-200 text-red-600">
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            {/* Product Rows */}
+            {productRows.length > 0 ? (
+              <div className="space-y-0">
+                {productRows.map(({ order, item, itemIndex }, rowIndex) => {
+                  const statusInfo = getStatusInfo(order.status, order);
+                  return (
+                    <div
+                      key={`${order.id}-${itemIndex}`}
+                      className="bg-white border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+                      style={{ borderTop: rowIndex === 0 ? undefined : '0' }}
+                      onClick={() => navigate(`/orders/${order.id}`)}
+                    >
+                      <div className="flex items-start gap-4">
+                        {/* Product Image */}
+                        <div className="w-16 h-16 md:w-20 md:h-20 flex-shrink-0 bg-white rounded border border-gray-100 overflow-hidden">
+                          <img
+                            src={item.image || '/placeholder.svg'}
+                            alt={item.name || 'Product'}
+                            className="w-full h-full object-contain p-1"
+                          />
+                        </div>
+
+                        {/* Product Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm md:text-base font-medium text-gray-900 line-clamp-1">
+                            {item.name || `Item ${itemIndex + 1}`}
+                          </p>
+                          {item.color && (
+                            <p className="text-xs text-gray-500 mt-0.5">Color: {item.color}</p>
+                          )}
+                          {item.size && (
+                            <p className="text-xs text-gray-500">Size: {item.size}</p>
+                          )}
+                        </div>
+
+                        {/* Price */}
+                        <div className="text-right flex-shrink-0 w-24 hidden md:block">
+                          <p className="font-semibold text-sm text-gray-900">₹{((item.quantity || 1) * (item.price || 0)).toLocaleString()}</p>
+                        </div>
+
+                        {/* Status */}
+                        <div className="flex-shrink-0 text-right w-48 hidden md:block">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <span className={`w-2 h-2 rounded-full ${statusInfo.dot}`}></span>
+                            <span className={`text-sm font-semibold ${statusInfo.color}`}>{statusInfo.label}</span>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{statusInfo.sub}</p>
+                          {order.status === 'delivered' && (
+                            <button className="flex items-center gap-1 text-xs text-blue-600 font-medium mt-2 ml-auto hover:underline">
+                              <Star className="h-3 w-3" />
+                              Rate & Review Product
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Mobile: Price + Status */}
+                        <div className="md:hidden flex-shrink-0 text-right">
+                          <p className="font-semibold text-sm text-gray-900">₹{((item.quantity || 1) * (item.price || 0)).toLocaleString()}</p>
+                          <div className="flex items-center justify-end gap-1 mt-1">
+                            <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dot}`}></span>
+                            <span className={`text-xs font-medium ${statusInfo.color}`}>
+                              {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : orders.length > 0 ? (
+              <div className="bg-white rounded-lg shadow-sm text-center py-16">
+                <Search className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No matching orders</h3>
+                <p className="text-gray-500 mb-6">Try adjusting your search or filters.</p>
+                <Button variant="outline" onClick={clearAllFilters}>Clear Filters</Button>
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm text-center py-16">
+                <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No orders yet</h3>
+                <p className="text-gray-500 mb-6">You haven't placed any orders yet.</p>
+                <Button onClick={() => navigate('/')}>Start Shopping</Button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Order Tracking Dialog */}
+      {trackingOrder && (
+        <OrderTracking
+          isOpen={!!trackingOrderId}
+          onClose={() => setTrackingOrderId(null)}
+          orderNumber={trackingOrder.order_number}
+          currentStatus={trackingOrder.status}
+          estimatedDelivery={getEstimatedDelivery(trackingOrder)}
+          trackingUpdates={getTrackingUpdates(trackingOrder)}
+          createdAt={trackingOrder.created_at}
+        />
+      )}
+
+      <div className="h-20 lg:hidden"></div>
+      <MobileBottomNav />
       <Footer />
     </div>
   );
