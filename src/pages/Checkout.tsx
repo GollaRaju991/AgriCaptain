@@ -465,6 +465,22 @@ const Checkout = () => {
 
       <Footer />
 
+      <PaymentProcessingDialog
+        open={showPaymentDialog}
+        onOpenChange={setShowPaymentDialog}
+        paymentMethod={paymentMethod}
+        amount={finalTotal}
+        paymentDetail={getPaymentDetail()}
+        onSuccess={() => {
+          setShowPaymentDialog(false);
+          completeOrder();
+        }}
+        onRetry={() => {
+          setShowPaymentDialog(false);
+          setTimeout(() => setShowPaymentDialog(true), 300);
+        }}
+      />
+
     </div>
   );
 };
