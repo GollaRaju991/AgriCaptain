@@ -47,6 +47,7 @@ import AgrizinMoney from "./pages/AgrizinMoney";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
+import AdminOrders from "./pages/AdminOrders";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -111,6 +112,7 @@ const App = () => (
                     <Route path="/seller/edit-product/:id" element={<EditProduct />} />
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="/scanner" element={<Scanner />} />
+                    <Route path="/admin/orders" element={<AdminOrders />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
