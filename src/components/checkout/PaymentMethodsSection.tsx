@@ -227,7 +227,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
                     <CheckCircle className="h-3 w-3" />
                     Payment request will be sent to your UPI app
                   </p>
-                  <Button size="sm" className="w-full bg-amber-400 hover:bg-amber-500 text-foreground font-semibold" onClick={onPayment}>
+                  <Button size="sm" className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold" onClick={onPayment}>
                     Pay ₹{finalTotal.toLocaleString()}
                   </Button>
                 </div>
