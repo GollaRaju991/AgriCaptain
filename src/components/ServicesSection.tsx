@@ -125,11 +125,11 @@ const ServicesSection = () => {
 
           {/* Sell Crop - right side card */}
           <Link to={sideCards.sellCrop.path}>
-            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.sellCrop.borderColor} cursor-pointer h-full flex flex-col items-center justify-center p-4`}>
-              <div className="w-20 h-20 mb-3">
-                <img src={sideCards.sellCrop.icon} alt={sideCards.sellCrop.name} className="w-full h-full object-contain" loading="lazy" />
+            <div className={`bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.03] border-2 ${sideCards.sellCrop.borderColor} cursor-pointer h-full flex flex-col items-center justify-center`}>
+              <div className="w-full aspect-square overflow-hidden">
+                <img src={sideCards.sellCrop.icon} alt={sideCards.sellCrop.name} className="w-full h-full object-cover" loading="lazy" />
               </div>
-              <h3 className="font-bold text-sm text-foreground text-center">{sideCards.sellCrop.name}</h3>
+              <h3 className="font-bold text-sm text-foreground text-center py-2">{sideCards.sellCrop.name}</h3>
             </div>
           </Link>
         </div>
