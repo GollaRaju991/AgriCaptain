@@ -35,6 +35,7 @@ const statusOptions = [
   { value: 'pending', label: 'Pending', color: 'bg-gray-500' },
   { value: 'processing', label: 'Processing', color: 'bg-yellow-500' },
   { value: 'shipped', label: 'Shipped', color: 'bg-blue-500' },
+  { value: 'out_for_delivery', label: 'Out for Delivery', color: 'bg-purple-500' },
   { value: 'delivered', label: 'Delivered', color: 'bg-green-500' },
   { value: 'cancelled', label: 'Cancelled', color: 'bg-red-500' },
   { value: 'returned', label: 'Returned', color: 'bg-orange-500' },
