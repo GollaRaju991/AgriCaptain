@@ -6,19 +6,9 @@ import Footer from '@/components/Footer';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '@/components/ui/pagination';
-import { Filter, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { X, SlidersHorizontal } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -30,7 +20,6 @@ import { mockProducts } from '@/data/mockProducts';
 
 const categories = ['seeds', 'fertilizers', 'tools', 'equipment', 'agriculture'];
 
-// Map seller product categories to app categories
 const mapSellerCategory = (cat: string): string => {
   const lower = cat.toLowerCase();
   if (lower.includes('seed')) return 'seeds';
@@ -45,17 +34,13 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 8;
   const [sellerProducts, setSellerProducts] = useState<any[]>([]);
 
   const searchQuery = searchParams.get('search') || '';
   const selectedCategory = searchParams.get('category') || '';
   const selectedBrand = searchParams.get('brand') || '';
 
-  // Fetch active seller products from DB
   useEffect(() => {
     const fetchSellerProducts = async () => {
       const { data } = await (supabase.from('seller_products') as any)
@@ -85,7 +70,6 @@ const Products = () => {
   const filteredAndSortedProducts = useMemo(() => {
     let filtered = [...mockProducts, ...sellerProducts];
 
-    // Enhanced search functionality - search in name, description, and category
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -94,74 +78,49 @@ const Products = () => {
       );
     }
 
-    // Filter by category
     if (selectedCategory) {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
-    // Filter by brand
     if (selectedBrand) {
       filtered = filtered.filter(product => 
         (product as any).brand?.toLowerCase() === selectedBrand.toLowerCase()
       );
     }
 
-    // Filter by price range
     if (priceRange !== 'all') {
       const [min, max] = priceRange.split('-').map(Number);
       filtered = filtered.filter(product => {
-        if (max) {
-          return product.price >= min && product.price <= max;
-        }
+        if (max) return product.price >= min && product.price <= max;
         return product.price >= min;
       });
     }
 
-    // Sort products
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'price-low':
-          return a.price - b.price;
-        case 'price-high':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
-        case 'discount':
-          return b.discount - a.discount;
-        default:
-          return a.name.localeCompare(b.name);
+        case 'price-low': return a.price - b.price;
+        case 'price-high': return b.price - a.price;
+        case 'rating': return b.rating - a.rating;
+        case 'discount': return b.discount - a.discount;
+        default: return a.name.localeCompare(b.name);
       }
     });
 
     return filtered;
   }, [searchQuery, selectedCategory, selectedBrand, priceRange, sortBy, sellerProducts]);
 
-  // Pagination logic
-  const totalPages = Math.ceil(filteredAndSortedProducts.length / productsPerPage);
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const currentProducts = filteredAndSortedProducts.slice(startIndex, endIndex);
-
   const clearFilters = () => {
     setSearchParams({});
     setPriceRange('all');
     setSortBy('name');
-    setCurrentPage(1);
   };
 
   const removeFilter = (type: string) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.delete(type);
     setSearchParams(newParams);
-    setCurrentPage(1);
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  // Count active filters
   const activeFilterCount = [searchQuery, selectedCategory, selectedBrand, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
 
   return (
@@ -170,16 +129,13 @@ const Products = () => {
       
       {/* === MOBILE LAYOUT === */}
       <div className="md:hidden">
-        {/* Page Title */}
         <div className="px-4 pt-4 pb-2">
           <h1 className="text-2xl font-bold text-foreground">
             {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
         </div>
 
-        {/* Filter & Sort Bar */}
         <div className="px-4 pb-3 flex gap-3">
-          {/* Filters Button */}
           <button
             onClick={() => setMobileFiltersOpen(true)}
             className="flex-1 flex items-center justify-center gap-2 bg-primary/10 border border-primary/20 rounded-xl py-3 px-4 text-primary font-semibold text-base relative"
@@ -193,7 +149,6 @@ const Products = () => {
             )}
           </button>
 
-          {/* Sort Button */}
           <div className="flex-1">
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-full bg-muted/50 border border-border rounded-xl py-3 px-4 h-auto text-base font-semibold text-foreground">
@@ -213,14 +168,12 @@ const Products = () => {
           </div>
         </div>
 
-        {/* Products Count */}
         <div className="mx-4 mb-3 bg-muted/40 rounded-xl py-2.5 px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredAndSortedProducts.length)} of {filteredAndSortedProducts.length} products
+            Showing {filteredAndSortedProducts.length} products
           </p>
         </div>
 
-        {/* Active Filter Badges */}
         {(searchQuery || selectedCategory) && (
           <div className="flex flex-wrap items-center gap-2 px-4 mb-3">
             {searchQuery && (
@@ -241,52 +194,12 @@ const Products = () => {
           </div>
         )}
 
-        {/* Mobile Products Grid */}
-        {currentProducts.length > 0 ? (
-          <>
-            <div className="grid grid-cols-2 gap-3 px-4 mb-6">
-              {currentProducts.map(product => (
-                <ProductCard key={product.id} product={product} variant="grid" />
-              ))}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center pb-6">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                    {[...Array(totalPages)].map((_, index) => {
-                      const page = index + 1;
-                      if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
-                        return (
-                          <PaginationItem key={page}>
-                            <PaginationLink onClick={() => handlePageChange(page)} isActive={currentPage === page} className="cursor-pointer">
-                              {page}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      } else if ((page === currentPage - 2 && currentPage > 3) || (page === currentPage + 2 && currentPage < totalPages - 2)) {
-                        return <PaginationItem key={page}><PaginationEllipsis /></PaginationItem>;
-                      }
-                      return null;
-                    })}
-                    <PaginationItem>
-                      <PaginationNext 
-                        onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </>
+        {filteredAndSortedProducts.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 px-4 mb-6">
+            {filteredAndSortedProducts.map(product => (
+              <ProductCard key={product.id} product={product} variant="grid" />
+            ))}
+          </div>
         ) : (
           <div className="text-center py-12 px-4">
             <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
@@ -294,14 +207,12 @@ const Products = () => {
           </div>
         )}
 
-        {/* Mobile Filter Bottom Sheet */}
         <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
           <SheetContent side="bottom" className="rounded-t-2xl max-h-[70vh]">
             <SheetHeader>
               <SheetTitle className="text-lg font-bold">Filters</SheetTitle>
             </SheetHeader>
             <div className="space-y-6 py-4 overflow-y-auto">
-              {/* Categories */}
               <div>
                 <h4 className="font-semibold mb-3 text-foreground">Categories</h4>
                 <div className="space-y-2">
@@ -328,7 +239,6 @@ const Products = () => {
                 </div>
               </div>
 
-              {/* Price Range */}
               <div>
                 <h4 className="font-semibold mb-3 text-foreground">Price Range</h4>
                 <Select value={priceRange} onValueChange={setPriceRange}>
@@ -387,7 +297,6 @@ const Products = () => {
         </div>
 
         <div className="flex gap-8">
-          {/* Desktop Filters Sidebar */}
           <div className="w-64">
             <div className="bg-card rounded-lg p-6 shadow-sm">
               <div className="space-y-6">
@@ -436,11 +345,10 @@ const Products = () => {
             </div>
           </div>
 
-          {/* Desktop Products Grid */}
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6 bg-card p-4 rounded-lg shadow-sm">
               <p className="text-muted-foreground">
-                Showing {startIndex + 1}-{Math.min(endIndex, filteredAndSortedProducts.length)} of {filteredAndSortedProducts.length} products
+                Showing {filteredAndSortedProducts.length} products
               </p>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">Sort by:</span>
@@ -459,49 +367,12 @@ const Products = () => {
               </div>
             </div>
 
-            {currentProducts.length > 0 ? (
-              <>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                  {currentProducts.map(product => (
-                    <ProductCard key={product.id} product={product} variant="grid" />
-                  ))}
-                </div>
-                {totalPages > 1 && (
-                  <div className="flex justify-center">
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious 
-                            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                            className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                          />
-                        </PaginationItem>
-                        {[...Array(totalPages)].map((_, index) => {
-                          const page = index + 1;
-                          if (page === 1 || page === totalPages || (page >= currentPage - 1 && page <= currentPage + 1)) {
-                            return (
-                              <PaginationItem key={page}>
-                                <PaginationLink onClick={() => handlePageChange(page)} isActive={currentPage === page} className="cursor-pointer">
-                                  {page}
-                                </PaginationLink>
-                              </PaginationItem>
-                            );
-                          } else if ((page === currentPage - 2 && currentPage > 3) || (page === currentPage + 2 && currentPage < totalPages - 2)) {
-                            return <PaginationItem key={page}><PaginationEllipsis /></PaginationItem>;
-                          }
-                          return null;
-                        })}
-                        <PaginationItem>
-                          <PaginationNext 
-                            onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                            className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  </div>
-                )}
-              </>
+            {filteredAndSortedProducts.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                {filteredAndSortedProducts.map(product => (
+                  <ProductCard key={product.id} product={product} variant="grid" />
+                ))}
+              </div>
             ) : (
               <div className="text-center py-12">
                 <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
