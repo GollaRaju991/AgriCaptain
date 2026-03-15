@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSlider from "@/components/HeroSlider";
 import ProductCard from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ProductCategories from "@/components/ProductCategories";
@@ -17,14 +16,6 @@ import ProductAdBanner from "@/components/ProductAdBanner";
 import ScannerPromoBanner from "@/components/ScannerPromoBanner";
 import ServicesSection from "@/components/ServicesSection";
 import { products } from "@/data/products";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 const Index = () => {
   const { translations } = useLanguage();
