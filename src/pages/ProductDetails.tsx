@@ -178,21 +178,38 @@ const ProductDetails = () => {
     ]
   } : null;
 
-  // Get related products
-  const relatedProducts = useMemo(() => {
-    if (!product) return [];
+  // Get related products first, then unrelated - chaining system like Flipkart/Amazon
+  const { relatedProducts, unrelatedProducts } = useMemo(() => {
+    if (!product) return { relatedProducts: [], unrelatedProducts: [] };
     const currentId = product.id;
     const keywords = product.name.toLowerCase().split(' ').filter(w => w.length > 3);
-    const similar = products.filter(p => {
-      if (p.id === currentId) return false;
+    
+    // Combine all product sources
+    const allProducts = [...products, ...mockProducts.map(mp => ({
+      ...mp,
+      originalPrice: mp.originalPrice,
+    }))];
+    
+    // Deduplicate by id
+    const uniqueProducts = allProducts.filter((p, idx, arr) => 
+      p.id !== currentId && arr.findIndex(x => x.id === p.id) === idx
+    );
+    
+    const related = uniqueProducts.filter(p => {
       const pName = p.name.toLowerCase();
       return keywords.some(kw => pName.includes(kw));
     });
     
-    if (similar.length >= 4) return similar.slice(0, 8);
+    const relatedIds = new Set(related.map(p => p.id));
+    const unrelated = uniqueProducts.filter(p => !relatedIds.has(p.id));
     
-    const remaining = products.filter(p => p.id !== currentId && !similar.includes(p));
-    return [...similar, ...remaining].slice(0, 8);
+    // Shuffle unrelated for variety
+    const shuffled = [...unrelated].sort(() => Math.random() - 0.5);
+    
+    return {
+      relatedProducts: related.slice(0, 30),
+      unrelatedProducts: shuffled.slice(0, 60),
+    };
   }, [product?.id, product?.name]);
 
   // All reviews (static + user submitted)
