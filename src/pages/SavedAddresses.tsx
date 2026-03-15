@@ -20,13 +20,13 @@ const SavedAddresses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F5F5F5]">
       {isMobile ? (
-        <div className="bg-white border-b px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
+        <div className="bg-white border-b border-border/50 px-4 py-3 flex items-center gap-3 sticky top-0 z-40 shadow-sm">
           <button onClick={() => navigate('/profile')} className="p-1">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
-          <h1 className="text-base font-semibold text-foreground">Saved Addresses</h1>
+          <h1 className="text-base font-bold text-foreground">Manage Address</h1>
         </div>
       ) : (
         <Header />
