@@ -1,10 +1,6 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Plus, MapPin } from 'lucide-react';
+import { MapPin, Plus } from 'lucide-react';
 import AddressManager from '@/components/AddressManager';
 
 interface Address {
@@ -45,99 +41,92 @@ const AddressSection: React.FC<AddressSectionProps> = ({
     setShowAddressManager(false);
   };
 
-  // If showing address manager, render it fullscreen
   if (showAddressManager) {
     return (
-      <Card className="border border-gray-200">
-        <CardContent className="p-3 md:p-4">
+      <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-border/30 flex items-center gap-2">
+          <button onClick={() => setShowAddressManager(false)} className="text-sm text-brand-green font-medium hover:underline">
+            ← Back
+          </button>
+          <h2 className="text-base font-bold text-foreground ml-2">Manage Address</h2>
+        </div>
+        <div className="p-5">
           <AddressManager 
             onAddressSelect={handleAddressAdded}
             selectedAddressId={selectedAddress?.id}
             onClose={() => setShowAddressManager(false)}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="border border-gray-200">
-      <CardHeader className="bg-blue-50 border-b p-3 md:p-4">
-        <CardTitle className="text-base md:text-lg font-medium flex items-center">
-          <span className="bg-blue-600 text-white rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center text-xs md:text-sm mr-2 md:mr-3">1</span>
-          Delivery Address
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-3 md:p-4">
+    <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-border/30 flex items-center gap-3">
+        <div className="w-7 h-7 bg-brand-green rounded-full flex items-center justify-center text-white text-xs font-bold">1</div>
+        <h2 className="text-base font-bold text-foreground">Delivery Address</h2>
+      </div>
+      <div className="p-5">
         {addressesLoading ? (
-          <div className="flex items-center justify-center py-6 md:py-8">
-            <div className="animate-spin rounded-full h-6 w-6 md:h-8 md:w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600 text-sm md:text-base">Loading addresses...</span>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-brand-green"></div>
+            <span className="ml-3 text-muted-foreground text-sm">Loading addresses...</span>
           </div>
-        ) : addresses && addresses.length > 0 ? (
-          <div className="space-y-3 md:space-y-4">
-            <RadioGroup 
-              value={selectedAddress?.id || ''} 
-              onValueChange={(value) => {
-                const address = addresses.find(addr => addr.id === value);
-                if (address) onAddressSelect(address);
-              }}
-            >
-              {addresses.map((address) => (
-                <div key={address.id} className="border rounded-lg p-3 md:p-4 hover:bg-gray-50">
-                  <div className="flex items-start space-x-2 md:space-x-3">
-                    <RadioGroupItem value={address.id} className="mt-1" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <span className="font-medium text-gray-900 text-sm md:text-base">{address.name}</span>
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded capitalize">
-                          {address.address_type}
-                        </span>
-                        {address.is_default && (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                            Default
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600 mb-1 break-words">{address.address}</p>
-                      <p className="text-xs md:text-sm text-gray-600 mb-1">
-                        {address.city}, {address.state} - {address.pincode}
-                      </p>
-                      <p className="text-xs md:text-sm text-gray-600">Mobile: {address.phone}</p>
+        ) : selectedAddress ? (
+          <div className="space-y-4">
+            {/* Selected Address Card */}
+            <div className="bg-muted/30 rounded-2xl border border-border/40 p-5">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <MapPin className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-foreground">{selectedAddress.name}</span>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${
+                        selectedAddress.address_type === 'home'
+                          ? 'bg-brand-green/10 text-brand-green'
+                          : selectedAddress.address_type === 'work'
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'bg-muted text-muted-foreground'
+                      }`}>
+                        {selectedAddress.address_type}
+                      </span>
                     </div>
+                    <p className="text-sm text-muted-foreground mt-1">+91 {selectedAddress.phone}</p>
+                    <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                      {selectedAddress.address}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedAddress.city}, {selectedAddress.state} {selectedAddress.pincode}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </RadioGroup>
-            
-            <div className="border-t pt-3 md:pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowAddressManager(true)}
-                className="text-blue-600 border-blue-600 hover:bg-blue-50 w-full md:w-auto text-sm"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add New Address
-              </Button>
+                <button
+                  onClick={() => setShowAddressManager(true)}
+                  className="text-sm font-semibold text-brand-green px-4 py-2 border border-brand-green rounded-xl shrink-0 ml-4 hover:bg-brand-green/5 transition-colors"
+                >
+                  Change
+                </button>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="text-center py-6 md:py-8">
-            <MapPin className="h-10 w-10 md:h-12 md:w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-600 mb-4 text-sm md:text-base">No delivery addresses found</p>
-            <p className="text-xs md:text-sm text-gray-500 mb-4">Add your first address to proceed with checkout</p>
-            <Button 
+          <div className="text-center py-8">
+            <MapPin className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+            <p className="text-muted-foreground mb-2 text-sm">No delivery addresses found</p>
+            <p className="text-xs text-muted-foreground mb-4">Add your first address to proceed with checkout</p>
+            <button 
               onClick={() => setShowAddressManager(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full md:w-auto text-sm"
+              className="bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl px-6 py-2.5 text-sm inline-flex items-center gap-2 shadow-sm"
             >
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Add Delivery Address
-            </Button>
+            </button>
           </div>
         )}
-
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
