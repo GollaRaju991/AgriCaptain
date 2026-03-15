@@ -46,7 +46,11 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
   const { toast } = useToast();
   const { user, session } = useAuth();
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [screen, setScreen] = useState<'list' | 'form'>('list');
+  const [screen, setScreenState] = useState<'list' | 'form'>('list');
+  const setScreen = (s: 'list' | 'form') => {
+    setScreenState(s);
+    onScreenChange?.(s);
+  };
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
