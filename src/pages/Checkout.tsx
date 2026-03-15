@@ -210,7 +210,7 @@ const Checkout = () => {
   };
 
   const getPaymentDetail = () => {
-    if (paymentMethod === 'upi') return `UPI: ${upiId}`;
+    if (paymentMethod === 'upi') return selectedUpiApp ? `UPI - ${selectedUpiApp}` : `UPI: ${upiId}`;
     if (paymentMethod === 'card') return `Card ending ****${cardNumber.replace(/\s/g, '').slice(-4)}`;
     if (paymentMethod === 'netbanking') return `Net Banking: ${selectedBank.toUpperCase()}`;
     if (paymentMethod === 'emi') return `EMI: ${selectedEMI}`;
