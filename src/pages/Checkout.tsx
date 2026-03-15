@@ -172,21 +172,6 @@ const Checkout = () => {
     }
   };
 
-  const handleCodAdvancePayment = async (method: string) => {
-    setCodPaymentProcessing(true);
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setCodPaymentMethod(method);
-    setCodAdvancePaid(true);
-    setCodPaymentProcessing(false);
-    
-    toast({
-      title: "Advance Payment Successful!",
-      description: `₹${COD_ADVANCE_AMOUNT} paid via ${method}. Remaining ₹${Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} will be collected on delivery.`,
-    });
-  };
 
   const saveOrderToDatabase = async (orderDetails: any) => {
     try {
