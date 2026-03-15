@@ -487,8 +487,8 @@ const Checkout = () => {
             selectedAddress={selectedAddress}
             onCouponApply={handleCouponApply}
             onPayment={handlePayment}
-            codAdvancePaid={codAdvancePaid}
-            codAdvanceAmount={COD_ADVANCE_AMOUNT}
+            codAdvancePaid={false}
+            codAdvanceAmount={0}
           />
         </div>
       </div>
