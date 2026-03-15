@@ -511,6 +511,45 @@ const Checkout = () => {
         }}
       />
 
+      {/* COD Order Success Popup */}
+      {showCodSuccess && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto">
+              <Shield className="h-12 w-12 text-brand-green" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Order Placed Successfully!</h2>
+              <p className="text-sm text-muted-foreground mt-2">Your order has been confirmed. Pay on delivery.</p>
+              <div className="mt-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Order ID</span>
+                  <span className="font-semibold text-foreground">{codOrderNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Amount</span>
+                  <span className="font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3 pt-2">
+              <button
+                onClick={() => navigate('/orders')}
+                className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl"
+              >
+                View Order History
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="w-full h-11 border border-brand-green text-brand-green font-semibold rounded-xl"
+              >
+                Go to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
