@@ -579,6 +579,8 @@ const Checkout = () => {
               onCodAdvancePayment={async () => {}}
               codPaymentProcessing={false}
               onPayment={handlePayment}
+              selectedUpiApp={selectedUpiApp}
+              onUpiAppSelect={setSelectedUpiApp}
             />
           </div>
 
