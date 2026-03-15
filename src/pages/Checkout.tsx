@@ -55,6 +55,7 @@ const Checkout = () => {
   const [nameOnCard, setNameOnCard] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [selectedEMI, setSelectedEMI] = useState('');
+  const [selectedUpiApp, setSelectedUpiApp] = useState('');
   
   // Payment processing dialog state
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);

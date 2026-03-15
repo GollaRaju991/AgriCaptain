@@ -122,28 +122,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             <span>₹{finalTotal.toFixed(2)}</span>
           </div>
 
-          {/* COD Payment Breakdown */}
+          {/* COD Info */}
           {isCOD && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mt-3 space-y-2">
-              <p className="text-sm font-medium text-amber-800">Cash on Delivery Breakdown:</p>
-              <div className="flex justify-between text-sm">
-                <span className={codAdvancePaid ? 'text-green-700' : 'text-amber-700'}>
-                  {codAdvancePaid ? '✓ Advance Paid' : 'Advance Payment'}
-                </span>
-                <span className={codAdvancePaid ? 'text-green-700 font-medium' : 'text-amber-700'}>
-                  ₹{codAdvanceAmount}
-                </span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Due on Delivery</span>
-                <span className="font-medium">₹{codRemainingAmount.toFixed(2)}</span>
-              </div>
-              {(upiDiscount > 0 || couponDiscount > 0) && (
-                <div className="flex justify-between text-sm text-green-600">
-                  <span>Total Savings</span>
-                  <span>-₹{(upiDiscount + couponDiscount).toFixed(2)}</span>
-                </div>
-              )}
+            <div className="bg-brand-green/5 border border-brand-green/20 rounded-lg p-3 mt-2">
+              <p className="text-sm text-muted-foreground">
+                Pay ₹{finalTotal.toFixed(0)} when your order is delivered.
+              </p>
             </div>
           )}
           
