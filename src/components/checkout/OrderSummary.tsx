@@ -159,15 +159,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 : `Pay ₹${finalTotal.toFixed(0)}`
               }
             </Button>
-            {(!paymentMethod || !selectedAddress || (isCOD && !codAdvancePaid)) && (
-              <p className="text-xs text-gray-500 mt-2 text-center">
+            {(!paymentMethod || !selectedAddress) && (
+              <p className="text-xs text-muted-foreground mt-2 text-center">
                 {!selectedAddress 
                   ? 'Please select delivery address' 
-                  : !paymentMethod 
-                    ? 'Please select payment method'
-                    : isCOD && !codAdvancePaid 
-                      ? 'Please complete ₹99 advance payment above'
-                      : ''
+                  : 'Please select payment method'
                 }
               </p>
             )}
