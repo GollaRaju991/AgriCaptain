@@ -39,6 +39,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const { user, session, loading: authLoading, setRedirectAfterLogin } = useAuth();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   // Address state
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
