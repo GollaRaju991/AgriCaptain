@@ -287,7 +287,7 @@ const Header = () => {
               </Button>
 
               <Link to="/become-seller">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 min-w-[140px]">
+                <Button className="bg-brand-green hover:bg-brand-green/90 text-white px-5 py-2 min-w-[140px]">
                   <UserPlus className="h-4 w-4 mr-2" />
                   {translations.become_seller}
                 </Button>
