@@ -28,6 +28,7 @@ interface AddressManagerProps {
   onAddressSelect: (address: Address) => void;
   selectedAddressId?: string;
   onClose?: () => void;
+  onScreenChange?: (screen: 'list' | 'form') => void;
 }
 
 const INDIAN_STATES = [
@@ -41,11 +42,15 @@ const INDIAN_STATES = [
   'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'
 ];
 
-const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, selectedAddressId, onClose }) => {
+const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, selectedAddressId, onClose, onScreenChange }) => {
   const { toast } = useToast();
   const { user, session } = useAuth();
   const [addresses, setAddresses] = useState<Address[]>([]);
-  const [screen, setScreen] = useState<'list' | 'form'>('list');
+  const [screen, setScreenState] = useState<'list' | 'form'>('list');
+  const setScreen = (s: 'list' | 'form') => {
+    setScreenState(s);
+    onScreenChange?.(s);
+  };
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
