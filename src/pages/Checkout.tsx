@@ -59,17 +59,16 @@ const Checkout = () => {
   // Payment processing dialog state
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   
-  // COD advance payment state
-  const [codAdvancePaid, setCodAdvancePaid] = useState(false);
-  const [codPaymentMethod, setCodPaymentMethod] = useState('');
-  const [codPaymentProcessing, setCodPaymentProcessing] = useState(false);
+  // COD state
+  const [showCodSuccess, setShowCodSuccess] = useState(false);
+  const [codOrderNumber, setCodOrderNumber] = useState('');
   
   // Coupon state
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
   // COD constants
-  const COD_ADVANCE_AMOUNT = 99;
+  
 
   // Pricing calculations
   const deliveryFee = 0;
@@ -173,21 +172,6 @@ const Checkout = () => {
     }
   };
 
-  const handleCodAdvancePayment = async (method: string) => {
-    setCodPaymentProcessing(true);
-    
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setCodPaymentMethod(method);
-    setCodAdvancePaid(true);
-    setCodPaymentProcessing(false);
-    
-    toast({
-      title: "Advance Payment Successful!",
-      description: `₹${COD_ADVANCE_AMOUNT} paid via ${method}. Remaining ₹${Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} will be collected on delivery.`,
-    });
-  };
 
   const saveOrderToDatabase = async (orderDetails: any) => {
     try {
@@ -308,9 +292,12 @@ const Checkout = () => {
       return;
     }
 
-    // For COD, skip payment dialog
+    // For COD, skip payment dialog — place order directly with success popup
     if (paymentMethod === 'cod') {
+      const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
+      setCodOrderNumber(orderNum);
       await completeOrder();
+      setShowCodSuccess(true);
       return;
     }
 
@@ -480,9 +467,9 @@ const Checkout = () => {
               selectedEMI={selectedEMI}
               setSelectedEMI={setSelectedEMI}
               finalTotal={finalTotal}
-              codAdvancePaid={codAdvancePaid}
-              onCodAdvancePayment={handleCodAdvancePayment}
-              codPaymentProcessing={codPaymentProcessing}
+              codAdvancePaid={false}
+              onCodAdvancePayment={async () => {}}
+              codPaymentProcessing={false}
               onPayment={handlePayment}
             />
           </div>
@@ -500,8 +487,8 @@ const Checkout = () => {
             selectedAddress={selectedAddress}
             onCouponApply={handleCouponApply}
             onPayment={handlePayment}
-            codAdvancePaid={codAdvancePaid}
-            codAdvanceAmount={COD_ADVANCE_AMOUNT}
+            codAdvancePaid={false}
+            codAdvanceAmount={0}
           />
         </div>
       </div>
@@ -523,6 +510,45 @@ const Checkout = () => {
           setTimeout(() => setShowPaymentDialog(true), 300);
         }}
       />
+
+      {/* COD Order Success Popup */}
+      {showCodSuccess && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto">
+              <Shield className="h-12 w-12 text-brand-green" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Order Placed Successfully!</h2>
+              <p className="text-sm text-muted-foreground mt-2">Your order has been confirmed. Pay on delivery.</p>
+              <div className="mt-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Order ID</span>
+                  <span className="font-semibold text-foreground">{codOrderNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Amount</span>
+                  <span className="font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3 pt-2">
+              <button
+                onClick={() => navigate('/orders')}
+                className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl"
+              >
+                View Order History
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="w-full h-11 border border-brand-green text-brand-green font-semibold rounded-xl"
+              >
+                Go to Home
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

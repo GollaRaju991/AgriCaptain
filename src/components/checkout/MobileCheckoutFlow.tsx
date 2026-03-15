@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import AddressManager from '@/components/AddressManager';
-import CODAdvancePayment from '@/components/checkout/CODAdvancePayment';
+
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -80,7 +80,7 @@ interface MobileCheckoutFlowProps {
   onCouponApply: () => void;
 }
 
-const COD_ADVANCE_AMOUNT = 99;
+
 
 const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   items,
@@ -119,8 +119,6 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const [savedCardCvv, setSavedCardCvv] = useState('');
   const [showNewCardForm, setShowNewCardForm] = useState(false);
   const [saveNewCard, setSaveNewCard] = useState(false);
-  const [codAdvancePaid, setCodAdvancePaid] = useState(false);
-  const [codPaymentProcessing, setCodPaymentProcessing] = useState(false);
 
   // Overlay states
   const [showProcessing, setShowProcessing] = useState(false);
@@ -147,13 +145,6 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
     if (data) setSavedCards(data as SavedCard[]);
   };
 
-  const handleCodAdvancePayment = async (method: string) => {
-    setCodPaymentProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setCodAdvancePaid(true);
-    setCodPaymentProcessing(false);
-    toast({ title: "Advance Payment Successful!", description: `₹${COD_ADVANCE_AMOUNT} paid via ${method}.` });
-  };
 
   const getProcessingSteps = () => {
     if (paymentMethod === 'upi') return ['Sending payment request...', 'Waiting for approval...', 'Verifying transaction...', 'Payment confirmed!'];
@@ -192,12 +183,20 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         return;
       }
     }
-    if (paymentMethod === 'cod' && !codAdvancePaid) {
-      toast({ title: "Complete advance payment", description: `Pay ₹${COD_ADVANCE_AMOUNT} to proceed`, variant: "destructive" });
+    // COD: skip payment processing, directly place order
+    if (paymentMethod === 'cod') {
+      const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
+      setOrderNumber(orderNum);
+      try {
+        await onCompleteOrder(paymentMethod, {});
+        setShowSuccess(true);
+      } catch {
+        toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      }
       return;
     }
 
-    // Start processing overlay
+    // Start processing overlay for online payments
     setShowProcessing(true);
     setProcessingStep(0);
 
@@ -576,18 +575,9 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               onToggle={() => setPaymentMethod(paymentMethod === 'cod' ? '' : 'cod')}
             >
               <div className="mt-1">
-                <p className="text-xs text-muted-foreground mb-3">
-                  Pay ₹{COD_ADVANCE_AMOUNT} now, remaining ₹{Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} on delivery
+                <p className="text-xs text-muted-foreground">
+                  Pay the full amount when your order is delivered to your doorstep.
                 </p>
-                {codAdvancePaid ? (
-                  <div className="bg-brand-green/5 p-3 rounded-xl">
-                    <p className="text-sm text-brand-green font-medium flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" /> Advance ₹{COD_ADVANCE_AMOUNT} paid!
-                    </p>
-                  </div>
-                ) : (
-                  <CODAdvancePayment advanceAmount={COD_ADVANCE_AMOUNT} onPaymentComplete={handleCodAdvancePayment} isProcessing={codPaymentProcessing} />
-                )}
               </div>
             </PaymentOptionCard>
           </div>
@@ -631,8 +621,17 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
           disabled={!paymentMethod || !selectedAddress}
           className="w-full h-12 bg-brand-green hover:bg-brand-green/90 text-white font-bold text-sm rounded-xl disabled:opacity-50 shadow-lg"
         >
-          <Shield className="h-4 w-4 mr-2" />
-          Pay Securely
+          {paymentMethod === 'cod' ? (
+            <>
+              <Package className="h-4 w-4 mr-2" />
+              Place Order
+            </>
+          ) : (
+            <>
+              <Shield className="h-4 w-4 mr-2" />
+              Pay Securely
+            </>
+          )}
         </Button>
       </div>
 
@@ -676,7 +675,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               <CheckCircle className="h-12 w-12 text-brand-green" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-foreground">Payment Successful</h2>
+              <h2 className="text-xl font-bold text-foreground">{paymentMethod === 'cod' ? 'Order Placed Successfully' : 'Payment Successful'}</h2>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Order ID</span>
