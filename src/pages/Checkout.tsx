@@ -10,7 +10,7 @@ import PaymentProcessingDialog from '@/components/checkout/PaymentProcessingDial
 import MobileCheckoutFlow from '@/components/checkout/MobileCheckoutFlow';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Shield } from 'lucide-react';
+import { Shield, Package, Truck, Receipt, CheckCircle, IndianRupee } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { supabase } from '@/integrations/supabase/client';
