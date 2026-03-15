@@ -68,7 +68,7 @@ const Checkout = () => {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
   // COD constants
-  const COD_ADVANCE_AMOUNT = 99;
+  
 
   // Pricing calculations
   const deliveryFee = 0;
