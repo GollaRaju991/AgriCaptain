@@ -119,8 +119,6 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const [savedCardCvv, setSavedCardCvv] = useState('');
   const [showNewCardForm, setShowNewCardForm] = useState(false);
   const [saveNewCard, setSaveNewCard] = useState(false);
-  const [codAdvancePaid, setCodAdvancePaid] = useState(false);
-  const [codPaymentProcessing, setCodPaymentProcessing] = useState(false);
 
   // Overlay states
   const [showProcessing, setShowProcessing] = useState(false);
