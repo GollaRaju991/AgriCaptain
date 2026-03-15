@@ -445,21 +445,27 @@ const Checkout = () => {
     );
   }
 
+  const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
+  const discount = upiDiscount + couponDiscount;
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <Header />
       
-      <div className="max-w-7xl mx-auto px-3 md:px-4 py-4 md:py-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 space-y-4 md:space-y-0">
-          <h1 className="text-2xl md:text-3xl font-bold">Complete Payment</h1>
-          <div className="flex items-center text-green-600">
-            <Shield className="h-4 w-4 md:h-5 md:w-5 mr-2" />
-            <span className="text-xs md:text-sm font-medium">100% Secure</span>
+      <div className="max-w-7xl mx-auto px-4 lg:px-6 py-6 lg:py-10">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl lg:text-3xl font-bold text-foreground">Payment Details</h1>
+          <div className="flex items-center gap-2 text-brand-green">
+            <Shield className="h-5 w-5" />
+            <span className="text-sm font-semibold">100% Secure</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* LEFT COLUMN */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* 1. DELIVERY ADDRESS */}
             <AddressSection
               addresses={addresses}
               selectedAddress={selectedAddress}
@@ -468,6 +474,86 @@ const Checkout = () => {
               onAddressRefresh={loadAddresses}
             />
 
+            {/* 2. ORDER DETAILS */}
+            <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-border/30 flex items-center gap-3">
+                <Package className="h-5 w-5 text-brand-green" />
+                <h2 className="text-base lg:text-lg font-bold text-foreground">Order Details</h2>
+              </div>
+              <div className="divide-y divide-border/30">
+                {items.map((item, idx) => (
+                  <div key={idx} className="p-5 flex gap-4">
+                    <img src={item.image} alt={item.name} className="w-16 h-16 lg:w-20 lg:h-20 rounded-xl object-cover bg-muted border border-border/30" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm lg:text-base font-medium text-foreground line-clamp-2">{item.name}</p>
+                      <p className="text-sm text-muted-foreground mt-1">Qty: {item.quantity}</p>
+                      <p className="text-base lg:text-lg font-bold text-foreground mt-1.5">₹{(item.price * item.quantity).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* Delivery info */}
+              <div className="px-6 py-4 bg-brand-green/5 flex items-center gap-4 border-t border-border/30">
+                <div className="w-10 h-10 bg-card rounded-full flex items-center justify-center shadow-sm border border-border/30">
+                  <Truck className="h-5 w-5 text-brand-green" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs lg:text-sm text-muted-foreground">Expected Delivery</p>
+                  <p className="text-sm lg:text-base font-semibold text-foreground">{expectedDelivery}</p>
+                </div>
+                <span className="text-sm font-bold text-brand-green">FREE</span>
+              </div>
+            </div>
+
+            {/* 3. INVOICE DETAILS */}
+            <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-border/30 flex items-center gap-3">
+                <Receipt className="h-5 w-5 text-brand-green" />
+                <h2 className="text-base lg:text-lg font-bold text-foreground">Invoice Details</h2>
+              </div>
+              <div className="p-6 space-y-3">
+                <div className="flex justify-between text-sm lg:text-base">
+                  <span className="text-muted-foreground">Items Total ({items.reduce((s, i) => s + i.quantity, 0)})</span>
+                  <span className="text-foreground font-medium">₹{totalPrice.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm lg:text-base">
+                  <span className="text-muted-foreground">Delivery Fee</span>
+                  <span className="text-brand-green font-medium">Free</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm lg:text-base">
+                    <span className="text-muted-foreground">Discount</span>
+                    <span className="text-brand-green font-medium">−₹{discount.toLocaleString()}</span>
+                  </div>
+                )}
+                {/* Coupon */}
+                <div className="pt-1 pb-1">
+                  <div className="flex gap-2">
+                    <input
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="flex-1 h-10 px-3 text-sm rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-brand-green/30"
+                    />
+                    <button onClick={handleCouponApply} className="text-sm font-semibold text-brand-green px-5 h-10 border border-brand-green rounded-lg hover:bg-brand-green/5 transition-colors">
+                      Apply
+                    </button>
+                  </div>
+                  {appliedCoupon && (
+                    <div className="bg-brand-green/5 rounded-lg p-3 mt-2 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-brand-green" />
+                      <span className="text-sm text-brand-green font-medium">{appliedCoupon} applied — saved ₹{couponDiscount}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="border-t border-border/50 pt-4 flex justify-between items-center">
+                  <span className="text-base lg:text-lg font-bold text-foreground">Total Amount</span>
+                  <span className="text-xl lg:text-2xl font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. PAYMENT METHODS */}
             <PaymentMethodsSection
               paymentMethod={paymentMethod}
               setPaymentMethod={setPaymentMethod}
@@ -493,22 +579,25 @@ const Checkout = () => {
             />
           </div>
 
-          <OrderSummary
-            items={items}
-            totalPrice={totalPrice}
-            upiDiscount={upiDiscount}
-            couponDiscount={couponDiscount}
-            finalTotal={finalTotal}
-            couponCode={couponCode}
-            setCouponCode={setCouponCode}
-            appliedCoupon={appliedCoupon}
-            paymentMethod={paymentMethod}
-            selectedAddress={selectedAddress}
-            onCouponApply={handleCouponApply}
-            onPayment={handlePayment}
-            codAdvancePaid={false}
-            codAdvanceAmount={0}
-          />
+          {/* RIGHT COLUMN - Summary */}
+          <div className="space-y-5">
+            <OrderSummary
+              items={items}
+              totalPrice={totalPrice}
+              upiDiscount={upiDiscount}
+              couponDiscount={couponDiscount}
+              finalTotal={finalTotal}
+              couponCode={couponCode}
+              setCouponCode={setCouponCode}
+              appliedCoupon={appliedCoupon}
+              paymentMethod={paymentMethod}
+              selectedAddress={selectedAddress}
+              onCouponApply={handleCouponApply}
+              onPayment={handlePayment}
+              codAdvancePaid={false}
+              codAdvanceAmount={0}
+            />
+          </div>
         </div>
       </div>
 
