@@ -232,12 +232,14 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   if (showAddressManager) {
     return (
       <div className="min-h-screen bg-[#F5F5F5]">
-        <div className="sticky top-0 z-10 bg-white border-b border-border/50 px-4 py-3 flex items-center gap-3 shadow-sm">
-          <button onClick={() => setShowAddressManager(false)} className="p-1">
-            <ArrowLeft className="h-5 w-5 text-foreground" />
-          </button>
-          <h1 className="text-base font-bold text-foreground">Manage Address</h1>
-        </div>
+        {addressManagerScreen === 'list' && (
+          <div className="sticky top-0 z-10 bg-white border-b border-border/50 px-4 py-3 flex items-center gap-3 shadow-sm">
+            <button onClick={() => setShowAddressManager(false)} className="p-1">
+              <ArrowLeft className="h-5 w-5 text-foreground" />
+            </button>
+            <h1 className="text-base font-bold text-foreground">Manage Address</h1>
+          </div>
+        )}
         <div className="p-4">
           <AddressManager
             onAddressSelect={(addr: Address) => {
@@ -247,6 +249,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
             }}
             selectedAddressId={selectedAddress?.id}
             onClose={() => setShowAddressManager(false)}
+            onScreenChange={(s) => setAddressManagerScreen(s)}
           />
         </div>
       </div>
