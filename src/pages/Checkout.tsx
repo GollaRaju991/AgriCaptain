@@ -380,9 +380,9 @@ const Checkout = () => {
       paymentMethod: mobilePaymentMethod === 'cod' ? 'Cash on Delivery' : mobilePaymentMethod.toUpperCase()
     };
     await saveOrderToDatabase(orderDetails);
-    // Don't clear cart here - let the success popup show first
-    // Cart will be cleared when user navigates away
-    setTimeout(() => clearCart(), 2000);
+    // Don't clear cart immediately - let the success popup show first
+    // Cart will be cleared after navigation
+    setTimeout(() => clearCart(), 6000);
   };
 
   // Show loading while checking authentication
