@@ -576,18 +576,9 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               onToggle={() => setPaymentMethod(paymentMethod === 'cod' ? '' : 'cod')}
             >
               <div className="mt-1">
-                <p className="text-xs text-muted-foreground mb-3">
-                  Pay ₹{COD_ADVANCE_AMOUNT} now, remaining ₹{Math.max(0, finalTotal - COD_ADVANCE_AMOUNT)} on delivery
+                <p className="text-xs text-muted-foreground">
+                  Pay the full amount when your order is delivered to your doorstep.
                 </p>
-                {codAdvancePaid ? (
-                  <div className="bg-brand-green/5 p-3 rounded-xl">
-                    <p className="text-sm text-brand-green font-medium flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" /> Advance ₹{COD_ADVANCE_AMOUNT} paid!
-                    </p>
-                  </div>
-                ) : (
-                  <CODAdvancePayment advanceAmount={COD_ADVANCE_AMOUNT} onPaymentComplete={handleCodAdvancePayment} isProcessing={codPaymentProcessing} />
-                )}
               </div>
             </PaymentOptionCard>
           </div>
