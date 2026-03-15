@@ -292,9 +292,12 @@ const Checkout = () => {
       return;
     }
 
-    // For COD, skip payment dialog
+    // For COD, skip payment dialog — place order directly with success popup
     if (paymentMethod === 'cod') {
+      const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
+      setCodOrderNumber(orderNum);
       await completeOrder();
+      setShowCodSuccess(true);
       return;
     }
 
