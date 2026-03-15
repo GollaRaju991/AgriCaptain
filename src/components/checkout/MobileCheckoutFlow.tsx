@@ -748,4 +748,77 @@ const PaymentOptionCard: React.FC<{
   </div>
 );
 
+// Success overlay with auto-close timer
+const SuccessOverlay: React.FC<{
+  paymentMethod: string;
+  orderNumber: string;
+  finalTotal: number;
+  expectedDelivery: string;
+  onNavigate: (path: string) => void;
+}> = ({ paymentMethod, orderNumber, finalTotal, expectedDelivery, onNavigate }) => {
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onNavigate('/orders');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [onNavigate]);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6">
+      <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl text-center space-y-5 animate-in zoom-in-95 duration-300">
+        <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto">
+          <CheckCircle className="h-12 w-12 text-brand-green" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-foreground">
+            {paymentMethod === 'cod' ? 'Order Placed Successfully!' : 'Payment Successful!'}
+          </h2>
+          <p className="text-xs text-muted-foreground mt-1">
+            {paymentMethod === 'cod' ? 'Pay when your order arrives' : 'Your payment has been processed'}
+          </p>
+          <div className="mt-4 space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Order ID</span>
+              <span className="font-semibold text-foreground">{orderNumber}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{paymentMethod === 'cod' ? 'Amount to Pay' : 'Amount Paid'}</span>
+              <span className="font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Expected Delivery</span>
+              <span className="font-semibold text-foreground">{expectedDelivery}</span>
+            </div>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">Redirecting to orders in {countdown}s...</p>
+        <div className="space-y-2.5 pt-1">
+          <Button
+            onClick={() => onNavigate('/orders')}
+            className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl"
+          >
+            Order Details
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('/')}
+            className="w-full h-11 border-brand-green text-brand-green font-semibold rounded-xl"
+          >
+            Go to Home
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default MobileCheckoutFlow;
