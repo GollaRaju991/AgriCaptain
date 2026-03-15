@@ -192,12 +192,20 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         return;
       }
     }
-    if (paymentMethod === 'cod' && !codAdvancePaid) {
-      toast({ title: "Complete advance payment", description: `Pay ₹${COD_ADVANCE_AMOUNT} to proceed`, variant: "destructive" });
+    // COD: skip payment processing, directly place order
+    if (paymentMethod === 'cod') {
+      const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
+      setOrderNumber(orderNum);
+      try {
+        await onCompleteOrder(paymentMethod, {});
+        setShowSuccess(true);
+      } catch {
+        toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      }
       return;
     }
 
-    // Start processing overlay
+    // Start processing overlay for online payments
     setShowProcessing(true);
     setProcessingStep(0);
 
