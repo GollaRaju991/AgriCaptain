@@ -59,10 +59,9 @@ const Checkout = () => {
   // Payment processing dialog state
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   
-  // COD advance payment state
-  const [codAdvancePaid, setCodAdvancePaid] = useState(false);
-  const [codPaymentMethod, setCodPaymentMethod] = useState('');
-  const [codPaymentProcessing, setCodPaymentProcessing] = useState(false);
+  // COD state
+  const [showCodSuccess, setShowCodSuccess] = useState(false);
+  const [codOrderNumber, setCodOrderNumber] = useState('');
   
   // Coupon state
   const [couponCode, setCouponCode] = useState('');
