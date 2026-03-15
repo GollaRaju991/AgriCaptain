@@ -151,14 +151,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <div className="mt-6 hidden lg:block">
             <Button 
               onClick={onPayment} 
-              className="w-full h-12 text-base font-medium bg-green-600 hover:bg-green-700 text-white"
-              disabled={!paymentMethod || !selectedAddress || (isCOD && !codAdvancePaid)}
+              className="w-full h-12 text-base font-medium bg-brand-green hover:bg-brand-green/90 text-white rounded-xl"
+              disabled={!paymentMethod || !selectedAddress}
             >
               {isCOD 
-                ? (codAdvancePaid 
-                    ? `PLACE ORDER (Pay ₹${codRemainingAmount.toFixed(0)} on Delivery)` 
-                    : 'Complete Advance Payment First')
-                : `PAY ₹${finalTotal.toFixed(0)}`
+                ? 'Place Order'
+                : `Pay ₹${finalTotal.toFixed(0)}`
               }
             </Button>
             {(!paymentMethod || !selectedAddress || (isCOD && !codAdvancePaid)) && (
