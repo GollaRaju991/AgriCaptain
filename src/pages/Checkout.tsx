@@ -250,14 +250,16 @@ const Checkout = () => {
 
     // Validation for UPI
     if (paymentMethod === 'upi') {
-      if (!upiId) {
-        toast({ title: "Enter UPI ID", description: "Please enter your UPI ID", variant: "destructive" });
+      if (!selectedUpiApp && !upiId) {
+        toast({ title: "Select UPI app or enter UPI ID", variant: "destructive" });
         return;
       }
-      const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
-      if (!upiRegex.test(upiId)) {
-        toast({ title: "Invalid UPI ID", description: "Enter a valid UPI ID like name@bank", variant: "destructive" });
-        return;
+      if (upiId && !selectedUpiApp) {
+        const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
+        if (!upiRegex.test(upiId)) {
+          toast({ title: "Invalid UPI ID", description: "Enter a valid UPI ID like name@bank", variant: "destructive" });
+          return;
+        }
       }
     }
 
