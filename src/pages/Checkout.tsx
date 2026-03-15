@@ -296,8 +296,25 @@ const Checkout = () => {
     if (paymentMethod === 'cod') {
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setCodOrderNumber(orderNum);
-      await completeOrder();
-      setShowCodSuccess(true);
+      try {
+        const orderDetails = {
+          orderNumber: orderNum,
+          date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
+          items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price, image: item.image })),
+          shippingAddress: selectedAddress,
+          paymentSummary: { subtotal: totalPrice, delivery: deliveryFee, discount: upiDiscount + couponDiscount, total: finalTotal },
+          paymentMethod: 'Cash on Delivery'
+        };
+        await saveOrderToDatabase(orderDetails);
+        setShowCodSuccess(true);
+        // Auto-close and navigate after 5 seconds
+        setTimeout(() => {
+          clearCart();
+          navigate('/orders');
+        }, 5000);
+      } catch (error) {
+        toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      }
       return;
     }
 
