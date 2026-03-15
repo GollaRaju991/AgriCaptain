@@ -145,13 +145,6 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
     if (data) setSavedCards(data as SavedCard[]);
   };
 
-  const handleCodAdvancePayment = async (method: string) => {
-    setCodPaymentProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setCodAdvancePaid(true);
-    setCodPaymentProcessing(false);
-    toast({ title: "Advance Payment Successful!", description: `₹${COD_ADVANCE_AMOUNT} paid via ${method}.` });
-  };
 
   const getProcessingSteps = () => {
     if (paymentMethod === 'upi') return ['Sending payment request...', 'Waiting for approval...', 'Verifying transaction...', 'Payment confirmed!'];
