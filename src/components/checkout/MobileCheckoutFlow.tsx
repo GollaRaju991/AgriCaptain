@@ -105,6 +105,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const { toast } = useToast();
 
   const [showAddressManager, setShowAddressManager] = useState(false);
+  const [addressManagerScreen, setAddressManagerScreen] = useState<'list' | 'form'>('list');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [upiId, setUpiId] = useState('');
   const [upiVerified, setUpiVerified] = useState(false);
