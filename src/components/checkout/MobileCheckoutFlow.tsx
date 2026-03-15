@@ -684,7 +684,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               <CheckCircle className="h-12 w-12 text-brand-green" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-foreground">Payment Successful</h2>
+              <h2 className="text-xl font-bold text-foreground">{paymentMethod === 'cod' ? 'Order Placed Successfully' : 'Payment Successful'}</h2>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Order ID</span>
