@@ -1,29 +1,69 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { translateProductName } from '@/data/translations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, X, Tag, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
+
+const COUPONS: Record<string, { type: 'percent'; value: number; minOrder: number; label: string }> = {
+  SAVE10: { type: 'percent', value: 10, minOrder: 1000, label: '10% off on orders above ₹1000' },
+  FIRST20: { type: 'percent', value: 20, minOrder: 0, label: '20% off for first time buyers' },
+  UPI10: { type: 'percent', value: 10, minOrder: 0, label: 'Extra 10% off with UPI payment' },
+};
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const { user, setRedirectAfterLogin } = useAuth();
   const { language, translations } = useLanguage();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
 
   const deliveryCharges = 0;
   const platformCharges = 0;
   const discountAmount = Math.round(totalPrice * 0.05);
   const upiDiscount = Math.round(totalPrice * 0.1);
-  const totalAfterDiscount = totalPrice - discountAmount;
+  const totalAfterDiscount = totalPrice - discountAmount - couponDiscount;
   const totalWithUPI = totalAfterDiscount - upiDiscount;
+
+  const handleApplyCoupon = () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) {
+      toast({ title: 'Enter a coupon code', variant: 'destructive' });
+      return;
+    }
+    const coupon = COUPONS[code];
+    if (!coupon) {
+      toast({ title: 'Invalid Coupon', description: `"${code}" is not a valid coupon code.`, variant: 'destructive' });
+      return;
+    }
+    if (totalPrice < coupon.minOrder) {
+      toast({ title: 'Minimum order not met', description: `This coupon requires a minimum order of ₹${coupon.minOrder}.`, variant: 'destructive' });
+      return;
+    }
+    const discount = Math.round(totalPrice * (coupon.value / 100));
+    setCouponDiscount(discount);
+    setAppliedCoupon(code);
+    toast({ title: 'Coupon Applied!', description: `${code} — You save ₹${discount}` });
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponCode('');
+    toast({ title: 'Coupon Removed' });
+  };
 
   const handleCheckoutClick = () => {
     if (user) {
@@ -54,6 +94,57 @@ const Cart = () => {
     );
   }
 
+  // Shared coupon UI
+  const CouponSection = ({ mobile = false }: { mobile?: boolean }) => (
+    <Card className={mobile ? "border border-gray-200 rounded-xl shadow-sm" : "mt-4"}>
+      <CardContent className={mobile ? "p-4" : "p-6"}>
+        <h4 className="font-semibold mb-3 text-foreground">{translations.have_coupon}</h4>
+
+        {appliedCoupon ? (
+          <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <div>
+                <span className="font-bold text-green-700 text-sm">{appliedCoupon}</span>
+                <p className="text-xs text-green-600">You save ₹{couponDiscount}</p>
+              </div>
+            </div>
+            <button onClick={handleRemoveCoupon} className="text-red-500 hover:text-red-700">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              placeholder={translations.enter_coupon}
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+            />
+            <Button variant="outline" className="border-green-600 text-green-700 font-semibold" onClick={handleApplyCoupon}>
+              {translations.apply}
+            </Button>
+          </div>
+        )}
+
+        <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">{translations.available_coupons}</p>
+          {Object.entries(COUPONS).map(([code, c]) => (
+            <button
+              key={code}
+              onClick={() => { setCouponCode(code); }}
+              className={`flex items-center gap-1.5 w-full text-left text-green-600 hover:text-green-800 transition-colors ${appliedCoupon === code ? 'font-bold' : ''}`}
+            >
+              <Tag className="h-3 w-3" />
+              <span>{code} - {c.label}</span>
+            </button>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Desktop header */}
@@ -82,11 +173,7 @@ const Cart = () => {
             <Card key={item.id} className="border border-gray-200 rounded-xl shadow-sm">
               <CardContent className="p-4">
                 <div className="flex gap-3">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-20 h-20 object-contain rounded-lg bg-gray-50"
-                  />
+                  <img src={item.image} alt={item.name} className="w-20 h-20 object-contain rounded-lg bg-gray-50" />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base text-foreground">{translateProductName(item.name, language)}</h3>
                     <p className="text-sm text-muted-foreground capitalize">{item.category}</p>
@@ -95,29 +182,12 @@ const Cart = () => {
                 </div>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100"
-                    >
-                      −
-                    </button>
-                    <span className="w-10 h-10 flex items-center justify-center text-base font-semibold border-x border-gray-300">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100"
-                    >
-                      +
-                    </button>
-                    <span className="bg-green-700 text-white font-bold px-4 h-10 flex items-center justify-center text-base rounded-r-lg">
-                      ₹{item.price * item.quantity}
-                    </span>
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100">−</button>
+                    <span className="w-10 h-10 flex items-center justify-center text-base font-semibold border-x border-gray-300">{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100">+</button>
+                    <span className="bg-green-700 text-white font-bold px-4 h-10 flex items-center justify-center text-base rounded-r-lg">₹{item.price * item.quantity}</span>
                   </div>
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="flex items-center gap-1 text-muted-foreground hover:text-red-600 text-sm"
-                  >
+                  <button onClick={() => removeFromCart(item.id)} className="flex items-center gap-1 text-muted-foreground hover:text-red-600 text-sm">
                     <Trash2 className="h-4 w-4" />
                     <span>Remove</span>
                   </button>
@@ -147,42 +217,28 @@ const Cart = () => {
                   <span className="font-medium">{translations.discount_amount || 'Discount'}</span>
                   <span className="font-semibold">-₹{discountAmount}</span>
                 </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span className="font-medium">Coupon ({appliedCoupon})</span>
+                    <span className="font-semibold">-₹{couponDiscount}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-green-600">
                   <span className="font-medium">{translations.upi_discount || 'UPI Discount (10%)'}</span>
                   <span className="font-semibold">-₹{upiDiscount}</span>
                 </div>
               </div>
-
               <div className="border-t border-gray-200 mt-4 pt-4">
                 <div className="flex justify-between text-xl font-bold text-foreground">
                   <span>{translations.total || 'Total Amount'}</span>
                   <span>₹{totalAfterDiscount}</span>
                 </div>
               </div>
-
             </CardContent>
           </Card>
 
           {/* Coupon Section */}
-          <Card className="border border-gray-200 rounded-xl shadow-sm">
-            <CardContent className="p-4">
-              <h4 className="font-semibold mb-3 text-foreground">{translations.have_coupon}</h4>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  placeholder={translations.enter_coupon}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-                />
-                <Button variant="outline" className="border-green-600 text-green-700 font-semibold">{translations.apply}</Button>
-              </div>
-              <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">{translations.available_coupons}</p>
-                <p className="text-green-600">• SAVE10 - 10% off on orders above ₹1000</p>
-                <p className="text-green-600">• FIRST20 - 20% off for first time buyers</p>
-                <p className="text-green-600">• UPI10 - Extra 10% off with UPI payment</p>
-              </div>
-            </CardContent>
-          </Card>
+          <CouponSection mobile />
         </div>
 
         {/* Sticky Bottom Bar */}
@@ -192,10 +248,7 @@ const Cart = () => {
               {translations.add_more || 'Add More'}
             </Button>
           </Link>
-          <Button
-            className="flex-1 h-12 text-base font-semibold rounded-xl bg-green-700 hover:bg-green-800 text-white"
-            onClick={handleCheckoutClick}
-          >
+          <Button className="flex-1 h-12 text-base font-semibold rounded-xl bg-green-700 hover:bg-green-800 text-white" onClick={handleCheckoutClick}>
             {user ? (translations.checkout || 'Checkout') : (translations.login_to_checkout || 'Login to Checkout')}
           </Button>
         </div>
@@ -262,6 +315,12 @@ const Cart = () => {
                     <span>{translations.discount_amount}</span>
                     <span>-₹{discountAmount}</span>
                   </div>
+                  {couponDiscount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Coupon ({appliedCoupon})</span>
+                      <span>-₹{couponDiscount}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-green-600">
                     <span>{translations.upi_discount}</span>
                     <span>-₹{upiDiscount}</span>
@@ -292,21 +351,7 @@ const Cart = () => {
               </CardContent>
             </Card>
 
-            <Card className="mt-4">
-              <CardContent className="p-6">
-                <h4 className="font-semibold mb-3">{translations.have_coupon}</h4>
-                <div className="flex space-x-2">
-                  <input type="text" placeholder={translations.enter_coupon} className="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500" />
-                  <Button variant="outline">{translations.apply}</Button>
-                </div>
-                <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-                  <p>{translations.available_coupons}</p>
-                  <p className="text-green-600">• SAVE10 - 10% off on orders above ₹1000</p>
-                  <p className="text-green-600">• FIRST20 - 20% off for first time buyers</p>
-                  <p className="text-green-600">• UPI10 - Extra 10% off with UPI payment</p>
-                </div>
-              </CardContent>
-            </Card>
+            <CouponSection />
           </div>
         </div>
       </div>
