@@ -630,8 +630,17 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
           disabled={!paymentMethod || !selectedAddress}
           className="w-full h-12 bg-brand-green hover:bg-brand-green/90 text-white font-bold text-sm rounded-xl disabled:opacity-50 shadow-lg"
         >
-          <Shield className="h-4 w-4 mr-2" />
-          Pay Securely
+          {paymentMethod === 'cod' ? (
+            <>
+              <Package className="h-4 w-4 mr-2" />
+              Place Order
+            </>
+          ) : (
+            <>
+              <Shield className="h-4 w-4 mr-2" />
+              Pay Securely
+            </>
+          )}
         </Button>
       </div>
 
