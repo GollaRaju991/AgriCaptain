@@ -55,6 +55,7 @@ const Checkout = () => {
   const [nameOnCard, setNameOnCard] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
   const [selectedEMI, setSelectedEMI] = useState('');
+  const [selectedUpiApp, setSelectedUpiApp] = useState('');
   
   // Payment processing dialog state
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
@@ -209,7 +210,7 @@ const Checkout = () => {
   };
 
   const getPaymentDetail = () => {
-    if (paymentMethod === 'upi') return `UPI: ${upiId}`;
+    if (paymentMethod === 'upi') return selectedUpiApp ? `UPI - ${selectedUpiApp}` : `UPI: ${upiId}`;
     if (paymentMethod === 'card') return `Card ending ****${cardNumber.replace(/\s/g, '').slice(-4)}`;
     if (paymentMethod === 'netbanking') return `Net Banking: ${selectedBank.toUpperCase()}`;
     if (paymentMethod === 'emi') return `EMI: ${selectedEMI}`;
@@ -249,14 +250,16 @@ const Checkout = () => {
 
     // Validation for UPI
     if (paymentMethod === 'upi') {
-      if (!upiId) {
-        toast({ title: "Enter UPI ID", description: "Please enter your UPI ID", variant: "destructive" });
+      if (!selectedUpiApp && !upiId) {
+        toast({ title: "Select UPI app or enter UPI ID", variant: "destructive" });
         return;
       }
-      const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
-      if (!upiRegex.test(upiId)) {
-        toast({ title: "Invalid UPI ID", description: "Enter a valid UPI ID like name@bank", variant: "destructive" });
-        return;
+      if (upiId && !selectedUpiApp) {
+        const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
+        if (!upiRegex.test(upiId)) {
+          toast({ title: "Invalid UPI ID", description: "Enter a valid UPI ID like name@bank", variant: "destructive" });
+          return;
+        }
       }
     }
 
@@ -576,6 +579,8 @@ const Checkout = () => {
               onCodAdvancePayment={async () => {}}
               codPaymentProcessing={false}
               onPayment={handlePayment}
+              selectedUpiApp={selectedUpiApp}
+              onUpiAppSelect={setSelectedUpiApp}
             />
           </div>
 
