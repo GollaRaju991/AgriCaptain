@@ -7,6 +7,7 @@ import AddressSection from '@/components/checkout/AddressSection';
 import PaymentMethodsSection from '@/components/checkout/PaymentMethodsSection';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import PaymentProcessingDialog from '@/components/checkout/PaymentProcessingDialog';
+import MobileCheckoutFlow from '@/components/checkout/MobileCheckoutFlow';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Shield } from 'lucide-react';
@@ -14,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { supabase } from '@/integrations/supabase/client';
 import { dualBackendService } from '@/services/dualBackendService';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 interface Address {
@@ -37,6 +39,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const { user, session, loading: authLoading, setRedirectAfterLogin } = useAuth();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   // Address state
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
@@ -362,13 +365,27 @@ const Checkout = () => {
       });
     }
   };
+
+  const handleMobileCompleteOrder = async (mobilePaymentMethod: string, paymentDetails: any) => {
+    const orderDetails = {
+      orderNumber: '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase(),
+      date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
+      items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price, image: item.image })),
+      shippingAddress: selectedAddress,
+      paymentSummary: { subtotal: totalPrice, delivery: deliveryFee, discount: upiDiscount + couponDiscount, total: finalTotal },
+      paymentMethod: mobilePaymentMethod === 'cod' ? 'Cash on Delivery' : mobilePaymentMethod.toUpperCase()
+    };
+    await saveOrderToDatabase(orderDetails);
+    clearCart();
+  };
+
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-muted flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <span className="text-gray-600">Loading...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green mx-auto mb-4"></div>
+          <span className="text-muted-foreground">Loading...</span>
         </div>
       </div>
     );
@@ -381,20 +398,44 @@ const Checkout = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-muted">
         <Header />
         <div className="max-w-7xl mx-auto px-4 py-8 md:py-16 text-center">
           <h1 className="text-xl md:text-2xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-6 md:mb-8 text-sm md:text-base">Add some products to continue</p>
+          <p className="text-muted-foreground mb-6 md:mb-8 text-sm md:text-base">Add some products to continue</p>
           <button 
             onClick={() => navigate('/products')} 
-            className="bg-blue-600 text-white px-4 md:px-6 py-2 rounded hover:bg-blue-700 text-sm md:text-base"
+            className="bg-brand-green text-white px-4 md:px-6 py-2 rounded hover:bg-brand-green/90 text-sm md:text-base"
           >
             Continue Shopping
           </button>
         </div>
         <Footer />
       </div>
+    );
+  }
+
+  // Mobile checkout flow
+  if (isMobile) {
+    return (
+      <MobileCheckoutFlow
+        items={items}
+        totalPrice={totalPrice}
+        finalTotal={finalTotal}
+        upiDiscount={upiDiscount}
+        couponDiscount={couponDiscount}
+        deliveryFee={deliveryFee}
+        addresses={addresses}
+        selectedAddress={selectedAddress}
+        addressesLoading={addressesLoading}
+        onAddressSelect={handleAddressSelect}
+        onAddressRefresh={loadAddresses}
+        onCompleteOrder={handleMobileCompleteOrder}
+        couponCode={couponCode}
+        setCouponCode={setCouponCode}
+        appliedCoupon={appliedCoupon}
+        onCouponApply={handleCouponApply}
+      />
     );
   }
 
