@@ -28,6 +28,7 @@ interface AddressManagerProps {
   onAddressSelect: (address: Address) => void;
   selectedAddressId?: string;
   onClose?: () => void;
+  onScreenChange?: (screen: 'list' | 'form') => void;
 }
 
 const INDIAN_STATES = [
