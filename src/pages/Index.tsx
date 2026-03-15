@@ -61,9 +61,11 @@ const Index = () => {
           </div>
 
           {(() => {
-            const batch1 = products.slice(0, 6);
-            const batch2 = products.slice(6, 12);
-            const remaining = products.slice(12);
+            const displayProducts = products.slice(0, 120);
+            const batch1 = displayProducts.slice(0, 12);
+            const batch2 = displayProducts.slice(12, 30);
+            const batch3 = displayProducts.slice(30, 60);
+            const remaining = displayProducts.slice(60);
             return (
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 md:gap-2">
@@ -87,7 +89,15 @@ const Index = () => {
                 {/* Ad Banner 2 */}
                 <ProductAdBanner />
 
-                {/* All remaining products */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 md:gap-2 mt-2">
+                  {batch3.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+
+                {/* Ad Banner 3 */}
+                <ProductAdBanner />
+
                 {remaining.length > 0 && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 md:gap-2 mt-2">
                     {remaining.map((product) => (

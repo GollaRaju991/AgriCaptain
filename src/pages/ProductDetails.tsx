@@ -841,18 +841,9 @@ const ProductDetails = () => {
 
         {/* Related Products Section */}
         {relatedProducts.length > 0 && (
-          <div className="mt-8 lg:mt-12 mb-8 px-4 lg:px-0">
+          <div className="mt-8 lg:mt-12 mb-4 px-4 lg:px-0">
             <h2 className="text-lg lg:text-2xl font-bold mb-4 lg:mb-6">Related Products</h2>
-            
-            {/* Mobile: 2 column grid */}
-            <div className="grid grid-cols-2 gap-2 md:hidden">
-              {relatedProducts.slice(0, 6).map(relProduct => (
-                <ProductCard key={relProduct.id} product={relProduct} variant="grid" />
-              ))}
-            </div>
-            
-            {/* Desktop: 4 column grid */}
-            <div className="hidden md:grid md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
               {relatedProducts.map(relProduct => (
                 <ProductCard key={relProduct.id} product={relProduct} variant="grid" />
               ))}
@@ -860,90 +851,17 @@ const ProductDetails = () => {
           </div>
         )}
 
-        {/* Product Pagination at Bottom */}
-        <div className="mt-8 mb-8 flex justify-center px-4 lg:px-0">
-          <Pagination>
-            <PaginationContent className="flex-wrap justify-center">
-              <PaginationItem>
-                <PaginationPrevious 
-                  onClick={() => {
-                    if (currentIndex > 0) {
-                      const prevProduct = products[currentIndex - 1];
-                      navigate(`/product/${prevProduct.id}`);
-                    }
-                  }}
-                  className={currentIndex === 0 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-              
-              {currentIndex > 2 && (
-                <>
-                  <PaginationItem>
-                    <PaginationLink 
-                      onClick={() => navigate(`/product/${products[0].id}`)}
-                      className="cursor-pointer"
-                    >
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
-                  {currentIndex > 3 && (
-                    <PaginationItem>
-                      <span className="px-2 text-muted-foreground">...</span>
-                    </PaginationItem>
-                  )}
-                </>
-              )}
-              
-              {Array.from({ length: 5 }, (_, i) => {
-                const pageIndex = Math.max(0, currentIndex - 2) + i;
-                if (pageIndex >= products.length) return null;
-                if (pageIndex < 0) return null;
-                
-                return (
-                  <PaginationItem key={pageIndex}>
-                    <PaginationLink 
-                      onClick={() => navigate(`/product/${products[pageIndex].id}`)}
-                      isActive={pageIndex === currentIndex}
-                      className="cursor-pointer"
-                    >
-                      {pageIndex + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                );
-              })}
-              
-              {currentIndex < products.length - 3 && (
-                <>
-                  {currentIndex < products.length - 4 && (
-                    <PaginationItem>
-                      <span className="px-2 text-muted-foreground">...</span>
-                    </PaginationItem>
-                  )}
-                  <PaginationItem>
-                    <PaginationLink 
-                      onClick={() => navigate(`/product/${products[products.length - 1].id}`)}
-                      className="cursor-pointer"
-                    >
-                      {products.length}
-                    </PaginationLink>
-                  </PaginationItem>
-                </>
-              )}
-              
-              <PaginationItem>
-                <PaginationNext 
-                  onClick={() => {
-                    if (currentIndex < products.length - 1) {
-                      const nextProduct = products[currentIndex + 1];
-                      navigate(`/product/${nextProduct.id}`);
-                    }
-                  }}
-                  className={currentIndex >= products.length - 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        {/* More Products You May Like - Unrelated (Chaining) */}
+        {unrelatedProducts.length > 0 && (
+          <div className="mt-6 mb-8 px-4 lg:px-0">
+            <h2 className="text-lg lg:text-2xl font-bold mb-4 lg:mb-6">More Products You May Like</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
+              {unrelatedProducts.map(product => (
+                <ProductCard key={product.id} product={product} variant="grid" />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
       
       {/* Mobile Sticky Bottom Bar - Flipkart Style */}
