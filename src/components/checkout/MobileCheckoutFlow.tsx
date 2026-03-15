@@ -268,44 +268,46 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
       <div className="p-4 space-y-4">
 
         {/* ── SECTION 1: DELIVERY ADDRESS ── */}
-        <div className="bg-white rounded-2xl shadow-sm border border-border/50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
-            <MapPin className="h-4 w-4 text-brand-green" />
-            <h2 className="text-sm font-bold text-foreground">Delivery Address</h2>
-          </div>
+        <div>
+          <h2 className="text-sm font-bold text-foreground mb-2.5">Delivery Address</h2>
           {addressesLoading ? (
-            <div className="p-6 text-center">
+            <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6 text-center">
               <Loader2 className="h-5 w-5 animate-spin text-brand-green mx-auto mb-2" />
               <p className="text-xs text-muted-foreground">Loading...</p>
             </div>
           ) : selectedAddress ? (
-            <div className="p-4">
+            <div className="bg-white rounded-2xl shadow-sm border border-border/40 p-4">
               <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground">{selectedAddress.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">+91 {selectedAddress.phone}</p>
-                  <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                    {selectedAddress.address}<br />
-                    {selectedAddress.city}, {selectedAddress.state} {selectedAddress.pincode}
-                  </p>
+                <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                  <MapPin className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-foreground">{selectedAddress.name}</p>
+                    <p className="text-sm text-muted-foreground mt-0.5">+91 {selectedAddress.phone}</p>
+                    <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                      {selectedAddress.address}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedAddress.city}, {selectedAddress.state} {selectedAddress.pincode}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setShowAddressManager(true)}
-                  className="text-xs font-semibold text-brand-green px-3 py-1.5 border border-brand-green rounded-lg shrink-0 ml-3"
+                  className="text-sm font-semibold text-brand-green px-4 py-2 border border-brand-green rounded-xl shrink-0 ml-3 hover:bg-brand-green/5 transition-colors"
                 >
                   Change
                 </button>
               </div>
             </div>
           ) : (
-            <div className="p-6 text-center">
-              <MapPin className="h-8 w-8 text-muted-foreground/30 mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground mb-3">No address added</p>
+            <div className="bg-white rounded-2xl shadow-sm border border-border/40 p-6 text-center">
+              <MapPin className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground mb-3">No address added</p>
               <button
                 onClick={() => setShowAddressManager(true)}
-                className="text-xs font-semibold text-brand-green border border-brand-green rounded-lg px-4 py-2 inline-flex items-center gap-1"
+                className="text-sm font-semibold text-white bg-brand-green rounded-xl px-5 py-2.5 inline-flex items-center gap-1.5 shadow-sm"
               >
-                <Plus className="h-3.5 w-3.5" /> Add Address
+                <Plus className="h-4 w-4" /> Add Address
               </button>
             </div>
           )}
