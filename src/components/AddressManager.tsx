@@ -42,7 +42,7 @@ const INDIAN_STATES = [
   'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry'
 ];
 
-const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, selectedAddressId, onClose }) => {
+const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, selectedAddressId, onClose, onScreenChange }) => {
   const { toast } = useToast();
   const { user, session } = useAuth();
   const [addresses, setAddresses] = useState<Address[]>([]);
