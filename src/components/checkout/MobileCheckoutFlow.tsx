@@ -80,7 +80,7 @@ interface MobileCheckoutFlowProps {
   onCouponApply: () => void;
 }
 
-const COD_ADVANCE_AMOUNT = 99;
+
 
 const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   items,
