@@ -467,9 +467,9 @@ const Checkout = () => {
               selectedEMI={selectedEMI}
               setSelectedEMI={setSelectedEMI}
               finalTotal={finalTotal}
-              codAdvancePaid={codAdvancePaid}
-              onCodAdvancePayment={handleCodAdvancePayment}
-              codPaymentProcessing={codPaymentProcessing}
+              codAdvancePaid={false}
+              onCodAdvancePayment={async () => {}}
+              codPaymentProcessing={false}
               onPayment={handlePayment}
             />
           </div>
