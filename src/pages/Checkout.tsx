@@ -296,8 +296,25 @@ const Checkout = () => {
     if (paymentMethod === 'cod') {
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setCodOrderNumber(orderNum);
-      await completeOrder();
-      setShowCodSuccess(true);
+      try {
+        const orderDetails = {
+          orderNumber: orderNum,
+          date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
+          items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price, image: item.image })),
+          shippingAddress: selectedAddress,
+          paymentSummary: { subtotal: totalPrice, delivery: deliveryFee, discount: upiDiscount + couponDiscount, total: finalTotal },
+          paymentMethod: 'Cash on Delivery'
+        };
+        await saveOrderToDatabase(orderDetails);
+        setShowCodSuccess(true);
+        // Auto-close and navigate after 5 seconds
+        setTimeout(() => {
+          clearCart();
+          navigate('/orders');
+        }, 5000);
+      } catch (error) {
+        toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      }
       return;
     }
 
@@ -363,7 +380,9 @@ const Checkout = () => {
       paymentMethod: mobilePaymentMethod === 'cod' ? 'Cash on Delivery' : mobilePaymentMethod.toUpperCase()
     };
     await saveOrderToDatabase(orderDetails);
-    clearCart();
+    // Don't clear cart immediately - let the success popup show first
+    // Cart will be cleared after navigation
+    setTimeout(() => clearCart(), 6000);
   };
 
   // Show loading while checking authentication
@@ -513,43 +532,83 @@ const Checkout = () => {
 
       {/* COD Order Success Popup */}
       {showCodSuccess && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6">
-          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
-            <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto">
-              <Shield className="h-12 w-12 text-brand-green" />
+        <CodSuccessPopup
+          orderNumber={codOrderNumber}
+          finalTotal={finalTotal}
+          onNavigate={(path) => {
+            clearCart();
+            navigate(path);
+          }}
+        />
+      )}
+
+    </div>
+  );
+};
+
+// COD Success Popup with auto-close
+const CodSuccessPopup: React.FC<{
+  orderNumber: string;
+  finalTotal: number;
+  onNavigate: (path: string) => void;
+}> = ({ orderNumber, finalTotal, onNavigate }) => {
+  const [countdown, setCountdown] = useState(5);
+  const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onNavigate('/orders');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [onNavigate]);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6">
+      <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl text-center space-y-6 animate-in zoom-in-95 duration-300">
+        <div className="w-20 h-20 bg-brand-green/10 rounded-full flex items-center justify-center mx-auto">
+          <Shield className="h-12 w-12 text-brand-green" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Order Placed Successfully!</h2>
+          <p className="text-sm text-muted-foreground mt-2">Your order has been confirmed. Pay on delivery.</p>
+          <div className="mt-4 space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Order ID</span>
+              <span className="font-semibold text-foreground">{orderNumber}</span>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Order Placed Successfully!</h2>
-              <p className="text-sm text-muted-foreground mt-2">Your order has been confirmed. Pay on delivery.</p>
-              <div className="mt-4 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Order ID</span>
-                  <span className="font-semibold text-foreground">{codOrderNumber}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Amount</span>
-                  <span className="font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
-                </div>
-              </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Amount to Pay</span>
+              <span className="font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
             </div>
-            <div className="space-y-3 pt-2">
-              <button
-                onClick={() => navigate('/orders')}
-                className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl"
-              >
-                View Order History
-              </button>
-              <button
-                onClick={() => navigate('/')}
-                className="w-full h-11 border border-brand-green text-brand-green font-semibold rounded-xl"
-              >
-                Go to Home
-              </button>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Expected Delivery</span>
+              <span className="font-semibold text-foreground">{expectedDelivery}</span>
             </div>
           </div>
         </div>
-      )}
-
+        <p className="text-xs text-muted-foreground">Redirecting to orders in {countdown}s...</p>
+        <div className="space-y-3 pt-2">
+          <button
+            onClick={() => onNavigate('/orders')}
+            className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl"
+          >
+            Order Details
+          </button>
+          <button
+            onClick={() => onNavigate('/')}
+            className="w-full h-11 border border-brand-green text-brand-green font-semibold rounded-xl"
+          >
+            Go to Home
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
