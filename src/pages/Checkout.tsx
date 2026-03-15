@@ -7,6 +7,7 @@ import AddressSection from '@/components/checkout/AddressSection';
 import PaymentMethodsSection from '@/components/checkout/PaymentMethodsSection';
 import OrderSummary from '@/components/checkout/OrderSummary';
 import PaymentProcessingDialog from '@/components/checkout/PaymentProcessingDialog';
+import MobileCheckoutFlow from '@/components/checkout/MobileCheckoutFlow';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { Shield } from 'lucide-react';
@@ -14,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { supabase } from '@/integrations/supabase/client';
 import { dualBackendService } from '@/services/dualBackendService';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 interface Address {
