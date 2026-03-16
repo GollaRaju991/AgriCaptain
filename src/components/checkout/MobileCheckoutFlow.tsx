@@ -139,6 +139,8 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   };
 
   const handlePay = async () => {
+    if (isSubmitting) return;
+
     if (!selectedAddress) {
       toast({ title: "Select delivery address", variant: "destructive" });
       return;
