@@ -164,17 +164,7 @@ const Header = () => {
 
                 <div className="flex items-center gap-2 ml-auto">
                   {/* Notification Bell - Mobile */}
-                  <Link
-                    to="/notifications"
-                    className="relative flex items-center justify-center w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full shadow-sm"
-                  >
-                    <Bell className="h-4 w-4 text-green-700" />
-                    {unreadNotifications > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
-                        {unreadNotifications > 99 ? '99+' : unreadNotifications}
-                      </span>
-                    )}
-                  </Link>
+                  <NotificationDropdown variant="mobile" />
 
                   <Link
                     to="/become-seller"
