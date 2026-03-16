@@ -253,9 +253,10 @@ const Header = () => {
         <div className="hidden lg:block">
           {/* Row 1: Logo + Search + Actions - hides on scroll */}
           <div
-            className={`flex items-center justify-between py-5 px-8 transition-all duration-300 overflow-hidden ${
-              scrolled ? "max-h-0 py-0 opacity-0" : "max-h-28 opacity-100"
+            className={`flex items-center justify-between py-5 px-8 transition-all duration-300 ${
+              scrolled ? "max-h-0 py-0 opacity-hidden pointer-events-none opacity-0" : "max-h-28 opacity-100"
             }`}
+            style={scrolled ? { overflow: 'hidden' } : {}}
           >
             <Link to="/" className="flex items-center space-x-3">
               <img src={appLogo} alt="Agrizin" className="w-12 h-12 rounded-full shadow" />
