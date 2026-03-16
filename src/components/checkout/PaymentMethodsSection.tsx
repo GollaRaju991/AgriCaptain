@@ -114,12 +114,6 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
     fetchSavedCards();
   };
 
-  const upiApps = [
-    { id: 'gpay', name: 'Google Pay', icon: <GooglePayIcon /> },
-    { id: 'phonepe', name: 'PhonePe', icon: <PhonePeIcon /> },
-    { id: 'paytm', name: 'Paytm', icon: <PaytmIcon /> },
-    { id: 'cred', name: 'CRED', icon: <CREDIcon /> },
-  ];
 
   return (
     <Card className="border border-border/50 rounded-2xl shadow-sm overflow-hidden">
