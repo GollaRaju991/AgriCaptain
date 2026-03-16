@@ -105,6 +105,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const [processingStep, setProcessingStep] = useState(0);
   const [orderNumber, setOrderNumber] = useState('');
   const [transactionId, setTransactionId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
   const discount = upiDiscount + couponDiscount;
@@ -138,6 +139,8 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   };
 
   const handlePay = async () => {
+    if (isSubmitting) return;
+
     if (!selectedAddress) {
       toast({ title: "Select delivery address", variant: "destructive" });
       return;
@@ -163,6 +166,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
     }
     // COD: skip payment processing, directly place order
     if (paymentMethod === 'cod') {
+      setIsSubmitting(true);
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setOrderNumber(orderNum);
       try {
@@ -170,6 +174,8 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         setShowSuccess(true);
       } catch {
         toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      } finally {
+        setIsSubmitting(false);
       }
       return;
     }
@@ -192,6 +198,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
     setShowProcessing(false);
 
     if (success) {
+      setIsSubmitting(true);
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setOrderNumber(orderNum);
       try {
@@ -199,6 +206,8 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         setShowSuccess(true);
       } catch {
         setShowFailed(true);
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       setShowFailed(true);

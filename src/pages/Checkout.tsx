@@ -68,8 +68,8 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
-  // COD constants
-  
+  // Submission guard
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Pricing calculations
   const deliveryFee = 0;
@@ -219,6 +219,8 @@ const Checkout = () => {
   };
 
   const handlePayment = async () => {
+    if (isSubmitting) return;
+
     if (!user || !session) {
       toast({
         title: "Please login",
@@ -297,6 +299,7 @@ const Checkout = () => {
 
     // For COD, skip payment dialog — place order directly with success popup
     if (paymentMethod === 'cod') {
+      setIsSubmitting(true);
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setCodOrderNumber(orderNum);
       try {
@@ -310,13 +313,14 @@ const Checkout = () => {
         };
         await saveOrderToDatabase(orderDetails);
         setShowCodSuccess(true);
-        // Auto-close and navigate after 5 seconds
         setTimeout(() => {
           clearCart();
           navigate('/orders');
         }, 5000);
-      } catch (error) {
-        toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      } catch (error: any) {
+        toast({ title: "Order failed", description: error?.message || "Please try again.", variant: "destructive" });
+      } finally {
+        setIsSubmitting(false);
       }
       return;
     }
@@ -326,6 +330,8 @@ const Checkout = () => {
   };
 
   const completeOrder = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const orderDetails = {
         orderNumber: '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase(),
@@ -367,9 +373,11 @@ const Checkout = () => {
       console.error('Error processing order:', error);
       toast({
         title: "Order failed",
-        description: "There was an error processing your order. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

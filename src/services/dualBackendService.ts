@@ -21,8 +21,47 @@ interface DualOrderData {
 }
 
 class DualBackendService {
+  private isSubmitting = false;
+
   async saveOrderDual(orderData: DualOrderData): Promise<{ success: boolean; error?: string }> {
+    // Prevent duplicate submissions
+    if (this.isSubmitting) {
+      console.warn('Order submission already in progress, blocking duplicate');
+      return { success: false, error: 'Order submission already in progress' };
+    }
+    this.isSubmitting = true;
+
     try {
+      // Check for recent duplicate orders (same user, same items, same amount within last 2 minutes)
+      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      const { data: recentOrders } = await supabase
+        .from('orders')
+        .select('id, items, total_amount, created_at')
+        .eq('user_id', orderData.userId)
+        .gte('created_at', twoMinutesAgo)
+        .order('created_at', { ascending: false });
+
+      if (recentOrders && recentOrders.length > 0) {
+        const isDuplicate = recentOrders.some(existingOrder => {
+          if (existingOrder.total_amount !== orderData.totalAmount) return false;
+          const existingItems = Array.isArray(existingOrder.items) ? existingOrder.items : [];
+          if (existingItems.length !== orderData.items.length) return false;
+          return orderData.items.every((newItem: any) =>
+            existingItems.some((existing: any) =>
+              existing.name === newItem.name &&
+              existing.quantity === newItem.quantity &&
+              existing.price === newItem.price
+            )
+          );
+        });
+
+        if (isDuplicate) {
+          console.warn('Duplicate order detected, blocking submission');
+          this.isSubmitting = false;
+          return { success: false, error: 'This order was already placed. Check your orders page.' };
+        }
+      }
+
       const estimatedDelivery = new Date();
       estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
 
@@ -73,6 +112,8 @@ class DualBackendService {
     } catch (error) {
       console.error('Order save error:', error);
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    } finally {
+      this.isSubmitting = false;
     }
   }
 
