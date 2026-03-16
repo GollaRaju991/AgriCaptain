@@ -77,7 +77,6 @@ const Header = () => {
   const [searchFocused, setSearchFocused] = useState(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-  const unreadNotifications = useNotificationCount();
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
