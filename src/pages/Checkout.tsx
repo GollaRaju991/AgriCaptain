@@ -68,8 +68,8 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
-  // COD constants
-  
+  // Submission guard
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Pricing calculations
   const deliveryFee = 0;
