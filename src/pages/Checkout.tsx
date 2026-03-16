@@ -299,6 +299,7 @@ const Checkout = () => {
 
     // For COD, skip payment dialog — place order directly with success popup
     if (paymentMethod === 'cod') {
+      setIsSubmitting(true);
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setCodOrderNumber(orderNum);
       try {
@@ -312,13 +313,14 @@ const Checkout = () => {
         };
         await saveOrderToDatabase(orderDetails);
         setShowCodSuccess(true);
-        // Auto-close and navigate after 5 seconds
         setTimeout(() => {
           clearCart();
           navigate('/orders');
         }, 5000);
-      } catch (error) {
-        toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      } catch (error: any) {
+        toast({ title: "Order failed", description: error?.message || "Please try again.", variant: "destructive" });
+      } finally {
+        setIsSubmitting(false);
       }
       return;
     }
