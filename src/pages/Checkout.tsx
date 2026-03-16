@@ -330,6 +330,8 @@ const Checkout = () => {
   };
 
   const completeOrder = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const orderDetails = {
         orderNumber: '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase(),
