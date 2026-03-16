@@ -168,7 +168,6 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
           .single();
         if (error) { toast({ title: "Error saving address", variant: "destructive" }); return; }
         toast({ title: "Address added successfully" });
-        onAddressSelect(data);
       }
       await fetchAddresses();
       resetForm();
@@ -421,15 +420,24 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
       {addresses.length > 0 ? (
         <div className="space-y-3">
           <h3 className="text-base font-bold text-foreground">Saved Addresses</h3>
-          {addresses.map((address) => (
-            <div
-              key={address.id}
-              className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden"
-            >
-              <div className="p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                    <MapPin className="h-5 w-5 text-orange-500 shrink-0 mt-0.5" />
+          {addresses.map((address) => {
+            const isSelected = selectedAddressId === address.id;
+            return (
+              <div
+                key={address.id}
+                onClick={() => handleDeliverHere(address)}
+                className={`bg-card rounded-2xl border-2 shadow-sm overflow-hidden cursor-pointer transition-all ${
+                  isSelected ? 'border-brand-green' : 'border-border/50 hover:border-border'
+                }`}
+              >
+                <div className="p-4">
+                  <div className="flex items-start gap-3">
+                    {/* Radio indicator */}
+                    <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                      isSelected ? 'border-brand-green' : 'border-gray-300'
+                    }`}>
+                      {isSelected && <div className="w-3 h-3 rounded-full bg-brand-green" />}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-bold text-foreground">{address.name}</span>
@@ -456,36 +464,25 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
                         Phone: {address.phone}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0 ml-2">
-                    <button
-                      onClick={() => handleEditAddress(address)}
-                      className="p-2 rounded-lg hover:bg-muted/60 transition-colors"
-                    >
-                      <Edit className="h-4 w-4 text-muted-foreground" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAddress(address.id)}
-                      className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4 text-orange-500" />
-                    </button>
+                    <div className="flex items-center gap-1 shrink-0 ml-2">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleEditAddress(address); }}
+                        className="p-2 rounded-lg hover:bg-muted/60 transition-colors"
+                      >
+                        <Edit className="h-4 w-4 text-muted-foreground" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteAddress(address.id); }}
+                        className="p-2 rounded-lg hover:bg-destructive/10 transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4 text-orange-500" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-              {/* Deliver Here Button */}
-              <div className="px-4 pb-4">
-                <div className="border-t border-border/30 pt-3">
-                  <Button
-                    onClick={() => handleDeliverHere(address)}
-                    className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold text-sm rounded-xl shadow-sm"
-                  >
-                    Deliver Here
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12 bg-card rounded-2xl border border-border/50">
