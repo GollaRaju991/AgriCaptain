@@ -134,14 +134,7 @@ const Header = () => {
               </form>
               <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
             </div>
-            <Link to="/notifications" className="relative p-1">
-              <Bell className="h-5 w-5 text-gray-700" />
-              {unreadNotifications > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-0.5">
-                  {unreadNotifications > 99 ? '99+' : unreadNotifications}
-                </span>
-              )}
-            </Link>
+            <NotificationDropdown variant="mobile" />
             <Link to="/cart" className="relative p-1">
               <ShoppingCart className="h-5 w-5 text-gray-700" />
               {totalItems > 0 && (
