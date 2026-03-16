@@ -406,16 +406,7 @@ const Header = () => {
                 )}
               </Link>
               {/* Notification Bell - Desktop Sticky */}
-              <Link to="/notifications" className="relative">
-                <Button variant="ghost" className="text-green-700 px-2">
-                  <Bell className="h-5 w-5" />
-                </Button>
-                {unreadNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
-                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
-                  </span>
-                )}
-              </Link>
+              <NotificationDropdown variant="sticky" />
               {user ? (
                 <Link to="/profile">
                   <Button variant="ghost" className="text-green-700">
