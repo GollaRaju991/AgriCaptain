@@ -373,9 +373,11 @@ const Checkout = () => {
       console.error('Error processing order:', error);
       toast({
         title: "Order failed",
-        description: "There was an error processing your order. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error processing your order. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

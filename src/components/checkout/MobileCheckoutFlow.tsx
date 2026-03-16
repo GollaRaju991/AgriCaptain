@@ -198,6 +198,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
     setShowProcessing(false);
 
     if (success) {
+      setIsSubmitting(true);
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setOrderNumber(orderNum);
       try {
@@ -205,6 +206,8 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         setShowSuccess(true);
       } catch {
         setShowFailed(true);
+      } finally {
+        setIsSubmitting(false);
       }
     } else {
       setShowFailed(true);

@@ -46,10 +46,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
+      // Check by id AND name+price to catch duplicates with different IDs but same product
+      const existingItem = prevItems.find(item =>
+        item.id === product.id ||
+        (item.name === product.name && item.price === product.price && item.category === product.category)
+      );
       if (existingItem) {
         return prevItems.map(item =>
-          item.id === product.id
+          (item.id === existingItem.id)
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
