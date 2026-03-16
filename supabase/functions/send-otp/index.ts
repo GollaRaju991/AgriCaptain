@@ -107,7 +107,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Skip SMS for test phones
     if (isTestPhone) {
-      console.log(`TEST MODE: OTP for ${formattedPhone} is 123456`);
+      console.log(`TEST MODE: OTP for ${phone} is 123456`);
       return new Response(
         JSON.stringify({ success: true, message: "Test OTP: 123456" }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
