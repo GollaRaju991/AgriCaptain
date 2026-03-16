@@ -50,7 +50,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { addToSearchHistory } from "@/hooks/useSearchHistory";
-import { useNotificationCount } from "@/hooks/useNotificationCount";
+import NotificationDropdown from "./NotificationDropdown";
 
 import LanguageSelector from "./LanguageSelector";
 import LogoutConfirmation from "./LogoutConfirmation";
