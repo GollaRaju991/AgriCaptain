@@ -166,6 +166,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
     }
     // COD: skip payment processing, directly place order
     if (paymentMethod === 'cod') {
+      setIsSubmitting(true);
       const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
       setOrderNumber(orderNum);
       try {
@@ -173,6 +174,8 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         setShowSuccess(true);
       } catch {
         toast({ title: "Order failed", description: "Please try again.", variant: "destructive" });
+      } finally {
+        setIsSubmitting(false);
       }
       return;
     }
