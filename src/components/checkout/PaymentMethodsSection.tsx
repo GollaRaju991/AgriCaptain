@@ -149,23 +149,10 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
             onToggle={() => { setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi'); setUpiVerified(false); }}
           >
             <div className="space-y-4 mt-2">
-              {/* UPI App Icons */}
-              <div className="flex gap-5 py-2">
-                {upiApps.map(app => (
-                  <button
-                    key={app.id}
-                    onClick={() => { setSelectedUpiApp(app.id); setUpiId(''); setUpiVerified(false); }}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <div className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center transition-all ${
-                      selectedUpiApp === app.id ? 'border-brand-green bg-brand-green/5 shadow-md' : 'border-border bg-muted/30 hover:border-muted-foreground/40'
-                    }`}>
-                      {app.icon}
-                    </div>
-                    <span className="text-xs text-muted-foreground font-medium">{app.name}</span>
-                  </button>
-                ))}
-              </div>
+              <UpiAppsList
+                selectedApp={selectedUpiApp}
+                onSelect={(appId) => { setSelectedUpiApp(appId); setUpiId(''); setUpiVerified(false); }}
+              />
 
               {/* UPI ID manual entry */}
               <div className="border-t border-border/30 pt-4">

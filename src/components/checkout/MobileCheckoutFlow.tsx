@@ -389,31 +389,13 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               isOpen={paymentMethod === 'upi'}
               onToggle={() => setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi')}
             >
-              <div className="space-y-2 mt-1">
-                {/* Quick UPI apps */}
-                <div className="flex gap-4 py-2">
-                  {[
-                    { id: 'gpay', name: 'Google Pay', icon: <GooglePayIcon /> },
-                    { id: 'phonepe', name: 'PhonePe', icon: <PhonePeIcon /> },
-                    { id: 'paytm', name: 'Paytm', icon: <PaytmIcon /> },
-                    { id: 'cred', name: 'CRED', icon: <CREDIcon /> },
-                  ].map(app => (
-                    <button
-                      key={app.id}
-                      onClick={() => { setSelectedUpiApp(app.id); setUpiId(''); setUpiVerified(false); }}
-                      className="flex flex-col items-center gap-1.5"
-                    >
-                      <div className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all ${
-                        selectedUpiApp === app.id ? 'border-brand-green bg-brand-green/5 shadow-sm' : 'border-border bg-muted/30'
-                      }`}>
-                        {app.icon}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground font-medium">{app.name}</span>
-                    </button>
-                  ))}
-                </div>
-                {/* UPI ID */}
-                <div className="border-t border-border/30 pt-3">
+              <div className="mt-1">
+                <UpiAppsList
+                  selectedApp={selectedUpiApp}
+                  onSelect={(appId) => { setSelectedUpiApp(appId); setUpiId(''); setUpiVerified(false); }}
+                />
+                {/* UPI ID manual entry */}
+                <div className="border-t border-border/30 pt-3 mt-1">
                   <p className="text-xs font-medium text-muted-foreground mb-2">Or enter UPI ID</p>
                   <div className="flex gap-2">
                     <Input
