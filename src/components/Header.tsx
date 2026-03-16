@@ -50,6 +50,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { addToSearchHistory } from "@/hooks/useSearchHistory";
+import { useNotificationCount } from "@/hooks/useNotificationCount";
 
 import LanguageSelector from "./LanguageSelector";
 import LogoutConfirmation from "./LogoutConfirmation";
@@ -76,7 +77,7 @@ const Header = () => {
   const [searchFocused, setSearchFocused] = useState(false);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-
+  const unreadNotifications = useNotificationCount();
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -134,6 +135,14 @@ const Header = () => {
               </form>
               <SearchSuggestions query={searchQuery} onSelect={handleSuggestionSelect} visible={searchFocused} />
             </div>
+            <Link to="/notifications" className="relative p-1">
+              <Bell className="h-5 w-5 text-gray-700" />
+              {unreadNotifications > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[16px] h-[16px] flex items-center justify-center rounded-full px-0.5">
+                  {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                </span>
+              )}
+            </Link>
             <Link to="/cart" className="relative p-1">
               <ShoppingCart className="h-5 w-5 text-gray-700" />
               {totalItems > 0 && (
@@ -162,6 +171,19 @@ const Header = () => {
                 </Link>
 
                 <div className="flex items-center gap-2 ml-auto">
+                  {/* Notification Bell - Mobile */}
+                  <Link
+                    to="/notifications"
+                    className="relative flex items-center justify-center w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full shadow-sm"
+                  >
+                    <Bell className="h-4 w-4 text-green-700" />
+                    {unreadNotifications > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                        {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                      </span>
+                    )}
+                  </Link>
+
                   <Link
                     to="/become-seller"
                     className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm"
@@ -304,6 +326,18 @@ const Header = () => {
                 )}
               </Link>
 
+              {/* Notification Bell - Desktop */}
+              <Link to="/notifications" className="relative">
+                <Button variant="ghost" className="text-green-700 px-3 py-2">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                {unreadNotifications > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
+                  </span>
+                )}
+              </Link>
+
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -395,6 +429,17 @@ const Header = () => {
                 {totalItems > 0 && (
                   <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                     {totalItems}
+                  </span>
+                )}
+              </Link>
+              {/* Notification Bell - Desktop Sticky */}
+              <Link to="/notifications" className="relative">
+                <Button variant="ghost" className="text-green-700 px-2">
+                  <Bell className="h-5 w-5" />
+                </Button>
+                {unreadNotifications > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                    {unreadNotifications > 99 ? '99+' : unreadNotifications}
                   </span>
                 )}
               </Link>
