@@ -25,7 +25,16 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    // Return a safe default during HMR/module reload instead of crashing
+    return {
+      items: [],
+      addToCart: () => {},
+      removeFromCart: () => {},
+      updateQuantity: () => {},
+      clearCart: () => {},
+      totalItems: 0,
+      totalPrice: 0,
+    } as CartContextType;
   }
   return context;
 };
