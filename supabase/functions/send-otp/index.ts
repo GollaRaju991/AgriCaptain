@@ -64,8 +64,10 @@ const handler = async (req: Request): Promise<Response> => {
       }
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // TEST MODE: Use fixed OTP "123456" for test numbers (remove in production!)
+    const TEST_PHONES = ["+919999999999", "+911234567890", "+910000000000"];
+    const isTestPhone = TEST_PHONES.includes(formattedPhone);
+    const otp = isTestPhone ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
     const expiryTime = new Date(Date.now() + 10 * 60 * 1000);
 
     // Determine send_count and first_sent_at
