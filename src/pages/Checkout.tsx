@@ -219,6 +219,8 @@ const Checkout = () => {
   };
 
   const handlePayment = async () => {
+    if (isSubmitting) return;
+
     if (!user || !session) {
       toast({
         title: "Please login",
