@@ -35,7 +35,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
 }) => {
   const [showAddressManager, setShowAddressManager] = useState(false);
 
-  const handleAddressAdded = (address: Address) => {
+  const handleAddressSelected = (address: Address) => {
     onAddressSelect(address);
     onAddressRefresh();
     setShowAddressManager(false);
