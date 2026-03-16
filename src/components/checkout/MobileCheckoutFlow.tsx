@@ -105,6 +105,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const [processingStep, setProcessingStep] = useState(0);
   const [orderNumber, setOrderNumber] = useState('');
   const [transactionId, setTransactionId] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
   const discount = upiDiscount + couponDiscount;
