@@ -10,30 +10,7 @@ import AddressManager from '@/components/AddressManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-
-const GooglePayIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
-    <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="#4285F4"/>
-  </svg>
-);
-
-const PhonePeIcon = () => (
-  <div className="h-5 w-5 bg-purple-600 rounded-full flex items-center justify-center">
-    <span className="text-white text-[10px] font-bold">P</span>
-  </div>
-);
-
-const PaytmIcon = () => (
-  <div className="h-5 w-5 bg-blue-500 rounded flex items-center justify-center">
-    <span className="text-white text-[8px] font-bold">PT</span>
-  </div>
-);
-
-const CREDIcon = () => (
-  <div className="h-5 w-5 bg-gray-900 rounded flex items-center justify-center">
-    <span className="text-white text-[7px] font-bold">CR</span>
-  </div>
-);
+import UpiAppsList from './UpiAppsList';
 
 interface Address {
   id: string;
@@ -412,31 +389,13 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               isOpen={paymentMethod === 'upi'}
               onToggle={() => setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi')}
             >
-              <div className="space-y-2 mt-1">
-                {/* Quick UPI apps */}
-                <div className="flex gap-4 py-2">
-                  {[
-                    { id: 'gpay', name: 'Google Pay', icon: <GooglePayIcon /> },
-                    { id: 'phonepe', name: 'PhonePe', icon: <PhonePeIcon /> },
-                    { id: 'paytm', name: 'Paytm', icon: <PaytmIcon /> },
-                    { id: 'cred', name: 'CRED', icon: <CREDIcon /> },
-                  ].map(app => (
-                    <button
-                      key={app.id}
-                      onClick={() => { setSelectedUpiApp(app.id); setUpiId(''); setUpiVerified(false); }}
-                      className="flex flex-col items-center gap-1.5"
-                    >
-                      <div className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all ${
-                        selectedUpiApp === app.id ? 'border-brand-green bg-brand-green/5 shadow-sm' : 'border-border bg-muted/30'
-                      }`}>
-                        {app.icon}
-                      </div>
-                      <span className="text-[10px] text-muted-foreground font-medium">{app.name}</span>
-                    </button>
-                  ))}
-                </div>
-                {/* UPI ID */}
-                <div className="border-t border-border/30 pt-3">
+              <div className="mt-1">
+                <UpiAppsList
+                  selectedApp={selectedUpiApp}
+                  onSelect={(appId) => { setSelectedUpiApp(appId); setUpiId(''); setUpiVerified(false); }}
+                />
+                {/* UPI ID manual entry */}
+                <div className="border-t border-border/30 pt-3 mt-1">
                   <p className="text-xs font-medium text-muted-foreground mb-2">Or enter UPI ID</p>
                   <div className="flex gap-2">
                     <Input

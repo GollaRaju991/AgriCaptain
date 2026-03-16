@@ -8,31 +8,7 @@ import { CreditCard, Smartphone, Truck, CheckCircle, ChevronDown, ChevronUp, Hel
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
-// UPI App Icons
-const GooglePayIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-    <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="#4285F4"/>
-  </svg>
-);
-
-const PhonePeIcon = () => (
-  <div className="h-6 w-6 bg-purple-600 rounded-full flex items-center justify-center">
-    <span className="text-white text-xs font-bold">P</span>
-  </div>
-);
-
-const PaytmIcon = () => (
-  <div className="h-6 w-6 bg-blue-500 rounded flex items-center justify-center">
-    <span className="text-white text-[9px] font-bold">PT</span>
-  </div>
-);
-
-const CREDIcon = () => (
-  <div className="h-6 w-6 bg-gray-900 rounded flex items-center justify-center">
-    <span className="text-white text-[8px] font-bold">CR</span>
-  </div>
-);
+import UpiAppsList from './UpiAppsList';
 
 interface SavedCard {
   id: string;
@@ -138,12 +114,6 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
     fetchSavedCards();
   };
 
-  const upiApps = [
-    { id: 'gpay', name: 'Google Pay', icon: <GooglePayIcon /> },
-    { id: 'phonepe', name: 'PhonePe', icon: <PhonePeIcon /> },
-    { id: 'paytm', name: 'Paytm', icon: <PaytmIcon /> },
-    { id: 'cred', name: 'CRED', icon: <CREDIcon /> },
-  ];
 
   return (
     <Card className="border border-border/50 rounded-2xl shadow-sm overflow-hidden">
@@ -179,23 +149,10 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
             onToggle={() => { setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi'); setUpiVerified(false); }}
           >
             <div className="space-y-4 mt-2">
-              {/* UPI App Icons */}
-              <div className="flex gap-5 py-2">
-                {upiApps.map(app => (
-                  <button
-                    key={app.id}
-                    onClick={() => { setSelectedUpiApp(app.id); setUpiId(''); setUpiVerified(false); }}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <div className={`w-14 h-14 rounded-xl border-2 flex items-center justify-center transition-all ${
-                      selectedUpiApp === app.id ? 'border-brand-green bg-brand-green/5 shadow-md' : 'border-border bg-muted/30 hover:border-muted-foreground/40'
-                    }`}>
-                      {app.icon}
-                    </div>
-                    <span className="text-xs text-muted-foreground font-medium">{app.name}</span>
-                  </button>
-                ))}
-              </div>
+              <UpiAppsList
+                selectedApp={selectedUpiApp}
+                onSelect={(appId) => { setSelectedUpiApp(appId); setUpiId(''); setUpiVerified(false); }}
+              />
 
               {/* UPI ID manual entry */}
               <div className="border-t border-border/30 pt-4">
