@@ -168,7 +168,6 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
           .single();
         if (error) { toast({ title: "Error saving address", variant: "destructive" }); return; }
         toast({ title: "Address added successfully" });
-        onAddressSelect(data);
       }
       await fetchAddresses();
       resetForm();
