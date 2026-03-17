@@ -178,10 +178,10 @@ const Header = () => {
                     <Languages className="h-4 w-4 text-green-700" />
                     <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">{translations.language}</span>
                   </button>
-
-                  {/* Notification Bell - Mobile */}
-                  <NotificationDropdown variant="mobile" />
                 </div>
+
+                {/* Notification Bell - Mobile */}
+                <NotificationDropdown variant="mobile" />
               </div>
 
               {/* Row 2: Search bar + Scanner button */}
