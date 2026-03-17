@@ -109,9 +109,9 @@ const NotificationDropdown = ({ variant = 'desktop' }: { variant?: 'desktop' | '
   const bellButton = variant === 'mobile' ? (
     <button
       onClick={handleToggle}
-      className="relative flex items-center justify-center w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full shadow-sm"
+      className="relative flex items-center justify-center w-9 h-9"
     >
-      <Bell className="h-5 w-5 text-green-700" />
+      <Bell className="h-5 w-5 text-white" />
       {unreadCount > 0 && (
         <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 shadow">
           {unreadCount}
