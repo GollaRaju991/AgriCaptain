@@ -163,24 +163,24 @@ const Header = () => {
                 </Link>
 
                 <div className="flex items-center gap-2 ml-auto">
-                  {/* Notification Bell - Mobile */}
-                  <NotificationDropdown variant="mobile" />
-
                   <Link
                     to="/become-seller"
-                    className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm"
+                    className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-md px-3 py-1.5 shadow-sm"
                   >
                     <UserPlus className="h-4 w-4 text-green-700" />
-                    <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">{translations.become_seller}</span>
+                    <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">Start Selling</span>
                   </Link>
 
                   <button
                     onClick={() => setLanguageDialogOpen(true)}
-                    className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-sm"
+                    className="flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-md px-3 py-1.5 shadow-sm"
                   >
                     <Languages className="h-4 w-4 text-green-700" />
                     <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">{translations.language}</span>
                   </button>
+
+                  {/* Notification Bell - Mobile */}
+                  <NotificationDropdown variant="mobile" />
                 </div>
               </div>
 
