@@ -7,7 +7,7 @@ import MobilePageHeader from '@/components/MobilePageHeader';
 
 // Sidebar icons
 import catSeedsIcon from '@/assets/cat-seeds-icon.png';
-import catFertilizerIcon from '@/assets/cat-fertilizer-icon.png';
+
 import catAgriIcon from '@/assets/cat-agri-icon.png';
 import catBrandsIcon from '@/assets/cat-brands-icon.png';
 import catLoansIcon from '@/assets/cat-loans-icon.png';
