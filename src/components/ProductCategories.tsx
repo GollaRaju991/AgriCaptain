@@ -23,7 +23,7 @@ const ProductCategories = () => {
 
   const categories = [
     { name: translations.seeds || 'Seeds', image: seedsImg, href: '/products?category=seeds' },
-    { name: translations.fertilizers || 'Fertilizers', image: fertilizersImg, href: '/products?category=fertilizers' },
+    
     { name: 'Pesticides', image: pesticidesImg, href: '/products?category=agriculture' },
     { name: translations.tools || 'Tools', image: toolsImg, href: '/products?category=tools' },
     { name: 'Crop Nutrition', image: nutritionImg, href: '/products?category=organic' },
