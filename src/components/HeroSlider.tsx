@@ -27,15 +27,6 @@ const HeroSlider = () => {
       bgColor: "from-blue-600 to-blue-800"
     },
     {
-      id: 3,
-      titleKey: 'organic_fertilizers_title',
-      subtitleKey: 'nourish_your_crops',
-      descriptionKey: 'boost_soil',
-      image: "https://i.postimg.cc/02nqJVk7/Screenshot-2025-07-09-230107.png",
-      ctaKey: 'shop_fertilizers',
-      bgColor: "from-purple-600 to-purple-800"
-    },
-    {
       id: 4,
       titleKey: 'smart_irrigation',
       subtitleKey: 'water_efficiently',

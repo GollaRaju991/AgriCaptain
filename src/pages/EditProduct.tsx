@@ -14,10 +14,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import sellerHeroBg from '@/assets/seller-hero-bg.jpg';
 
-const categories = ['Seeds', 'Fertilizers', 'Pesticides', 'Tools', 'Irrigation', 'Crop Nutrition', 'Agri Products'];
+const categories = ['Seeds', 'Pesticides', 'Tools', 'Irrigation', 'Crop Nutrition', 'Agri Products'];
 const subCategories: Record<string, string[]> = {
   Seeds: ['Cotton Seeds', 'Paddy Seeds', 'Vegetable Seeds', 'Fruit Seeds', 'Flower Seeds', 'Grain Seeds'],
-  Fertilizers: ['Organic', 'Chemical', 'Bio Fertilizers', 'Micro Nutrients'],
   Pesticides: ['Insecticides', 'Fungicides', 'Herbicides', 'Bio Pesticides'],
   Tools: ['Hand Tools', 'Power Tools', 'Sprayers', 'Cutting Tools'],
   Irrigation: ['Drip Systems', 'Sprinklers', 'Pipes', 'Pumps'],

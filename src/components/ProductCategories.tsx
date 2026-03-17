@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import seedsImg from '@/assets/cat-seeds-photo.jpg';
-import fertilizersImg from '@/assets/cat-fertilizers-photo.jpg';
+
 import pesticidesImg from '@/assets/cat-pesticides-photo.jpg';
 import toolsImg from '@/assets/cat-tools-photo.jpg';
 import nutritionImg from '@/assets/cat-nutrition-photo.jpg';
@@ -11,7 +11,6 @@ import irrigationImg from '@/assets/cat-irrigation-photo.jpg';
 
 const borderColors = [
   'border-b-orange-400',
-  'border-b-green-500',
   'border-b-yellow-500',
   'border-b-orange-400',
   'border-b-green-500',
@@ -23,7 +22,7 @@ const ProductCategories = () => {
 
   const categories = [
     { name: translations.seeds || 'Seeds', image: seedsImg, href: '/products?category=seeds' },
-    { name: translations.fertilizers || 'Fertilizers', image: fertilizersImg, href: '/products?category=fertilizers' },
+    
     { name: 'Pesticides', image: pesticidesImg, href: '/products?category=agriculture' },
     { name: translations.tools || 'Tools', image: toolsImg, href: '/products?category=tools' },
     { name: 'Crop Nutrition', image: nutritionImg, href: '/products?category=organic' },

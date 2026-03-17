@@ -18,12 +18,12 @@ import {
 
 import { mockProducts } from '@/data/mockProducts';
 
-const categories = ['seeds', 'fertilizers', 'tools', 'equipment', 'agriculture'];
+const categories = ['seeds', 'tools', 'equipment', 'agriculture'];
 
 const mapSellerCategory = (cat: string): string => {
   const lower = cat.toLowerCase();
   if (lower.includes('seed')) return 'seeds';
-  if (lower.includes('fertiliz')) return 'fertilizers';
+  if (lower.includes('fertiliz')) return 'agriculture';
   if (lower.includes('pesticid') || lower.includes('insecticid') || lower.includes('herbicid') || lower.includes('fungicid')) return 'agriculture';
   if (lower.includes('tool')) return 'tools';
   if (lower.includes('irrigat') || lower.includes('equip') || lower.includes('tractor') || lower.includes('harvest')) return 'equipment';

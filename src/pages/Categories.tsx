@@ -7,7 +7,7 @@ import MobilePageHeader from '@/components/MobilePageHeader';
 
 // Sidebar icons
 import catSeedsIcon from '@/assets/cat-seeds-icon.png';
-import catFertilizerIcon from '@/assets/cat-fertilizer-icon.png';
+
 import catAgriIcon from '@/assets/cat-agri-icon.png';
 import catBrandsIcon from '@/assets/cat-brands-icon.png';
 import catLoansIcon from '@/assets/cat-loans-icon.png';
@@ -54,18 +54,6 @@ const Categories = () => {
         { name: 'Fruit Seeds', path: '/products?category=seeds&type=fruit', image: catFruitSeeds, accent: 'text-red-500' },
         { name: 'Flower Seeds', path: '/products?category=seeds&type=flower', image: catFlowerSeeds, accent: 'text-pink-500' },
         { name: 'Grain Seeds', path: '/products?category=seeds&type=grain', image: catGrainSeeds, accent: 'text-amber-600' },
-      ]
-    },
-    {
-      id: 'fertilizers',
-      name: 'Fertilizers',
-      sidebarIcon: catFertilizerIcon,
-      shopAllLabel: 'Shop All Fertilizers',
-      subcategories: [
-        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', image: catVegetableSeeds, accent: 'text-green-600' },
-        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', image: catFruitSeeds, accent: 'text-blue-500' },
-        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', image: catFlowerSeeds, accent: 'text-emerald-500' },
-        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', image: catGrainSeeds, accent: 'text-amber-600' },
       ]
     },
     {
