@@ -222,7 +222,7 @@ const Header = () => {
               <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
                 {[
                   { name: translations.seeds, image: catSeedsIcon, path: '/products?category=seeds', bg: 'bg-green-50' },
-                  { name: translations.fertilizers, image: catFertilizerIcon, path: '/products?category=fertilizers', bg: 'bg-emerald-50' },
+                  
                   { name: translations.agri_products || translations.agriculture_products, image: catAgriIcon, path: '/products?category=agriculture', bg: 'bg-amber-50' },
                   { name: translations.brands, image: catBrandsIcon, path: '/products?category=brands', bg: 'bg-pink-50' },
                   { name: translations.market_details, image: catMarketIcon, path: '/market-details', bg: 'bg-cyan-50' },

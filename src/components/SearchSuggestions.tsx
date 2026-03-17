@@ -27,7 +27,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, onSelect, 
     mockProducts.forEach((p) => allNames.add(p.name));
 
     const categories = [
-      'Seeds', 'Fertilizers', 'Pesticides', 'Insecticide', 'Fungicide',
+      'Seeds', 'Pesticides', 'Insecticide', 'Fungicide',
       'Herbicide', 'Sprayer', 'Tools', 'Irrigation', 'Neem Oil',
       'Cotton', 'Tomato', 'Onion', 'Chilli', 'Wheat', 'Rice',
       'Maize', 'Potato', 'Soybean', 'Mustard', 'Sugarcane',

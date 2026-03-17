@@ -27,15 +27,6 @@ const PromoBanners = () => {
       link: '/products?category=seeds'
     },
     {
-      id: '2',
-      title: 'Fertilizers',
-      subtitle: 'Organic & Chemical',
-      offer: 'Up to 40% Off',
-      image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png',
-      bgColor: 'from-blue-100 to-blue-200',
-      link: '/products?category=fertilizers'
-    },
-    {
       id: '3',
       title: 'Pesticides',
       subtitle: 'Crop Protection',
