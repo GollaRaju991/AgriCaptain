@@ -95,7 +95,7 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">{translations.quick_links || "Quick Links"}</h3>
             <ul className="space-y-2">
               <li><Link to="/products?category=seeds" className="text-gray-400 hover:text-white transition-colors">{translations.seeds || "Seeds"}</Link></li>
-              <li><Link to="/products?category=fertilizers" className="text-gray-400 hover:text-white transition-colors">{translations.fertilizers || "Fertilizers"}</Link></li>
+              
               <li><Link to="/products?category=agriculture" className="text-gray-400 hover:text-white transition-colors">{translations.agriculture_products || "Agriculture Tools"}</Link></li>
               <li><Link to="/products?category=brands" className="text-gray-400 hover:text-white transition-colors">{translations.brands || "Brands"}</Link></li>
               <li><Link to="/farm-worker" className="text-gray-400 hover:text-white transition-colors">{translations.farm_worker || "Farm Worker"}</Link></li>
