@@ -162,6 +162,9 @@ const Header = () => {
                   <span className="text-xl font-bold text-white">Agrizin</span>
                 </Link>
 
+                {/* Notification Bell - Mobile (left side) */}
+                <NotificationDropdown variant="mobile" />
+
                 <div className="flex items-center gap-2 ml-auto">
                   <Link
                     to="/become-seller"
@@ -179,9 +182,6 @@ const Header = () => {
                     <span className="text-[11px] font-semibold text-green-800 whitespace-nowrap">{translations.language}</span>
                   </button>
                 </div>
-
-                {/* Notification Bell - Mobile */}
-                <NotificationDropdown variant="mobile" />
               </div>
 
               {/* Row 2: Search bar + Scanner button */}
