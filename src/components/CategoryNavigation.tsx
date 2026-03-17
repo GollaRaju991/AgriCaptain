@@ -27,18 +27,6 @@ const CategoryNavigation = () => {
       ]
     },
     { 
-      name: 'Fertilizers', 
-      icon: Droplet, 
-      path: '/products?category=fertilizers',
-      hasDropdown: true,
-      subcategories: [
-        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', icon: Leaf },
-        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', icon: FlaskConical },
-        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', icon: Bug },
-        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', icon: Sparkles },
-      ]
-    },
-    { 
       name: 'Agriculture Products', 
       icon: Wrench, 
       path: '/products?category=agriculture',

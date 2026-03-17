@@ -5,7 +5,7 @@ import adCropYields from '@/assets/ad-crop-yields.jpg';
 import adSmartFarming from '@/assets/ad-smart-farming.jpg';
 
 const ads = [
-  { image: adCropYields, link: '/products?category=fertilizers', label: 'Crop Yield Booster' },
+  { image: adCropYields, link: '/products?category=seeds', label: 'Crop Yield Booster' },
   { image: adSmartFarming, link: '/products?category=seeds', label: 'Smart Farming Solutions' },
 ];
 

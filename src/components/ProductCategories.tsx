@@ -11,7 +11,6 @@ import irrigationImg from '@/assets/cat-irrigation-photo.jpg';
 
 const borderColors = [
   'border-b-orange-400',
-  'border-b-green-500',
   'border-b-yellow-500',
   'border-b-orange-400',
   'border-b-green-500',

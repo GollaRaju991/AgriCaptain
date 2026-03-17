@@ -57,18 +57,6 @@ const Categories = () => {
       ]
     },
     {
-      id: 'fertilizers',
-      name: 'Fertilizers',
-      sidebarIcon: catFertilizerIcon,
-      shopAllLabel: 'Shop All Fertilizers',
-      subcategories: [
-        { name: 'Organic Fertilizers', path: '/products?category=fertilizers&type=organic', image: catVegetableSeeds, accent: 'text-green-600' },
-        { name: 'Chemical Fertilizers', path: '/products?category=fertilizers&type=chemical', image: catFruitSeeds, accent: 'text-blue-500' },
-        { name: 'Bio Fertilizers', path: '/products?category=fertilizers&type=bio', image: catFlowerSeeds, accent: 'text-emerald-500' },
-        { name: 'Micronutrients', path: '/products?category=fertilizers&type=micronutrients', image: catGrainSeeds, accent: 'text-amber-600' },
-      ]
-    },
-    {
       id: 'agriculture',
       name: 'Agri\nProducts',
       sidebarIcon: catAgriIcon,
