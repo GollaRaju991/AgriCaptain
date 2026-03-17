@@ -18,7 +18,7 @@ import {
 
 import { mockProducts } from '@/data/mockProducts';
 
-const categories = ['seeds', 'fertilizers', 'tools', 'equipment', 'agriculture'];
+const categories = ['seeds', 'tools', 'equipment', 'agriculture'];
 
 const mapSellerCategory = (cat: string): string => {
   const lower = cat.toLowerCase();
