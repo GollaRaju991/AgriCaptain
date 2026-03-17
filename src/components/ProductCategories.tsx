@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronRight } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import seedsImg from '@/assets/cat-seeds-photo.jpg';
-import fertilizersImg from '@/assets/cat-fertilizers-photo.jpg';
+
 import pesticidesImg from '@/assets/cat-pesticides-photo.jpg';
 import toolsImg from '@/assets/cat-tools-photo.jpg';
 import nutritionImg from '@/assets/cat-nutrition-photo.jpg';
