@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface TrackingUpdate {
   status: string;
@@ -62,6 +64,18 @@ const OrderDetails = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [returnRequest, setReturnRequest] = useState<any>(null);
+
+  // Edit phone/address state
+  const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
+  const [addressDialogOpen, setAddressDialogOpen] = useState(false);
+  const [editPhone, setEditPhone] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editState, setEditState] = useState('');
+  const [editPincode, setEditPincode] = useState('');
+  const [editAddressType, setEditAddressType] = useState('home');
+  const [updatingDetails, setUpdatingDetails] = useState(false);
 
   useScrollToTop();
 
@@ -200,6 +214,36 @@ const OrderDetails = () => {
     finally { setReturningOrder(false); setReturnReason(''); }
   };
 
+  const handleUpdatePhone = async () => {
+    if (!editPhone || editPhone.length < 10) { toast.error('Please enter a valid phone number'); return; }
+    setUpdatingDetails(true);
+    try {
+      const currentAddress = order.shipping_address as any;
+      const updatedAddress = { ...currentAddress, phone: editPhone };
+      const { error } = await supabase.from('orders').update({ shipping_address: updatedAddress as unknown as Json }).eq('id', order.id);
+      if (error) { toast.error('Failed to update phone number'); return; }
+      await fetchOrder();
+      toast.success('Phone number updated successfully!');
+      setPhoneDialogOpen(false);
+    } catch { toast.error('Failed to update phone number'); }
+    finally { setUpdatingDetails(false); }
+  };
+
+  const handleUpdateAddress = async () => {
+    if (!editName || !editAddress || !editCity || !editState || !editPincode) { toast.error('Please fill all fields'); return; }
+    setUpdatingDetails(true);
+    try {
+      const currentAddress = order.shipping_address as any;
+      const updatedAddress = { ...currentAddress, name: editName, address: editAddress, city: editCity, state: editState, pincode: editPincode, address_type: editAddressType };
+      const { error } = await supabase.from('orders').update({ shipping_address: updatedAddress as unknown as Json }).eq('id', order.id);
+      if (error) { toast.error('Failed to update address'); return; }
+      await fetchOrder();
+      toast.success('Delivery address updated successfully!');
+      setAddressDialogOpen(false);
+    } catch { toast.error('Failed to update address'); }
+    finally { setUpdatingDetails(false); }
+  };
+
   const getTrackingUpdates = (): TrackingUpdate[] => {
     if (!order.tracking_updates || !Array.isArray(order.tracking_updates)) return [];
     return order.tracking_updates as unknown as TrackingUpdate[];
@@ -328,8 +372,21 @@ const OrderDetails = () => {
     // pending or processing
     return {
       primary: [
-        { label: 'Change Phone Number', icon: <Phone className="h-4 w-4" />, action: () => navigate('/help-center'), hasArrow: true },
-        { label: 'Change Delivery Address', icon: <MapPin className="h-4 w-4" />, action: () => navigate('/help-center'), hasArrow: true },
+        { label: 'Change Phone Number', icon: <Phone className="h-4 w-4" />, action: () => {
+          const addr = order.shipping_address as any;
+          setEditPhone(addr?.phone || '');
+          setPhoneDialogOpen(true);
+        }, hasArrow: true },
+        { label: 'Change Delivery Address', icon: <MapPin className="h-4 w-4" />, action: () => {
+          const addr = order.shipping_address as any;
+          setEditName(addr?.name || '');
+          setEditAddress(addr?.address || '');
+          setEditCity(addr?.city || '');
+          setEditState(addr?.state || '');
+          setEditPincode(addr?.pincode || '');
+          setEditAddressType(addr?.address_type || 'home');
+          setAddressDialogOpen(true);
+        }, hasArrow: true },
         ...(canCancelOrder() ? [{ label: 'Cancel Order', icon: <XCircle className="h-4 w-4" />, action: () => setCancelDialogOpen(true) }] : []),
         chatOption,
       ],
@@ -928,6 +985,111 @@ const OrderDetails = () => {
               </div>
             )}
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Phone Number Dialog */}
+      <Dialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen}>
+        <DialogContent className="max-w-sm mx-auto rounded-xl">
+          <DialogHeader>
+            <DialogTitle className="text-base">Change Phone Number</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              Update the contact number for this order.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-phone" className="text-sm font-medium">Phone Number</Label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">+91</span>
+                <Input
+                  id="edit-phone"
+                  type="tel"
+                  maxLength={10}
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value.replace(/\D/g, ''))}
+                  placeholder="Enter 10-digit phone number"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-row gap-2 sm:flex-row">
+            <Button variant="outline" className="flex-1" onClick={() => setPhoneDialogOpen(false)}>Cancel</Button>
+            <Button
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleUpdatePhone}
+              disabled={updatingDetails || !editPhone || editPhone.length < 10}
+            >
+              {updatingDetails ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+              Update
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Delivery Address Dialog */}
+      <Dialog open={addressDialogOpen} onOpenChange={setAddressDialogOpen}>
+        <DialogContent className="max-w-md mx-auto rounded-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-base">Change Delivery Address</DialogTitle>
+            <DialogDescription className="text-sm text-gray-600">
+              Update the delivery address for this order.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name" className="text-sm font-medium">Full Name</Label>
+              <Input id="edit-name" value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Recipient name" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-addr" className="text-sm font-medium">Address</Label>
+              <Textarea id="edit-addr" value={editAddress} onChange={(e) => setEditAddress(e.target.value)} placeholder="House No., Street, Area" rows={3} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="edit-city" className="text-sm font-medium">City</Label>
+                <Input id="edit-city" value={editCity} onChange={(e) => setEditCity(e.target.value)} placeholder="City" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-state" className="text-sm font-medium">State</Label>
+                <Input id="edit-state" value={editState} onChange={(e) => setEditState(e.target.value)} placeholder="State" />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="edit-pincode" className="text-sm font-medium">Pincode</Label>
+                <Input id="edit-pincode" value={editPincode} onChange={(e) => setEditPincode(e.target.value.replace(/\D/g, ''))} maxLength={6} placeholder="Pincode" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Address Type</Label>
+                <div className="flex gap-2 mt-1">
+                  {['home', 'work', 'other'].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setEditAddressType(type)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border capitalize transition-colors ${
+                        editAddressType === type ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="flex flex-row gap-2 sm:flex-row">
+            <Button variant="outline" className="flex-1" onClick={() => setAddressDialogOpen(false)}>Cancel</Button>
+            <Button
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              onClick={handleUpdateAddress}
+              disabled={updatingDetails || !editName || !editAddress || !editCity || !editState || !editPincode}
+            >
+              {updatingDetails ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
+              Update Address
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
