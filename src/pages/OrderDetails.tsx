@@ -137,6 +137,71 @@ const OrderDetails = () => {
     finally { setLoading(false); }
   };
 
+  // Auto-progress existing in-progress refunds
+  useEffect(() => {
+    if (returnRequest && returnRequest.refund_status !== 'completed') {
+      const createdTime = new Date(returnRequest.created_at).getTime();
+      const now = Date.now();
+      const elapsed = now - createdTime;
+
+      const steps = [
+        { status: 'processing', delay: 40000 },
+        { status: 'in_transit', delay: 80000 },
+        { status: 'completed', delay: 150000 },
+      ];
+
+      const statusOrder = ['approved', 'processing', 'in_transit', 'completed'];
+      const currentIdx = statusOrder.indexOf(returnRequest.refund_status);
+
+      refundTimersRef.current.forEach(clearTimeout);
+      refundTimersRef.current = [];
+
+      steps.forEach(({ status, delay }) => {
+        const stepIdx = statusOrder.indexOf(status);
+        if (stepIdx > currentIdx) {
+          const remaining = delay - elapsed;
+          if (remaining > 0) {
+            const timer = setTimeout(async () => {
+              const updateData: any = { refund_status: status };
+              if (status === 'completed') {
+                updateData.refund_completed_at = new Date().toISOString();
+              }
+              await supabase.from('return_requests').update(updateData).eq('id', returnRequest.id);
+              
+              if (status === 'completed' && user) {
+                await supabase.from('notifications').insert({
+                  user_id: user!.id,
+                  order_id: id,
+                  type: 'order',
+                  title: 'Refund Completed',
+                  message: `Your refund has been credited to your account.`,
+                  action_url: '/orders'
+                });
+              }
+              
+              await fetchReturnRequest();
+            }, remaining);
+            refundTimersRef.current.push(timer);
+          } else {
+            (async () => {
+              const updateData: any = { refund_status: status };
+              if (status === 'completed') {
+                updateData.refund_completed_at = new Date().toISOString();
+              }
+              await supabase.from('return_requests').update(updateData).eq('id', returnRequest.id);
+              await fetchReturnRequest();
+            })();
+          }
+        }
+      });
+    }
+
+    return () => {
+      refundTimersRef.current.forEach(clearTimeout);
+      refundTimersRef.current = [];
+    };
+  }, [returnRequest?.id, returnRequest?.refund_status]);
+
   if (authLoading || loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
