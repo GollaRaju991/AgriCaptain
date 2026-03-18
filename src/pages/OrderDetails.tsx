@@ -188,6 +188,108 @@ const OrderDetails = () => {
     finally { setCancellingOrder(false); }
   };
 
+  const startRefundProgression = (returnReqId: string) => {
+    // Clear any existing timers
+    refundTimersRef.current.forEach(clearTimeout);
+    refundTimersRef.current = [];
+
+    const steps = [
+      { status: 'processing', delay: 40000 },    // 40s after approved
+      { status: 'in_transit', delay: 80000 },     // 80s after approved
+      { status: 'completed', delay: 150000 },     // 2.5 min after approved
+    ];
+
+    steps.forEach(({ status, delay }) => {
+      const timer = setTimeout(async () => {
+        const updateData: any = { refund_status: status };
+        if (status === 'completed') {
+          updateData.refund_completed_at = new Date().toISOString();
+        }
+        await supabase.from('return_requests').update(updateData).eq('id', returnReqId);
+        
+        if (status === 'completed' && user) {
+          await supabase.from('notifications').insert({
+            user_id: user.id,
+            order_id: order?.id,
+            type: 'order',
+            title: 'Refund Completed',
+            message: `Your refund of ₹${order?.total_amount?.toLocaleString()} for order #${order?.order_number} has been credited to your account.`,
+            action_url: '/orders'
+          });
+        }
+        
+        await fetchReturnRequest();
+      }, delay);
+      refundTimersRef.current.push(timer);
+    });
+  };
+
+  // Auto-progress existing in-progress refunds
+  useEffect(() => {
+    if (returnRequest && returnRequest.refund_status !== 'completed') {
+      const createdTime = new Date(returnRequest.created_at).getTime();
+      const now = Date.now();
+      const elapsed = now - createdTime;
+
+      const steps = [
+        { status: 'processing', delay: 40000 },
+        { status: 'in_transit', delay: 80000 },
+        { status: 'completed', delay: 150000 },
+      ];
+
+      const statusOrder = ['approved', 'processing', 'in_transit', 'completed'];
+      const currentIdx = statusOrder.indexOf(returnRequest.refund_status);
+
+      refundTimersRef.current.forEach(clearTimeout);
+      refundTimersRef.current = [];
+
+      steps.forEach(({ status, delay }) => {
+        const stepIdx = statusOrder.indexOf(status);
+        if (stepIdx > currentIdx) {
+          const remaining = delay - elapsed;
+          if (remaining > 0) {
+            const timer = setTimeout(async () => {
+              const updateData: any = { refund_status: status };
+              if (status === 'completed') {
+                updateData.refund_completed_at = new Date().toISOString();
+              }
+              await supabase.from('return_requests').update(updateData).eq('id', returnRequest.id);
+              
+              if (status === 'completed' && user) {
+                await supabase.from('notifications').insert({
+                  user_id: user.id,
+                  order_id: order?.id,
+                  type: 'order',
+                  title: 'Refund Completed',
+                  message: `Your refund of ₹${order?.total_amount?.toLocaleString()} for order #${order?.order_number} has been credited to your account.`,
+                  action_url: '/orders'
+                });
+              }
+              
+              await fetchReturnRequest();
+            }, remaining);
+            refundTimersRef.current.push(timer);
+          } else {
+            // This step should have already happened, update immediately
+            (async () => {
+              const updateData: any = { refund_status: status };
+              if (status === 'completed') {
+                updateData.refund_completed_at = new Date().toISOString();
+              }
+              await supabase.from('return_requests').update(updateData).eq('id', returnRequest.id);
+              await fetchReturnRequest();
+            })();
+          }
+        }
+      });
+    }
+
+    return () => {
+      refundTimersRef.current.forEach(clearTimeout);
+      refundTimersRef.current = [];
+    };
+  }, [returnRequest?.id, returnRequest?.refund_status]);
+
   const handleReturnOrder = async () => {
     if (!returnReason) { toast.error('Please select a reason'); return; }
     setReturningOrder(true);
@@ -195,22 +297,25 @@ const OrderDetails = () => {
     try {
       const { error } = await supabase.from('orders').update({ status: 'returned', payment_status: 'refunded' }).eq('id', order.id);
       if (error) { toast.error('Failed to initiate return.'); return; }
-      await supabase.from('return_requests').insert({
+      const { data: returnData } = await supabase.from('return_requests').insert({
         order_id: order.id,
         user_id: user?.id,
         reason: returnReason,
         status: 'approved',
         refund_amount: order.total_amount,
-        refund_status: 'processing'
-      });
+        refund_status: 'approved'
+      }).select().single();
       await supabase.from('notifications').insert({
-        user_id: user?.id, order_id: order.id, type: 'order', title: 'Return Initiated',
-        message: `Return initiated for order #${order.order_number}. ₹${order.total_amount} will be refunded within 5-7 business days.`,
+        user_id: user?.id, order_id: order.id, type: 'order', title: 'Return Approved',
+        message: `Return approved for order #${order.order_number}. ₹${order.total_amount} refund is being processed.`,
         action_url: '/orders'
       });
       await fetchOrder();
       await fetchReturnRequest();
-      toast.success(`Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`, { duration: 6000 });
+      if (returnData) {
+        startRefundProgression(returnData.id);
+      }
+      toast.success(`Return approved! ₹${order.total_amount} refund is being processed.`, { duration: 6000 });
     } catch { toast.error('Failed to initiate return.'); }
     finally { setReturningOrder(false); setReturnReason(''); }
   };
