@@ -342,8 +342,21 @@ const OrderDetails = () => {
     // pending or processing
     return {
       primary: [
-        { label: 'Change Phone Number', icon: <Phone className="h-4 w-4" />, action: () => navigate('/help-center'), hasArrow: true },
-        { label: 'Change Delivery Address', icon: <MapPin className="h-4 w-4" />, action: () => navigate('/help-center'), hasArrow: true },
+        { label: 'Change Phone Number', icon: <Phone className="h-4 w-4" />, action: () => {
+          const addr = order.shipping_address as any;
+          setEditPhone(addr?.phone || '');
+          setPhoneDialogOpen(true);
+        }, hasArrow: true },
+        { label: 'Change Delivery Address', icon: <MapPin className="h-4 w-4" />, action: () => {
+          const addr = order.shipping_address as any;
+          setEditName(addr?.name || '');
+          setEditAddress(addr?.address || '');
+          setEditCity(addr?.city || '');
+          setEditState(addr?.state || '');
+          setEditPincode(addr?.pincode || '');
+          setEditAddressType(addr?.address_type || 'home');
+          setAddressDialogOpen(true);
+        }, hasArrow: true },
         ...(canCancelOrder() ? [{ label: 'Cancel Order', icon: <XCircle className="h-4 w-4" />, action: () => setCancelDialogOpen(true) }] : []),
         chatOption,
       ],
