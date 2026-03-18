@@ -1015,7 +1015,7 @@ const OrderDetails = () => {
 
             {/* Refund Status Timeline */}
             {(() => {
-              const refundStatus = returnRequest?.refund_status || 'processing';
+              const refundStatus = returnRequest?.refund_status || 'approved';
               const refundSteps = [
                 { key: 'approved', label: 'Return Approved', description: 'Your return request has been approved', icon: <CheckCircle className="h-4 w-4" /> },
                 { key: 'processing', label: 'Refund Initiated', description: 'Refund is being processed by our team', icon: <Clock className="h-4 w-4" /> },
@@ -1025,8 +1025,7 @@ const OrderDetails = () => {
 
               const statusOrder = ['approved', 'processing', 'in_transit', 'completed'];
               const currentIdx = statusOrder.indexOf(refundStatus);
-              // If status is 'processing', show first two as complete
-              const activeIdx = refundStatus === 'processing' ? 1 : currentIdx;
+              const activeIdx = currentIdx;
 
               return (
                 <div className="space-y-0">
