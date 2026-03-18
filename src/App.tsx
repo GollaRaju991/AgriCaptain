@@ -48,6 +48,7 @@ import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
+import SupportChat from "./pages/SupportChat";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -113,6 +114,7 @@ const App = () => (
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="/scanner" element={<Scanner />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
+                    <Route path="/support-chat" element={<SupportChat />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
