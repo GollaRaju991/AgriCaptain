@@ -108,7 +108,7 @@ const HelpCenter = () => {
             </a>
             
             <a 
-              href="#chat" 
+              href="/support-chat" 
               className="flex items-center justify-between p-4 hover:bg-gray-50"
             >
               <div className="flex items-center space-x-3">
