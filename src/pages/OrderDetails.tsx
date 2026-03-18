@@ -1063,7 +1063,12 @@ const OrderDetails = () => {
                           {isCompleted && returnRequest?.created_at && (
                             <p className="text-[10px] text-green-600 mt-0.5">{formatDate(returnRequest.created_at)}</p>
                           )}
-                          {isCurrent && (
+                          {isCurrent && refundStatus === 'completed' && (
+                            <p className="text-[10px] text-green-600 mt-0.5">
+                              {returnRequest?.refund_completed_at ? formatDate(returnRequest.refund_completed_at) : formatDate(new Date().toISOString())}
+                            </p>
+                          )}
+                          {isCurrent && refundStatus !== 'completed' && (
                             <span className="inline-block text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full mt-1 font-medium">In Progress</span>
                           )}
                         </div>
@@ -1075,13 +1080,23 @@ const OrderDetails = () => {
             })()}
 
             {/* Estimated refund timeline */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 flex items-start gap-2">
-              <Clock className="h-4 w-4 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Estimated refund timeline</p>
-                <p className="mt-0.5">Refunds typically take 5-7 business days to reflect in your account after processing.</p>
+            {returnRequest?.refund_status === 'completed' ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-700 flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Refund completed</p>
+                  <p className="mt-0.5">₹{(returnRequest?.refund_amount || order.total_amount).toLocaleString()} has been credited to your account.</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 flex items-start gap-2">
+                <Clock className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Refund in progress</p>
+                  <p className="mt-0.5">Your refund will be completed automatically within 2-3 minutes.</p>
+                </div>
+              </div>
+            )}
 
             {/* Reason */}
             {returnRequest?.reason && (
