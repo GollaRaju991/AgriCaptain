@@ -65,6 +65,18 @@ const OrderDetails = () => {
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [returnRequest, setReturnRequest] = useState<any>(null);
 
+  // Edit phone/address state
+  const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
+  const [addressDialogOpen, setAddressDialogOpen] = useState(false);
+  const [editPhone, setEditPhone] = useState('');
+  const [editName, setEditName] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [editCity, setEditCity] = useState('');
+  const [editState, setEditState] = useState('');
+  const [editPincode, setEditPincode] = useState('');
+  const [editAddressType, setEditAddressType] = useState('home');
+  const [updatingDetails, setUpdatingDetails] = useState(false);
+
   useScrollToTop();
 
   const formatStatusLabel = (status: string) =>
