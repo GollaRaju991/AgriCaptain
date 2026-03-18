@@ -87,7 +87,7 @@ const OrderDetails = () => {
     if (user && id) {
       fetchOrder();
       fetchReturnRequest();
-      const interval = setInterval(fetchOrder, 5000);
+      const interval = setInterval(() => { fetchOrder(); fetchReturnRequest(); }, 5000);
       const channel = supabase
         .channel(`order-${id}`)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
