@@ -64,6 +64,7 @@ const OrderDetails = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [returnRequest, setReturnRequest] = useState<any>(null);
+  const refundTimersRef = React.useRef<NodeJS.Timeout[]>([]);
 
   // Edit phone/address state
   const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
@@ -86,7 +87,7 @@ const OrderDetails = () => {
     if (user && id) {
       fetchOrder();
       fetchReturnRequest();
-      const interval = setInterval(fetchOrder, 5000);
+      const interval = setInterval(() => { fetchOrder(); fetchReturnRequest(); }, 5000);
       const channel = supabase
         .channel(`order-${id}`)
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
@@ -135,6 +136,71 @@ const OrderDetails = () => {
     } catch (error) { console.error('Error:', error); }
     finally { setLoading(false); }
   };
+
+  // Auto-progress existing in-progress refunds
+  useEffect(() => {
+    if (returnRequest && returnRequest.refund_status !== 'completed') {
+      const createdTime = new Date(returnRequest.created_at).getTime();
+      const now = Date.now();
+      const elapsed = now - createdTime;
+
+      const steps = [
+        { status: 'processing', delay: 40000 },
+        { status: 'in_transit', delay: 80000 },
+        { status: 'completed', delay: 150000 },
+      ];
+
+      const statusOrder = ['approved', 'processing', 'in_transit', 'completed'];
+      const currentIdx = statusOrder.indexOf(returnRequest.refund_status);
+
+      refundTimersRef.current.forEach(clearTimeout);
+      refundTimersRef.current = [];
+
+      steps.forEach(({ status, delay }) => {
+        const stepIdx = statusOrder.indexOf(status);
+        if (stepIdx > currentIdx) {
+          const remaining = delay - elapsed;
+          if (remaining > 0) {
+            const timer = setTimeout(async () => {
+              const updateData: any = { refund_status: status };
+              if (status === 'completed') {
+                updateData.refund_completed_at = new Date().toISOString();
+              }
+              await supabase.from('return_requests').update(updateData).eq('id', returnRequest.id);
+              
+              if (status === 'completed' && user) {
+                await supabase.from('notifications').insert({
+                  user_id: user!.id,
+                  order_id: id,
+                  type: 'order',
+                  title: 'Refund Completed',
+                  message: `Your refund has been credited to your account.`,
+                  action_url: '/orders'
+                });
+              }
+              
+              await fetchReturnRequest();
+            }, remaining);
+            refundTimersRef.current.push(timer);
+          } else {
+            (async () => {
+              const updateData: any = { refund_status: status };
+              if (status === 'completed') {
+                updateData.refund_completed_at = new Date().toISOString();
+              }
+              await supabase.from('return_requests').update(updateData).eq('id', returnRequest.id);
+              await fetchReturnRequest();
+            })();
+          }
+        }
+      });
+    }
+
+    return () => {
+      refundTimersRef.current.forEach(clearTimeout);
+      refundTimersRef.current = [];
+    };
+  }, [returnRequest?.id, returnRequest?.refund_status]);
 
   if (authLoading || loading) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -187,6 +253,43 @@ const OrderDetails = () => {
     finally { setCancellingOrder(false); }
   };
 
+  const startRefundProgression = (returnReqId: string) => {
+    // Clear any existing timers
+    refundTimersRef.current.forEach(clearTimeout);
+    refundTimersRef.current = [];
+
+    const steps = [
+      { status: 'processing', delay: 40000 },    // 40s after approved
+      { status: 'in_transit', delay: 80000 },     // 80s after approved
+      { status: 'completed', delay: 150000 },     // 2.5 min after approved
+    ];
+
+    steps.forEach(({ status, delay }) => {
+      const timer = setTimeout(async () => {
+        const updateData: any = { refund_status: status };
+        if (status === 'completed') {
+          updateData.refund_completed_at = new Date().toISOString();
+        }
+        await supabase.from('return_requests').update(updateData).eq('id', returnReqId);
+        
+        if (status === 'completed' && user) {
+          await supabase.from('notifications').insert({
+            user_id: user.id,
+            order_id: order?.id,
+            type: 'order',
+            title: 'Refund Completed',
+            message: `Your refund of ₹${order?.total_amount?.toLocaleString()} for order #${order?.order_number} has been credited to your account.`,
+            action_url: '/orders'
+          });
+        }
+        
+        await fetchReturnRequest();
+      }, delay);
+      refundTimersRef.current.push(timer);
+    });
+  };
+
+
   const handleReturnOrder = async () => {
     if (!returnReason) { toast.error('Please select a reason'); return; }
     setReturningOrder(true);
@@ -194,22 +297,25 @@ const OrderDetails = () => {
     try {
       const { error } = await supabase.from('orders').update({ status: 'returned', payment_status: 'refunded' }).eq('id', order.id);
       if (error) { toast.error('Failed to initiate return.'); return; }
-      await supabase.from('return_requests').insert({
+      const { data: returnData } = await supabase.from('return_requests').insert({
         order_id: order.id,
         user_id: user?.id,
         reason: returnReason,
         status: 'approved',
         refund_amount: order.total_amount,
-        refund_status: 'processing'
-      });
+        refund_status: 'approved'
+      }).select().single();
       await supabase.from('notifications').insert({
-        user_id: user?.id, order_id: order.id, type: 'order', title: 'Return Initiated',
-        message: `Return initiated for order #${order.order_number}. ₹${order.total_amount} will be refunded within 5-7 business days.`,
+        user_id: user?.id, order_id: order.id, type: 'order', title: 'Return Approved',
+        message: `Return approved for order #${order.order_number}. ₹${order.total_amount} refund is being processed.`,
         action_url: '/orders'
       });
       await fetchOrder();
       await fetchReturnRequest();
-      toast.success(`Return initiated! ₹${order.total_amount} will be refunded within 5-7 business days.`, { duration: 6000 });
+      if (returnData) {
+        startRefundProgression(returnData.id);
+      }
+      toast.success(`Return approved! ₹${order.total_amount} refund is being processed.`, { duration: 6000 });
     } catch { toast.error('Failed to initiate return.'); }
     finally { setReturningOrder(false); setReturnReason(''); }
   };
@@ -909,7 +1015,7 @@ const OrderDetails = () => {
 
             {/* Refund Status Timeline */}
             {(() => {
-              const refundStatus = returnRequest?.refund_status || 'processing';
+              const refundStatus = returnRequest?.refund_status || 'approved';
               const refundSteps = [
                 { key: 'approved', label: 'Return Approved', description: 'Your return request has been approved', icon: <CheckCircle className="h-4 w-4" /> },
                 { key: 'processing', label: 'Refund Initiated', description: 'Refund is being processed by our team', icon: <Clock className="h-4 w-4" /> },
@@ -919,8 +1025,7 @@ const OrderDetails = () => {
 
               const statusOrder = ['approved', 'processing', 'in_transit', 'completed'];
               const currentIdx = statusOrder.indexOf(refundStatus);
-              // If status is 'processing', show first two as complete
-              const activeIdx = refundStatus === 'processing' ? 1 : currentIdx;
+              const activeIdx = currentIdx;
 
               return (
                 <div className="space-y-0">
@@ -958,7 +1063,12 @@ const OrderDetails = () => {
                           {isCompleted && returnRequest?.created_at && (
                             <p className="text-[10px] text-green-600 mt-0.5">{formatDate(returnRequest.created_at)}</p>
                           )}
-                          {isCurrent && (
+                          {isCurrent && refundStatus === 'completed' && (
+                            <p className="text-[10px] text-green-600 mt-0.5">
+                              {returnRequest?.refund_completed_at ? formatDate(returnRequest.refund_completed_at) : formatDate(new Date().toISOString())}
+                            </p>
+                          )}
+                          {isCurrent && refundStatus !== 'completed' && (
                             <span className="inline-block text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full mt-1 font-medium">In Progress</span>
                           )}
                         </div>
@@ -970,13 +1080,23 @@ const OrderDetails = () => {
             })()}
 
             {/* Estimated refund timeline */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 flex items-start gap-2">
-              <Clock className="h-4 w-4 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="font-semibold">Estimated refund timeline</p>
-                <p className="mt-0.5">Refunds typically take 5-7 business days to reflect in your account after processing.</p>
+            {returnRequest?.refund_status === 'completed' ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-700 flex items-start gap-2">
+                <CheckCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Refund completed</p>
+                  <p className="mt-0.5">₹{(returnRequest?.refund_amount || order.total_amount).toLocaleString()} has been credited to your account.</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700 flex items-start gap-2">
+                <Clock className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold">Refund in progress</p>
+                  <p className="mt-0.5">Your refund will be completed automatically within 2-3 minutes.</p>
+                </div>
+              </div>
+            )}
 
             {/* Reason */}
             {returnRequest?.reason && (
