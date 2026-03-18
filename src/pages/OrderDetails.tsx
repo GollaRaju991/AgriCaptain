@@ -446,7 +446,7 @@ const OrderDetails = () => {
 
   // Need Help options based on status (mobile only)
   const getNeedHelpOptions = () => {
-    const chatOption = { label: 'Chat With Us', icon: <MessageCircle className="h-4 w-4" />, action: () => navigate('/help-center') };
+    const chatOption = { label: 'Chat With Us', icon: <MessageCircle className="h-4 w-4" />, action: () => navigate(`/support-chat?orderId=${id}`) };
 
     if (order.status === 'delivered') {
       return {
