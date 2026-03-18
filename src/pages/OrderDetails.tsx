@@ -64,6 +64,7 @@ const OrderDetails = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [returnRequest, setReturnRequest] = useState<any>(null);
+  const refundTimersRef = React.useRef<NodeJS.Timeout[]>([]);
 
   // Edit phone/address state
   const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
