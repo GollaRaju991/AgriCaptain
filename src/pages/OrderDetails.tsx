@@ -214,6 +214,36 @@ const OrderDetails = () => {
     finally { setReturningOrder(false); setReturnReason(''); }
   };
 
+  const handleUpdatePhone = async () => {
+    if (!editPhone || editPhone.length < 10) { toast.error('Please enter a valid phone number'); return; }
+    setUpdatingDetails(true);
+    try {
+      const currentAddress = order.shipping_address as any;
+      const updatedAddress = { ...currentAddress, phone: editPhone };
+      const { error } = await supabase.from('orders').update({ shipping_address: updatedAddress as unknown as Json }).eq('id', order.id);
+      if (error) { toast.error('Failed to update phone number'); return; }
+      await fetchOrder();
+      toast.success('Phone number updated successfully!');
+      setPhoneDialogOpen(false);
+    } catch { toast.error('Failed to update phone number'); }
+    finally { setUpdatingDetails(false); }
+  };
+
+  const handleUpdateAddress = async () => {
+    if (!editName || !editAddress || !editCity || !editState || !editPincode) { toast.error('Please fill all fields'); return; }
+    setUpdatingDetails(true);
+    try {
+      const currentAddress = order.shipping_address as any;
+      const updatedAddress = { ...currentAddress, name: editName, address: editAddress, city: editCity, state: editState, pincode: editPincode, address_type: editAddressType };
+      const { error } = await supabase.from('orders').update({ shipping_address: updatedAddress as unknown as Json }).eq('id', order.id);
+      if (error) { toast.error('Failed to update address'); return; }
+      await fetchOrder();
+      toast.success('Delivery address updated successfully!');
+      setAddressDialogOpen(false);
+    } catch { toast.error('Failed to update address'); }
+    finally { setUpdatingDetails(false); }
+  };
+
   const getTrackingUpdates = (): TrackingUpdate[] => {
     if (!order.tracking_updates || !Array.isArray(order.tracking_updates)) return [];
     return order.tracking_updates as unknown as TrackingUpdate[];
