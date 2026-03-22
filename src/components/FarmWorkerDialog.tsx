@@ -73,7 +73,7 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
   };
   const getAvailableVillages = () => selectedMandal ? villages[selectedMandal as keyof typeof villages] || [] : [];
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!selectedCountry || !selectedState || !selectedDistrict || !workerType || !workerCategory || !startDate || !endDate) return;
     if (districtHasDivisions && !selectedDivision) return;
     if (workerCategory === 'Group' && !numberOfWorkers) return;
@@ -89,12 +89,40 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
       category: workerCategory,
     });
 
-    const mockResults = [
-      { id: 1, name: 'Rajesh Kumar', type: workerType, experience: '5 years', rating: 4.5, rate: '₹500/day', location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory },
-      { id: 2, name: 'Suresh Patel', type: workerType, experience: '8 years', rating: 4.8, rate: '₹600/day', location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory }
-    ];
-    setSearchResults(mockResults);
-    setIsSearched(true);
+    try {
+      const { data, error } = await supabase
+        .from('farm_workers' as any)
+        .select('*')
+        .eq('is_active', true)
+        .contains('worker_types', [workerType]);
+
+      if (error) throw error;
+
+      const workers = (data as any[]) || [];
+      const results = workers.map((w: any) => ({
+        id: w.id,
+        name: w.name,
+        type: workerType,
+        experience: w.experience || 'N/A',
+        rating: w.rating || 0,
+        rate: `₹${w.daily_rate || 0}/day`,
+        location: `${w.district || ''}, ${w.state || ''}`,
+        availability: w.availability || 'Available',
+        category: w.category || workerCategory,
+        avatar: w.photo_url || '',
+        phone: w.phone || '',
+      }));
+
+      setSearchResults(results);
+      setIsSearched(true);
+
+      if (results.length === 0) {
+        toast.info(label('No workers found', 'కార్మికులు కనుగొనబడలేదు'));
+      }
+    } catch (err) {
+      console.error('Error searching workers:', err);
+      toast.error(label('Failed to search workers', 'కార్మికులను వెతకడంలో విఫలమైంది'));
+    }
   };
 
   const resetForm = () => {
