@@ -26,7 +26,7 @@ const FarmWorker = () => {
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedMandal, setSelectedMandal] = useState('');
   const [selectedVillage, setSelectedVillage] = useState('');
-  const [workerType, setWorkerType] = useState('');
+  const [workerTypes, setWorkerTypes] = useState<string[]>([]);
   const [workerCategory, setWorkerCategory] = useState('');
   const [numberOfWorkers, setNumberOfWorkers] = useState('');
   const [startDate, setStartDate] = useState<Date>();
