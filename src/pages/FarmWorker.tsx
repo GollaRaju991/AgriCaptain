@@ -21,6 +21,9 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+const WORKER_TYPE_OPTIONS = ['Field Worker', 'Harvester', 'Planting Specialist', 'Irrigation Expert', 'Pesticide Applicator', 'General Laborer', 'Equipment Operator', 'Supervisor'];
+const WORKER_CATEGORIES = ['Single', 'Group'];
+
 const FarmWorker = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
