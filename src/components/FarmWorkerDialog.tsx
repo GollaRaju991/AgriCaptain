@@ -15,6 +15,9 @@ import LocationDetector from './LocationDetector';
 import SavedAddressPicker from './SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 
 interface FarmWorkerDialogProps {
   open: boolean;
