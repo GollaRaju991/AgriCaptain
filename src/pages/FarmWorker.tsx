@@ -72,7 +72,7 @@ const FarmWorker = () => {
     );
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!selectedCountry || !selectedState || !selectedDistrict || selectedWorkerTypes.length === 0 || !workerCategory || !startDate || !endDate) return;
     if (districtHasDivisions && !selectedDivision) return;
     if (workerCategory === 'Group' && !numberOfWorkers) return;
@@ -88,17 +88,43 @@ const FarmWorker = () => {
       category: workerCategory,
     });
 
-    const names = Object.keys(MOCK_PROFILES);
-    const results = selectedWorkerTypes.flatMap((type, idx) => {
-      const n1 = names[(idx * 2) % names.length];
-      const n2 = names[(idx * 2 + 1) % names.length];
-      return [
-        { id: `${type}-1`, name: n1, type, experience: `${3 + idx * 2} years`, rating: 4.5, rate: `₹${400 + idx * 50}/day`, location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory, avatar: MOCK_PROFILES[n1].avatar, phone: MOCK_PROFILES[n1].phone },
-        { id: `${type}-2`, name: n2, type, experience: `${5 + idx} years`, rating: 4.8, rate: `₹${500 + idx * 50}/day`, location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory, avatar: MOCK_PROFILES[n2].avatar, phone: MOCK_PROFILES[n2].phone },
-      ];
-    });
-    setSearchResults(results);
-    setIsSearched(true);
+    try {
+      // Query farm_workers from Supabase where worker_types overlaps with selected types
+      const { data, error } = await supabase
+        .from('farm_workers' as any)
+        .select('*')
+        .eq('is_active', true)
+        .overlaps('worker_types', selectedWorkerTypes);
+
+      if (error) throw error;
+
+      const workers = (data as any[]) || [];
+      
+      // Map database results to display format
+      const results = workers.map((w: any) => ({
+        id: w.id,
+        name: w.name,
+        type: (w.worker_types as string[]).filter((t: string) => selectedWorkerTypes.includes(t)).join(', '),
+        experience: w.experience || 'N/A',
+        rating: w.rating || 0,
+        rate: `₹${w.daily_rate || 0}/day`,
+        location: `${w.district || ''}, ${w.state || ''}`,
+        availability: w.availability || 'Available',
+        category: w.category || 'Single',
+        avatar: w.photo_url || '',
+        phone: w.phone || '',
+      }));
+
+      setSearchResults(results);
+      setIsSearched(true);
+
+      if (results.length === 0) {
+        toast.info(label('No workers found matching your criteria', 'మీ ప్రమాణాలకు సరిపోయే కార్మికులు కనుగొనబడలేదు'));
+      }
+    } catch (err) {
+      console.error('Error searching workers:', err);
+      toast.error(label('Failed to search workers', 'కార్మికులను వెతకడంలో విఫలమైంది'));
+    }
   };
 
   const resetForm = () => {
