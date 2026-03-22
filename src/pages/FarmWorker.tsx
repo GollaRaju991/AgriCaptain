@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,19 @@ import LocationDetector from '@/components/LocationDetector';
 import SavedAddressPicker from '@/components/SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+
+const WORKER_TYPE_OPTIONS = ['Field Worker', 'Harvester', 'Planting Specialist', 'Irrigation Expert', 'Pesticide Applicator', 'General Laborer', 'Equipment Operator', 'Supervisor'];
+const WORKER_CATEGORIES = ['Single', 'Group'];
+
+const MOCK_PROFILES: Record<string, { avatar: string; phone: string }> = {
+  'Rajesh Kumar': { avatar: 'https://i.pravatar.cc/150?img=11', phone: '+91 98765 43210' },
+  'Suresh Patel': { avatar: 'https://i.pravatar.cc/150?img=12', phone: '+91 87654 32109' },
+  'Anil Reddy': { avatar: 'https://i.pravatar.cc/150?img=14', phone: '+91 76543 21098' },
+  'Venkat Rao': { avatar: 'https://i.pravatar.cc/150?img=15', phone: '+91 65432 10987' },
+  'Ramesh Goud': { avatar: 'https://i.pravatar.cc/150?img=16', phone: '+91 54321 09876' },
+};
 
 const FarmWorker = () => {
   const navigate = useNavigate();
@@ -26,7 +39,7 @@ const FarmWorker = () => {
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedMandal, setSelectedMandal] = useState('');
   const [selectedVillage, setSelectedVillage] = useState('');
-  const [workerTypes, setWorkerTypes] = useState<string[]>([]);
+  const [selectedWorkerTypes, setSelectedWorkerTypes] = useState<string[]>([]);
   const [workerCategory, setWorkerCategory] = useState('');
   const [numberOfWorkers, setNumberOfWorkers] = useState('');
   const [startDate, setStartDate] = useState<Date>();
@@ -34,6 +47,7 @@ const FarmWorker = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearched, setIsSearched] = useState(false);
   const [autoDetectLocation, setAutoDetectLocation] = useState(true);
+  const [workerTypeDropdownOpen, setWorkerTypeDropdownOpen] = useState(false);
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
@@ -49,9 +63,6 @@ const FarmWorker = () => {
   useEffect(() => { setSelectedVillage(''); }, [selectedMandal]);
   useEffect(() => { setNumberOfWorkers(''); }, [workerCategory]);
 
-  const workerTypes = ['Field Worker', 'Harvester', 'Planting Specialist', 'Irrigation Expert', 'Pesticide Applicator', 'General Laborer', 'Equipment Operator', 'Supervisor'];
-  const workerCategories = ['Single', 'Group'];
-
   const getAvailableStates = () => selectedCountry ? states[selectedCountry as keyof typeof states] || [] : [];
   const getAvailableDistricts = () => selectedState ? districts[selectedState as keyof typeof districts] || [] : [];
   const getAvailableDivisions = () => selectedDistrict ? divisions[selectedDistrict as keyof typeof divisions] || [] : [];
@@ -64,8 +75,14 @@ const FarmWorker = () => {
   };
   const getAvailableVillages = () => selectedMandal ? villages[selectedMandal as keyof typeof villages] || [] : [];
 
+  const toggleWorkerType = (type: string) => {
+    setSelectedWorkerTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    );
+  };
+
   const handleSearch = () => {
-    if (!selectedCountry || !selectedState || !selectedDistrict || !workerType || !workerCategory || !startDate || !endDate) return;
+    if (!selectedCountry || !selectedState || !selectedDistrict || selectedWorkerTypes.length === 0 || !workerCategory || !startDate || !endDate) return;
     if (districtHasDivisions && !selectedDivision) return;
     if (workerCategory === 'Group' && !numberOfWorkers) return;
 
@@ -76,21 +93,26 @@ const FarmWorker = () => {
       division: selectedDivision,
       mandal: selectedMandal,
       village: selectedVillage,
-      workType: workerType,
+      workType: selectedWorkerTypes.join(', '),
       category: workerCategory,
     });
 
-    const mockResults = [
-      { id: 1, name: 'Rajesh Kumar', type: workerType, experience: '5 years', rating: 4.5, rate: '₹500/day', location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory },
-      { id: 2, name: 'Suresh Patel', type: workerType, experience: '8 years', rating: 4.8, rate: '₹600/day', location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory }
-    ];
-    setSearchResults(mockResults);
+    const names = Object.keys(MOCK_PROFILES);
+    const results = selectedWorkerTypes.flatMap((type, idx) => {
+      const n1 = names[(idx * 2) % names.length];
+      const n2 = names[(idx * 2 + 1) % names.length];
+      return [
+        { id: `${type}-1`, name: n1, type, experience: `${3 + idx * 2} years`, rating: 4.5, rate: `₹${400 + idx * 50}/day`, location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory, avatar: MOCK_PROFILES[n1].avatar, phone: MOCK_PROFILES[n1].phone },
+        { id: `${type}-2`, name: n2, type, experience: `${5 + idx} years`, rating: 4.8, rate: `₹${500 + idx * 50}/day`, location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory, avatar: MOCK_PROFILES[n2].avatar, phone: MOCK_PROFILES[n2].phone },
+      ];
+    });
+    setSearchResults(results);
     setIsSearched(true);
   };
 
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
-    setWorkerType(''); setWorkerCategory(''); setNumberOfWorkers('');
+    setSelectedWorkerTypes([]); setWorkerCategory(''); setNumberOfWorkers('');
     setStartDate(undefined); setEndDate(undefined);
     setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true);
   };
@@ -141,17 +163,16 @@ const FarmWorker = () => {
         }, 50);
       }, 50);
     }, 50);
-    setWorkerType(addr.workType);
+    setSelectedWorkerTypes(addr.workType ? addr.workType.split(', ') : []);
     setWorkerCategory(addr.category);
   };
 
-  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && workerType && workerCategory && startDate && endDate && (workerCategory === 'Single' || numberOfWorkers);
+  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && selectedWorkerTypes.length > 0 && workerCategory && startDate && endDate && (workerCategory === 'Single' || numberOfWorkers);
 
   const label = (en: string, te: string) => language === 'te' ? te : en;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#2d5a27] text-white">
         <div className="flex items-center justify-between px-4 py-4">
           <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }} className="p-1">
@@ -163,20 +184,11 @@ const FarmWorker = () => {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-        <SavedAddressPicker
-          addresses={savedAddresses}
-          onSelect={handleSelectSavedAddress}
-          onDelete={deleteAddress}
-          isLimitReached={isLimitReached}
-        />
+        <SavedAddressPicker addresses={savedAddresses} onSelect={handleSelectSavedAddress} onDelete={deleteAddress} isLimitReached={isLimitReached} />
+        <LocationDetector enabled={autoDetectLocation} onLocationDetected={handleLocationDetected} />
 
-        <LocationDetector 
-          enabled={autoDetectLocation} 
-          onLocationDetected={handleLocationDetected}
-        />
-
-        {/* Location Fields */}
         <div className="space-y-4">
+          {/* Country */}
           <div>
             <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
             <Select value={selectedCountry} onValueChange={setSelectedCountry}>
@@ -184,6 +196,7 @@ const FarmWorker = () => {
               <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
+          {/* State */}
           <div>
             <Label className="text-sm font-medium">{label('State *', 'రాష్ట్రం *')}</Label>
             <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
@@ -191,6 +204,7 @@ const FarmWorker = () => {
               <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
+          {/* District */}
           <div>
             <Label className="text-sm font-medium">{label('District *', 'జిల్లా *')}</Label>
             <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
@@ -198,7 +212,7 @@ const FarmWorker = () => {
               <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
             </Select>
           </div>
-
+          {/* Division */}
           {districtHasDivisions && (
             <div>
               <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
@@ -208,7 +222,7 @@ const FarmWorker = () => {
               </Select>
             </div>
           )}
-
+          {/* Mandal */}
           <div>
             <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
             {getAvailableMandals().length > 0 ? (
@@ -220,6 +234,7 @@ const FarmWorker = () => {
               <Input className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
             )}
           </div>
+          {/* Village */}
           <div>
             <Label className="text-sm font-medium">{label('Village', 'గ్రామం')}</Label>
             {getAvailableVillages().length > 0 ? (
@@ -232,19 +247,57 @@ const FarmWorker = () => {
             )}
           </div>
 
-          {/* Worker Type */}
+          {/* Worker Type - Multi Select */}
           <div>
             <Label className="text-sm font-medium">{label('Worker Type *', 'కార్మిక రకం *')}</Label>
-            <Select value={workerType} onValueChange={setWorkerType}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select worker type', 'కార్మిక రకం ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{workerTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-            </Select>
+            <Popover open={workerTypeDropdownOpen} onOpenChange={setWorkerTypeDropdownOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-between mt-1 font-normal h-auto min-h-10 text-left">
+                  {selectedWorkerTypes.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {selectedWorkerTypes.map(t => (
+                        <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">{label('Select worker types', 'కార్మిక రకాలు ఎంచుకోండి')}</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
+                <div className="max-h-60 overflow-y-auto">
+                  {WORKER_TYPE_OPTIONS.map((type) => {
+                    const isSelected = selectedWorkerTypes.includes(type);
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => toggleWorkerType(type)}
+                        className={cn(
+                          "flex items-center gap-2 w-full px-3 py-2.5 text-sm text-left hover:bg-accent transition-colors",
+                          isSelected && "bg-accent/50"
+                        )}
+                      >
+                        <div className={cn(
+                          "h-4 w-4 rounded border flex items-center justify-center shrink-0",
+                          isSelected ? "bg-primary border-primary text-primary-foreground" : "border-input"
+                        )}>
+                          {isSelected && <Check className="h-3 w-3" />}
+                        </div>
+                        {type}
+                      </button>
+                    );
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
+
+          {/* Category */}
           <div>
             <Label className="text-sm font-medium">{label('Category *', 'వర్గం *')}</Label>
             <Select value={workerCategory} onValueChange={setWorkerCategory}>
               <SelectTrigger className="mt-1"><SelectValue placeholder={label('Single or Group', 'ఒంటరి లేదా గ్రూపు')} /></SelectTrigger>
-              <SelectContent>{workerCategories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              <SelectContent>{WORKER_CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           {workerCategory === 'Group' && (
@@ -301,22 +354,31 @@ const FarmWorker = () => {
             <h3 className="text-lg font-semibold">{label('Available Workers', 'అందుబాటులో ఉన్న కార్మికులు')} ({searchResults.length})</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {searchResults.map((worker) => (
-                <div key={worker.id} className="border border-border rounded-lg p-4 space-y-2 bg-card">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold">{worker.name}</h4>
-                      <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
-                      {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-green-600">{worker.rate}</p>
-                      <p className="text-sm text-yellow-600">★ {worker.rating}</p>
+                <div key={worker.id} className="border border-border rounded-lg p-4 space-y-3 bg-card">
+                  <div className="flex gap-3 items-start">
+                    <Avatar className="h-14 w-14 shrink-0">
+                      <AvatarImage src={worker.avatar} alt={worker.name} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-lg">{worker.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-semibold">{worker.name}</h4>
+                          <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className="font-semibold text-green-600">{worker.rate}</p>
+                          <p className="text-sm text-yellow-600">★ {worker.rating}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
                   <div className="text-sm space-y-1">
                     <p><strong>{label('Experience:', 'అనుభవం:')}</strong> {worker.experience}</p>
                     <p><strong>{label('Location:', 'ప్రాంతం:')}</strong> {worker.location}</p>
-                    <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className={worker.availability === 'Available' ? 'text-green-600' : 'text-orange-600'}>{worker.availability}</span></p>
+                    <p><strong>{label('Phone:', 'ఫోన్:')}</strong> {worker.phone}</p>
+                    <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className="text-green-600">{worker.availability}</span></p>
                   </div>
                   <Button className="w-full" size="sm">{label('Contact Worker', 'కార్మికుడిని సంప్రదించండి')}</Button>
                 </div>
