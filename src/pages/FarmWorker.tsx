@@ -18,17 +18,8 @@ import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAdd
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-
-const WORKER_TYPE_OPTIONS = ['Field Worker', 'Harvester', 'Planting Specialist', 'Irrigation Expert', 'Pesticide Applicator', 'General Laborer', 'Equipment Operator', 'Supervisor'];
-const WORKER_CATEGORIES = ['Single', 'Group'];
-
-const MOCK_PROFILES: Record<string, { avatar: string; phone: string }> = {
-  'Rajesh Kumar': { avatar: 'https://i.pravatar.cc/150?img=11', phone: '+91 98765 43210' },
-  'Suresh Patel': { avatar: 'https://i.pravatar.cc/150?img=12', phone: '+91 87654 32109' },
-  'Anil Reddy': { avatar: 'https://i.pravatar.cc/150?img=14', phone: '+91 76543 21098' },
-  'Venkat Rao': { avatar: 'https://i.pravatar.cc/150?img=15', phone: '+91 65432 10987' },
-  'Ramesh Goud': { avatar: 'https://i.pravatar.cc/150?img=16', phone: '+91 54321 09876' },
-};
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const FarmWorker = () => {
   const navigate = useNavigate();
