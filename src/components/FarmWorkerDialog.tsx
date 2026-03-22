@@ -343,15 +343,24 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {searchResults.map((worker) => (
                   <div key={worker.id} className="border border-border rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-semibold">{worker.name}</h4>
-                        <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
-                        {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-green-600">{worker.rate}</p>
-                        <p className="text-sm text-yellow-600">★ {worker.rating}</p>
+                    <div className="flex gap-3 items-start">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={worker.avatar} alt={worker.name} />
+                        <AvatarFallback>{worker.name?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <div>
+                            <h4 className="font-semibold">{worker.name}</h4>
+                            <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
+                            {worker.phone && <p className="text-xs text-muted-foreground">{worker.phone}</p>}
+                            {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-green-600">{worker.rate}</p>
+                            <p className="text-sm text-yellow-600">★ {worker.rating}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="text-sm space-y-1">
