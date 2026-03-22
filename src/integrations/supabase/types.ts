@@ -115,6 +115,66 @@ export type Database = {
           },
         ]
       }
+      farm_workers: {
+        Row: {
+          availability: string
+          category: string
+          created_at: string
+          daily_rate: number | null
+          district: string | null
+          experience: string | null
+          id: string
+          is_active: boolean
+          mandal: string | null
+          name: string
+          phone: string
+          photo_url: string | null
+          rating: number | null
+          state: string | null
+          updated_at: string
+          village: string | null
+          worker_types: string[]
+        }
+        Insert: {
+          availability?: string
+          category?: string
+          created_at?: string
+          daily_rate?: number | null
+          district?: string | null
+          experience?: string | null
+          id?: string
+          is_active?: boolean
+          mandal?: string | null
+          name: string
+          phone: string
+          photo_url?: string | null
+          rating?: number | null
+          state?: string | null
+          updated_at?: string
+          village?: string | null
+          worker_types?: string[]
+        }
+        Update: {
+          availability?: string
+          category?: string
+          created_at?: string
+          daily_rate?: number | null
+          district?: string | null
+          experience?: string | null
+          id?: string
+          is_active?: boolean
+          mandal?: string | null
+          name?: string
+          phone?: string
+          photo_url?: string | null
+          rating?: number | null
+          state?: string | null
+          updated_at?: string
+          village?: string | null
+          worker_types?: string[]
+        }
+        Relationships: []
+      }
       farmer_crops: {
         Row: {
           availability_location: string

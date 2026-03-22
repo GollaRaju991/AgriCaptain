@@ -15,6 +15,9 @@ import LocationDetector from './LocationDetector';
 import SavedAddressPicker from './SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { toast } from 'sonner';
 
 interface FarmWorkerDialogProps {
   open: boolean;
@@ -70,7 +73,7 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
   };
   const getAvailableVillages = () => selectedMandal ? villages[selectedMandal as keyof typeof villages] || [] : [];
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!selectedCountry || !selectedState || !selectedDistrict || !workerType || !workerCategory || !startDate || !endDate) return;
     if (districtHasDivisions && !selectedDivision) return;
     if (workerCategory === 'Group' && !numberOfWorkers) return;
@@ -86,12 +89,40 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
       category: workerCategory,
     });
 
-    const mockResults = [
-      { id: 1, name: 'Rajesh Kumar', type: workerType, experience: '5 years', rating: 4.5, rate: '₹500/day', location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory },
-      { id: 2, name: 'Suresh Patel', type: workerType, experience: '8 years', rating: 4.8, rate: '₹600/day', location: `${selectedDistrict}, ${selectedState}`, availability: 'Available', category: workerCategory }
-    ];
-    setSearchResults(mockResults);
-    setIsSearched(true);
+    try {
+      const { data, error } = await supabase
+        .from('farm_workers' as any)
+        .select('*')
+        .eq('is_active', true)
+        .contains('worker_types', [workerType]);
+
+      if (error) throw error;
+
+      const workers = (data as any[]) || [];
+      const results = workers.map((w: any) => ({
+        id: w.id,
+        name: w.name,
+        type: workerType,
+        experience: w.experience || 'N/A',
+        rating: w.rating || 0,
+        rate: `₹${w.daily_rate || 0}/day`,
+        location: `${w.district || ''}, ${w.state || ''}`,
+        availability: w.availability || 'Available',
+        category: w.category || workerCategory,
+        avatar: w.photo_url || '',
+        phone: w.phone || '',
+      }));
+
+      setSearchResults(results);
+      setIsSearched(true);
+
+      if (results.length === 0) {
+        toast.info(label('No workers found', 'కార్మికులు కనుగొనబడలేదు'));
+      }
+    } catch (err) {
+      console.error('Error searching workers:', err);
+      toast.error(label('Failed to search workers', 'కార్మికులను వెతకడంలో విఫలమైంది'));
+    }
   };
 
   const resetForm = () => {
@@ -312,15 +343,24 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {searchResults.map((worker) => (
                   <div key={worker.id} className="border border-border rounded-lg p-4 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-semibold">{worker.name}</h4>
-                        <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
-                        {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-green-600">{worker.rate}</p>
-                        <p className="text-sm text-yellow-600">★ {worker.rating}</p>
+                    <div className="flex gap-3 items-start">
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={worker.avatar} alt={worker.name} />
+                        <AvatarFallback>{worker.name?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <div>
+                            <h4 className="font-semibold">{worker.name}</h4>
+                            <p className="text-sm text-muted-foreground">{worker.type} - {worker.category}</p>
+                            {worker.phone && <p className="text-xs text-muted-foreground">{worker.phone}</p>}
+                            {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
+                          </div>
+                          <div className="text-right">
+                            <p className="font-semibold text-green-600">{worker.rate}</p>
+                            <p className="text-sm text-yellow-600">★ {worker.rating}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="text-sm space-y-1">
