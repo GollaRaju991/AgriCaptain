@@ -108,6 +108,26 @@ class DualBackendService {
           action_url: '/orders'
         });
 
+      // Send vendor order alerts for seller products
+      try {
+        const orderItems = Array.isArray(orderData.items) ? orderData.items : [];
+        for (const item of orderItems) {
+          if (item?.seller_id) {
+            await (supabase.from('vendor_order_alerts') as any).insert({
+              seller_id: item.seller_id,
+              order_id: supabaseOrder.id,
+              product_name: item.name || 'Product',
+              quantity: item.quantity || 1,
+              total_amount: (item.price || 0) * (item.quantity || 1),
+              customer_address: JSON.stringify(orderData.address),
+              status: 'pending'
+            });
+          }
+        }
+      } catch (alertErr) {
+        console.error('Vendor alert error (non-blocking):', alertErr);
+      }
+
       return { success: true };
     } catch (error) {
       console.error('Order save error:', error);

@@ -700,31 +700,21 @@ const ProductDetails = () => {
         {/* Product Details - Stacked Collapsible Sections */}
         <div className="mt-4 lg:mt-12 px-4 lg:px-0 space-y-3">
           {/* Description Section */}
-          <ProductSection 
-            title="Description" 
-            defaultOpen={true}
-            bgColor="bg-blue-50 dark:bg-blue-950/30"
-            borderColor="border-blue-200 dark:border-blue-800"
-          >
+          <ProductSection title="Description" defaultOpen={true}>
             <div className="prose max-w-none">
-              <h4 className="text-base md:text-lg font-semibold mb-3 text-blue-800 dark:text-blue-300">Product Description</h4>
+              <h4 className="text-base md:text-lg font-semibold mb-3 text-green-800 dark:text-green-300">Product Description</h4>
               <div className="whitespace-pre-line text-muted-foreground leading-relaxed text-sm md:text-base">
                 {product.detailedDescription}
               </div>
-              <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
-                <h4 className="text-base md:text-lg font-semibold mb-2 text-blue-800 dark:text-blue-300">Usage Instructions</h4>
+              <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-700">
+                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">Usage Instructions</h4>
                 <p className="text-muted-foreground text-sm md:text-base">{product.usage}</p>
               </div>
             </div>
           </ProductSection>
 
           {/* Specifications Section */}
-          <ProductSection 
-            title="Specifications" 
-            defaultOpen={false}
-            bgColor="bg-green-50 dark:bg-green-950/30"
-            borderColor="border-green-200 dark:border-green-800"
-          >
+          <ProductSection title="Specifications">
             <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Product Specifications</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
               {Object.entries(product.specifications).map(([key, value]) => (
@@ -736,31 +726,143 @@ const ProductDetails = () => {
             </div>
           </ProductSection>
 
+          {/* Pest Control Details */}
+          <ProductSection title="Pest Control Details">
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Pest Control Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm md:text-base text-green-900 dark:text-green-100">Target Pests:</span>
+                <p className="text-muted-foreground text-sm md:text-base mt-1">{sellerProduct?.target_pests || 'Aphids, Whiteflies, Stem Borer, Jassids'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm md:text-base text-green-900 dark:text-green-100">Suitable Crops:</span>
+                <p className="text-muted-foreground text-sm md:text-base mt-1">{sellerProduct?.suitable_crops || 'Cotton, Paddy, Vegetables, Chilli'}</p>
+              </div>
+            </div>
+          </ProductSection>
+
+          {/* Composition & Dosage */}
+          <ProductSection title="Composition & Dosage">
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Active Ingredients & Usage</h4>
+            <div className="space-y-3">
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Composition:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.composition || 'As per label'}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Dosage:</span>
+                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.dosage || '1 ml per liter of water'}</p>
+                </div>
+                <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Application Method:</span>
+                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.application_method || 'Spraying'}</p>
+                </div>
+                <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Frequency:</span>
+                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.frequency || 'As needed'}</p>
+                </div>
+              </div>
+            </div>
+          </ProductSection>
+
+          {/* Safety Information */}
+          <ProductSection title="Safety Information">
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">⚠️ Safety Instructions</h4>
+            <div className="space-y-3">
+              <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+                <ul className="space-y-2 text-sm text-foreground">
+                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Wear gloves, mask, and protective clothing during application</li>
+                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Avoid contact with skin, eyes, and mouth</li>
+                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Keep away from children and animals</li>
+                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Do not eat, drink or smoke during application</li>
+                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Wash hands thoroughly after handling</li>
+                </ul>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Protective Equipment:</span>
+                  <p className="text-muted-foreground text-sm mt-1">Mask, Gloves, Protective Clothing</p>
+                </div>
+                <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Waiting Period:</span>
+                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.waiting_period || '14 days before harvest'}</p>
+                </div>
+              </div>
+            </div>
+          </ProductSection>
+
+          {/* Agricultural Details */}
+          <ProductSection title="Agricultural Details">
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Storage & Package</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Storage:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.storage_instructions || 'Store in a cool, dry place away from sunlight'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Shelf Life:</span>
+                <p className="text-muted-foreground text-sm mt-1">{product.specifications?.['Shelf Life'] || '2 years'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Package Size:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.package_size || sellerProduct?.unit_type || '1 unit'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Manufacturing Date:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.manufacturing_date || 'See label'}</p>
+              </div>
+            </div>
+          </ProductSection>
+
           {/* Features Section */}
-          <ProductSection 
-            title="Features" 
-            defaultOpen={false}
-            bgColor="bg-orange-50 dark:bg-orange-950/30"
-            borderColor="border-orange-200 dark:border-orange-800"
-          >
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-orange-800 dark:text-orange-300">Key Features</h4>
+          <ProductSection title="Features">
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Key Features</h4>
             <ul className="space-y-3">
               {product.features.map((feature, index) => (
                 <li key={index} className="flex items-center space-x-3">
-                  <span className="w-2 h-2 bg-orange-500 rounded-full flex-shrink-0"></span>
+                  <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
                   <span className="text-sm md:text-base">{feature}</span>
                 </li>
               ))}
             </ul>
           </ProductSection>
 
+          {/* Vendor Details */}
+          <ProductSection title="Vendor Details">
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Seller / Vendor Information</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Vendor Name:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.brand || 'Agrizin Verified Seller'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">License Number:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.license_number || 'As per Insecticides Act 1968'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-2 md:col-span-2">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">Shop Address:</span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.shop_address || 'Contact seller for address details'}</p>
+              </div>
+            </div>
+          </ProductSection>
+
+          {/* Disclaimer */}
+          <ProductSection title="Disclaimer">
+            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <h4 className="text-base font-semibold mb-3 text-red-800 dark:text-red-300">⚠️ Important Disclaimer</h4>
+              <ul className="space-y-2 text-sm text-red-700 dark:text-red-400">
+                <li>• Use only as per label instructions.</li>
+                <li>• Seller is responsible for product quality and legal compliance.</li>
+                <li>• Platform (Agrizin) acts only as a marketplace and does not guarantee the efficacy of products.</li>
+                <li>• Verify the product's registration and license details before purchase.</li>
+                <li>• Follow all safety precautions mentioned on the product label.</li>
+              </ul>
+            </div>
+          </ProductSection>
+
           {/* Reviews Section */}
-          <ProductSection 
-            title={`Reviews (${allReviews.length})`}
-            defaultOpen={false}
-            bgColor="bg-purple-50 dark:bg-purple-950/30"
-            borderColor="border-purple-200 dark:border-purple-800"
-          >
+          <ProductSection title={`Reviews (${allReviews.length})`}>
             {/* Review Form */}
             <div className="mb-6">
               <ProductReviewForm productId={product.id} onReviewSubmit={handleReviewSubmit} />
@@ -770,7 +872,7 @@ const ProductDetails = () => {
               {/* Rating Summary */}
               <div className="flex-shrink-0 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                  <span className="text-3xl md:text-4xl font-bold text-purple-800 dark:text-purple-300">{product.rating}</span>
+                  <span className="text-3xl md:text-4xl font-bold text-green-800 dark:text-green-300">{product.rating}</span>
                   <Star className="h-6 w-6 md:h-8 md:w-8 fill-yellow-400 text-yellow-400" />
                 </div>
                 <p className="text-muted-foreground text-sm">{allReviews.length} Reviews</p>
@@ -781,9 +883,9 @@ const ProductDetails = () => {
                 {ratingDistribution.map(({ stars, count, percentage }) => (
                   <div key={stars} className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground w-6">{stars}★</span>
-                    <div className="flex-1 h-2 bg-purple-200 dark:bg-purple-800 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-green-200 dark:bg-green-800 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-purple-500 rounded-full transition-all"
+                        className="h-full bg-green-500 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
@@ -793,17 +895,17 @@ const ProductDetails = () => {
               </div>
             </div>
             
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-purple-800 dark:text-purple-300">Customer Reviews</h4>
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Customer Reviews</h4>
             <div className="space-y-4">
               {allReviews.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4">No reviews yet. Be the first to review!</p>
               )}
               {allReviews.map((review) => (
-                <div key={review.id} className="border-b border-purple-200 dark:border-purple-700 pb-4 last:border-b-0">
+                <div key={review.id} className="border-b border-green-200 dark:border-green-700 pb-4 last:border-b-0">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-purple-200 dark:bg-purple-800 rounded-full flex items-center justify-center">
-                        <span className="text-purple-700 dark:text-purple-300 font-medium text-sm">
+                      <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-full flex items-center justify-center">
+                        <span className="text-green-700 dark:text-green-300 font-medium text-sm">
                           {review.name.charAt(0)}
                         </span>
                       </div>
@@ -821,7 +923,7 @@ const ProductDetails = () => {
                   </div>
                   <p className="text-muted-foreground text-sm mb-3">{review.comment}</p>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <button className="flex items-center gap-1 hover:text-purple-600 transition-colors">
+                    <button className="flex items-center gap-1 hover:text-green-600 transition-colors">
                       <ThumbsUp className="h-3.5 w-3.5" />
                       <span>Helpful ({review.helpful})</span>
                     </button>
