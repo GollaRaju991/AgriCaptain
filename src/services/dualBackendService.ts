@@ -112,9 +112,10 @@ class DualBackendService {
       try {
         const orderItems = Array.isArray(orderData.items) ? orderData.items : [];
         for (const item of orderItems) {
-          if (item?.seller_id) {
+          const anyItem = item as any;
+          if (anyItem?.seller_id) {
             await (supabase.from('vendor_order_alerts') as any).insert({
-              seller_id: item.seller_id,
+              seller_id: anyItem.seller_id,
               order_id: supabaseOrder.id,
               product_name: item.name || 'Product',
               quantity: item.quantity || 1,
