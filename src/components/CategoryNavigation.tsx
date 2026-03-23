@@ -60,18 +60,6 @@ const CategoryNavigation = () => {
     { name: 'Market Details', icon: TrendingUp, path: '/market-details' },
     { name: 'Farm Worker', icon: Users, path: '/farm-worker' },
     { name: 'Rent Vehicles', icon: Truck, path: '/vehicle-rent' },
-    { 
-      name: 'Loans', 
-      icon: CreditCard, 
-      hasDropdown: true,
-      isDropdownOnly: true,
-      subcategories: [
-        { name: 'Crop Loans', path: '/loans?type=crop', icon: Wheat },
-        { name: 'Equipment Loans', path: '/loans?type=equipment', icon: Wrench },
-        { name: 'Land Loans', path: '/loans?type=land', icon: Sprout },
-        { name: 'Kisan Credit Card', path: '/loans?type=kcc', icon: CreditCard },
-      ]
-    },
   ];
 
   const handleCategoryClick = (category: any) => {

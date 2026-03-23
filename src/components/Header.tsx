@@ -228,7 +228,7 @@ const Header = () => {
                   { name: translations.market_details, image: catMarketIcon, path: '/market-details', bg: 'bg-cyan-50' },
                   { name: translations.farm_worker, image: catFarmworkerIcon, path: '/farm-worker', bg: 'bg-orange-50' },
                   { name: translations.rent_vehicles, image: catVehicleIcon, path: '/vehicle-rent', bg: 'bg-lime-50' },
-                  { name: translations.loans, image: catLoansIcon, path: '/loans', bg: 'bg-yellow-50' },
+                  
                 ].map((category, index) => {
                   
                   return (
