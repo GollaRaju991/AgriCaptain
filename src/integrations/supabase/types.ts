@@ -453,6 +453,80 @@ export type Database = {
         }
         Relationships: []
       }
+      product_specifications: {
+        Row: {
+          active_ingredients: string | null
+          application_method: string | null
+          composition: string | null
+          created_at: string
+          dosage: string | null
+          expiry_date: string | null
+          frequency_of_use: string | null
+          id: string
+          manufacturing_date: string | null
+          package_size: string | null
+          product_id: string
+          protective_equipment: string | null
+          safety_instructions: string | null
+          storage_instructions: string | null
+          suitable_crops: string[] | null
+          target_pests: string[] | null
+          updated_at: string
+          user_id: string
+          waiting_period: string | null
+        }
+        Insert: {
+          active_ingredients?: string | null
+          application_method?: string | null
+          composition?: string | null
+          created_at?: string
+          dosage?: string | null
+          expiry_date?: string | null
+          frequency_of_use?: string | null
+          id?: string
+          manufacturing_date?: string | null
+          package_size?: string | null
+          product_id: string
+          protective_equipment?: string | null
+          safety_instructions?: string | null
+          storage_instructions?: string | null
+          suitable_crops?: string[] | null
+          target_pests?: string[] | null
+          updated_at?: string
+          user_id: string
+          waiting_period?: string | null
+        }
+        Update: {
+          active_ingredients?: string | null
+          application_method?: string | null
+          composition?: string | null
+          created_at?: string
+          dosage?: string | null
+          expiry_date?: string | null
+          frequency_of_use?: string | null
+          id?: string
+          manufacturing_date?: string | null
+          package_size?: string | null
+          product_id?: string
+          protective_equipment?: string | null
+          safety_instructions?: string | null
+          storage_instructions?: string | null
+          suitable_crops?: string[] | null
+          target_pests?: string[] | null
+          updated_at?: string
+          user_id?: string
+          waiting_period?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_specifications_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "seller_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           aadhar_card: string | null
@@ -832,6 +906,143 @@ export type Database = {
           village?: string | null
         }
         Relationships: []
+      }
+      vendor_details: {
+        Row: {
+          created_at: string
+          district: string | null
+          email: string | null
+          id: string
+          license_number: string | null
+          mandal: string | null
+          phone: string | null
+          seller_id: string
+          shop_address: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          vendor_name: string
+          village: string | null
+        }
+        Insert: {
+          created_at?: string
+          district?: string | null
+          email?: string | null
+          id?: string
+          license_number?: string | null
+          mandal?: string | null
+          phone?: string | null
+          seller_id: string
+          shop_address?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          vendor_name: string
+          village?: string | null
+        }
+        Update: {
+          created_at?: string
+          district?: string | null
+          email?: string | null
+          id?: string
+          license_number?: string | null
+          mandal?: string | null
+          phone?: string | null
+          seller_id?: string
+          shop_address?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          vendor_name?: string
+          village?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_details_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "public_sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_details_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendor_order_alerts: {
+        Row: {
+          created_at: string
+          customer_address: string | null
+          id: string
+          is_read: boolean
+          order_id: string
+          product_name: string
+          quantity: number
+          seller_id: string | null
+          status: string
+          total_amount: number
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_address?: string | null
+          id?: string
+          is_read?: boolean
+          order_id: string
+          product_name: string
+          quantity?: number
+          seller_id?: string | null
+          status?: string
+          total_amount?: number
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_address?: string | null
+          id?: string
+          is_read?: boolean
+          order_id?: string
+          product_name?: string
+          quantity?: number
+          seller_id?: string | null
+          status?: string
+          total_amount?: number
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_order_alerts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_order_alerts_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "public_sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_order_alerts_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "sellers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_order_alerts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_details"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wallet_transactions: {
         Row: {
