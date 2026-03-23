@@ -27,21 +27,19 @@ import { addToSearchHistory } from '@/hooks/useSearchHistory';
 interface ProductSectionProps {
   title: string;
   defaultOpen?: boolean;
-  bgColor: string;
-  borderColor: string;
   children: React.ReactNode;
 }
 
-const ProductSection = ({ title, defaultOpen = false, bgColor, borderColor, children }: ProductSectionProps) => {
+const ProductSection = ({ title, defaultOpen = false, children }: ProductSectionProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger className={`w-full flex items-center justify-between p-4 ${bgColor} ${borderColor} border rounded-lg hover:opacity-90 transition-all`}>
-        <span className="font-semibold text-foreground">{title}</span>
-        <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+      <CollapsibleTrigger className="w-full flex items-center justify-between p-4 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 dark:hover:bg-green-950/50 transition-all">
+        <span className="font-semibold text-green-800 dark:text-green-300">{title}</span>
+        <ChevronDown className={`h-5 w-5 text-green-600 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
       </CollapsibleTrigger>
-      <CollapsibleContent className={`${bgColor} ${borderColor} border border-t-0 rounded-b-lg px-4 pb-4 pt-2`}>
+      <CollapsibleContent className="bg-green-50/50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 border-t-0 rounded-b-lg px-4 pb-4 pt-2">
         {children}
       </CollapsibleContent>
     </Collapsible>
