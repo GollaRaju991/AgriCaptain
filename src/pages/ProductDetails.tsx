@@ -67,12 +67,10 @@ const ProductDetails = () => {
 
   // Reset state and scroll instantly when product changes (Flipkart-style instant land)
   useEffect(() => {
-    // Scroll instantly before paint — no visible animation
     document.documentElement.style.scrollBehavior = 'auto';
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-
     setSelectedImage(0);
     setQuantity(1);
     setSearchActive(false);
@@ -99,17 +97,13 @@ const ProductDetails = () => {
     }
   }, [id, isSellerProduct]);
 
-  // Find current product index for navigation
   const currentIndex = useMemo(() => products.findIndex(p => p.id === id), [id]);
   const prevProduct = currentIndex > 0 ? products[currentIndex - 1] : null;
   const nextProduct = currentIndex < products.length - 1 ? products[currentIndex + 1] : null;
 
-
-  // Check mockProducts first (Products page data), then fall back to generated products
   const foundMockProduct = isSellerProduct ? null : mockProducts.find(p => p.id === id);
   const foundProduct = isSellerProduct ? null : (foundMockProduct || products.find(p => p.id === id));
 
-  // Build product from seller DB data or static data
   const product = sellerProduct ? {
     id: id || '',
     name: sellerProduct.product_name,
@@ -175,47 +169,35 @@ const ProductDetails = () => {
     ]
   } : null;
 
-  // Get related products first, then unrelated - chaining system like Flipkart/Amazon
   const { relatedProducts, unrelatedProducts } = useMemo(() => {
     if (!product) return { relatedProducts: [], unrelatedProducts: [] };
     const currentId = product.id;
     const keywords = product.name.toLowerCase().split(' ').filter(w => w.length > 3);
-    
-    // Combine all product sources
     const allProducts = [...products, ...mockProducts.map(mp => ({
       ...mp,
       originalPrice: mp.originalPrice,
     }))];
-    
-    // Deduplicate by id
     const uniqueProducts = allProducts.filter((p, idx, arr) => 
       p.id !== currentId && arr.findIndex(x => x.id === p.id) === idx
     );
-    
     const related = uniqueProducts.filter(p => {
       const pName = p.name.toLowerCase();
       return keywords.some(kw => pName.includes(kw));
     });
-    
     const relatedIds = new Set(related.map(p => p.id));
     const unrelated = uniqueProducts.filter(p => !relatedIds.has(p.id));
-    
-    // Shuffle unrelated for variety
     const shuffled = [...unrelated].sort(() => Math.random() - 0.5);
-    
     return {
       relatedProducts: related.slice(0, 30),
       unrelatedProducts: shuffled.slice(0, 60),
     };
   }, [product?.id, product?.name]);
 
-  // All reviews (static + user submitted)
   const allReviews = useMemo(() => {
     const staticReviews = product?.reviewsList || [];
     return [...userReviews, ...staticReviews];
   }, [product?.reviewsList, userReviews]);
 
-  // Rating distribution
   const ratingDistribution = useMemo(() => {
     const total = allReviews.length || 1;
     const dist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -233,7 +215,6 @@ const ProductDetails = () => {
     setUserReviews(prev => [review, ...prev]);
   };
 
-  // If no product found at all, show not found
   if (!product && !loadingSeller) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
@@ -261,7 +242,6 @@ const ProductDetails = () => {
         category: product.category
       });
     }
-    
     toast({
       title: "Added to Cart",
       description: `${quantity} × ${product.name} added to your cart.`
@@ -291,13 +271,12 @@ const ProductDetails = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile top bar - Flipkart Style */}
+      {/* Mobile top bar */}
       <div className="lg:hidden sticky top-0 z-50 bg-white shadow-sm">
         <div className="flex items-center gap-2 px-2 py-2">
           <button onClick={() => { if (searchActive) { setSearchActive(false); setSearchQuery(''); } else if (window.history.length > 2) navigate(-1); else navigate('/'); }} className="p-1.5">
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
-          {/* Functional Flipkart-style search bar */}
           <div className="flex-1 relative">
             {searchActive ? (
               <div className="flex items-center gap-2 bg-gray-100 rounded-full px-3 py-2 border border-gray-200">
@@ -381,7 +360,7 @@ const ProductDetails = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-12">
-          {/* Product Images - Flipkart Style on Mobile */}
+          {/* Product Images */}
           <div>
             <div 
               className="relative cursor-zoom-in group bg-white"
@@ -393,7 +372,6 @@ const ProductDetails = () => {
                 className="w-full h-[350px] md:h-[420px] lg:h-96 object-contain bg-white p-4"
               />
               
-              {/* Wishlist & Share - floating on right side like Flipkart */}
               <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
                 <button
                   onClick={(e) => {
@@ -421,13 +399,11 @@ const ProductDetails = () => {
                 </button>
               </div>
 
-              {/* Zoom Hint - Desktop only */}
               <div className="hidden lg:flex absolute top-3 left-3 bg-black/50 text-white px-3 py-1.5 rounded-full text-sm items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                 <ZoomIn className="h-4 w-4" />
                 <span>Click to zoom</span>
               </div>
 
-              {/* Rating badge on image - Flipkart style */}
               <div className="absolute bottom-3 left-3 lg:hidden">
                 <div className="bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1 border border-gray-100">
                   <span className="font-bold text-sm text-foreground">{product.rating}</span>
@@ -436,7 +412,6 @@ const ProductDetails = () => {
                 </div>
               </div>
               
-              {/* Navigation Arrows */}
               {product.images.length > 1 && (
                 <>
                   <button
@@ -454,13 +429,11 @@ const ProductDetails = () => {
                 </>
               )}
               
-              {/* Image Counter */}
               <div className="absolute bottom-3 right-3 bg-black/50 text-white px-3 py-1 rounded-full text-xs">
                 {selectedImage + 1} / {product.images.length}
               </div>
             </div>
             
-            {/* Dot indicators on mobile - Flipkart style */}
             <div className="flex justify-center items-center gap-1.5 py-2 lg:hidden">
               {product.images.map((_, index) => (
                 <div
@@ -476,7 +449,6 @@ const ProductDetails = () => {
               ))}
             </div>
 
-            {/* Thumbnail Images - Desktop */}
             <div className="hidden lg:flex gap-3 overflow-x-auto pb-2 mt-4">
               {product.images.map((image, index) => (
                 <button
@@ -497,7 +469,6 @@ const ProductDetails = () => {
               ))}
             </div>
 
-            {/* Image Zoom Modal */}
             <ImageZoomModal
               isOpen={zoomModalOpen}
               onClose={() => setZoomModalOpen(false)}
@@ -508,7 +479,7 @@ const ProductDetails = () => {
             />
           </div>
 
-          {/* Product Info - Flipkart Style on Mobile */}
+          {/* Product Info */}
           <div className="px-4 lg:px-0">
             <div className="mb-3 lg:mb-4">
               <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-sm">
@@ -518,7 +489,6 @@ const ProductDetails = () => {
                 {translateProductName(product.name, language)}
               </h1>
               
-              {/* Rating - Desktop */}
               <div className="hidden lg:flex items-center mb-4">
                 <div className="flex items-center mr-4">
                   {[...Array(5)].map((_, i) => (
@@ -537,11 +507,10 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-              {/* Short Description - Desktop */}
               <p className="hidden lg:block text-base text-muted-foreground mb-4">{product.shortDescription}</p>
             </div>
 
-            {/* Price Section - Flipkart Style */}
+            {/* Price Section */}
             <div className="mb-4 lg:mb-6">
               <div className="flex items-baseline gap-2 mb-1">
                 <span className="text-2xl lg:text-4xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
@@ -559,7 +528,7 @@ const ProductDetails = () => {
               <p className="text-xs lg:text-sm text-muted-foreground">inclusive of all taxes</p>
             </div>
 
-            {/* Offers Section - Flipkart Style */}
+            {/* Offers Section */}
             <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
               <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -607,7 +576,7 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Delivery Info - Flipkart compact style on mobile */}
+            {/* Delivery Info */}
             <div className="flex flex-wrap gap-3 mb-4 lg:mb-6 py-3 border-y border-border lg:border-0 lg:p-4 lg:bg-green-50 lg:rounded-lg">
               <div className="flex items-center gap-1.5 text-xs lg:text-base">
                 <Truck className="h-4 w-4 lg:h-5 lg:w-5 text-green-600" />
@@ -623,7 +592,6 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Short description on mobile */}
             <div className="lg:hidden mb-4">
               <p className="text-sm text-muted-foreground leading-relaxed">{product.shortDescription}</p>
             </div>
@@ -633,19 +601,9 @@ const ProductDetails = () => {
               <div className="flex items-center space-x-4 mb-4">
                 <label className="text-base font-medium">{translations.quantity}:</label>
                 <div className="flex items-center border rounded">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3 py-1 hover:bg-muted"
-                  >
-                    -
-                  </button>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-1 hover:bg-muted">-</button>
                   <span className="px-4 py-1 border-x">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3 py-1 hover:bg-muted"
-                  >
-                    +
-                  </button>
+                  <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-1 hover:bg-muted">+</button>
                 </div>
               </div>
 
@@ -687,7 +645,6 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Share Dialog */}
             <ShareDialog
               isOpen={shareDialogOpen}
               onClose={() => setShareDialogOpen(false)}
@@ -697,12 +654,11 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        {/* Product Details - Only 3 Sections */}
+        {/* ===== ONLY 3 SECTIONS: Description, Vendor Details, Reviews ===== */}
         <div className="mt-4 lg:mt-12 px-4 lg:px-0 space-y-3">
-          {/* 1. Description Section - Expanded by default */}
+          {/* 1. Description - Expanded by default */}
           <ProductSection title={language === 'te' ? 'వివరణ' : 'Description'} defaultOpen={true}>
             <div className="prose max-w-none space-y-5">
-              {/* Product Overview */}
               <div>
                 <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
                   {language === 'te' ? '📋 ఉత్పత్తి అవలోకనం' : '📋 Product Overview'}
@@ -712,7 +668,6 @@ const ProductDetails = () => {
                 </p>
               </div>
 
-              {/* Usage (Why to Use) */}
               <div className="pt-3 border-t border-green-200 dark:border-green-700">
                 <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
                   {language === 'te' ? '🎯 ఉపయోగం (ఎందుకు వాడాలి)' : '🎯 Usage (Why to Use)'}
@@ -729,7 +684,6 @@ const ProductDetails = () => {
                 </p>
               </div>
 
-              {/* Applicable Crops */}
               <div className="pt-3 border-t border-green-200 dark:border-green-700">
                 <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
                   {language === 'te' ? '🌾 అనుకూల పంటలు' : '🌾 Applicable Crops'}
@@ -742,7 +696,6 @@ const ProductDetails = () => {
                 </p>
               </div>
 
-              {/* Dosage Details */}
               <div className="pt-3 border-t border-green-200 dark:border-green-700">
                 <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
                   {language === 'te' ? '💊 మోతాదు వివరాలు' : '💊 Dosage Details'}
@@ -875,244 +828,8 @@ const ProductDetails = () => {
             </div>
           </ProductSection>
         </div>
-            <div className="prose max-w-none">
-              <h4 className="text-base md:text-lg font-semibold mb-3 text-green-800 dark:text-green-300">Product Description</h4>
-              <div className="whitespace-pre-line text-muted-foreground leading-relaxed text-sm md:text-base">
-                {product.detailedDescription}
-              </div>
-              <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-700">
-                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">Usage Instructions</h4>
-                <p className="text-muted-foreground text-sm md:text-base">{product.usage}</p>
-              </div>
-            </div>
-          </ProductSection>
 
-          {/* Specifications Section */}
-          <ProductSection title="Specifications">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Product Specifications</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-              {Object.entries(product.specifications).map(([key, value]) => (
-                <div key={key} className="flex justify-between items-center border-b border-green-200 dark:border-green-700 pb-2">
-                  <span className="font-medium text-sm md:text-base text-green-900 dark:text-green-100">{key}:</span>
-                  <span className="text-muted-foreground text-sm md:text-base">{value}</span>
-                </div>
-              ))}
-            </div>
-          </ProductSection>
-
-          {/* Pest Control Details */}
-          <ProductSection title="Pest Control Details">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Pest Control Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm md:text-base text-green-900 dark:text-green-100">Target Pests:</span>
-                <p className="text-muted-foreground text-sm md:text-base mt-1">{sellerProduct?.target_pests || 'Aphids, Whiteflies, Stem Borer, Jassids'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm md:text-base text-green-900 dark:text-green-100">Suitable Crops:</span>
-                <p className="text-muted-foreground text-sm md:text-base mt-1">{sellerProduct?.suitable_crops || 'Cotton, Paddy, Vegetables, Chilli'}</p>
-              </div>
-            </div>
-          </ProductSection>
-
-          {/* Composition & Dosage */}
-          <ProductSection title="Composition & Dosage">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Active Ingredients & Usage</h4>
-            <div className="space-y-3">
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Composition:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.composition || 'As per label'}</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Dosage:</span>
-                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.dosage || '1 ml per liter of water'}</p>
-                </div>
-                <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Application Method:</span>
-                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.application_method || 'Spraying'}</p>
-                </div>
-                <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Frequency:</span>
-                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.frequency || 'As needed'}</p>
-                </div>
-              </div>
-            </div>
-          </ProductSection>
-
-          {/* Safety Information */}
-          <ProductSection title="Safety Information">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">⚠️ Safety Instructions</h4>
-            <div className="space-y-3">
-              <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-                <ul className="space-y-2 text-sm text-foreground">
-                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Wear gloves, mask, and protective clothing during application</li>
-                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Avoid contact with skin, eyes, and mouth</li>
-                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Keep away from children and animals</li>
-                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Do not eat, drink or smoke during application</li>
-                  <li className="flex items-start gap-2"><span className="text-yellow-600">•</span> Wash hands thoroughly after handling</li>
-                </ul>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Protective Equipment:</span>
-                  <p className="text-muted-foreground text-sm mt-1">Mask, Gloves, Protective Clothing</p>
-                </div>
-                <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                  <span className="font-medium text-sm text-green-900 dark:text-green-100">Waiting Period:</span>
-                  <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.waiting_period || '14 days before harvest'}</p>
-                </div>
-              </div>
-            </div>
-          </ProductSection>
-
-          {/* Agricultural Details */}
-          <ProductSection title="Agricultural Details">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Storage & Package</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Storage:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.storage_instructions || 'Store in a cool, dry place away from sunlight'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Shelf Life:</span>
-                <p className="text-muted-foreground text-sm mt-1">{product.specifications?.['Shelf Life'] || '2 years'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Package Size:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.package_size || sellerProduct?.unit_type || '1 unit'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Manufacturing Date:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.manufacturing_date || 'See label'}</p>
-              </div>
-            </div>
-          </ProductSection>
-
-          {/* Features Section */}
-          <ProductSection title="Features">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Key Features</h4>
-            <ul className="space-y-3">
-              {product.features.map((feature, index) => (
-                <li key={index} className="flex items-center space-x-3">
-                  <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
-                  <span className="text-sm md:text-base">{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </ProductSection>
-
-          {/* Vendor Details */}
-          <ProductSection title="Vendor Details">
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Seller / Vendor Information</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Vendor Name:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.brand || 'Agrizin Verified Seller'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">License Number:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.license_number || 'As per Insecticides Act 1968'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-2 md:col-span-2">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">Shop Address:</span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.shop_address || 'Contact seller for address details'}</p>
-              </div>
-            </div>
-          </ProductSection>
-
-          {/* Disclaimer */}
-          <ProductSection title="Disclaimer">
-            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <h4 className="text-base font-semibold mb-3 text-red-800 dark:text-red-300">⚠️ Important Disclaimer</h4>
-              <ul className="space-y-2 text-sm text-red-700 dark:text-red-400">
-                <li>• Use only as per label instructions.</li>
-                <li>• Seller is responsible for product quality and legal compliance.</li>
-                <li>• Platform (Agrizin) acts only as a marketplace and does not guarantee the efficacy of products.</li>
-                <li>• Verify the product's registration and license details before purchase.</li>
-                <li>• Follow all safety precautions mentioned on the product label.</li>
-              </ul>
-            </div>
-          </ProductSection>
-
-          {/* Reviews Section */}
-          <ProductSection title={`Reviews (${allReviews.length})`}>
-            {/* Review Form */}
-            <div className="mb-6">
-              <ProductReviewForm productId={product.id} onReviewSubmit={handleReviewSubmit} />
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-6 mb-6">
-              {/* Rating Summary */}
-              <div className="flex-shrink-0 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                  <span className="text-3xl md:text-4xl font-bold text-green-800 dark:text-green-300">{product.rating}</span>
-                  <Star className="h-6 w-6 md:h-8 md:w-8 fill-yellow-400 text-yellow-400" />
-                </div>
-                <p className="text-muted-foreground text-sm">{allReviews.length} Reviews</p>
-              </div>
-              
-              {/* Rating Distribution */}
-              <div className="flex-1 space-y-2">
-                {ratingDistribution.map(({ stars, count, percentage }) => (
-                  <div key={stars} className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground w-6">{stars}★</span>
-                    <div className="flex-1 h-2 bg-green-200 dark:bg-green-800 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-green-500 rounded-full transition-all"
-                        style={{ width: `${percentage}%` }}
-                      />
-                    </div>
-                    <span className="text-sm text-muted-foreground w-8">{count}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">Customer Reviews</h4>
-            <div className="space-y-4">
-              {allReviews.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">No reviews yet. Be the first to review!</p>
-              )}
-              {allReviews.map((review) => (
-                <div key={review.id} className="border-b border-green-200 dark:border-green-700 pb-4 last:border-b-0">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-full flex items-center justify-center">
-                        <span className="text-green-700 dark:text-green-300 font-medium text-sm">
-                          {review.name.charAt(0)}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">{review.name}</p>
-                        <p className="text-xs text-muted-foreground">{review.date}</p>
-                      </div>
-                    </div>
-                    <div className={`flex items-center px-2 py-0.5 rounded text-sm text-white ${
-                      review.rating >= 4 ? 'bg-green-600' : review.rating >= 3 ? 'bg-yellow-500' : 'bg-red-500'
-                    }`}>
-                      <span>{review.rating}</span>
-                      <Star className="h-3 w-3 fill-current ml-0.5" />
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground text-sm mb-3">{review.comment}</p>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <button className="flex items-center gap-1 hover:text-green-600 transition-colors">
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                      <span>Helpful ({review.helpful})</span>
-                    </button>
-                    <button className="flex items-center gap-1 hover:text-destructive transition-colors">
-                      <ThumbsDown className="h-3.5 w-3.5" />
-                      <span>({review.notHelpful})</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ProductSection>
-        </div>
-
-        {/* Related Products Section */}
+        {/* Related Products */}
         {relatedProducts.length > 0 && (
           <div className="mt-8 lg:mt-12 mb-4 px-4 lg:px-0">
             <h2 className="text-lg lg:text-2xl font-bold mb-4 lg:mb-6">Related Products</h2>
@@ -1124,7 +841,6 @@ const ProductDetails = () => {
           </div>
         )}
 
-        {/* More Products You May Like - Unrelated (Chaining) */}
         {unrelatedProducts.length > 0 && (
           <div className="mt-6 mb-8 px-4 lg:px-0">
             <h2 className="text-lg lg:text-2xl font-bold mb-4 lg:mb-6">More Products You May Like</h2>
@@ -1137,7 +853,7 @@ const ProductDetails = () => {
         )}
       </div>
       
-      {/* Mobile Sticky Bottom Bar - Flipkart Style */}
+      {/* Mobile Sticky Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border flex lg:hidden z-40 shadow-[0_-2px_10px_rgba(0,0,0,0.1)]">
         <button 
           onClick={handleAddToCart}
