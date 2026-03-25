@@ -10,7 +10,7 @@ import catSeedsIcon from '@/assets/cat-seeds-icon.png';
 
 import catAgriIcon from '@/assets/cat-agri-icon.png';
 import catBrandsIcon from '@/assets/cat-brands-icon.png';
-import catLoansIcon from '@/assets/cat-loans-icon.png';
+
 import catMarketIcon from '@/assets/cat-market-icon.png';
 import catFarmworkerIcon from '@/assets/cat-farmworker-icon.png';
 import catVehicleIcon from '@/assets/cat-vehicle-icon.png';
@@ -81,18 +81,6 @@ const Categories = () => {
         { name: 'Syngenta', path: '/products?brand=syngenta', image: catFlowerSeeds, accent: 'text-purple-500' },
         { name: 'UPL', path: '/products?brand=upl', image: catGrainSeeds, accent: 'text-amber-600' },
         { name: 'Tata Rallis', path: '/products?brand=tata-rallis', image: catVegetableSeeds, accent: 'text-red-500' },
-      ]
-    },
-    {
-      id: 'loans',
-      name: 'Loans',
-      sidebarIcon: catLoansIcon,
-      shopAllLabel: 'View All Loans',
-      subcategories: [
-        { name: 'Crop Loans', path: '/loans?type=crop', image: catGrainSeeds, accent: 'text-green-600' },
-        { name: 'Equipment Loans', path: '/loans?type=equipment', image: catVegetableSeeds, accent: 'text-blue-500' },
-        { name: 'Land Loans', path: '/loans?type=land', image: catFlowerSeeds, accent: 'text-amber-600' },
-        { name: 'Kisan Credit Card', path: '/loans?type=kcc', image: catFruitSeeds, accent: 'text-red-500' },
       ]
     },
     {
