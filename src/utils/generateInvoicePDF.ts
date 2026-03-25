@@ -98,12 +98,12 @@ export const generateInvoicePDF = (order: InvoiceOrder) => {
       (idx + 1).toString(),
       item.name || `Item ${idx + 1}`,
       qty.toString(),
-      `₹${price.toLocaleString()}`,
-      `₹${Math.round(price * 1.2).toLocaleString()}`,
-      `₹${(Math.round(price * 1.2) - price).toLocaleString()}`,
-      `₹${total.toLocaleString()}`,
-      `₹${itemCgst.toLocaleString()} (9%)`,
-      `₹${itemSgst.toLocaleString()} (9%)`
+      `Rs.${price.toLocaleString('en-IN')}`,
+      `Rs.${Math.round(price * 1.2).toLocaleString('en-IN')}`,
+      `Rs.${(Math.round(price * 1.2) - price).toLocaleString('en-IN')}`,
+      `Rs.${total.toLocaleString('en-IN')}`,
+      `Rs.${itemCgst.toLocaleString('en-IN')} (9%)`,
+      `Rs.${itemSgst.toLocaleString('en-IN')} (9%)`
     ];
   });
 
@@ -127,12 +127,12 @@ export const generateInvoicePDF = (order: InvoiceOrder) => {
   const summaryX = pageWidth - 80;
   doc.setFontSize(9);
   const summaryItems = [
-    ['Subtotal (MRP)', `₹${listingPrice.toLocaleString()}`],
-    ['Discount', `- ₹${discount.toLocaleString()}`],
-    ['Taxable Amount', `₹${taxableAmount.toLocaleString()}`],
-    ['CGST (9%)', `₹${cgst.toLocaleString()}`],
-    ['SGST (9%)', `₹${sgst.toLocaleString()}`],
-    ['Shipping', shipping === 0 ? 'FREE' : `₹${shipping}`],
+    ['Subtotal (MRP)', `Rs.${listingPrice.toLocaleString('en-IN')}`],
+    ['Discount', `- Rs.${discount.toLocaleString('en-IN')}`],
+    ['Taxable Amount', `Rs.${taxableAmount.toLocaleString('en-IN')}`],
+    ['CGST (9%)', `Rs.${cgst.toLocaleString('en-IN')}`],
+    ['SGST (9%)', `Rs.${sgst.toLocaleString('en-IN')}`],
+    ['Shipping', shipping === 0 ? 'FREE' : `Rs.${shipping}`],
   ];
 
   let sy = finalY;
@@ -151,7 +151,7 @@ export const generateInvoicePDF = (order: InvoiceOrder) => {
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.text('Grand Total', summaryX, sy);
-  doc.text(`₹${order.total_amount.toLocaleString()}`, pageWidth - 14, sy, { align: 'right' });
+  doc.text(`Rs.${order.total_amount.toLocaleString('en-IN')}`, pageWidth - 14, sy, { align: 'right' });
 
   // Footer disclaimer
   sy += 15;

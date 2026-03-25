@@ -436,12 +436,16 @@ const OrderDetails = () => {
   })();
 
   const paymentMethodLabel = (() => {
-    switch (order.payment_method) {
-      case 'cod': return 'Cash On Delivery';
-      case 'upi': return 'UPI';
-      case 'card': return 'Card Payment';
-      case 'netbanking': return 'Net Banking';
-      default: return order.payment_method?.toUpperCase() || 'Online';
+    const method = order.payment_method?.toLowerCase();
+    switch (method) {
+      case 'cod': 
+      case 'cash_on_delivery':
+      case 'cash on delivery':
+        return 'Cash on Delivery';
+      case 'upi': return 'Paid Online (UPI)';
+      case 'card': return 'Paid Online (Card)';
+      case 'netbanking': return 'Paid Online (Net Banking)';
+      default: return 'Paid Online';
     }
   })();
 
@@ -722,7 +726,7 @@ const OrderDetails = () => {
           </div>
 
           {/* Download Invoice - Mobile */}
-          <div className="px-4 pb-4">
+          <div className="px-4 pt-3 pb-4">
             <Button
               onClick={() => generateInvoicePDF(order)}
               className="w-full bg-green-600 hover:bg-green-700 text-white"
@@ -924,7 +928,7 @@ const OrderDetails = () => {
               </div>
 
               {/* Download Invoice - Desktop */}
-              <div className="bg-white rounded-lg shadow-sm p-5">
+              <div className="bg-white rounded-lg shadow-sm p-5 mt-4">
                 <Button
                   onClick={() => generateInvoicePDF(order)}
                   className="w-full bg-green-600 hover:bg-green-700 text-white"
