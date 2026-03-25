@@ -720,12 +720,8 @@ const OrderDetails = () => {
               {isCodOrder && (
                 <div className="space-y-1 pt-1">
                   <div className="flex justify-between text-xs">
-                    <span className="text-green-600">Advance Paid (Online)</span>
-                    <span className="text-green-600 font-medium">₹99</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
                     <span className="text-orange-600">Due on Delivery</span>
-                    <span className="text-orange-600 font-medium">₹{(order.total_amount - 99).toLocaleString()}</span>
+                    <span className="text-orange-600 font-medium">₹{order.total_amount.toLocaleString()}</span>
                   </div>
                 </div>
               )}
@@ -922,12 +918,8 @@ const OrderDetails = () => {
                   {isCodOrder && (
                     <div className="space-y-1.5 pt-1">
                       <div className="flex justify-between text-sm">
-                        <span className="text-green-600">Advance Paid (Online)</span>
-                        <span className="text-green-600 font-medium">₹99</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
                         <span className="text-orange-600">Due on Delivery</span>
-                        <span className="text-orange-600 font-medium">₹{(order.total_amount - 99).toLocaleString()}</span>
+                        <span className="text-orange-600 font-medium">₹{order.total_amount.toLocaleString()}</span>
                       </div>
                     </div>
                   )}
