@@ -5,7 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import catMarketIcon from '@/assets/cat-market-icon.png';
 import catFarmworkerIcon from '@/assets/cat-farmworker-icon.png';
 import catVehicleIcon from '@/assets/cat-vehicle-icon.png';
-import catLoansIcon from '@/assets/cat-loans-icon.png';
+
 import catDirectFarmIcon from '@/assets/direct-from-farm-hero.jpeg';
 import catSellCropIcon from '@/assets/sell-crop-hero.jpeg';
 
@@ -39,15 +39,6 @@ const ServicesSection = () => {
       ctaColor: 'bg-blue-500 text-white',
       borderColor: 'border-b-blue-500',
       path: '/vehicle-rent',
-    },
-    {
-      name: 'Loans',
-      description: 'Apply for agriculture loans',
-      icon: catLoansIcon,
-      cta: 'Apply Now →',
-      ctaColor: 'bg-orange-500 text-white',
-      borderColor: 'border-b-orange-500',
-      path: '/loans',
     },
   ];
 
