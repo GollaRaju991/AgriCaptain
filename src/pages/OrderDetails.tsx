@@ -5,12 +5,13 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeft, Package, Truck, CheckCircle, Clock, XCircle,
-  Loader2, RotateCcw, Copy, Home, User, Phone, ChevronRight, CreditCard, MessageCircle, MapPin, Calendar, IndianRupee, Banknote, CircleDollarSign, ShieldCheck
+  Loader2, RotateCcw, Copy, Home, User, Phone, ChevronRight, CreditCard, MessageCircle, MapPin, Calendar, IndianRupee, Banknote, CircleDollarSign, ShieldCheck, FileDown
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import useScrollToTop from '@/hooks/useScrollToTop';
+import { generateInvoicePDF } from '@/utils/generateInvoicePDF';
 import { toast } from 'sonner';
 import OrderTracking from '@/components/OrderTracking';
 import MobileBottomNav from '@/components/MobileBottomNav';
@@ -718,8 +719,19 @@ const OrderDetails = () => {
                   </div>
                 </div>
               )}
-            </div>
           </div>
+
+          {/* Download Invoice - Mobile */}
+          <div className="px-4 pb-4">
+            <Button
+              onClick={() => generateInvoicePDF(order)}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              <FileDown className="h-4 w-4 mr-2" />
+              Download Invoice
+            </Button>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -909,8 +921,19 @@ const OrderDetails = () => {
                       </div>
                     </div>
                   )}
-                </div>
               </div>
+
+              {/* Download Invoice - Desktop */}
+              <div className="bg-white rounded-lg shadow-sm p-5">
+                <Button
+                  onClick={() => generateInvoicePDF(order)}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Download Invoice
+                </Button>
+              </div>
+            </div>
             </div>
           </div>
         </div>
