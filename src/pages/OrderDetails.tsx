@@ -719,8 +719,19 @@ const OrderDetails = () => {
                   </div>
                 </div>
               )}
-            </div>
           </div>
+
+          {/* Download Invoice - Mobile */}
+          <div className="px-4 pb-4">
+            <Button
+              onClick={() => generateInvoicePDF(order)}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              <FileDown className="h-4 w-4 mr-2" />
+              Download Invoice
+            </Button>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -910,8 +921,19 @@ const OrderDetails = () => {
                       </div>
                     </div>
                   )}
-                </div>
               </div>
+
+              {/* Download Invoice - Desktop */}
+              <div className="bg-white rounded-lg shadow-sm p-5">
+                <Button
+                  onClick={() => generateInvoicePDF(order)}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <FileDown className="h-4 w-4 mr-2" />
+                  Download Invoice
+                </Button>
+              </div>
+            </div>
             </div>
           </div>
         </div>
