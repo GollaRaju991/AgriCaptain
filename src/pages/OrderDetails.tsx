@@ -435,18 +435,24 @@ const OrderDetails = () => {
     });
   })();
 
+  const normalizedPaymentMethod = (order.payment_method || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[\s_-]+/g, '');
+
+  // Legacy COD orders may have empty payment_method in DB; treat them as COD for display.
+  const isCodOrder =
+    normalizedPaymentMethod === '' ||
+    normalizedPaymentMethod === 'cod' ||
+    normalizedPaymentMethod === 'cashondelivery';
+
   const paymentMethodLabel = (() => {
-    const method = order.payment_method?.toLowerCase();
-    switch (method) {
-      case 'cod': 
-      case 'cash_on_delivery':
-      case 'cash on delivery':
-        return 'Cash on Delivery';
-      case 'upi': return 'Paid Online (UPI)';
-      case 'card': return 'Paid Online (Card)';
-      case 'netbanking': return 'Paid Online (Net Banking)';
-      default: return 'Paid Online';
-    }
+    if (isCodOrder) return 'Cash on Delivery';
+    if (normalizedPaymentMethod === 'upi' || normalizedPaymentMethod === 'upiid') return 'Paid Online (UPI)';
+    if (normalizedPaymentMethod === 'card' || normalizedPaymentMethod === 'creditcard' || normalizedPaymentMethod === 'debitcard') return 'Paid Online (Card)';
+    if (normalizedPaymentMethod === 'netbanking') return 'Paid Online (Net Banking)';
+    if (normalizedPaymentMethod === 'emi') return 'Paid Online (EMI)';
+    return 'Paid Online';
   })();
 
   // Need Help options based on status (mobile only)
@@ -711,7 +717,7 @@ const OrderDetails = () => {
                   <span className="text-gray-700 font-medium">{paymentMethodLabel}</span>
                 </div>
               </div>
-              {order.payment_method === 'cod' && (
+              {isCodOrder && (
                 <div className="space-y-1 pt-1">
                   <div className="flex justify-between text-xs">
                     <span className="text-green-600">Advance Paid (Online)</span>
@@ -913,7 +919,7 @@ const OrderDetails = () => {
                       <span className="text-gray-700 font-medium">{paymentMethodLabel}</span>
                     </div>
                   </div>
-                  {order.payment_method === 'cod' && (
+                  {isCodOrder && (
                     <div className="space-y-1.5 pt-1">
                       <div className="flex justify-between text-sm">
                         <span className="text-green-600">Advance Paid (Online)</span>
@@ -1033,10 +1039,10 @@ const OrderDetails = () => {
             <div className="flex items-center justify-between text-sm bg-gray-50 rounded-lg px-4 py-3">
               <span className="text-gray-500">Refund to</span>
               <span className="font-medium text-gray-800">
-                {order.payment_method === 'cod' ? 'Original Payment Method (UPI)' :
-                 order.payment_method === 'upi' ? 'Original UPI Account' :
-                 order.payment_method === 'card' ? 'Original Card' :
-                 order.payment_method === 'netbanking' ? 'Original Bank Account' : 'Original Payment Method'}
+                {isCodOrder ? 'Original Payment Method (UPI)' :
+                 normalizedPaymentMethod === 'upi' || normalizedPaymentMethod === 'upiid' ? 'Original UPI Account' :
+                 normalizedPaymentMethod === 'card' || normalizedPaymentMethod === 'creditcard' || normalizedPaymentMethod === 'debitcard' ? 'Original Card' :
+                 normalizedPaymentMethod === 'netbanking' ? 'Original Bank Account' : 'Original Payment Method'}
               </span>
             </div>
 
