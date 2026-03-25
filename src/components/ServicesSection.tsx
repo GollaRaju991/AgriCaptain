@@ -41,13 +41,6 @@ const ServicesSection = () => {
       path: '/vehicle-rent',
     },
     {
-      name: 'Loans',
-      description: 'Apply for agriculture loans',
-      icon: catLoansIcon,
-      cta: 'Apply Now →',
-      ctaColor: 'bg-orange-500 text-white',
-      borderColor: 'border-b-orange-500',
-      path: '/loans',
     },
   ];
 
