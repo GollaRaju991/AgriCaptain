@@ -142,9 +142,6 @@ const ProductDetails = () => {
     ...foundProduct,
     images: [
       foundProduct.image,
-      'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=600&h=400&fit=crop',
-      'https://images.unsplash.com/photo-1566909702770-bd3ec25f6b29?w=600&h=400&fit=crop'
     ],
     category: (foundProduct as any).category || 'seeds',
     shortDescription: foundProduct.description || 'Premium quality product for farming',
