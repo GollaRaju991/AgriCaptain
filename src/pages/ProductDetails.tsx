@@ -697,10 +697,184 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        {/* Product Details - Stacked Collapsible Sections */}
+        {/* Product Details - Only 3 Sections */}
         <div className="mt-4 lg:mt-12 px-4 lg:px-0 space-y-3">
-          {/* Description Section */}
-          <ProductSection title="Description" defaultOpen={true}>
+          {/* 1. Description Section - Expanded by default */}
+          <ProductSection title={language === 'te' ? 'వివరణ' : 'Description'} defaultOpen={true}>
+            <div className="prose max-w-none space-y-5">
+              {/* Product Overview */}
+              <div>
+                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                  {language === 'te' ? '📋 ఉత్పత్తి అవలోకనం' : '📋 Product Overview'}
+                </h4>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                  {translateDescription(product.detailedDescription || product.shortDescription, language)}
+                </p>
+              </div>
+
+              {/* Usage (Why to Use) */}
+              <div className="pt-3 border-t border-green-200 dark:border-green-700">
+                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                  {language === 'te' ? '🎯 ఉపయోగం (ఎందుకు వాడాలి)' : '🎯 Usage (Why to Use)'}
+                </h4>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                  {language === 'te' 
+                    ? (sellerProduct?.target_pests 
+                        ? `ఈ ఉత్పత్తి ${sellerProduct.target_pests} వంటి పురుగులను నియంత్రించడానికి ఉపయోగపడుతుంది.`
+                        : 'ఈ ఉత్పత్తి పంటలను పురుగులు మరియు వ్యాధుల నుండి రక్షించడానికి ఉపయోగపడుతుంది.')
+                    : (sellerProduct?.target_pests 
+                        ? `This product is used to control pests like ${sellerProduct.target_pests}. It provides effective protection for your crops.`
+                        : 'This product helps protect crops from pests and diseases, ensuring healthy growth and better yield.')
+                  }
+                </p>
+              </div>
+
+              {/* Applicable Crops */}
+              <div className="pt-3 border-t border-green-200 dark:border-green-700">
+                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                  {language === 'te' ? '🌾 అనుకూల పంటలు' : '🌾 Applicable Crops'}
+                </h4>
+                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                  {language === 'te'
+                    ? (sellerProduct?.suitable_crops || 'పత్తి, వరి, కూరగాయలు, మిర్చి, టమాటా')
+                    : (sellerProduct?.suitable_crops || 'Cotton, Paddy, Vegetables, Chilli, Tomato')
+                  }
+                </p>
+              </div>
+
+              {/* Dosage Details */}
+              <div className="pt-3 border-t border-green-200 dark:border-green-700">
+                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                  {language === 'te' ? '💊 మోతాదు వివరాలు' : '💊 Dosage Details'}
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold mt-0.5">•</span>
+                    <p className="text-muted-foreground text-sm md:text-base">
+                      <span className="font-medium text-foreground">{language === 'te' ? 'మోతాదు:' : 'Dosage:'}</span>{' '}
+                      {sellerProduct?.dosage || (language === 'te' ? 'లీటరు నీటికి 1 ml' : '1 ml per liter of water')}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold mt-0.5">•</span>
+                    <p className="text-muted-foreground text-sm md:text-base">
+                      <span className="font-medium text-foreground">{language === 'te' ? 'పద్ధతి:' : 'Method:'}</span>{' '}
+                      {sellerProduct?.application_method || (language === 'te' ? 'స్ప్రే చేయడం' : 'Spraying')}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-600 font-bold mt-0.5">•</span>
+                    <p className="text-muted-foreground text-sm md:text-base">
+                      <span className="font-medium text-foreground">{language === 'te' ? 'ఎకరాకు:' : 'Per Acre:'}</span>{' '}
+                      {sellerProduct?.package_size || (language === 'te' ? '200ml - 250ml' : '200ml - 250ml')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ProductSection>
+
+          {/* 2. Vendor Details - Collapsed by default */}
+          <ProductSection title={language === 'te' ? 'విక్రేత వివరాలు' : 'Vendor Details'} defaultOpen={false}>
+            <div className="space-y-3">
+              <div className="border-b border-green-200 dark:border-green-700 pb-3">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">
+                  {language === 'te' ? 'విక్రేత పేరు:' : 'Vendor Name:'}
+                </span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.brand || 'Agrizin Verified Seller'}</p>
+              </div>
+              <div className="border-b border-green-200 dark:border-green-700 pb-3">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">
+                  {language === 'te' ? 'దుకాణ చిరునామా:' : 'Vendor Address:'}
+                </span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.shop_address || (language === 'te' ? 'చిరునామా కోసం విక్రేతను సంప్రదించండి' : 'Contact seller for address details')}</p>
+              </div>
+              <div className="pb-1">
+                <span className="font-medium text-sm text-green-900 dark:text-green-100">
+                  {language === 'te' ? 'లైసెన్స్ నంబర్:' : 'License Number:'}
+                </span>
+                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.license_number || (language === 'te' ? 'కీటకనాశిని చట్టం 1968 ప్రకారం' : 'As per Insecticides Act 1968')}</p>
+              </div>
+            </div>
+          </ProductSection>
+
+          {/* 3. Reviews - Collapsed by default */}
+          <ProductSection title={language === 'te' ? `సమీక్షలు (${allReviews.length})` : `Reviews (${allReviews.length})`} defaultOpen={false}>
+            <div className="mb-6">
+              <ProductReviewForm productId={product.id} onReviewSubmit={handleReviewSubmit} />
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-6 mb-6">
+              <div className="flex-shrink-0 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
+                  <span className="text-3xl md:text-4xl font-bold text-green-800 dark:text-green-300">{product.rating}</span>
+                  <Star className="h-6 w-6 md:h-8 md:w-8 fill-yellow-400 text-yellow-400" />
+                </div>
+                <p className="text-muted-foreground text-sm">{allReviews.length} {language === 'te' ? 'సమీక్షలు' : 'Reviews'}</p>
+              </div>
+              
+              <div className="flex-1 space-y-2">
+                {ratingDistribution.map(({ stars, count, percentage }) => (
+                  <div key={stars} className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground w-6">{stars}★</span>
+                    <div className="flex-1 h-2 bg-green-200 dark:bg-green-800 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-green-500 rounded-full transition-all"
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <span className="text-sm text-muted-foreground w-8">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <h4 className="text-base md:text-lg font-semibold mb-4 text-green-800 dark:text-green-300">
+              {language === 'te' ? 'కస్టమర్ సమీక్షలు' : 'Customer Reviews'}
+            </h4>
+            <div className="space-y-4">
+              {allReviews.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  {language === 'te' ? 'ఇంకా సమీక్షలు లేవు. మొదటిగా సమీక్ష రాయండి!' : 'No reviews yet. Be the first to review!'}
+                </p>
+              )}
+              {allReviews.map((review) => (
+                <div key={review.id} className="border-b border-green-200 dark:border-green-700 pb-4 last:border-b-0">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-green-200 dark:bg-green-800 rounded-full flex items-center justify-center">
+                        <span className="text-green-700 dark:text-green-300 font-medium text-sm">
+                          {review.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-sm">{review.name}</p>
+                        <p className="text-xs text-muted-foreground">{review.date}</p>
+                      </div>
+                    </div>
+                    <div className={`flex items-center px-2 py-0.5 rounded text-sm text-white ${
+                      review.rating >= 4 ? 'bg-green-600' : review.rating >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}>
+                      <span>{review.rating}</span>
+                      <Star className="h-3 w-3 fill-current ml-0.5" />
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground text-sm mb-3">{review.comment}</p>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <button className="flex items-center gap-1 hover:text-green-600 transition-colors">
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                      <span>{language === 'te' ? 'ఉపయోగకరం' : 'Helpful'} ({review.helpful})</span>
+                    </button>
+                    <button className="flex items-center gap-1 hover:text-destructive transition-colors">
+                      <ThumbsDown className="h-3.5 w-3.5" />
+                      <span>({review.notHelpful})</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ProductSection>
+        </div>
             <div className="prose max-w-none">
               <h4 className="text-base md:text-lg font-semibold mb-3 text-green-800 dark:text-green-300">Product Description</h4>
               <div className="whitespace-pre-line text-muted-foreground leading-relaxed text-sm md:text-base">
