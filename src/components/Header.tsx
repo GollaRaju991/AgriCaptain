@@ -200,7 +200,15 @@ const Header = () => {
               >
                 <Link to="/" className="flex items-center gap-2 flex-shrink-0">
                   <img src={appLogo} alt="Agrizin" className="w-8 h-8 rounded-full" />
-                  <span className="text-xl font-bold text-white">Agrizin</span>
+                  <div className="flex flex-col leading-none">
+                    <span className="text-xl font-bold text-white">Agrizin</span>
+                    {headerTemp !== null && (
+                      <span className="text-[9px] text-white/80 font-medium flex items-center gap-0.5 mt-0.5">
+                        <Sun className="h-2.5 w-2.5 text-yellow-300" />
+                        {headerTemp}°C {headerCity && `· ${headerCity}`}
+                      </span>
+                    )}
+                  </div>
                 </Link>
 
                 <div className="flex items-center gap-2 ml-auto">
