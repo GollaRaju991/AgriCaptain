@@ -14,7 +14,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useToast } from '@/hooks/use-toast';
-import { products } from '@/data/products';
+import { products, type Variant, getDefaultVariant } from '@/data/products';
 import { mockProducts } from '@/data/mockProducts';
 import ProductCard from '@/components/ProductCard';
 import ShareDialog from '@/components/ShareDialog';
@@ -63,6 +63,7 @@ const ProductDetails = () => {
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Reset state and scroll instantly when product changes (Flipkart-style instant land)
@@ -77,6 +78,7 @@ const ProductDetails = () => {
     setSearchQuery('');
     setShowSuggestions(false);
     setUserReviews([]);
+    setSelectedVariantIndex(0);
   }, [id]);
 
   const isSellerProduct = id?.startsWith('sp-');
@@ -137,32 +139,43 @@ const ProductDetails = () => {
       `Unit: ${sellerProduct.unit_type}`,
       sellerProduct.delivery_available ? 'Delivery Available' : null,
     ].filter(Boolean),
+    variants: [{ variant: sellerProduct.unit_type || 'Standard', sku: id || '', price: sellerProduct.selling_price, originalPrice: sellerProduct.mrp_price, discount: sellerProduct.discount_percent || 0, inStock: sellerProduct.stock_quantity > 0 }] as Variant[],
     reviewsList: []
-  } : foundProduct ? {
-    ...foundProduct,
-    images: ((foundProduct as any).images || [foundProduct.image]).filter((img: string) => img && img.length > 0),
-    category: (foundProduct as any).category || 'seeds',
-    shortDescription: foundProduct.description || 'Premium quality product for farming',
-    detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
-    usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
-    specifications: {
-      'Product Type': ((foundProduct as any).category || 'Seeds').charAt(0).toUpperCase() + ((foundProduct as any).category || 'seeds').slice(1),
-      'Quality': 'Premium',
-      'Shelf Life': '2 years',
-      'Origin': 'India'
-    },
-    features: [
-      'High quality product',
-      'Suitable for all conditions',
-      'Professional packaging',
-      'Detailed instructions included'
-    ],
-    reviewsList: [
-      { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery.', helpful: 45, notHelpful: 2 },
-      { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
-      { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
-    ]
-  } : null;
+  } : foundProduct ? (() => {
+    const activeVariant = foundProduct.variants?.[selectedVariantIndex] || getDefaultVariant(foundProduct);
+    return {
+      ...foundProduct,
+      price: activeVariant.price,
+      originalPrice: activeVariant.originalPrice,
+      discount: activeVariant.discount,
+      inStock: activeVariant.inStock,
+      variant: activeVariant.variant,
+      sku: activeVariant.sku,
+      variants: foundProduct.variants || [],
+      images: ((foundProduct as any).images || [foundProduct.image]).filter((img: string) => img && img.length > 0),
+      category: (foundProduct as any).category || 'seeds',
+      shortDescription: foundProduct.description || 'Premium quality product for farming',
+      detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
+      usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
+      specifications: {
+        'Product Type': ((foundProduct as any).category || 'Seeds').charAt(0).toUpperCase() + ((foundProduct as any).category || 'seeds').slice(1),
+        'Quality': 'Premium',
+        'Shelf Life': '2 years',
+        'Origin': 'India'
+      },
+      features: [
+        'High quality product',
+        'Suitable for all conditions',
+        'Professional packaging',
+        'Detailed instructions included'
+      ],
+      reviewsList: [
+        { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery.', helpful: 45, notHelpful: 2 },
+        { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
+        { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
+      ]
+    };
+  })() : null;
 
   const { relatedProducts, unrelatedProducts } = useMemo(() => {
     if (!product) return { relatedProducts: [], unrelatedProducts: [] };
@@ -227,11 +240,14 @@ const ProductDetails = () => {
     );
   }
 
+  const activeVariant = product.variants?.[selectedVariantIndex] || product.variants?.[0];
+
   const handleAddToCart = () => {
+    const cartId = activeVariant ? `${product.id}-${activeVariant.sku}` : product.id;
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
-        name: product.name,
+        id: cartId,
+        name: `${product.name}${activeVariant ? ` (${activeVariant.variant})` : ''}`,
         price: product.price,
         image: product.images[0],
         category: product.category
@@ -239,7 +255,7 @@ const ProductDetails = () => {
     }
     toast({
       title: "Added to Cart",
-      description: `${quantity} × ${product.name} added to your cart.`
+      description: `${quantity} × ${product.name}${activeVariant ? ` (${activeVariant.variant})` : ''} added to your cart.`
     });
   };
 
@@ -252,10 +268,11 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
+    const cartId = activeVariant ? `${product.id}-${activeVariant.sku}` : product.id;
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
-        name: product.name,
+        id: cartId,
+        name: `${product.name}${activeVariant ? ` (${activeVariant.variant})` : ''}`,
         price: product.price,
         image: product.images[0],
         category: product.category
@@ -522,6 +539,39 @@ const ProductDetails = () => {
               </div>
               <p className="text-xs lg:text-sm text-muted-foreground">inclusive of all taxes</p>
             </div>
+
+            {/* Variant Selector */}
+            {product.variants && product.variants.length > 1 && (
+              <div className="mb-4 lg:mb-6">
+                <p className="text-sm font-medium text-foreground mb-2">
+                  {language === 'te' ? 'సైజ్ ఎంచుకోండి:' : 'Select Size:'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((v: Variant, idx: number) => (
+                    <button
+                      key={v.sku}
+                      onClick={() => setSelectedVariantIndex(idx)}
+                      className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                        selectedVariantIndex === idx
+                          ? 'border-green-600 bg-green-50 text-green-800'
+                          : v.inStock
+                            ? 'border-border bg-background text-foreground hover:border-green-400'
+                            : 'border-border bg-muted text-muted-foreground line-through opacity-60 cursor-not-allowed'
+                      }`}
+                      disabled={!v.inStock}
+                    >
+                      <span className="block">{v.variant}</span>
+                      <span className="block text-xs mt-0.5">₹{v.price.toLocaleString()}</span>
+                    </button>
+                  ))}
+                </div>
+                {!product.inStock && (
+                  <p className="text-sm text-destructive mt-2 font-medium">
+                    {language === 'te' ? 'ఈ సైజ్ అందుబాటులో లేదు' : 'This size is currently out of stock'}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Offers Section */}
             <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
