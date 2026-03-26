@@ -78,6 +78,7 @@ const ProductDetails = () => {
     setSearchQuery('');
     setShowSuggestions(false);
     setUserReviews([]);
+    setSelectedVariantIndex(0);
   }, [id]);
 
   const isSellerProduct = id?.startsWith('sp-');
