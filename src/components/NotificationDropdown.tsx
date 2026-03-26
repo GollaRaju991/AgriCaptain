@@ -55,6 +55,7 @@ const NotificationDropdown = ({ variant = 'desktop' }: { variant?: 'desktop' | '
   const handleNotificationClick = async (n: Notification) => {
     if (!n.is_read) {
       await supabase.from('notifications').update({ is_read: true }).eq('id', n.id);
+      setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, is_read: true } : item));
     }
     setOpen(false);
     if (n.action_url) navigate(n.action_url);
@@ -135,6 +136,9 @@ const NotificationDropdown = ({ variant = 'desktop' }: { variant?: 'desktop' | '
   return (
     <div className="relative" ref={dropdownRef}>
       {bellButton}
+      {open && variant === 'mobile' && (
+        <div className="fixed inset-0 bg-black/30 z-[9998]" onClick={() => setOpen(false)} />
+      )}
 
       {open && (
         <div className={`fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden ${
