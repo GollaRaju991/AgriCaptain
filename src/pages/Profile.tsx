@@ -232,35 +232,9 @@ const Profile = () => {
                 <ChevronRight className="h-5 w-5 text-muted-foreground" />
               </a>
 
-              <a href="#" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
-                <div className="flex items-center space-x-3">
-                  <ShieldCheck className="h-5 w-5 text-brand-green" />
-                  <span className="text-sm text-foreground">Privacy Center</span>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </a>
             </div>
           </div>
 
-          {/* Green divider */}
-          <div className="h-2 bg-brand-green/5"></div>
-
-          {/* Finance Options Section */}
-          <div className="bg-white">
-            <h3 className="px-4 pt-4 pb-2 text-base font-bold text-foreground">Finance Options</h3>
-            <div className="divide-y divide-gray-100">
-              <a href="/loans" className="flex items-center justify-between px-4 py-3.5 hover:bg-gray-50 active:bg-gray-100">
-                <div className="flex items-center space-x-3">
-                  <IndianRupee className="h-5 w-5 text-brand-green" />
-                  <div>
-                    <span className="text-sm font-medium text-foreground">Agricultural Loans</span>
-                    <p className="text-xs text-muted-foreground">Apply for farm loans & equipment finance</p>
-                  </div>
-                </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-              </a>
-            </div>
-          </div>
 
           {/* Green divider */}
           <div className="h-2 bg-brand-green/5"></div>
