@@ -15,11 +15,26 @@ import catMarketIcon from '@/assets/cat-market-icon.png';
 import catFarmworkerIcon from '@/assets/cat-farmworker-icon.png';
 import catVehicleIcon from '@/assets/cat-vehicle-icon.png';
 
-// Subcategory images
+// Subcategory images - Seeds
 import catVegetableSeeds from '@/assets/cat-vegetable-seeds.png';
 import catFruitSeeds from '@/assets/cat-fruit-seeds.png';
 import catFlowerSeeds from '@/assets/cat-flower-seeds.png';
 import catGrainSeeds from '@/assets/cat-grain-seeds.png';
+
+// Subcategory images - Agriculture
+import catPesticides from '@/assets/cat-pesticides.png';
+import catInsecticides from '@/assets/cat-insecticides.png';
+import catHerbicides from '@/assets/cat-herbicides.png';
+import catFungicides from '@/assets/cat-fungicides.png';
+import catSprayers from '@/assets/cat-sprayers.png';
+import catIrrigation from '@/assets/cat-irrigation.png';
+
+// Subcategory images - Brands
+import catBrandBasf from '@/assets/cat-brand-basf.png';
+import catBrandBayer from '@/assets/cat-brand-bayer.png';
+import catBrandSyngenta from '@/assets/cat-brand-syngenta.png';
+import catBrandUpl from '@/assets/cat-brand-upl.png';
+import catBrandTata from '@/assets/cat-brand-tata.png';
 
 interface SubCategory {
   name: string;
@@ -62,12 +77,12 @@ const Categories = () => {
       sidebarIcon: catAgriIcon,
       shopAllLabel: 'Shop All Products',
       subcategories: [
-        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', image: catVegetableSeeds, accent: 'text-red-500' },
-        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', image: catFruitSeeds, accent: 'text-orange-500' },
-        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', image: catFlowerSeeds, accent: 'text-green-600' },
-        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', image: catGrainSeeds, accent: 'text-amber-600' },
-        { name: 'Sprayers', path: '/products?category=agriculture&type=equipment', image: catVegetableSeeds, accent: 'text-blue-500' },
-        { name: 'Irrigation', path: '/products?category=agriculture&type=irrigation', image: catFlowerSeeds, accent: 'text-cyan-500' },
+        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', image: catPesticides, accent: 'text-red-500' },
+        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', image: catInsecticides, accent: 'text-orange-500' },
+        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', image: catHerbicides, accent: 'text-green-600' },
+        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', image: catFungicides, accent: 'text-amber-600' },
+        { name: 'Sprayers', path: '/products?category=agriculture&type=equipment', image: catSprayers, accent: 'text-blue-500' },
+        { name: 'Irrigation', path: '/products?category=agriculture&type=irrigation', image: catIrrigation, accent: 'text-cyan-500' },
       ]
     },
     {
@@ -76,11 +91,11 @@ const Categories = () => {
       sidebarIcon: catBrandsIcon,
       shopAllLabel: 'Shop All Brands',
       subcategories: [
-        { name: 'BASF', path: '/products?brand=basf', image: catVegetableSeeds, accent: 'text-blue-600' },
-        { name: 'Bayer', path: '/products?brand=bayer', image: catFruitSeeds, accent: 'text-green-600' },
-        { name: 'Syngenta', path: '/products?brand=syngenta', image: catFlowerSeeds, accent: 'text-purple-500' },
-        { name: 'UPL', path: '/products?brand=upl', image: catGrainSeeds, accent: 'text-amber-600' },
-        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', image: catVegetableSeeds, accent: 'text-red-500' },
+        { name: 'BASF', path: '/products?brand=basf', image: catBrandBasf, accent: 'text-blue-600' },
+        { name: 'Bayer', path: '/products?brand=bayer', image: catBrandBayer, accent: 'text-green-600' },
+        { name: 'Syngenta', path: '/products?brand=syngenta', image: catBrandSyngenta, accent: 'text-purple-500' },
+        { name: 'UPL', path: '/products?brand=upl', image: catBrandUpl, accent: 'text-amber-600' },
+        { name: 'Tata Rallis', path: '/products?brand=tata-rallis', image: catBrandTata, accent: 'text-red-500' },
       ]
     },
     {
