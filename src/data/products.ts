@@ -79,20 +79,20 @@ export const products: Product[] = [
   // ─── Seeds ───
   defineProduct({
     id: 'P101',
-    name: 'Hybrid Tomato Seeds',
-    brand: 'Seminis',
+    name: 'Saaho (TO-3251) Tomato Seeds | High Yield Hybrid Seed by Syngenta',
+    brand: 'Syngenta',
     category: 'seeds',
     image: 'https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102_fa8e4f1b-8208-424b-8580-c611341fcb08.webp?tr=c-at_max,w-400,h-300',
-    images: ['https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102_fa8e4f1b-8208-424b-8580-c611341fcb08.webp?tr=c-at_max,w-400,h-300', '', '', ''],
+    images: ['https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102_fa8e4f1b-8208-424b-8580-c611341fcb08.webp?tr=c-at_max,w-400,h-300', 'https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20103_56dd106d-6fd3-44af-b893-e94d62c50d48.webp', 'https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20104_b81f8c6b-f8f3-42bc-9295-789101668f23.webp'],
     rating: 4.5,
     reviews: 124,
     description: 'Premium quality hybrid tomato seeds for high-yield farming with excellent disease resistance',
     forUse: 'Vegetable farming and kitchen gardens',
     variants: [
-      { variant: '10g', sku: 'SEED-TOM-10G-001', price: 299, originalPrice: 399, discount: 25, inStock: true },
-      { variant: '50g', sku: 'SEED-TOM-50G-001', price: 1200, originalPrice: 1600, discount: 25, inStock: true },
-      { variant: '100g', sku: 'SEED-TOM-100G-001', price: 2200, originalPrice: 2900, discount: 24, inStock: true },
-      { variant: '500g', sku: 'SEED-TOM-500G-001', price: 9500, originalPrice: 12500, discount: 24, inStock: false },
+      { variant: '250g', sku: 'SEED-TOM-10G-001', price: 299, originalPrice: 399, discount: 25, inStock: true },
+      { variant: '500g', sku: 'SEED-TOM-50G-001', price: 1200, originalPrice: 1600, discount: 25, inStock: true },
+      { variant: '1kg', sku: 'SEED-TOM-100G-001', price: 2200, originalPrice: 2900, discount: 24, inStock: true },
+      { variant: '2kg', sku: 'SEED-TOM-500G-001', price: 9500, originalPrice: 12500, discount: 24, inStock: false },
     ],
   }),
   defineProduct({
