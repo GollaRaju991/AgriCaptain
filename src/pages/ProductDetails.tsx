@@ -540,48 +540,16 @@ const ProductDetails = () => {
               <p className="text-xs lg:text-sm text-muted-foreground">inclusive of all taxes</p>
             </div>
 
-            {/* Variant Selector */}
-            {product.variants && product.variants.length > 1 && (
-              <div className="mb-4 lg:mb-6">
-                <p className="text-sm font-medium text-foreground mb-2">
-                  {language === 'te' ? 'సైజ్ ఎంచుకోండి:' : 'Select Size:'}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {product.variants.map((v: Variant, idx: number) => (
-                    <button
-                      key={v.sku}
-                      onClick={() => setSelectedVariantIndex(idx)}
-                      className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
-                        selectedVariantIndex === idx
-                          ? 'border-green-600 bg-green-50 text-green-800'
-                          : v.inStock
-                            ? 'border-border bg-background text-foreground hover:border-green-400'
-                            : 'border-border bg-muted text-muted-foreground line-through opacity-60 cursor-not-allowed'
-                      }`}
-                      disabled={!v.inStock}
-                    >
-                      <span className="block">{v.variant}</span>
-                      <span className="block text-xs mt-0.5">₹{v.price.toLocaleString()}</span>
-                    </button>
-                  ))}
-                </div>
-                {!product.inStock && (
-                  <p className="text-sm text-destructive mt-2 font-medium">
-                    {language === 'te' ? 'ఈ సైజ్ అందుబాటులో లేదు' : 'This size is currently out of stock'}
-                  </p>
-                )}
-              </div>
-            )}
 
             {/* Offers Section */}
-            <div className="mb-4 lg:mb-6 border border-blue-200 rounded-lg overflow-hidden">
-              <div className="bg-blue-600 text-white px-4 py-2.5 flex items-center justify-between">
+            <div className="mb-4 lg:mb-6 border border-green-200 rounded-lg overflow-hidden">
+              <div className="bg-green-600 text-white px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Tag className="h-5 w-5" />
                   <span className="font-semibold text-sm lg:text-base">Available Offers</span>
                 </div>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-950/20 divide-y divide-blue-100 dark:divide-blue-900">
+              <div className="bg-green-50 dark:bg-green-950/20 divide-y divide-green-100 dark:divide-green-900">
                 <div className="px-4 py-3 flex items-start gap-3">
                   <Tag className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                   <div>
