@@ -351,23 +351,21 @@ const ProductDetails = () => {
       
       <div className="container mx-auto px-0 lg:px-4 py-0 lg:py-8 pb-32 md:pb-8">
         {/* Back Button & Breadcrumb - Desktop only */}
-        <div className="hidden lg:block mb-4 md:mb-6">
-          <Button 
-            variant="outline" 
-            size="sm" 
+        <div className="hidden lg:block mb-6">
+          <button 
             onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/products'); }}
-            className="flex items-center gap-1 text-sm mb-2"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 hover:bg-green-100 text-green-700 font-medium text-sm transition-all border border-green-200 hover:border-green-300 shadow-sm hover:shadow !min-h-0"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
-          </Button>
+          </button>
           
-          <nav className="flex text-sm text-muted-foreground">
-            <Link to="/" className="hover:text-primary">Home</Link>
+          <nav className="flex text-sm text-muted-foreground mt-3">
+            <Link to="/" className="hover:text-green-700 transition-colors">Home</Link>
             <span className="mx-2">/</span>
-            <Link to="/products" className="hover:text-primary">Products</Link>
+            <Link to="/products" className="hover:text-green-700 transition-colors">Products</Link>
             <span className="mx-2">/</span>
-            <span className="text-foreground truncate max-w-[200px] md:max-w-[300px]">{translateProductName(product.name, language)}</span>
+            <span className="text-foreground font-medium truncate max-w-[300px]">{translateProductName(product.name, language)}</span>
           </nav>
         </div>
 
@@ -375,7 +373,7 @@ const ProductDetails = () => {
           {/* Product Images */}
           <div>
             <div 
-              className="relative cursor-zoom-in group bg-white"
+              className="relative cursor-zoom-in group bg-white border border-gray-200 rounded-xl shadow-sm lg:shadow-md overflow-hidden"
               onClick={() => setZoomModalOpen(true)}
             >
               <img
@@ -492,26 +490,26 @@ const ProductDetails = () => {
 
             {/* Variant Selector - Below Images */}
             {product.variants && product.variants.length > 1 && (
-              <div className="px-4 lg:px-0 mt-4 mb-4">
-                <p className="text-sm font-medium text-foreground mb-2">
+              <div className="px-4 lg:px-0 mt-5 mb-4">
+                <p className="text-base font-semibold text-foreground mb-3">
                   {language === 'te' ? 'సైజ్ ఎంచుకోండి:' : 'Select Size:'}
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {product.variants.map((v: Variant, idx: number) => (
                     <button
                       key={v.sku}
                       onClick={() => setSelectedVariantIndex(idx)}
-                      className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                      className={`px-5 py-3 rounded-xl border-2 font-medium transition-all min-w-[80px] ${
                         selectedVariantIndex === idx
-                          ? 'border-green-600 bg-green-50 text-green-800'
+                          ? 'border-green-600 bg-green-50 text-green-800 shadow-sm'
                           : v.inStock
-                            ? 'border-border bg-background text-foreground hover:border-green-400'
-                            : 'border-border bg-muted text-muted-foreground line-through opacity-60 cursor-not-allowed'
+                            ? 'border-gray-200 bg-background text-foreground hover:border-green-400 hover:bg-green-50/50'
+                            : 'border-gray-200 bg-muted text-muted-foreground line-through opacity-60 cursor-not-allowed'
                       }`}
                       disabled={!v.inStock}
                     >
-                      <span className="block">{v.variant}</span>
-                      <span className="block text-xs mt-0.5">₹{v.price.toLocaleString()}</span>
+                      <span className="block text-base font-semibold">{v.variant}</span>
+                      <span className="block text-sm mt-1 text-green-700 font-medium">₹{v.price.toLocaleString()}</span>
                     </button>
                   ))}
                 </div>
@@ -530,7 +528,7 @@ const ProductDetails = () => {
               <Badge className="bg-green-100 text-green-800 mb-2 text-[10px] lg:text-sm">
                 {product.category.toUpperCase()}
               </Badge>
-              <h1 className="text-lg lg:text-4xl font-medium lg:font-bold text-foreground mb-1 lg:mb-3">
+              <h1 className="text-xl lg:text-4xl font-semibold lg:font-bold text-foreground mb-2 lg:mb-3 leading-snug">
                 {translateProductName(product.name, language)}
               </h1>
               
