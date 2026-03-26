@@ -82,8 +82,12 @@ export const products: Product[] = [
     name: 'Saaho (TO-3251) Tomato Seeds | High Yield Hybrid Seed by Syngenta',
     brand: 'Syngenta',
     category: 'seeds',
-    image: 'image: "https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102.webp?tr=w-800,q-auto,f-auto',
-    images: ['image: "https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102.webp?tr=w-800,q-auto,f-auto', 'https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20103_56dd106d-6fd3-44af-b893-e94d62c50d48.webp', 'https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20104_b81f8c6b-f8f3-42bc-9295-789101668f23.webp'],
+    image: "https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102.webp?tr=w-800,q-auto,f-auto",
+    images: [
+  "https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102.webp?tr=w-800,q-auto,f-auto",
+  "https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20103_56dd106d-6fd3-44af-b893-e94d62c50d48.webp?tr=w-800,q-auto,f-auto",
+  "https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20104_b81f8c6b-f8f3-42bc-9295-789101668f23.webp?tr=w-800,q-auto,f-auto"
+],
     rating: 4.5,
     reviews: 3,
     description: 'Premium quality hybrid tomato seeds for high-yield farming with excellent disease resistance',
@@ -130,15 +134,19 @@ export const products: Product[] = [
   }),
   defineProduct({
     id: 'P104',
-    name: 'Onion Seeds – Kalyani',
-    brand: 'Urja',
+    name: 'Syngenta Lucky Cauliflower Seeds – High Yield, Compact Dome Shaped Curd',
+    brand: 'Syngenta',
     category: 'seeds',
     image: 'https://ik.imagekit.io/wadwvg0en/urja-kalyani-onion-seeds-file-14323.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/urja-kalyani-onion-seeds-file-14323.webp', '', '', ''],
     rating: 4.4,
     reviews: 145,
-    description: 'Premium onion seeds with high germination rate and uniform bulb size',
-    forUse: 'Onion cultivation',
+    description: `Lucky Cauliflower is a temperate variety with strong vigor and blue-green foliage.
+    Produces white, compact, dome-shaped dense curds.
+    Excellent self-cover ensures superior curd quality.
+    Suitable for cool climate conditions.`,
+    forUse: 'Cauliflower cultivation',
+
     variants: [
       { variant: '500g', sku: 'SEED-ONI-500G-001', price: 480, originalPrice: 600, discount: 20, inStock: true },
       { variant: '1kg', sku: 'SEED-ONI-1KG-001', price: 900, originalPrice: 1100, discount: 18, inStock: true },
@@ -147,15 +155,26 @@ export const products: Product[] = [
   }),
   defineProduct({
     id: 'P105',
-    name: 'Rice Seeds – Basmati',
+    name: 'VNR 212 Brinjal Seeds - F1 Hybrid, High Yield & Premium Quality',
     brand: 'VNR Seeds',
     category: 'seeds',
-    image: 'https://i.postimg.cc/bv6gfQJF/rice-bag.png',
-    images: ['https://i.postimg.cc/bv6gfQJF/rice-bag.png', '', '', ''],
-    rating: 4.7,
-    reviews: 189,
-    description: 'Premium basmati rice seeds for aromatic long-grain rice cultivation',
-    forUse: 'Rice cultivation and paddy farming',
+   image: "https://ik.imagekit.io/nsi7x5p2x/212-f1-hybrid-brinjal-seeds-file-20043.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/212-f1-hybrid-brinjal-seeds-file-20043.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/vnr-212-brinjal-file-2782.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/212-f1-hybrid-brinjal-seeds-file-20045.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/212-f1-hybrid-brinjal-seeds-file-20044.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/212-f1-hybrid-brinjal-seeds-file-20043.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 3,
+  description: `High-yielding hybrid brinjal variety with dark violet oblong fruits.
+Early maturity with first harvest in 42–45 days.
+Suitable for all seasons and high productivity farming.`,
+  
+  forUse: 'Vegetable cultivation',
     variants: [
       { variant: '1kg', sku: 'SEED-RIC-1KG-001', price: 350, originalPrice: 420, discount: 17, inStock: true },
       { variant: '5kg', sku: 'SEED-RIC-5KG-001', price: 1200, originalPrice: 1450, discount: 17, inStock: true },
@@ -164,15 +183,23 @@ export const products: Product[] = [
   }),
   defineProduct({
     id: 'P106',
-    name: 'Wheat Seeds – Premium',
-    brand: 'Syngenta',
+    name: 'VNR 145 F1 Hybrid Chilli Seeds - High Yield, Early Maturity & Pungent',
+    brand: 'VNR',
     category: 'seeds',
-    image: 'https://i.postimg.cc/tgFv016K/Screenshot-2025-07-19-182830.png',
-    images: ['https://i.postimg.cc/tgFv016K/Screenshot-2025-07-19-182830.png', '', '', ''],
-    rating: 4.6,
-    reviews: 203,
-    description: 'High-yielding wheat seeds suitable for various soil types and weather conditions',
-    forUse: 'Commercial wheat farming',
+    image: "https://ik.imagekit.io/nsi7x5p2x/vnr-145-chilli-seeds-file-1961.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/vnr-145-chilli-seeds-file-1961.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.5,
+  reviews: 95,
+
+  description: `VNR-145 is a high-yielding F1 hybrid chilli variety with parrot green, smooth and glossy fruits.
+Fruits are 12–16 cm long with high pungency and strong plant vigor.
+Suitable for multiple climatic conditions with consistent productivity.`,
+
+  forUse: 'Chilli cultivation',
     variants: [
       { variant: '1kg', sku: 'SEED-WHT-1KG-001', price: 180, originalPrice: 220, discount: 18, inStock: true },
       { variant: '5kg', sku: 'SEED-WHT-5KG-001', price: 550, originalPrice: 680, discount: 19, inStock: true },
@@ -181,15 +208,24 @@ export const products: Product[] = [
   }),
   defineProduct({
     id: 'P107',
-    name: 'Sunflower Seeds – Premium',
-    brand: 'East-West Seed',
+    name: 'Indra Hybrid Capsicum Seeds - High Yield, Heat & Cold Set',
+    brand: 'Syngenta',
     category: 'seeds',
-    image: 'https://i.postimg.cc/zfptDsd7/Brafe.png',
-    images: ['https://i.postimg.cc/zfptDsd7/Brafe.png', '', '', ''],
-    rating: 4.5,
-    reviews: 145,
-    description: 'Premium sunflower seeds for oil production and ornamental purposes',
-    forUse: 'Oil production and ornamental farming',
+   image: "https://ik.imagekit.io/nsi7x5p2x/capsicum-syngenta-file-271.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/capsicum-syngenta-file-271.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/capsicum-syngenta-file-272.avif?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 85,
+
+  description: `High-yield hybrid capsicum variety with uniform green fruits.
+Strong plant vigor and adaptable to different climatic conditions.
+Suitable for open field and protected cultivation.`,
+
+  forUse: 'Capsicum cultivation',
     variants: [
       { variant: '500g', sku: 'SEED-SUN-500G-001', price: 250, originalPrice: 300, discount: 17, inStock: true },
       { variant: '1kg', sku: 'SEED-SUN-1KG-001', price: 420, originalPrice: 500, discount: 16, inStock: true },
@@ -198,107 +234,28 @@ export const products: Product[] = [
   }),
   defineProduct({
     id: 'P108',
-    name: 'Maize Seeds – Hybrid',
+    name: 'NS 3 F1 Hybrid Ridge Gourd Seeds – High Yield & Early Harvest Variety by Namdhari',
     brand: 'Namdhari Seeds',
     category: 'seeds',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/71dJiDl1rAL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/71dJiDl1rAL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.3,
-    reviews: 98,
-    description: 'High-yield hybrid maize seeds for all soil conditions',
-    forUse: 'Commercial maize farming',
+    image: "https://ik.imagekit.io/nsi7x5p2x/ns-3-file-1340.avif?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/ns-3-file-1340.avif?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.3,
+  reviews: 70,
+
+  description: `NS-3 is a high-yielding hybrid seed variety with strong plant vigor.
+Produces uniform fruits with good market demand.
+Suitable for multiple seasons and adaptable to Indian conditions.`,
+
+  forUse: 'Vegetable cultivation',
+
     variants: [
       { variant: '1kg', sku: 'SEED-MAZ-1KG-001', price: 250, originalPrice: 300, discount: 17, inStock: true },
       { variant: '4kg', sku: 'SEED-MAZ-4KG-001', price: 680, originalPrice: 820, discount: 17, inStock: true },
       { variant: '10kg', sku: 'SEED-MAZ-10KG-001', price: 1500, originalPrice: 1800, discount: 17, inStock: true },
-    ],
-  }),
-
-  // ─── Fertilizers ───
-  defineProduct({
-    id: 'P201',
-    name: 'Organic Compost Fertilizer',
-    brand: 'Multiplex',
-    category: 'fertilizers',
-    image: 'https://i.postimg.cc/gkwfS2MW/Compost.png',
-    images: ['https://i.postimg.cc/gkwfS2MW/Compost.png', '', '', ''],
-    rating: 4.8,
-    reviews: 89,
-    description: 'Organic compost fertilizer for sustainable farming and improved soil health',
-    forUse: 'All crops and soil improvement',
-    variants: [
-      { variant: '5kg', sku: 'FERT-COMP-5KG-001', price: 199, originalPrice: 280, discount: 29, inStock: true },
-      { variant: '10kg', sku: 'FERT-COMP-10KG-001', price: 350, originalPrice: 480, discount: 27, inStock: true },
-      { variant: '25kg', sku: 'FERT-COMP-25KG-001', price: 599, originalPrice: 799, discount: 25, inStock: true },
-      { variant: '50kg', sku: 'FERT-COMP-50KG-001', price: 999, originalPrice: 1350, discount: 26, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P202',
-    name: 'NPK Fertilizer Complex (20:20:20)',
-    brand: 'Katyayani',
-    category: 'fertilizers',
-    image: 'https://i.postimg.cc/BQHGZv2C/katyayani-npk-20-20-20-fertilizer-with-2-sample-mix-micronutrients-and-organic-humic-acid-file-10642.jpg',
-    images: ['https://i.postimg.cc/BQHGZv2C/katyayani-npk-20-20-20-fertilizer-with-2-sample-mix-micronutrients-and-organic-humic-acid-file-10642.jpg', '', '', ''],
-    rating: 4.7,
-    reviews: 156,
-    description: 'Balanced NPK fertilizer complex for complete plant nutrition and optimal growth',
-    forUse: 'All crops requiring balanced nutrition',
-    variants: [
-      { variant: '1kg', sku: 'FERT-NPK-1KG-001', price: 450, originalPrice: 550, discount: 18, inStock: true },
-      { variant: '5kg', sku: 'FERT-NPK-5KG-001', price: 1800, originalPrice: 2200, discount: 18, inStock: true },
-      { variant: '25kg', sku: 'FERT-NPK-25KG-001', price: 7500, originalPrice: 9200, discount: 18, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P204',
-    name: 'Urea Fertilizer',
-    brand: 'IFFCO',
-    category: 'fertilizers',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/61F+U3KPoyL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/61F+U3KPoyL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.6,
-    reviews: 340,
-    description: 'Nitrogen-rich fertilizer for crops – promotes vigorous growth',
-    forUse: 'All crops – top dressing',
-    variants: [
-      { variant: '5kg', sku: 'FERT-UREA-5KG-001', price: 180, originalPrice: 220, discount: 18, inStock: true },
-      { variant: '25kg', sku: 'FERT-UREA-25KG-001', price: 650, originalPrice: 780, discount: 17, inStock: true },
-      { variant: '50kg', sku: 'FERT-UREA-50KG-001', price: 1200, originalPrice: 1400, discount: 14, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P205',
-    name: 'Bio Fertilizer Mix',
-    brand: 'Dhanuka',
-    category: 'fertilizers',
-    image: 'https://i.postimg.cc/3RPsjMgh/antracol-file-659.jpg',
-    images: ['https://i.postimg.cc/3RPsjMgh/antracol-file-659.jpg', '', '', ''],
-    rating: 4.4,
-    reviews: 145,
-    description: 'Advanced bio-fertilizer blend for enhanced plant growth and soil enrichment',
-    forUse: 'Organic farming and soil enhancement',
-    variants: [
-      { variant: '500g', sku: 'FERT-BIO-500G-001', price: 450, originalPrice: 560, discount: 20, inStock: true },
-      { variant: '1kg', sku: 'FERT-BIO-1KG-001', price: 799, originalPrice: 999, discount: 20, inStock: true },
-      { variant: '5kg', sku: 'FERT-BIO-5KG-001', price: 3500, originalPrice: 4400, discount: 20, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P206',
-    name: 'Vermicompost Organic Manure',
-    brand: 'GreenEarth',
-    category: 'fertilizers',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/41NF5NVbZNL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/41NF5NVbZNL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.5,
-    reviews: 120,
-    description: '100% organic vermicompost for soil conditioning and plant nutrition',
-    forUse: 'All crops – organic farming',
-    variants: [
-      { variant: '5kg', sku: 'FERT-VERM-5KG-001', price: 199, originalPrice: 260, discount: 23, inStock: true },
-      { variant: '10kg', sku: 'FERT-VERM-10KG-001', price: 350, originalPrice: 450, discount: 22, inStock: true },
-      { variant: '25kg', sku: 'FERT-VERM-25KG-001', price: 750, originalPrice: 950, discount: 21, inStock: true },
     ],
   }),
 
