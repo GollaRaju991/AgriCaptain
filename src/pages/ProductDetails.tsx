@@ -268,10 +268,11 @@ const ProductDetails = () => {
   };
 
   const handleBuyNow = () => {
+    const cartId = activeVariant ? `${product.id}-${activeVariant.sku}` : product.id;
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
-        name: product.name,
+        id: cartId,
+        name: `${product.name}${activeVariant ? ` (${activeVariant.variant})` : ''}`,
         price: product.price,
         image: product.images[0],
         category: product.category
