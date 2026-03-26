@@ -26,6 +26,7 @@ import {
   Bell,
   ArrowLeft,
   ShoppingCart,
+  Sun,
 } from "lucide-react";
 import appLogo from "@/assets/app-logo.png";
 import catSeedsIcon from "@/assets/cat-seeds-icon.png";
