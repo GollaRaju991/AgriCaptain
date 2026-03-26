@@ -82,9 +82,8 @@ export const products: Product[] = [
     name: 'Saaho (TO-3251) Tomato Seeds | High Yield Hybrid Seed by Syngenta',
     brand: 'Syngenta',
     category: 'seeds',
-    image: "https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102.webp?tr=w-800,q-auto,f-auto",
+    image: "https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20104_b81f8c6b-f8f3-42bc-9295-789101668f23.webp?tr=w-800,q-auto,f-auto",
     images: [
-  "https://ik.imagekit.io/wadwvg0en/saaho-to-3251-tomato-seeds-file-20102.webp?tr=w-800,q-auto,f-auto",
   "https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20103_56dd106d-6fd3-44af-b893-e94d62c50d48.webp?tr=w-800,q-auto,f-auto",
   "https://ik.imagekit.io/nsi7x5p2x/saaho-to-3251-tomato-seeds-file-20104_b81f8c6b-f8f3-42bc-9295-789101668f23.webp?tr=w-800,q-auto,f-auto"
 ],
@@ -251,6 +250,63 @@ Produces uniform fruits with good market demand.
 Suitable for multiple seasons and adaptable to Indian conditions.`,
 
   forUse: 'Vegetable cultivation',
+
+    variants: [
+      { variant: '1kg', sku: 'SEED-MAZ-1KG-001', price: 250, originalPrice: 300, discount: 17, inStock: true },
+      { variant: '4kg', sku: 'SEED-MAZ-4KG-001', price: 680, originalPrice: 820, discount: 17, inStock: true },
+      { variant: '10kg', sku: 'SEED-MAZ-10KG-001', price: 1500, originalPrice: 1800, discount: 17, inStock: true },
+    ],
+  }),
+  defineProduct({
+    id: 'P109',
+    name: 'NS 3 F1 Hybrid Ridge Gourd Seeds – High Yield & Early Harvest Variety by Namdhari',
+    brand: 'Ashoka Seeds',
+    category: 'seeds',
+    image: "https://ik.imagekit.io/nsi7x5p2x/ashoka-beans-seeds-1-file-467.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/ashoka-beans-seeds-1-file-467.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/ashoka-beans-seeds-1-file-468.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/ashoka-beans-seeds-1-file-469.avif?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 110,
+
+  description: `High-yield hybrid beans variety with tender, stringless pods.
+Strong plant growth and excellent disease tolerance.
+Suitable for all-season cultivation with consistent productivity.`,
+
+  forUse: 'Beans cultivation',
+
+    variants: [
+      { variant: '1kg', sku: 'SEED-MAZ-1KG-001', price: 250, originalPrice: 300, discount: 17, inStock: true },
+      { variant: '4kg', sku: 'SEED-MAZ-4KG-001', price: 680, originalPrice: 820, discount: 17, inStock: true },
+      { variant: '10kg', sku: 'SEED-MAZ-10KG-001', price: 1500, originalPrice: 1800, discount: 17, inStock: true },
+    ],
+  }),
+  defineProduct({
+    id: 'P110',
+    name: 'NS 295 Watermelon Seeds - F1 Hybrid & High Quality',
+    brand: 'Namdhari Seeds',
+    category: 'seeds',
+    image: "https://ik.imagekit.io/nsi7x5p2x/ns-295-file-1265.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/ns-295-file-1265.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/ns-295-file-1266.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/ns-295-file-1267.avif?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.5,
+  reviews: 150,
+
+  description: `NS-295 is a high-yielding hybrid watermelon variety producing oval to oblong fruits with dark green stripes.
+Fruits have deep red flesh, excellent sweetness, and strong shelf life.
+Suitable for all seasons and performs well in Indian climatic conditions.`,
+
+  forUse: 'Watermelon cultivation',
+
 
     variants: [
       { variant: '1kg', sku: 'SEED-MAZ-1KG-001', price: 250, originalPrice: 300, discount: 17, inStock: true },
@@ -721,7 +777,7 @@ Suitable for multiple seasons and adaptable to Indian conditions.`,
     id: 'P605',
     name: 'Rose Plant – Grafted',
     brand: 'Ugaoo',
-    category: 'seeds',
+    category: 'equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/81auo7w93cL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/81auo7w93cL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.7,
@@ -737,7 +793,7 @@ Suitable for multiple seasons and adaptable to Indian conditions.`,
     id: 'P606',
     name: 'Tulsi Plant – Holy Basil',
     brand: 'Ugaoo',
-    category: 'seeds',
+    category: 'equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/61+u3uGpTWL._AC_SX416_CB1169409_QL70_.jpg',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/61+u3uGpTWL._AC_SX416_CB1169409_QL70_.jpg', '', '', ''],
     rating: 4.8,
