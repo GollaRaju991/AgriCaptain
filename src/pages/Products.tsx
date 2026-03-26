@@ -16,7 +16,8 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 
-import { mockProducts } from '@/data/mockProducts';
+import { products as allStaticProducts } from '@/data/products';
+import { removeDuplicates } from '@/data/products';
 
 const categories = ['seeds', 'tools', 'equipment', 'agriculture'];
 
@@ -68,7 +69,7 @@ const Products = () => {
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = [...mockProducts, ...sellerProducts];
+    let filtered = removeDuplicates([...allStaticProducts, ...sellerProducts]);
 
     if (searchQuery) {
       filtered = filtered.filter(product =>
