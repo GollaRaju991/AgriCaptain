@@ -370,16 +370,21 @@ const Scanner = () => {
           />
         ) : (
           <div className="relative">
-            {analyzing && <AnalyzingOverlay translations={translations} />}
-            {analysisResult ? (
+            {analyzing ? (
+              <div className="flex flex-col items-center justify-center py-32">
+                <Loader2 className="h-10 w-10 text-green-500 animate-spin mb-3" />
+                <p className="text-sm font-medium text-gray-700">{translations.scanner_analyzing}</p>
+                <p className="text-xs text-gray-400 mt-1">{translations.scanner_analyzing_wait}</p>
+              </div>
+            ) : analysisResult ? (
               <ResultCard result={analysisResult} capturedImage={capturedImage} onRetake={retake} translations={translations} />
-            ) : !analyzing ? (
+            ) : (
               <div className="p-4 text-center text-gray-500 text-sm">{translations.scanner_processing}</div>
-            ) : null}
+            )}
           </div>
         )}
 
-        {capturedImage && (
+        {capturedImage && !analyzing && (
           <div className="px-3 pb-4 flex gap-2 max-w-sm mx-auto">
             <Button onClick={retake} className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 font-semibold">
               <Camera className="h-4 w-4 mr-2" /> {translations.scanner_scan_again}
