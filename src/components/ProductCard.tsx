@@ -12,6 +12,8 @@ import { translateProductName } from '@/data/translations';
 interface Product {
   id: string;
   name: string;
+  variant?: string;
+  sku?: string;
   price: number;
   originalPrice?: number;
   image: string;
@@ -91,8 +93,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
 
             <div className="flex-1 flex flex-col min-w-0">
               <div className="flex justify-between items-start">
-                <h3 className="font-medium text-sm text-gray-900 line-clamp-2 pr-2">
+          <h3 className="font-medium text-sm text-gray-900 line-clamp-2 pr-2">
                   {translatedName}
+                  {product.variant && <span className="text-xs text-gray-500 ml-1">({product.variant})</span>}
                 </h3>
                 <button className="text-gray-400 hover:text-red-500 flex-shrink-0">
                   <Heart className="h-5 w-5" />
@@ -177,6 +180,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
         <CardContent className="p-2 md:p-2.5 flex-1 flex flex-col">
           <h3 className="font-medium text-xs md:text-sm text-gray-900 mb-1 line-clamp-2 leading-tight">
             {translatedName}
+            {product.variant && <span className="text-[10px] md:text-xs text-gray-500 block">{product.variant}</span>}
           </h3>
           
           {product.rating && (
