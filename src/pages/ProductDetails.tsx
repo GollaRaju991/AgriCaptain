@@ -139,6 +139,7 @@ const ProductDetails = () => {
       `Unit: ${sellerProduct.unit_type}`,
       sellerProduct.delivery_available ? 'Delivery Available' : null,
     ].filter(Boolean),
+    variants: [{ variant: sellerProduct.unit_type || 'Standard', sku: id || '', price: sellerProduct.selling_price, originalPrice: sellerProduct.mrp_price, discount: sellerProduct.discount_percent || 0, inStock: sellerProduct.stock_quantity > 0 }] as Variant[],
     reviewsList: []
   } : foundProduct ? (() => {
     const activeVariant = foundProduct.variants?.[selectedVariantIndex] || getDefaultVariant(foundProduct);
