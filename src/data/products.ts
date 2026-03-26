@@ -367,11 +367,6 @@ It penetrates through leaves and destroys weeds from roots, ensuring long-lastin
 
   forUse: 'Weed control in agricultural fields, orchards, and bund areas',
 
-  usage: 'Spray directly on actively growing weeds',
-
-  crops: 'Cotton, Sugarcane, Paddy, Vegetables',
-
-  dosage: '1-2 ml per liter of water | 200-300 ml per acre',
     variants: [
       { variant: '500ml', sku: 'PEST-GLY-500ML-001', price: 350, originalPrice: 420, discount: 17, inStock: true },
       { variant: '1L', sku: 'PEST-GLY-1L-001', price: 620, originalPrice: 750, discount: 17, inStock: true },
@@ -402,11 +397,6 @@ It provides long-lasting protection and improves crop yield with minimal environ
 
   forUse: 'Control of lepidopteran pests in crops',
 
-  usage: 'Spray evenly on affected crop areas',
-
-  crops: 'Rice, Cotton, Vegetables, Chilli, Tomato',
-
-  dosage: '0.3 ml per liter of water | 60 ml per acre',
     variants: [
       { variant: '100ml', sku: 'PEST-TEB-100ML-001', price: 280, originalPrice: 340, discount: 18, inStock: true },
       { variant: '250ml', sku: 'PEST-TEB-250ML-001', price: 580, originalPrice: 700, discount: 17, inStock: true },
