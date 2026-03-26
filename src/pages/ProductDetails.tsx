@@ -140,9 +140,7 @@ const ProductDetails = () => {
     reviewsList: []
   } : foundProduct ? {
     ...foundProduct,
-    images: [
-      foundProduct.image,
-    ],
+    images: ((foundProduct as any).images || [foundProduct.image]).filter((img: string) => img && img.length > 0),
     category: (foundProduct as any).category || 'seeds',
     shortDescription: foundProduct.description || 'Premium quality product for farming',
     detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
