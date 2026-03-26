@@ -125,28 +125,64 @@ const AnalyzingOverlay = ({ translations }: { translations: any }) => (
   </div>
 );
 
-const ResultCard = ({ result, capturedImage, translations }: { result: string; capturedImage: string; translations: any }) => {
-  const lines = result.split('\n').filter(l => l.trim());
+const ResultCard = ({ result, capturedImage, onRetake, translations }: { result: string; capturedImage: string; onRetake: () => void; translations: any }) => {
+  const isNotPlant = result.includes('**NOT_A_PLANT**');
+  const isUnclear = result.includes('**UNCLEAR_IMAGE**');
+  const isPlantDisease = result.includes('**IS_PLANT_DISEASE**');
+
+  // Clean the marker tags from display text
+  const cleanResult = result
+    .replace('**NOT_A_PLANT**', '')
+    .replace('**UNCLEAR_IMAGE**', '')
+    .replace('**IS_PLANT_DISEASE**', '')
+    .trim();
+
+  const lines = cleanResult.split('\n').filter(l => l.trim());
+
+  // Find matching products from our catalog based on AI recommendations
+  const getMatchingProducts = () => {
+    if (isNotPlant || isUnclear) return [];
+    const lowerResult = result.toLowerCase();
+    // Only show pesticide category products that match keywords in the analysis
+    const pesticides = products.filter(p => p.category?.toLowerCase() === 'pesticides');
+    const matched = pesticides.filter(p => {
+      const nameWords = p.name.toLowerCase().split(/[\s\-–]+/);
+      return nameWords.some(word => word.length > 3 && lowerResult.includes(word));
+    });
+    return matched.slice(0, 3);
+  };
+
+  const matchingProducts = getMatchingProducts();
 
   return (
     <div className="px-3 py-4 space-y-3 animate-fade-in">
       {/* Captured image */}
       <div className="relative rounded-2xl overflow-hidden max-w-sm mx-auto shadow-lg">
         <img src={capturedImage} alt="Scanned crop" className="w-full max-h-48 object-cover" />
-        <div className="absolute top-2 left-2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-          <CheckCircle2 className="w-3 h-3" /> {translations.scanner_scan_complete}
+        <div className={`absolute top-2 left-2 ${isNotPlant || isUnclear ? 'bg-orange-500' : 'bg-green-600'} text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1`}>
+          {isNotPlant || isUnclear ? (
+            <><AlertTriangle className="w-3 h-3" /> {isNotPlant ? translations.scanner_not_plant || 'Not a Plant' : translations.scanner_unclear || 'Unclear Image'}</>
+          ) : (
+            <><CheckCircle2 className="w-3 h-3" /> {translations.scanner_scan_complete}</>
+          )}
         </div>
       </div>
 
-      {/* Disease Analysis Report */}
+      {/* Analysis Report */}
       <Card className="max-w-sm mx-auto border-green-200 shadow-md rounded-2xl overflow-hidden">
-        <div className="bg-gradient-to-r from-green-600 to-emerald-500 px-4 py-2.5 flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-white" />
+        <div className={`bg-gradient-to-r ${isNotPlant || isUnclear ? 'from-orange-500 to-amber-500' : 'from-green-600 to-emerald-500'} px-4 py-2.5 flex items-center gap-2`}>
+          {isNotPlant || isUnclear ? (
+            <AlertTriangle className="h-4 w-4 text-white" />
+          ) : (
+            <ShieldCheck className="h-4 w-4 text-white" />
+          )}
           <h2 className="text-sm font-bold text-white">{translations.scanner_disease_report}</h2>
         </div>
         <CardContent className="p-4">
           <div className="text-sm text-gray-700 leading-relaxed space-y-1">
             {lines.map((line, i) => {
+              // Skip lines that mention "Recommended Products: NONE"
+              if (line.toLowerCase().includes('recommended products') && line.toLowerCase().includes('none')) return null;
               const parts = line.split(/(\*\*.*?\*\*)/g).map((part, j) => {
                 if (part.startsWith('**') && part.endsWith('**')) {
                   return <strong key={j} className="text-green-700">{part.slice(2, -2)}</strong>;
@@ -159,42 +195,52 @@ const ResultCard = ({ result, capturedImage, translations }: { result: string; c
         </CardContent>
       </Card>
 
-      {/* Recommended Products */}
-      <div className="max-w-sm mx-auto">
-        <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1.5">
-          <ShoppingCart className="h-4 w-4 text-green-600" />
-          {translations.scanner_recommended_products}
-        </h3>
-        <div className="grid grid-cols-3 gap-2">
-          {products.slice(0, 3).map((product) => (
-            <Link key={product.id} to={`/product/${product.id}`}>
-              <Card className="rounded-xl overflow-hidden border-green-100 hover:shadow-md transition-shadow">
-                <img src={product.image} alt={product.name} className="w-full h-20 object-cover" />
-                <div className="p-2">
-                  <p className="text-[10px] font-semibold text-gray-800 line-clamp-2 leading-tight">{product.name}</p>
-                  <p className="text-[11px] font-bold text-green-700 mt-0.5">₹{product.price}</p>
-                </div>
-              </Card>
-            </Link>
-          ))}
+      {/* Recommended Products - only show if plant disease detected AND matching products found */}
+      {isPlantDisease && matchingProducts.length > 0 && (
+        <div className="max-w-sm mx-auto">
+          <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1.5">
+            <ShoppingCart className="h-4 w-4 text-green-600" />
+            {translations.scanner_recommended_products}
+          </h3>
+          <div className="grid grid-cols-3 gap-2">
+            {matchingProducts.map((product) => (
+              <Link key={product.id} to={`/product/${product.id}`}>
+                <Card className="rounded-xl overflow-hidden border-green-100 hover:shadow-md transition-shadow">
+                  <img src={product.image} alt={product.name} className="w-full h-20 object-cover" />
+                  <div className="p-2">
+                    <p className="text-[10px] font-semibold text-gray-800 line-clamp-2 leading-tight">{product.name}</p>
+                    <p className="text-[11px] font-bold text-green-700 mt-0.5">₹{product.price}</p>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Action Buttons */}
-      <div className="max-w-sm mx-auto flex gap-2">
-        <Link to="/scanner" className="flex-1">
-          <Button className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-semibold">
-            <Stethoscope className="h-3.5 w-3.5 mr-1.5" />
-            {translations.scanner_consult_doctor}
+      {/* Action Buttons - show scan again prominently for not-plant/unclear */}
+      {(isNotPlant || isUnclear) ? (
+        <div className="max-w-sm mx-auto">
+          <Button onClick={onRetake} className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-11 font-semibold">
+            <Camera className="h-4 w-4 mr-2" /> {translations.scanner_scan_again}
           </Button>
-        </Link>
-        <Link to="/products" className="flex-1">
-          <Button variant="outline" className="w-full border-green-300 text-green-700 hover:bg-green-50 rounded-xl h-10 text-xs font-semibold">
-            <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-            {translations.scanner_buy_product}
-          </Button>
-        </Link>
-      </div>
+        </div>
+      ) : (
+        <div className="max-w-sm mx-auto flex gap-2">
+          <Link to="/scanner" className="flex-1">
+            <Button className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-semibold">
+              <Stethoscope className="h-3.5 w-3.5 mr-1.5" />
+              {translations.scanner_consult_doctor}
+            </Button>
+          </Link>
+          <Link to="/products" className="flex-1">
+            <Button variant="outline" className="w-full border-green-300 text-green-700 hover:bg-green-50 rounded-xl h-10 text-xs font-semibold">
+              <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
+              {translations.scanner_buy_product}
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };
@@ -326,7 +372,7 @@ const Scanner = () => {
           <div className="relative">
             {analyzing && <AnalyzingOverlay translations={translations} />}
             {analysisResult ? (
-              <ResultCard result={analysisResult} capturedImage={capturedImage} translations={translations} />
+              <ResultCard result={analysisResult} capturedImage={capturedImage} onRetake={retake} translations={translations} />
             ) : !analyzing ? (
               <div className="p-4 text-center text-gray-500 text-sm">{translations.scanner_processing}</div>
             ) : null}
