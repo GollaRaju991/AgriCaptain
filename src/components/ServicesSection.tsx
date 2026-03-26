@@ -61,7 +61,7 @@ const ServicesSection = () => {
     <section className="py-4 md:py-6 bg-background">
       <div className="w-full px-3 md:px-4">
         {/* Mobile: 2x2 grid of services only */}
-        <div className="grid grid-cols-2 gap-3 md:hidden">
+        <div className="grid grid-cols-3 gap-2 md:hidden">
           {services.map((service, index) => (
             <Link key={index} to={service.path}>
               <div
