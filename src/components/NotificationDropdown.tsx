@@ -55,6 +55,7 @@ const NotificationDropdown = ({ variant = 'desktop' }: { variant?: 'desktop' | '
   const handleNotificationClick = async (n: Notification) => {
     if (!n.is_read) {
       await supabase.from('notifications').update({ is_read: true }).eq('id', n.id);
+      setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, is_read: true } : item));
     }
     setOpen(false);
     if (n.action_url) navigate(n.action_url);
@@ -135,12 +136,15 @@ const NotificationDropdown = ({ variant = 'desktop' }: { variant?: 'desktop' | '
   return (
     <div className="relative" ref={dropdownRef}>
       {bellButton}
+      {open && variant === 'mobile' && (
+        <div className="fixed inset-0 bg-black/30 z-[9998]" onClick={() => setOpen(false)} />
+      )}
 
       {open && (
-        <div className={`absolute z-[100] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden ${
+        <div className={`fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden ${
           variant === 'mobile'
-            ? 'right-0 top-12 w-[calc(100vw-24px)] max-w-[380px]'
-            : 'right-0 top-14 w-[400px]'
+            ? 'left-3 right-3 top-[120px] max-w-[400px] mx-auto'
+            : 'absolute right-0 top-14 w-[400px]'
         }`}>
           {/* Header with View All */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
