@@ -63,6 +63,7 @@ const ProductDetails = () => {
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Reset state and scroll instantly when product changes (Flipkart-style instant land)
