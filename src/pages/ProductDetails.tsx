@@ -712,62 +712,66 @@ const ProductDetails = () => {
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-green-200 dark:border-green-700">
-                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
-                  {language === 'te' ? '🎯 ఉపయోగం (ఎందుకు వాడాలి)' : '🎯 Usage (Why to Use)'}
-                </h4>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                  {language === 'te' 
-                    ? (sellerProduct?.target_pests 
-                        ? `ఈ ఉత్పత్తి ${sellerProduct.target_pests} వంటి పురుగులను నియంత్రించడానికి ఉపయోగపడుతుంది.`
-                        : 'ఈ ఉత్పత్తి పంటలను పురుగులు మరియు వ్యాధుల నుండి రక్షించడానికి ఉపయోగపడుతుంది.')
-                    : (sellerProduct?.target_pests 
-                        ? `This product is used to control pests like ${sellerProduct.target_pests}. It provides effective protection for your crops.`
-                        : 'This product helps protect crops from pests and diseases, ensuring healthy growth and better yield.')
-                  }
-                </p>
-              </div>
+              {product.category?.toLowerCase() === 'pesticides' && (
+                <>
+                  <div className="pt-3 border-t border-green-200 dark:border-green-700">
+                    <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                      {language === 'te' ? '🎯 ఉపయోగం (ఎందుకు వాడాలి)' : '🎯 Usage (Why to Use)'}
+                    </h4>
+                    <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                      {language === 'te' 
+                        ? (sellerProduct?.target_pests 
+                            ? `ఈ ఉత్పత్తి ${sellerProduct.target_pests} వంటి పురుగులను నియంత్రించడానికి ఉపయోగపడుతుంది.`
+                            : 'ఈ ఉత్పత్తి పంటలను పురుగులు మరియు వ్యాధుల నుండి రక్షించడానికి ఉపయోగపడుతుంది.')
+                        : (sellerProduct?.target_pests 
+                            ? `This product is used to control pests like ${sellerProduct.target_pests}. It provides effective protection for your crops.`
+                            : 'This product helps protect crops from pests and diseases, ensuring healthy growth and better yield.')
+                      }
+                    </p>
+                  </div>
 
-              <div className="pt-3 border-t border-green-200 dark:border-green-700">
-                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
-                  {language === 'te' ? '🌾 అనుకూల పంటలు' : '🌾 Applicable Crops'}
-                </h4>
-                <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-                  {language === 'te'
-                    ? (sellerProduct?.suitable_crops || 'పత్తి, వరి, కూరగాయలు, మిర్చి, టమాటా')
-                    : (sellerProduct?.suitable_crops || 'Cotton, Paddy, Vegetables, Chilli, Tomato')
-                  }
-                </p>
-              </div>
+                  <div className="pt-3 border-t border-green-200 dark:border-green-700">
+                    <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                      {language === 'te' ? '🌾 అనుకూల పంటలు' : '🌾 Applicable Crops'}
+                    </h4>
+                    <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+                      {language === 'te'
+                        ? (sellerProduct?.suitable_crops || 'పత్తి, వరి, కూరగాయలు, మిర్చి, టమాటా')
+                        : (sellerProduct?.suitable_crops || 'Cotton, Paddy, Vegetables, Chilli, Tomato')
+                      }
+                    </p>
+                  </div>
 
-              <div className="pt-3 border-t border-green-200 dark:border-green-700">
-                <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
-                  {language === 'te' ? '💊 మోతాదు వివరాలు' : '💊 Dosage Details'}
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold mt-0.5">•</span>
-                    <p className="text-muted-foreground text-sm md:text-base">
-                      <span className="font-medium text-foreground">{language === 'te' ? 'మోతాదు:' : 'Dosage:'}</span>{' '}
-                      {sellerProduct?.dosage || (language === 'te' ? 'లీటరు నీటికి 1 ml' : '1 ml per liter of water')}
-                    </p>
+                  <div className="pt-3 border-t border-green-200 dark:border-green-700">
+                    <h4 className="text-base md:text-lg font-semibold mb-2 text-green-800 dark:text-green-300">
+                      {language === 'te' ? '💊 మోతాదు వివరాలు' : '💊 Dosage Details'}
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-bold mt-0.5">•</span>
+                        <p className="text-muted-foreground text-sm md:text-base">
+                          <span className="font-medium text-foreground">{language === 'te' ? 'మోతాదు:' : 'Dosage:'}</span>{' '}
+                          {sellerProduct?.dosage || (language === 'te' ? 'లీటరు నీటికి 1 ml' : '1 ml per liter of water')}
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-bold mt-0.5">•</span>
+                        <p className="text-muted-foreground text-sm md:text-base">
+                          <span className="font-medium text-foreground">{language === 'te' ? 'పద్ధతి:' : 'Method:'}</span>{' '}
+                          {sellerProduct?.application_method || (language === 'te' ? 'స్ప్రే చేయడం' : 'Spraying')}
+                        </p>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <span className="text-green-600 font-bold mt-0.5">•</span>
+                        <p className="text-muted-foreground text-sm md:text-base">
+                          <span className="font-medium text-foreground">{language === 'te' ? 'ఎకరాకు:' : 'Per Acre:'}</span>{' '}
+                          {sellerProduct?.package_size || (language === 'te' ? '200ml - 250ml' : '200ml - 250ml')}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold mt-0.5">•</span>
-                    <p className="text-muted-foreground text-sm md:text-base">
-                      <span className="font-medium text-foreground">{language === 'te' ? 'పద్ధతి:' : 'Method:'}</span>{' '}
-                      {sellerProduct?.application_method || (language === 'te' ? 'స్ప్రే చేయడం' : 'Spraying')}
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-600 font-bold mt-0.5">•</span>
-                    <p className="text-muted-foreground text-sm md:text-base">
-                      <span className="font-medium text-foreground">{language === 'te' ? 'ఎకరాకు:' : 'Per Acre:'}</span>{' '}
-                      {sellerProduct?.package_size || (language === 'te' ? '200ml - 250ml' : '200ml - 250ml')}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
           </ProductSection>
 
