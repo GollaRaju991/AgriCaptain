@@ -318,15 +318,26 @@ Suitable for all seasons and performs well in Indian climatic conditions.`,
   // ─── Pesticides / Crop Protection ───
   defineProduct({
     id: 'P301',
-    name: 'Neem Oil – Organic Insecticide',
-    brand: 'Geolife',
+    name: 'Bayer Roundup Herbicide (Glyphosate 41% SL) for Non-Selective Weed Control',
+    brand: 'Bayer',
     category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-dronex-insecticide-file-20820.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-dronex-insecticide-file-20820.png', '', '', ''],
-    rating: 4.5,
-    reviews: 120,
-    description: 'Organic neem oil insecticide for pest control without harmful chemicals',
-    forUse: 'Pest control for organic farming',
+    image: "https://ik.imagekit.io/nsi7x5p2x/roundup-herbicide-file-2203.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/roundup-herbicide-file-2203.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/roundup-herbicide-file-2204.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/roundup-herbicide-file-2206.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/roundup-herbicide-file-2207.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.6,
+  reviews: 200,
+
+  description: `Roundup is a non-selective systemic herbicide used for effective weed control.
+It kills weeds from leaves to roots and is widely used in agriculture for broad-spectrum weed management.`,
+
+  forUse: 'Weed control in crops, bunds, and open fields',
+
     variants: [
       { variant: '250ml', sku: 'PEST-NEEM-250ML-001', price: 150, originalPrice: 190, discount: 21, inStock: true },
       { variant: '500ml', sku: 'PEST-NEEM-500ML-001', price: 250, originalPrice: 300, discount: 17, inStock: true },
@@ -337,14 +348,30 @@ Suitable for all seasons and performs well in Indian climatic conditions.`,
   defineProduct({
     id: 'P303',
     name: 'Glyphosafe Herbicide',
-    brand: 'Exylon',
+    brand: 'Sumitomo',
     category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-glyphosafe-herbicide-file-21319.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-glyphosafe-herbicide-file-21319.png', '', '', ''],
-    rating: 4.3,
-    reviews: 78,
-    description: 'Non-selective herbicide for effective weed control',
-    forUse: 'Weed control – all crops',
+    image: "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5004.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5004.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5005.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5006.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5011.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.5,
+  reviews: 160,
+
+  description: `Glycel is a systemic non-selective herbicide used for effective weed control.
+It penetrates through leaves and destroys weeds from roots, ensuring long-lasting control.`,
+
+  forUse: 'Weed control in agricultural fields, orchards, and bund areas',
+
+  usage: 'Spray directly on actively growing weeds',
+
+  crops: 'Cotton, Sugarcane, Paddy, Vegetables',
+
+  dosage: '1-2 ml per liter of water | 200-300 ml per acre',
     variants: [
       { variant: '500ml', sku: 'PEST-GLY-500ML-001', price: 350, originalPrice: 420, discount: 17, inStock: true },
       { variant: '1L', sku: 'PEST-GLY-1L-001', price: 620, originalPrice: 750, discount: 17, inStock: true },
@@ -353,15 +380,33 @@ Suitable for all seasons and performs well in Indian climatic conditions.`,
   }),
   defineProduct({
     id: 'P304',
-    name: 'Tebuspark Fungicide',
-    brand: 'Exylon',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-tebuspark-fungicide-file-20885.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-tebuspark-fungicide-file-20885.png', '', '', ''],
-    rating: 4.6,
-    reviews: 112,
-    description: 'Broad-spectrum fungicide for crops prone to fungal diseases',
-    forUse: 'Fungal disease management',
+    name: 'Coragen Insecticide (Chlorantraniliprole 18.5% SC)',
+  brand: 'FMC (DuPont)',
+  category: 'insecticide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/coragen-dupont-file-1135%20(1).webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/coragen-dupont-file-1135%20(1).webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Coragen_01.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Coragen_02%20(1).webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Coragen_03%20(1).webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Coragen_04%20(1).webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.7,
+  reviews: 220,
+
+  description: `Coragen is a highly effective insecticide used to control caterpillars and borers.
+It provides long-lasting protection and improves crop yield with minimal environmental impact.`,
+
+  forUse: 'Control of lepidopteran pests in crops',
+
+  usage: 'Spray evenly on affected crop areas',
+
+  crops: 'Rice, Cotton, Vegetables, Chilli, Tomato',
+
+  dosage: '0.3 ml per liter of water | 60 ml per acre',
     variants: [
       { variant: '100ml', sku: 'PEST-TEB-100ML-001', price: 280, originalPrice: 340, discount: 18, inStock: true },
       { variant: '250ml', sku: 'PEST-TEB-250ML-001', price: 580, originalPrice: 700, discount: 17, inStock: true },
