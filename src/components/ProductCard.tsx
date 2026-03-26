@@ -9,6 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translateProductName } from '@/data/translations';
 
+interface ProductVariant {
+  variant: string;
+  price: number;
+}
+
 interface Product {
   id: string;
   name: string;
@@ -24,6 +29,7 @@ interface Product {
   inStock?: boolean;
   description?: string;
   forUse?: string;
+  variants?: ProductVariant[];
 }
 
 interface ProductCardProps {
