@@ -137,10 +137,10 @@ const NotificationDropdown = ({ variant = 'desktop' }: { variant?: 'desktop' | '
       {bellButton}
 
       {open && (
-        <div className={`absolute z-[100] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden ${
+        <div className={`fixed z-[9999] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden ${
           variant === 'mobile'
-            ? 'right-0 top-12 w-[calc(100vw-24px)] max-w-[380px]'
-            : 'right-0 top-14 w-[400px]'
+            ? 'left-3 right-3 top-[120px] max-w-[400px] mx-auto'
+            : 'absolute right-0 top-14 w-[400px]'
         }`}>
           {/* Header with View All */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
