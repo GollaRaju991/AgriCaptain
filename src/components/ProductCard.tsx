@@ -188,6 +188,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant = 'grid', sh
             {translatedName}
             {product.variant && <span className="text-[10px] md:text-xs text-gray-500 block">{product.variant}</span>}
           </h3>
+
+          {product.variants && product.variants.length > 1 && (
+            <div className="flex flex-wrap gap-1 mb-1">
+              {product.variants.slice(0, 3).map((v) => (
+                <span key={v.variant} className="text-[9px] md:text-[10px] bg-green-50 text-green-700 border border-green-200 rounded px-1 py-0.5">
+                  {v.variant}
+                </span>
+              ))}
+              {product.variants.length > 3 && (
+                <span className="text-[9px] md:text-[10px] text-muted-foreground">+{product.variants.length - 3}</span>
+              )}
+            </div>
+          )}
           
           {product.rating && (
             <div className="flex items-center mb-1 gap-0.5">
