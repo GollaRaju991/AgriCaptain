@@ -372,7 +372,7 @@ const Scanner = () => {
           <div className="relative">
             {analyzing && <AnalyzingOverlay translations={translations} />}
             {analysisResult ? (
-              <ResultCard result={analysisResult} capturedImage={capturedImage} translations={translations} />
+              <ResultCard result={analysisResult} capturedImage={capturedImage} onRetake={retake} translations={translations} />
             ) : !analyzing ? (
               <div className="p-4 text-center text-gray-500 text-sm">{translations.scanner_processing}</div>
             ) : null}
