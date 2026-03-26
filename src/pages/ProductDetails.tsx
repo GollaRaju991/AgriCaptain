@@ -240,11 +240,14 @@ const ProductDetails = () => {
     );
   }
 
+  const activeVariant = product.variants?.[selectedVariantIndex] || product.variants?.[0];
+
   const handleAddToCart = () => {
+    const cartId = activeVariant ? `${product.id}-${activeVariant.sku}` : product.id;
     for (let i = 0; i < quantity; i++) {
       addToCart({
-        id: product.id,
-        name: product.name,
+        id: cartId,
+        name: `${product.name}${activeVariant ? ` (${activeVariant.variant})` : ''}`,
         price: product.price,
         image: product.images[0],
         category: product.category
@@ -252,7 +255,7 @@ const ProductDetails = () => {
     }
     toast({
       title: "Added to Cart",
-      description: `${quantity} × ${product.name} added to your cart.`
+      description: `${quantity} × ${product.name}${activeVariant ? ` (${activeVariant.variant})` : ''} added to your cart.`
     });
   };
 
