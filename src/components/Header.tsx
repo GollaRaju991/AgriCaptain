@@ -75,8 +75,49 @@ const Header = () => {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [headerTemp, setHeaderTemp] = useState<number | null>(null);
+  const [headerCity, setHeaderCity] = useState<string>('');
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Fetch weather for header
+  useEffect(() => {
+    const fetchTemp = async () => {
+      try {
+        const pos = await new Promise<GeolocationPosition>((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 })
+        );
+        const { latitude, longitude } = pos.coords;
+        // Get city name
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=&count=1&latitude=${latitude}&longitude=${longitude}`);
+        // Get weather
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+        const weatherData = await weatherRes.json();
+        if (weatherData.current_weather) {
+          setHeaderTemp(Math.round(weatherData.current_weather.temperature));
+        }
+        // Reverse geocode for city
+        try {
+          const revRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&zoom=10`);
+          const revData = await revRes.json();
+          const city = revData.address?.city || revData.address?.town || revData.address?.village || revData.address?.county || '';
+          setHeaderCity(city);
+        } catch { /* ignore */ }
+      } catch {
+        // Fallback: Hyderabad
+        try {
+          const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=17.385&longitude=78.4867&current_weather=true');
+          const data = await res.json();
+          if (data.current_weather) {
+            setHeaderTemp(Math.round(data.current_weather.temperature));
+            setHeaderCity('Hyderabad');
+          }
+        } catch { /* ignore */ }
+      }
+    };
+    fetchTemp();
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
