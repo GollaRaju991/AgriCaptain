@@ -140,31 +140,41 @@ const ProductDetails = () => {
       sellerProduct.delivery_available ? 'Delivery Available' : null,
     ].filter(Boolean),
     reviewsList: []
-  } : foundProduct ? {
-    ...foundProduct,
-    images: ((foundProduct as any).images || [foundProduct.image]).filter((img: string) => img && img.length > 0),
-    category: (foundProduct as any).category || 'seeds',
-    shortDescription: foundProduct.description || 'Premium quality product for farming',
-    detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
-    usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
-    specifications: {
-      'Product Type': ((foundProduct as any).category || 'Seeds').charAt(0).toUpperCase() + ((foundProduct as any).category || 'seeds').slice(1),
-      'Quality': 'Premium',
-      'Shelf Life': '2 years',
-      'Origin': 'India'
-    },
-    features: [
-      'High quality product',
-      'Suitable for all conditions',
-      'Professional packaging',
-      'Detailed instructions included'
-    ],
-    reviewsList: [
-      { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery.', helpful: 45, notHelpful: 2 },
-      { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
-      { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
-    ]
-  } : null;
+  } : foundProduct ? (() => {
+    const activeVariant = foundProduct.variants?.[selectedVariantIndex] || getDefaultVariant(foundProduct);
+    return {
+      ...foundProduct,
+      price: activeVariant.price,
+      originalPrice: activeVariant.originalPrice,
+      discount: activeVariant.discount,
+      inStock: activeVariant.inStock,
+      variant: activeVariant.variant,
+      sku: activeVariant.sku,
+      variants: foundProduct.variants || [],
+      images: ((foundProduct as any).images || [foundProduct.image]).filter((img: string) => img && img.length > 0),
+      category: (foundProduct as any).category || 'seeds',
+      shortDescription: foundProduct.description || 'Premium quality product for farming',
+      detailedDescription: `${foundProduct.description || 'Premium quality product'}\n\nKey Benefits:\n• High quality assured\n• Suitable for all conditions\n• Professional tested`,
+      usage: (foundProduct as any).forUse || `Ideal for commercial farming and home gardening.`,
+      specifications: {
+        'Product Type': ((foundProduct as any).category || 'Seeds').charAt(0).toUpperCase() + ((foundProduct as any).category || 'seeds').slice(1),
+        'Quality': 'Premium',
+        'Shelf Life': '2 years',
+        'Origin': 'India'
+      },
+      features: [
+        'High quality product',
+        'Suitable for all conditions',
+        'Professional packaging',
+        'Detailed instructions included'
+      ],
+      reviewsList: [
+        { id: 1, name: 'Ramesh Kumar', rating: 5, date: '2 weeks ago', comment: 'Excellent product! Great quality and fast delivery.', helpful: 45, notHelpful: 2 },
+        { id: 2, name: 'Suresh Patel', rating: 4, date: '1 month ago', comment: 'Good product. Works as expected.', helpful: 23, notHelpful: 3 },
+        { id: 3, name: 'Mahesh Singh', rating: 5, date: '1 month ago', comment: 'Best quality I have ever used.', helpful: 67, notHelpful: 1 },
+      ]
+    };
+  })() : null;
 
   const { relatedProducts, unrelatedProducts } = useMemo(() => {
     if (!product) return { relatedProducts: [], unrelatedProducts: [] };
