@@ -489,6 +489,39 @@ const ProductDetails = () => {
               productName={product.name}
               onChangeImage={setSelectedImage}
             />
+
+            {/* Variant Selector - Below Images */}
+            {product.variants && product.variants.length > 1 && (
+              <div className="px-4 lg:px-0 mt-4 mb-4">
+                <p className="text-sm font-medium text-foreground mb-2">
+                  {language === 'te' ? 'సైజ్ ఎంచుకోండి:' : 'Select Size:'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {product.variants.map((v: Variant, idx: number) => (
+                    <button
+                      key={v.sku}
+                      onClick={() => setSelectedVariantIndex(idx)}
+                      className={`px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                        selectedVariantIndex === idx
+                          ? 'border-green-600 bg-green-50 text-green-800'
+                          : v.inStock
+                            ? 'border-border bg-background text-foreground hover:border-green-400'
+                            : 'border-border bg-muted text-muted-foreground line-through opacity-60 cursor-not-allowed'
+                      }`}
+                      disabled={!v.inStock}
+                    >
+                      <span className="block">{v.variant}</span>
+                      <span className="block text-xs mt-0.5">₹{v.price.toLocaleString()}</span>
+                    </button>
+                  ))}
+                </div>
+                {!product.inStock && (
+                  <p className="text-sm text-destructive mt-2 font-medium">
+                    {language === 'te' ? 'ఈ సైజ్ అందుబాటులో లేదు' : 'This size is currently out of stock'}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}
