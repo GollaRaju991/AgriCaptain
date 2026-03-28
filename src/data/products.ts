@@ -667,9 +667,46 @@ It provides fast action and long-lasting protection, ensuring healthy crop growt
     // 🔹 Multi Pack
     { variant: '400 gms (40 gms x 10)', sku: 'INSEC-LES-400G-001', price: 4561, originalPrice: 7700, discount: 41, inStock: true, tag: 'Value Pack' }
   ]
+}),defineProduct({
+  id: 'P312',
+  name: 'Geolife No Virus Chilli Special',
+  brand: 'Geolife Agritech India Pvt Ltd',
+  category: 'plant-growth',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage1_32___e728d54c1d884b3d93bdc2ba6e0f3744_1___1.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage1_32___e728d54c1d884b3d93bdc2ba6e0f3744_1___1.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__6___Image2_32___ab189b122fb54c898a25113112bb6f9d_1___3.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage8_32___da442959fd354f2c80e94056911ca176_2___15.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 74,
+
+  description: `Geolife No Virus is a plant growth promoter specially designed for chilli crops.
+It enhances plant immunity, improves resistance against viral diseases, and boosts overall crop yield.`,
+
+  forUse: 'Improve plant immunity and growth in chilli crops',
+
+  usage: 'Spray on crop foliage during early growth and stress stages',
+
+  crops: 'Chilli, Vegetables',
+
+  dosage: '2 ml per liter of water | 200–300 ml per acre',
+
+  variants: [
+    // 🔹 Single Pack
+    { variant: '500 ml', sku: 'PLANT-GEO-500ML-001', price: 531, originalPrice: 1500, discount: 65, inStock: true, tag: 'Best Seller' },
+    { variant: '1 ltr', sku: 'PLANT-GEO-1L-001', price: 999, originalPrice: 2600, discount: 62, inStock: true },
+    { variant: '250 ml', sku: 'PLANT-GEO-250ML-001', price: 329, originalPrice: 800, discount: 59, inStock: true },
+
+    // 🔹 Multi Pack
+    { variant: '1000 ml (500 ml x 2)', sku: 'PLANT-GEO-1000ML-001', price: 1049, originalPrice: 3000, discount: 65, inStock: true, tag: 'Value Pack' }
+  ]
 }),
 
-  // ─── Coragen ───
+  // ─── tools ───
   defineProduct({
     id: 'P312',
     name: 'Coragen Insecticide – Chlorantraniliprole 18.5% SC',
@@ -933,23 +970,6 @@ It provides fast action and long-lasting protection, ensuring healthy crop growt
       { variant: '100ml', sku: 'SPEC-SEED-100ML-001', price: 180, originalPrice: 220, discount: 18, inStock: true },
       { variant: '250ml', sku: 'SPEC-SEED-250ML-001', price: 340, originalPrice: 420, discount: 19, inStock: true },
       { variant: '500ml', sku: 'SPEC-SEED-500ML-001', price: 620, originalPrice: 780, discount: 21, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P604',
-    name: 'Plant Growth Regulator',
-    brand: 'Dhanuka',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/61dUSrKEQTL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/61dUSrKEQTL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.3,
-    reviews: 65,
-    description: 'Regulates plant growth for uniform flowering and fruiting',
-    forUse: 'Fruit crops, cotton, vegetables',
-    variants: [
-      { variant: '50ml', sku: 'SPEC-PGR-50ML-001', price: 160, originalPrice: 200, discount: 20, inStock: true },
-      { variant: '100ml', sku: 'SPEC-PGR-100ML-001', price: 290, originalPrice: 360, discount: 19, inStock: true },
-      { variant: '250ml', sku: 'SPEC-PGR-250ML-001', price: 650, originalPrice: 800, discount: 19, inStock: true },
     ],
   }),
   defineProduct({
