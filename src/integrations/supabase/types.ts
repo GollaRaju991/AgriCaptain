@@ -913,6 +913,84 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_listings: {
+        Row: {
+          availability: string
+          condition: string
+          country: string | null
+          created_at: string
+          daily_rate: number
+          description: string | null
+          district: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          location_address: string | null
+          longitude: number | null
+          mandal: string | null
+          model_year: string | null
+          owner_name: string
+          owner_phone: string
+          state: string | null
+          updated_at: string
+          user_id: string
+          vehicle_images: string[] | null
+          vehicle_name: string | null
+          vehicle_type: string
+          village: string | null
+        }
+        Insert: {
+          availability?: string
+          condition?: string
+          country?: string | null
+          created_at?: string
+          daily_rate?: number
+          description?: string | null
+          district?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          location_address?: string | null
+          longitude?: number | null
+          mandal?: string | null
+          model_year?: string | null
+          owner_name: string
+          owner_phone: string
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          vehicle_images?: string[] | null
+          vehicle_name?: string | null
+          vehicle_type: string
+          village?: string | null
+        }
+        Update: {
+          availability?: string
+          condition?: string
+          country?: string | null
+          created_at?: string
+          daily_rate?: number
+          description?: string | null
+          district?: string | null
+          id?: string
+          is_active?: boolean
+          latitude?: number | null
+          location_address?: string | null
+          longitude?: number | null
+          mandal?: string | null
+          model_year?: string | null
+          owner_name?: string
+          owner_phone?: string
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          vehicle_images?: string[] | null
+          vehicle_name?: string | null
+          vehicle_type?: string
+          village?: string | null
+        }
+        Relationships: []
+      }
       vendor_details: {
         Row: {
           created_at: string
