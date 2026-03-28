@@ -190,13 +190,23 @@ const SellCrop: React.FC = () => {
     return '/placeholder.svg';
   };
 
+  const nearbyCrops = useMemo(() => filteredCrops.filter(c => c.distance !== undefined && c.distance <= 100), [filteredCrops]);
+  const extendedCrops = useMemo(() => filteredCrops.filter(c => c.distance !== undefined && c.distance > 100 && c.distance <= 500), [filteredCrops]);
+  const otherCrops = useMemo(() => filteredCrops.filter(c => c.distance === undefined || c.distance > 500), [filteredCrops]);
+  const hasLocationGrouping = userLocation && filteredCrops.some(c => c.distance !== undefined);
+
   const renderCropCard = (crop: CropWithSeller) => (
     <Card key={crop.id} className="overflow-hidden hover:shadow-md transition-shadow">
       <CardContent className="p-0">
         <Link to={`/sell-crop/${crop.id}`}>
           <div className="flex">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted relative">
               <img src={getFirstImage(crop.crop_images)} alt={crop.crop_name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
+              {crop.distance !== undefined && (
+                <Badge variant="secondary" className="absolute bottom-1 left-1 text-[9px] px-1.5 py-0 h-4 bg-primary/90 text-primary-foreground">
+                  {formatDistance(crop.distance)}
+                </Badge>
+              )}
             </div>
             <div className="flex-1 p-3 flex flex-col justify-between">
               <div>
@@ -207,9 +217,9 @@ const SellCrop: React.FC = () => {
               {crop.seller && (
                 <div className="flex items-center gap-2 mt-2">
                   {crop.seller.photo_url ? (
-                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 rounded-full object-cover border-2 border-green-500" />
+                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 rounded-full object-cover border-2 border-primary" />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
                       {crop.seller.name.charAt(0)}
                     </div>
                   )}
@@ -225,13 +235,28 @@ const SellCrop: React.FC = () => {
 
         {crop.location_address && (
           <div className="bg-muted/50 px-3 py-2 flex items-center gap-2 border-t">
-            <MapPin className="h-4 w-4 text-green-600 flex-shrink-0" />
+            <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
             <span className="text-sm text-muted-foreground truncate">{crop.location_address}</span>
           </div>
         )}
       </CardContent>
     </Card>
   );
+
+  const renderCropSection = (cropsList: CropWithSeller[], title: string) => {
+    if (cropsList.length === 0) return null;
+    return (
+      <div className="mb-6">
+        <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
+          {title}
+          <Badge variant="secondary" className="text-xs">{cropsList.length}</Badge>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {cropsList.map(crop => renderCropCard(crop))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
