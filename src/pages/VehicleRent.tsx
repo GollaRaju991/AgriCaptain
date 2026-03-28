@@ -102,20 +102,14 @@ const VehicleRent = () => {
     if (type === 'Other') setCustomVehicleType('');
   };
 
-  const handleNearby = async () => {
-    if (nearbyActive) {
-      setNearbyActive(false);
-      setUserCoords(null);
-      return;
-    }
+  const handleDetectNearby = async () => {
     setDetectingNearby(true);
     try {
       const loc = await detectUserLocation();
       setUserCoords({ lat: loc.latitude, lon: loc.longitude });
-      setNearbyActive(true);
-      toast.success(label('Location detected! Click Search to find nearby vehicles.', 'లొకేషన్ గుర్తించబడింది!'));
+      toast.success(label('Location detected!', 'లొకేషన్ గుర్తించబడింది!'));
     } catch {
-      toast.error(label('Could not detect location', 'లొకేషన్ గుర్తించలేకపోయింది'));
+      toast.error(label('Could not detect location. Try Add Location instead.', 'లొకేషన్ గుర్తించలేకపోయింది.'));
     } finally {
       setDetectingNearby(false);
     }
@@ -147,7 +141,7 @@ const VehicleRent = () => {
         .in('vehicle_type', effectiveTypes);
 
       // If not using nearby, filter by location fields
-      if (!nearbyActive) {
+      if (locationMode === 'manual') {
         if (selectedState) query = query.ilike('state', `%${selectedState}%`);
         if (selectedDistrict) query = query.ilike('district', `%${selectedDistrict}%`);
       }
@@ -192,7 +186,7 @@ const VehicleRent = () => {
         // Sort by distance
         results.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
         // If nearby active, only show within 500km
-        if (nearbyActive) {
+        if (locationMode === 'nearby') {
           results = results.filter(v => v.distance !== undefined && v.distance <= 500);
         }
       }
@@ -228,7 +222,7 @@ const VehicleRent = () => {
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
     setSelectedVehicleTypes([]); setCustomVehicleType(''); setStartDate(undefined); setEndDate(undefined);
-    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true); setNearbyActive(false); setUserCoords(null);
+    setSearchResults([]); setIsSearched(false); setLocationMode('nearby'); setUserCoords(null);
   };
 
   const findCodeByName = (list: { code: string; name: string }[], name: string) => {
