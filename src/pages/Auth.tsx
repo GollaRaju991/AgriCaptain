@@ -223,11 +223,11 @@ const Auth = () => {
       <div className="absolute top-4 left-4 z-10">
         <Button
           variant="ghost"
-          size="icon"
           onClick={() => navigate('/')}
-          className="rounded-full bg-white/80 backdrop-blur-sm shadow-md hover:bg-white hover:shadow-lg transition-all h-10 w-10"
+          className="rounded-full bg-[#2d5a27]/10 hover:bg-[#2d5a27]/20 text-[#2d5a27] font-medium gap-2 px-4 transition-all"
         >
-          <ArrowLeft className="h-5 w-5 text-foreground" />
+          <ArrowLeft className="h-5 w-5" />
+          Back
         </Button>
       </div>
 
