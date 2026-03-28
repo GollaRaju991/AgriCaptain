@@ -82,6 +82,8 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
           qualityGrade: crop.quality_grade,
           availabilityLocation: crop.availability_location,
           locationAddress: crop.location_address || '',
+          latitude: crop.latitude || null,
+          longitude: crop.longitude || null,
         });
         if (crop.harvest_date) setHarvestDate(new Date(crop.harvest_date));
         if (crop.crop_images && crop.crop_images.length > 0) {
