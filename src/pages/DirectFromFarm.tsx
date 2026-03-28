@@ -438,8 +438,18 @@ const DirectFromFarm: React.FC = () => {
         </Tabs>
       </div>
 
-      {/* Mobile filter chips */}
+      {/* Mobile filter chips with Nearby button */}
       <div className="lg:hidden bg-card px-4 py-1.5 flex gap-2 overflow-x-auto border-b border-border no-scrollbar">
+        <button
+          onClick={handleDetectLocation}
+          disabled={detectingLocation}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs whitespace-nowrap flex-shrink-0 font-medium ${
+            userLocation ? 'bg-green-700 text-white border border-green-700' : 'border border-border text-foreground'
+          }`}
+        >
+          {detectingLocation ? <Loader2 className="h-3 w-3 animate-spin" /> : <Navigation className="h-3 w-3" />}
+          {t('Nearby', 'సమీపంలో', 'नज़दीक')}
+        </button>
         <button
           onClick={() => setDrawerOpen(true)}
           className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-border text-xs text-foreground whitespace-nowrap flex-shrink-0"
@@ -473,13 +483,13 @@ const DirectFromFarm: React.FC = () => {
               <p className="text-sm text-muted-foreground mt-1">{t('Buy fresh crops directly from verified farmers near you', 'మీ సమీపంలోని ధృవీకరించబడిన రైతుల నుండి తాజా పంటలు కొనుగోలు చేయండి', 'अपने पास के सत्यापित किसानों से ताज़ा फसलें खरीदें')}</p>
             </div>
             <Button
-              variant="outline"
+              variant={userLocation ? 'default' : 'outline'}
               onClick={handleDetectLocation}
               disabled={detectingLocation}
-              className="gap-2"
+              className={`gap-2 ${userLocation ? 'bg-green-700 hover:bg-green-800' : ''}`}
             >
               {detectingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-              {userLocation?.address ? userLocation.address.split(',')[0] : t('Detect Location', 'స్థానం గుర్తించు', 'स्थान पहचानें')}
+              {userLocation?.address ? `📍 ${userLocation.address.split(',')[0]}` : t('Nearby', 'సమీపంలో', 'नज़दीक')}
             </Button>
           </div>
 

@@ -296,8 +296,17 @@ const SellCrop: React.FC = () => {
       </div>
 
       <main className="w-full px-4 py-6">
-        {/* Filter + Add Crop inline row */}
+        {/* Nearby + Filter + Add Crop inline row */}
         <div className="flex gap-2 mb-4">
+          <Button
+            variant={userLocation ? 'default' : 'outline'}
+            className={`gap-1.5 ${userLocation ? 'bg-green-700 hover:bg-green-800' : ''}`}
+            onClick={handleDetectLocation}
+            disabled={detectingLocation}
+          >
+            {detectingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+            {t('Nearby', 'సమీపంలో', 'नज़दीक')}
+          </Button>
           <Button
             variant="outline"
             className="flex-1"
@@ -315,7 +324,7 @@ const SellCrop: React.FC = () => {
             className="flex-1"
             onClick={() => navigate('/sell-crop/add')}
           >
-            <Plus className="h-4 w-4 mr-2" /> {t('Add Crop Details', 'పంట వివరాలు జోడించండి', 'फसल विवरण जोड़ें')}
+            <Plus className="h-4 w-4 mr-2" /> {t('Add Crop', 'పంట జోడించు', 'फसल जोड़ें')}
           </Button>
         </div>
 
