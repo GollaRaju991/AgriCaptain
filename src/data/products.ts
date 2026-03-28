@@ -737,50 +737,147 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
 
   // ─── Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment ───
   defineProduct({
-    id: 'P401',
-    name: 'Hand Cultivator – Garden Tool',
-    brand: 'Kraft Seeds',
-    category: 'Farm Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/Kraft%20Seeds%20Hand%20Cultivator%20-%201%20PC%20%20Cultivator%20Pesticides%20Tool%20for%20Home%20Gardening%20%20Farming%20Tiller%20for%20Plants%20in%20Garden%20Durable%20Hand%20Cultivator%20for%20Garden%20(Red%20Handle,%20Black%20Metal)%20%20Garden%20Tiller.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/Kraft%20Pesticides%20Hand%20Cultivator%20-%201%20PC%20%20Cultivator%20Pesticides%20Tool%20for%20Home%20Gardening%20%20Farming%20Tiller%20for%20Plants%20in%20Garden%20Durable%20Hand%20Cultivator%20for%20Garden%20(Red%20Handle,%20Black%20Metal)%20%20Garden%20Tiller.webp', '', '', ''],
-    rating: 4.3,
-    reviews: 230,
-    description: 'Durable hand cultivator for home gardening and farming',
-    forUse: 'Home gardening and farming',
-    variants: [
-      { variant: 'Standard', sku: 'TOOL-CULT-STD-001', price: 350, originalPrice: 450, discount: 22, inStock: true },
-    ],
-  }),
+  id: 'P401',
+  name: 'Tapas Pahalwaan 101 Battery Sprayer 12x8',
+  brand: 'Tapas',
+  category: 'Farm Farm Tools',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/tapas-pahalwaan-101-single-motor-battery-sprayer-12x8-file-14622.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/tapas-pahalwaan-101-single-motor-battery-sprayer-12x8-file-14622.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/tapas-pahalwaan-101-single-motor-battery-sprayer-12x8-file-14623.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/tapas-pahalwaan-101-single-motor-battery-sprayer-12x8-file-14624.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/tapas-pahalwaan-101-single-motor-battery-sprayer-12x8-file-14628.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.2,
+  reviews: 70,
+
+  description: `Tapas Pahalwaan 101 is a powerful battery-operated sprayer designed for efficient spraying in agriculture.
+It ensures uniform spray coverage and reduces manual effort, making it ideal for large farms and gardens.`,
+
+  forUse: 'Spraying pesticides, fertilizers, and disinfectants',
+
+  usage: 'Fill tank, charge battery, and spray evenly on crops',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'TOOL-SPRAYER-001',
+      price: 2599,
+      originalPrice: 4999,
+      discount: 48,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
   defineProduct({
-    id: 'P402',
-    name: 'Battery Sprayer – 16L',
-    brand: 'Neptune',
-    category: 'Farm Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/61g8uKD8JoL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/61g8uKD8JoL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.6,
-    reviews: 178,
-    description: 'Rechargeable battery-powered sprayer for effortless spraying',
-    forUse: 'Pesticide and fertilizer spraying',
-    variants: [
-      { variant: '16L', sku: 'TOOL-SPRY-16L-001', price: 2800, originalPrice: 3500, discount: 20, inStock: true },
-    ],
-  }),
+  id: 'P402',
+  name: 'Mipatex Heavy Duty Tarpaulin Sheet',
+  brand: 'Mipatex',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/mipatex-tarpaulin-sheet-waterproof-heavy-duty-yellow-blue-silver-file-6127.avif?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/mipatex-tarpaulin-sheet-waterproof-heavy-duty-yellow-blue-silver-file-6127.avif?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/mipatex-tarpaulin-sheet-waterproof-heavy-duty-yellow-blue-silver-file-6129.avif?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.5,
+  reviews: 7,
+
+  description: `Mipatex tarpaulin is a heavy-duty waterproof sheet designed for all-weather protection.
+It is UV resistant, durable, and suitable for agricultural, industrial, and household use.`,
+
+  forUse: 'Crop protection, storage cover, rain and weather protection',
+
+  usage: 'Spread over crops, goods, or equipment for protection',
+
+  variants: [
+    // 🔹 Single Pack (like UI)
+    {
+      variant: '200 gsm / 12 ft x 10 ft',
+      sku: 'TARP-200GSM-12X10-001',
+      price: 1199,
+      originalPrice: 2160,
+      discount: 44,
+      inStock: true,
+      tag: 'Best Seller'
+    },
+    {
+      variant: '130 gsm / 12 ft x 12 ft',
+      sku: 'TARP-130GSM-12X12-001',
+      price: 1170,
+      originalPrice: 1872,
+      discount: 38,
+      inStock: true
+    },
+    {
+      variant: '150 gsm / 12 ft x 12 ft',
+      sku: 'TARP-150GSM-12X12-001',
+      price: 1210,
+      originalPrice: 2160,
+      discount: 44,
+      inStock: true
+    }
+  ]
+}),
   defineProduct({
-    id: 'P403',
-    name: 'Pruning Shears – Professional',
-    brand: 'Falcon',
-    category: 'Farm Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/71cTTKlTkYL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/71cTTKlTkYL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.5,
-    reviews: 134,
-    description: 'Professional grade pruning shears for clean cuts',
-    forUse: 'Tree pruning and garden maintenance',
-    variants: [
-      { variant: '8 inch', sku: 'TOOL-PRUNE-8IN-001', price: 450, originalPrice: 580, discount: 22, inStock: true },
-    ],
-  }),
+  id: 'P403',
+  name: 'Siddhi Round Drip Irrigation Pipe (300m Roll)',
+  brand: 'Siddhi Agritech',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/siddhi-round-online-plane-drip-irrigation-pipe-lateral-for-plant-gardening-roll-0-4mm-thickness-length-300-meter-file-14141.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/siddhi-round-online-plane-drip-irrigation-pipe-lateral-for-plant-gardening-roll-0-4mm-thickness-length-300-meter-file-14141.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/siddhi-round-online-plane-drip-irrigation-pipe-lateral-for-plant-gardening-roll-0-4mm-thickness-length-300-meter-file-14142.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/siddhi-round-online-plane-drip-irrigation-pipe-lateral-for-plant-gardening-roll-0-4mm-thickness-length-300-meter-file-14143.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.2,
+  reviews: 11,
+
+  description: `High-quality drip irrigation pipe designed for efficient water distribution.
+Ensures uniform watering, saves water, and improves crop yield.`,
+
+  forUse: 'Drip irrigation for farms, gardens, and plantations',
+
+  usage: 'Connect to water source and lay across crop rows for controlled irrigation',
+
+  variants: [
+    // 🔹 Single Pack (like UI)
+    {
+      variant: '12 mm (300m)',
+      sku: 'DRIP-12MM-300M-001',
+      price: 1699,
+      originalPrice: 1699,
+      discount: 0,
+      inStock: true,
+      tag: 'Best Seller'
+    },
+    {
+      variant: '20 mm (300m)',
+      sku: 'DRIP-20MM-300M-001',
+      price: 3700,
+      originalPrice: 3999,
+      discount: 7,
+      inStock: true
+    },
+    {
+      variant: '16 mm (300m)',
+      sku: 'DRIP-16MM-300M-001',
+      price: 3000,
+      originalPrice: 3100,
+      discount: 3,
+      inStock: true
+    }
+  ]
+}),
   defineProduct({
     id: 'P404',
     name: 'Seedling Tray – 98 Cells',
