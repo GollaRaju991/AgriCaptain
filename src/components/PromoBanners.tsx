@@ -22,7 +22,7 @@ const PromoBanners = () => {
       title: 'Seeds Collection',
       subtitle: 'Premium Quality Seeds',
       offer: 'Min. 30% Off',
-      image: 'https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png',
+      image: 'https://ik.imagekit.io/wadwvg0en/Work/seeds-packet-collection.webp',
       bgColor: 'from-green-100 to-green-200',
       link: '/products?category=seeds'
     },
@@ -31,34 +31,34 @@ const PromoBanners = () => {
       title: 'Pesticides',
       subtitle: 'Crop Protection',
       offer: 'From ₹199',
-      image: 'https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png',
+      image: 'https://ik.imagekit.io/wadwvg0en/hph-5531-chilli-2-file-2220.webp',
       bgColor: 'from-orange-100 to-orange-200',
       link: '/products?category=pesticides'
     },
     {
       id: '4',
-      title: 'Garden Tools',
+      title: 'Farm Tools',
       subtitle: 'Professional Grade',
       offer: 'Min. 25% Off',
-      image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png',
+      image: 'https://ik.imagekit.io/wadwvg0en/Work/71rZ7-bV0iL._AC_UL480_FMwebp_QL65_.webp',
       bgColor: 'from-purple-100 to-purple-200',
-      link: '/products?category=tools'
+      link: '/products?category=farm-tools'
     },
     {
       id: '5',
       title: 'Irrigation',
       subtitle: 'Drip & Sprinkler',
       offer: 'Up to 50% Off',
-      image: 'https://i.postimg.cc/dtMvG7cj/glycel-herbicide-1-file-5004.png',
+      image: 'https://ik.imagekit.io/wadwvg0en/Work/71rZ7-bV0iL._AC_UL480_FMwebp_QL65_.webp',
       bgColor: 'from-cyan-100 to-cyan-200',
-      link: '/products?category=irrigation'
+      link: '/products?category=farm-tools'
     },
     {
       id: '6',
       title: 'Organic Products',
       subtitle: 'Natural Farming',
       offer: 'Special Deals',
-      image: 'https://i.postimg.cc/FKpwqR68/Tomato-Seeds.png',
+      image: 'https://ik.imagekit.io/wadwvg0en/Work/seeds-packet-collection.webp',
       bgColor: 'from-emerald-100 to-emerald-200',
       link: '/products?category=organic'
     }
