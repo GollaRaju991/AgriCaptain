@@ -183,7 +183,9 @@ export type Database = {
           crop_name: string
           harvest_date: string | null
           id: string
+          latitude: number | null
           location_address: string | null
+          longitude: number | null
           price: string
           quality_grade: string
           quantity: string
@@ -199,7 +201,9 @@ export type Database = {
           crop_name: string
           harvest_date?: string | null
           id?: string
+          latitude?: number | null
           location_address?: string | null
+          longitude?: number | null
           price: string
           quality_grade?: string
           quantity: string
@@ -215,7 +219,9 @@ export type Database = {
           crop_name?: string
           harvest_date?: string | null
           id?: string
+          latitude?: number | null
           location_address?: string | null
+          longitude?: number | null
           price?: string
           quality_grade?: string
           quantity?: string
@@ -1111,7 +1117,9 @@ export type Database = {
           crop_name: string | null
           harvest_date: string | null
           id: string | null
+          latitude: number | null
           location_address: string | null
+          longitude: number | null
           price: string | null
           quality_grade: string | null
           quantity: string | null
@@ -1125,7 +1133,9 @@ export type Database = {
           crop_name?: string | null
           harvest_date?: string | null
           id?: string | null
+          latitude?: number | null
           location_address?: string | null
+          longitude?: number | null
           price?: string | null
           quality_grade?: string | null
           quantity?: string | null
@@ -1139,7 +1149,9 @@ export type Database = {
           crop_name?: string | null
           harvest_date?: string | null
           id?: string | null
+          latitude?: number | null
           location_address?: string | null
+          longitude?: number | null
           price?: string | null
           quality_grade?: string | null
           quantity?: string | null

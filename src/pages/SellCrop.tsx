@@ -1,19 +1,22 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Loader2, Sprout, X, Plus, SlidersHorizontal, Filter } from 'lucide-react';
+import { MapPin, Loader2, Sprout, Plus, SlidersHorizontal, Navigation } from 'lucide-react';
 import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Drawer, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CategoryNavigation from '@/components/CategoryNavigation';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import { calculateDistance, formatDistance, detectUserLocation, type UserLocation } from '@/utils/locationUtils';
 
 interface CropWithSeller {
   id: string;
@@ -27,6 +30,8 @@ interface CropWithSeller {
   location_address: string | null;
   sell_type: string;
   user_id: string;
+  latitude: number | null;
+  longitude: number | null;
   seller: {
     name: string;
     phone: string;
@@ -35,6 +40,7 @@ interface CropWithSeller {
     district: string | null;
     state: string | null;
   } | null;
+  distance?: number;
 }
 
 interface Filters {
@@ -70,12 +76,28 @@ const parseQuantityKg = (qty: string): number => {
 
 const SellCrop: React.FC = () => {
   const { language } = useLanguage();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [crops, setCrops] = useState<CropWithSeller[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+
+  const handleDetectLocation = useCallback(async () => {
+    setDetectingLocation(true);
+    try {
+      const loc = await detectUserLocation();
+      setUserLocation(loc);
+      toast({ title: t('Location detected!', 'స్థానం గుర్తించబడింది!', 'स्थान पहचाना गया!'), description: loc.address });
+    } catch {
+      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది'), variant: 'destructive' });
+    } finally {
+      setDetectingLocation(false);
+    }
+  }, []);
   
 
   const t = (en: string, te: string, hi?: string) => {
@@ -112,10 +134,22 @@ const SellCrop: React.FC = () => {
   };
 
   useEffect(() => { fetchCrops(); }, []);
+  useEffect(() => { handleDetectLocation(); }, []);
+
+  // Add distance to crops
+  const cropsWithDistance = useMemo(() => {
+    if (!userLocation) return crops.map(c => ({ ...c, distance: undefined }));
+    return crops.map(crop => {
+      if (crop.latitude && crop.longitude) {
+        const dist = calculateDistance(userLocation.latitude, userLocation.longitude, crop.latitude, crop.longitude);
+        return { ...crop, distance: dist };
+      }
+      return { ...crop, distance: undefined };
+    });
+  }, [crops, userLocation]);
 
   const filteredCrops = useMemo(() => {
-    return crops.filter((crop) => {
-      // Only show crops listed for Crop Market (sell_type = 'crop_market' or 'both')
+    let result = cropsWithDistance.filter((crop) => {
       const sellType = crop.sell_type || 'both';
       if (sellType !== 'crop_market' && sellType !== 'both') return false;
 
@@ -142,7 +176,12 @@ const SellCrop: React.FC = () => {
       if (f.availabilityLocation && crop.availability_location !== f.availabilityLocation) return false;
       return true;
     });
-  }, [crops, appliedFilters]);
+    // Sort by nearest
+    if (userLocation) {
+      result.sort((a, b) => (a.distance ?? 99999) - (b.distance ?? 99999));
+    }
+    return result;
+  }, [cropsWithDistance, appliedFilters, userLocation]);
 
   const activeFilterCount = Object.values(appliedFilters).filter(Boolean).length;
 
@@ -151,13 +190,23 @@ const SellCrop: React.FC = () => {
     return '/placeholder.svg';
   };
 
+  const nearbyCrops = useMemo(() => filteredCrops.filter(c => c.distance !== undefined && c.distance <= 100), [filteredCrops]);
+  const extendedCrops = useMemo(() => filteredCrops.filter(c => c.distance !== undefined && c.distance > 100 && c.distance <= 500), [filteredCrops]);
+  const otherCrops = useMemo(() => filteredCrops.filter(c => c.distance === undefined || c.distance > 500), [filteredCrops]);
+  const hasLocationGrouping = userLocation && filteredCrops.some(c => c.distance !== undefined);
+
   const renderCropCard = (crop: CropWithSeller) => (
     <Card key={crop.id} className="overflow-hidden hover:shadow-md transition-shadow">
       <CardContent className="p-0">
         <Link to={`/sell-crop/${crop.id}`}>
           <div className="flex">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted relative">
               <img src={getFirstImage(crop.crop_images)} alt={crop.crop_name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
+              {crop.distance !== undefined && (
+                <Badge variant="secondary" className="absolute bottom-1 left-1 text-[9px] px-1.5 py-0 h-4 bg-primary/90 text-primary-foreground">
+                  {formatDistance(crop.distance)}
+                </Badge>
+              )}
             </div>
             <div className="flex-1 p-3 flex flex-col justify-between">
               <div>
@@ -168,9 +217,9 @@ const SellCrop: React.FC = () => {
               {crop.seller && (
                 <div className="flex items-center gap-2 mt-2">
                   {crop.seller.photo_url ? (
-                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 rounded-full object-cover border-2 border-green-500" />
+                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 rounded-full object-cover border-2 border-primary" />
                   ) : (
-                    <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
                       {crop.seller.name.charAt(0)}
                     </div>
                   )}
@@ -186,13 +235,28 @@ const SellCrop: React.FC = () => {
 
         {crop.location_address && (
           <div className="bg-muted/50 px-3 py-2 flex items-center gap-2 border-t">
-            <MapPin className="h-4 w-4 text-green-600 flex-shrink-0" />
+            <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
             <span className="text-sm text-muted-foreground truncate">{crop.location_address}</span>
           </div>
         )}
       </CardContent>
     </Card>
   );
+
+  const renderCropSection = (cropsList: CropWithSeller[], title: string) => {
+    if (cropsList.length === 0) return null;
+    return (
+      <div className="mb-6">
+        <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
+          {title}
+          <Badge variant="secondary" className="text-xs">{cropsList.length}</Badge>
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {cropsList.map(crop => renderCropCard(crop))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -205,6 +269,25 @@ const SellCrop: React.FC = () => {
           </button>
         }
       />
+
+      {/* Location bar (mobile) */}
+      <div className="lg:hidden bg-card px-4 py-2 border-b border-border">
+        <button
+          onClick={handleDetectLocation}
+          disabled={detectingLocation}
+          className="flex items-center gap-2 w-full"
+        >
+          {detectingLocation ? (
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          ) : (
+            <Navigation className="h-4 w-4 text-primary" />
+          )}
+          <span className="text-sm text-foreground font-medium truncate">
+            {userLocation?.address || t('Detect your location', 'మీ స్థానాన్ని గుర్తించండి', 'अपना स्थान पहचानें')}
+          </span>
+          {userLocation && <MapPin className="h-3 w-3 text-primary ml-auto flex-shrink-0" />}
+        </button>
+      </div>
 
       <div className="hidden lg:block"><Header /></div>
 
@@ -244,7 +327,7 @@ const SellCrop: React.FC = () => {
           <div className="text-center py-16">
             <Sprout className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
             <p className="text-lg font-semibold text-foreground mb-1">
-              {t('No crops available', 'పంటలు లేవు', 'कोई फसल उपलब्ध नहीं')}
+              {t('No crops available in your region', 'మీ ప్రాంతంలో పంటలు అందుబాటులో లేవు', 'आपके क्षेत्र में कोई फसल उपलब्ध नहीं')}
             </p>
             <p className="text-sm text-muted-foreground mb-4">
               {activeFilterCount > 0
@@ -257,6 +340,12 @@ const SellCrop: React.FC = () => {
               </Button>
             )}
           </div>
+        ) : hasLocationGrouping ? (
+          <>
+            {renderCropSection(nearbyCrops, `📍 ${t('Nearby Crops (0-100 km)', 'సమీపంలోని పంటలు (0-100 కి.మీ)', 'नज़दीकी फसलें (0-100 कि.मी.)')}`)}
+            {renderCropSection(extendedCrops, `🗺️ ${t('Extended Area (100-500 km)', 'విస్తారిత ప్రాంతం (100-500 కి.మీ)', 'विस्तारित क्षेत्र (100-500 कि.मी.)')}`)}
+            {renderCropSection(otherCrops, `🌍 ${t('Other Regions', 'ఇతర ప్రాంతాలు', 'अन्य क्षेत्र')}`)}
+          </>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredCrops.map(crop => renderCropCard(crop))}
