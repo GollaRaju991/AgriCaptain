@@ -134,10 +134,22 @@ const SellCrop: React.FC = () => {
   };
 
   useEffect(() => { fetchCrops(); }, []);
+  useEffect(() => { handleDetectLocation(); }, []);
+
+  // Add distance to crops
+  const cropsWithDistance = useMemo(() => {
+    if (!userLocation) return crops.map(c => ({ ...c, distance: undefined }));
+    return crops.map(crop => {
+      if (crop.latitude && crop.longitude) {
+        const dist = calculateDistance(userLocation.latitude, userLocation.longitude, crop.latitude, crop.longitude);
+        return { ...crop, distance: dist };
+      }
+      return { ...crop, distance: undefined };
+    });
+  }, [crops, userLocation]);
 
   const filteredCrops = useMemo(() => {
-    return crops.filter((crop) => {
-      // Only show crops listed for Crop Market (sell_type = 'crop_market' or 'both')
+    let result = cropsWithDistance.filter((crop) => {
       const sellType = crop.sell_type || 'both';
       if (sellType !== 'crop_market' && sellType !== 'both') return false;
 
@@ -164,7 +176,12 @@ const SellCrop: React.FC = () => {
       if (f.availabilityLocation && crop.availability_location !== f.availabilityLocation) return false;
       return true;
     });
-  }, [crops, appliedFilters]);
+    // Sort by nearest
+    if (userLocation) {
+      result.sort((a, b) => (a.distance ?? 99999) - (b.distance ?? 99999));
+    }
+    return result;
+  }, [cropsWithDistance, appliedFilters, userLocation]);
 
   const activeFilterCount = Object.values(appliedFilters).filter(Boolean).length;
 
