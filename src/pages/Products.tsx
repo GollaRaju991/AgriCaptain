@@ -85,7 +85,20 @@ const Products = () => {
       ? getProductsByCategory(selectedCategory)
       : allStaticProducts;
     
-    let filtered = removeDuplicates([...baseProducts, ...sellerProducts]);
+    // Filter seller products by category before merging
+    const filteredSellerProducts = selectedCategory
+      ? sellerProducts.filter(p => {
+          const cat = (p.category || '').toLowerCase();
+          if (selectedCategory === 'seeds') return cat === 'seeds';
+          if (selectedCategory === 'pesticides' || selectedCategory === 'agriculture' || selectedCategory === 'plant-growth')
+            return cat.includes('pesticid') || cat.includes('insecticid') || cat.includes('herbicid') || cat.includes('fungicid') || cat === 'agriculture' || cat === 'plant-growth';
+          if (selectedCategory === 'farm-tools' || selectedCategory === 'tools' || selectedCategory === 'equipment')
+            return cat.includes('tool') || cat.includes('equipment') || cat.includes('farm');
+          return cat === selectedCategory;
+        })
+      : sellerProducts;
+
+    let filtered = removeDuplicates([...baseProducts, ...filteredSellerProducts]);
 
     if (searchQuery) {
       filtered = filtered.filter(product =>
