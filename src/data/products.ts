@@ -378,36 +378,6 @@ It penetrates through leaves and destroys weeds from roots, ensuring long-lastin
 ],
   }),
   defineProduct({
-    id: 'P303',
-    name: 'Coragen Insecticide (Chlorantraniliprole 18.5% SC)',
-  brand: 'FMC (DuPont)',
-  category: 'Pesticides',
-
-  image: "https://ik.imagekit.io/nsi7x5p2x/coragen-dupont-file-1135%20(1).webp?tr=w-800,q-auto,f-auto",
-
-  images: [
-    "https://ik.imagekit.io/nsi7x5p2x/coragen-dupont-file-1135%20(1).webp?tr=w-800,q-auto,f-auto",
-    "https://ik.imagekit.io/nsi7x5p2x/Coragen_01.webp?tr=w-800,q-auto,f-auto",
-    "https://ik.imagekit.io/nsi7x5p2x/Coragen_02%20(1).webp?tr=w-800,q-auto,f-auto",
-    "https://ik.imagekit.io/nsi7x5p2x/Coragen_03%20(1).webp?tr=w-800,q-auto,f-auto",
-    "https://ik.imagekit.io/nsi7x5p2x/Coragen_04%20(1).webp?tr=w-800,q-auto,f-auto"
-  ],
-
-  rating: 4.7,
-  reviews: 220,
-
-  description: `Coragen is a highly effective insecticide used to control caterpillars and borers.
-It provides long-lasting protection and improves crop yield with minimal environmental impact.`,
-
-  forUse: 'Control of lepidopteran pests in crops',
-
-    variants: [
-  { variant: '10ml', sku: 'CORAGEN-10ML-001', price: 129, originalPrice: 220, discount: 41, inStock: true },
-  { variant: '60ml', sku: 'CORAGEN-60ML-001', price: 549, originalPrice: 1130, discount: 51, inStock: true },
-  { variant: '150ml', sku: 'CORAGEN-150ML-001', price: 1129, originalPrice: 2792, discount: 60, inStock: true },
-],
-  }),
-  defineProduct({
     id: 'P304',
     name: 'Exponus Insecticide by BASF (Broflanilide 300G/L SC) for Effective Pest Control',
     brand: 'BASF',
