@@ -61,9 +61,8 @@ const VehicleRent = () => {
   const [searchResults, setSearchResults] = useState<VehicleListing[]>([]);
   const [isSearched, setIsSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [autoDetectLocation, setAutoDetectLocation] = useState(true);
+  const [locationMode, setLocationMode] = useState<'nearby' | 'manual'>('nearby');
   const [detectingNearby, setDetectingNearby] = useState(false);
-  const [nearbyActive, setNearbyActive] = useState(false);
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
 
