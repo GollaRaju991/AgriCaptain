@@ -22,6 +22,16 @@ import { getProductsByCategory } from '@/data/productLoader';
 
 const categories = ['seeds', 'pesticides', 'farm-tools', 'equipment'];
 
+const categoryDisplayNames: Record<string, string> = {
+  seeds: 'Seeds',
+  pesticides: 'Pesticides',
+  'farm-tools': 'Farm Tools & Equipment',
+  agriculture: 'Pesticides',
+  'plant-growth': 'Plant Growth',
+  tools: 'Farm Tools',
+  equipment: 'Equipment',
+};
+
 const mapSellerCategory = (cat: string): string => {
   const lower = cat.toLowerCase();
   if (lower.includes('seed')) return 'seeds';
