@@ -1,19 +1,22 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Loader2, Sprout, X, Plus, SlidersHorizontal, Filter } from 'lucide-react';
+import { MapPin, Loader2, Sprout, Plus, SlidersHorizontal, Navigation } from 'lucide-react';
 import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Drawer, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CategoryNavigation from '@/components/CategoryNavigation';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import { calculateDistance, formatDistance, detectUserLocation, type UserLocation } from '@/utils/locationUtils';
 
 interface CropWithSeller {
   id: string;
