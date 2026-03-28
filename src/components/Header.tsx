@@ -272,8 +272,8 @@ const Header = () => {
               <div className="flex items-center px-2 py-2 space-x-4 min-w-max">
                 {[
                   { name: translations.seeds, image: catSeedsIcon, path: '/products?category=seeds', bg: 'bg-green-50' },
-                  
-                  { name: translations.agri_products || translations.agriculture_products, image: catAgriIcon, path: '/products?category=agriculture', bg: 'bg-amber-50' },
+                  { name: 'Pesticides', image: catAgriIcon, path: '/products?category=pesticides', bg: 'bg-red-50' },
+                  { name: 'Farm Tools', image: catAgriIcon, path: '/products?category=farm-tools', bg: 'bg-amber-50' },
                   { name: translations.brands, image: catBrandsIcon, path: '/products?category=brands', bg: 'bg-pink-50' },
                   { name: translations.market_details, image: catMarketIcon, path: '/market-details', bg: 'bg-cyan-50' },
                   { name: translations.farm_worker, image: catFarmworkerIcon, path: '/farm-worker', bg: 'bg-orange-50' },

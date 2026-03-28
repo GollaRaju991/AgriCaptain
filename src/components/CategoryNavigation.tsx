@@ -27,19 +27,26 @@ const CategoryNavigation = () => {
       ]
     },
     { 
-      name: 'Agriculture Products', 
-      icon: Wrench, 
-      path: '/products?category=agriculture',
+      name: 'Pesticides', 
+      icon: ShieldAlert, 
+      path: '/products?category=pesticides',
       hasDropdown: true,
       subcategories: [
-        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', icon: ShieldAlert },
-        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', icon: Target },
-        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', icon: Spline },
-        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', icon: CircleDot },
-        { name: 'Plant Growth Regulators', path: '/products?category=agriculture&type=growth-regulators', icon: Growth },
-        { name: 'Sprayers & Equipment', path: '/products?category=agriculture&type=equipment', icon: SprayCan },
-        { name: 'Irrigation Tools', path: '/products?category=agriculture&type=irrigation', icon: Droplets },
-        { name: 'Harvesting Tools', path: '/products?category=agriculture&type=harvesting', icon: Scissors },
+        { name: 'Insecticides', path: '/products?category=pesticides&type=insecticides', icon: Target },
+        { name: 'Herbicides', path: '/products?category=pesticides&type=herbicides', icon: Spline },
+        { name: 'Fungicides', path: '/products?category=pesticides&type=fungicides', icon: CircleDot },
+        { name: 'Plant Growth Regulators', path: '/products?category=pesticides&type=growth-regulators', icon: Growth },
+      ]
+    },
+    { 
+      name: 'Farm Tools & Equipment', 
+      icon: Wrench, 
+      path: '/products?category=farm-tools',
+      hasDropdown: true,
+      subcategories: [
+        { name: 'Sprayers & Equipment', path: '/products?category=farm-tools&type=equipment', icon: SprayCan },
+        { name: 'Irrigation Tools', path: '/products?category=farm-tools&type=irrigation', icon: Droplets },
+        { name: 'Harvesting Tools', path: '/products?category=farm-tools&type=harvesting', icon: Scissors },
       ]
     },
     { name: 'Direct From Farm', icon: Leaf, path: '/direct-from-farm' },

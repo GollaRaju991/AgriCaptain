@@ -72,17 +72,25 @@ const Categories = () => {
       ]
     },
     {
-      id: 'agriculture',
-      name: 'Agri\nProducts',
+      id: 'pesticides',
+      name: 'Pesticides',
       sidebarIcon: catAgriIcon,
-      shopAllLabel: 'Shop All Products',
+      shopAllLabel: 'Shop All Pesticides',
       subcategories: [
-        { name: 'Pesticides', path: '/products?category=agriculture&type=pesticides', image: catPesticides, accent: 'text-red-500' },
-        { name: 'Insecticides', path: '/products?category=agriculture&type=insecticides', image: catInsecticides, accent: 'text-orange-500' },
-        { name: 'Herbicides', path: '/products?category=agriculture&type=herbicides', image: catHerbicides, accent: 'text-green-600' },
-        { name: 'Fungicides', path: '/products?category=agriculture&type=fungicides', image: catFungicides, accent: 'text-amber-600' },
-        { name: 'Sprayers', path: '/products?category=agriculture&type=equipment', image: catSprayers, accent: 'text-blue-500' },
-        { name: 'Irrigation', path: '/products?category=agriculture&type=irrigation', image: catIrrigation, accent: 'text-cyan-500' },
+        { name: 'Insecticides', path: '/products?category=pesticides&type=insecticides', image: catInsecticides, accent: 'text-orange-500' },
+        { name: 'Herbicides', path: '/products?category=pesticides&type=herbicides', image: catHerbicides, accent: 'text-green-600' },
+        { name: 'Fungicides', path: '/products?category=pesticides&type=fungicides', image: catFungicides, accent: 'text-amber-600' },
+        { name: 'Pesticides', path: '/products?category=pesticides&type=pesticides', image: catPesticides, accent: 'text-red-500' },
+      ]
+    },
+    {
+      id: 'farm-tools',
+      name: 'Farm\nTools',
+      sidebarIcon: catAgriIcon,
+      shopAllLabel: 'Shop All Tools & Equipment',
+      subcategories: [
+        { name: 'Sprayers', path: '/products?category=farm-tools&type=equipment', image: catSprayers, accent: 'text-blue-500' },
+        { name: 'Irrigation', path: '/products?category=farm-tools&type=irrigation', image: catIrrigation, accent: 'text-cyan-500' },
       ]
     },
     {

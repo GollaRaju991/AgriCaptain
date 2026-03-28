@@ -18,8 +18,19 @@ import {
 
 import { products as allStaticProducts } from '@/data/products';
 import { removeDuplicates } from '@/data/products';
+import { getProductsByCategory } from '@/data/productLoader';
 
-const categories = ['seeds', 'tools', 'equipment', 'agriculture'];
+const categories = ['seeds', 'pesticides', 'farm-tools', 'equipment'];
+
+const categoryDisplayNames: Record<string, string> = {
+  seeds: 'Seeds',
+  pesticides: 'Pesticides',
+  'farm-tools': 'Farm Tools & Equipment',
+  agriculture: 'Pesticides',
+  'plant-growth': 'Plant Growth',
+  tools: 'Farm Tools',
+  equipment: 'Equipment',
+};
 
 const mapSellerCategory = (cat: string): string => {
   const lower = cat.toLowerCase();
@@ -69,17 +80,22 @@ const Products = () => {
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = removeDuplicates([...allStaticProducts, ...sellerProducts]);
+    // Use category-based loader if a category is selected
+    let baseProducts = selectedCategory
+      ? getProductsByCategory(selectedCategory)
+      : allStaticProducts;
+    
+    let filtered = removeDuplicates([...baseProducts, ...sellerProducts]);
 
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (product.category || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    if (selectedCategory) {
+    if (selectedCategory && !['seeds', 'pesticides', 'farm-tools', 'agriculture', 'plant-growth', 'tools', 'equipment'].includes(selectedCategory)) {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
@@ -132,7 +148,7 @@ const Products = () => {
       <div className="md:hidden">
         <div className="px-4 pt-4 pb-2">
           <h1 className="text-2xl font-bold text-foreground">
-            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
+            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${categoryDisplayNames[selectedCategory] || selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
         </div>
 
@@ -269,7 +285,7 @@ const Products = () => {
       <div className="hidden md:block container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-4">
-            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
+            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${categoryDisplayNames[selectedCategory] || selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
           {(searchQuery || selectedCategory || selectedBrand) && (
             <div className="flex flex-wrap items-center gap-2 mb-4">
