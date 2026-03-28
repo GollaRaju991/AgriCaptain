@@ -377,7 +377,7 @@ It penetrates through leaves and destroys weeds from roots, ensuring long-lastin
     id: 'P303',
     name: 'Coragen Insecticide (Chlorantraniliprole 18.5% SC)',
   brand: 'FMC (DuPont)',
-  category: 'insecticide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/coragen-dupont-file-1135%20(1).webp?tr=w-800,q-auto,f-auto",
 
@@ -435,7 +435,7 @@ It provides long-lasting protection and improves crop yield with minimal environ
     id: 'P305',
   name: 'Solomon Insecticide (Beta-cyfluthrin + Imidacloprid)',
   brand: 'Bayer',
-  category: 'insecticide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/solomon-file-779.webp?tr=w-800,q-auto,f-auto",
 
@@ -477,7 +477,7 @@ Suitable for modern farming practices with reliable performance across various c
   id: 'P307',
   name: 'Admire Insecticide (Imidacloprid 70% WG)',
   brand: 'Bayer',
-  category: 'insecticide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20004.webp?tr=w-800,q-auto,f-auto",
 
@@ -513,7 +513,7 @@ It provides long-lasting protection and improves crop health by eliminating harm
   id: 'P308',
   name: 'Topper 77 Herbicide (Glyphosate 71% SG)',
   brand: 'Crystal Crop Protection',
-  category: 'herbicide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/topper-77-file-11270.webp?tr=w-800,q-auto,f-auto",
 
@@ -554,7 +554,7 @@ Suitable for use in non-crop areas and pre-planting weed management.`,
   id: 'P309',
   name: 'Antracol Fungicide (Propineb 70% WP)',
   brand: 'Bayer',
-  category: 'fungicide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/antracol-file-659.webp?tr=w-800,q-auto,f-auto",
 
@@ -596,7 +596,7 @@ It protects crops from leaf spots, blights, and mildew, ensuring healthy plant g
   id: 'P310',
   name: 'Merivon Fungicide (Fluxapyroxad + Pyraclostrobin)',
   brand: 'BASF',
-  category: 'fungicide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4633.webp?tr=w-800,q-auto,f-auto",
 
@@ -635,7 +635,7 @@ It provides long-lasting protection against fungal infections and improves crop 
   id: 'P311',
   name: 'Lesenta Insecticide (Imidacloprid 17.8% SL)',
   brand: 'Bayer',
-  category: 'insecticide',
+  category: 'agriculture',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/lesenta-file-784.webp?tr=w-800,q-auto,f-auto",
 
