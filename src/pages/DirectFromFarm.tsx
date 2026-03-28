@@ -483,13 +483,13 @@ const DirectFromFarm: React.FC = () => {
               <p className="text-sm text-muted-foreground mt-1">{t('Buy fresh crops directly from verified farmers near you', 'మీ సమీపంలోని ధృవీకరించబడిన రైతుల నుండి తాజా పంటలు కొనుగోలు చేయండి', 'अपने पास के सत्यापित किसानों से ताज़ा फसलें खरीदें')}</p>
             </div>
             <Button
-              variant="outline"
+              variant={userLocation ? 'default' : 'outline'}
               onClick={handleDetectLocation}
               disabled={detectingLocation}
-              className="gap-2"
+              className={`gap-2 ${userLocation ? 'bg-green-700 hover:bg-green-800' : ''}`}
             >
               {detectingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
-              {userLocation?.address ? userLocation.address.split(',')[0] : t('Detect Location', 'స్థానం గుర్తించు', 'स्थान पहचानें')}
+              {userLocation?.address ? `📍 ${userLocation.address.split(',')[0]}` : t('Nearby', 'సమీపంలో', 'नज़दीक')}
             </Button>
           </div>
 
