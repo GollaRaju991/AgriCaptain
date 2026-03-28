@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, X, Navigation, Loader2 } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
@@ -15,6 +16,10 @@ import LocationDetector from './LocationDetector';
 import SavedAddressPicker from './SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { detectUserLocation } from '@/utils/locationUtils';
+import { toast } from 'sonner';
+
+const VEHICLE_TYPES = ['Auto', 'Mini Truck', 'Tractor', 'Lorry', 'Other'];
 
 interface RentVehicleDialogProps {
   open: boolean;
@@ -29,12 +34,16 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const [selectedDivision, setSelectedDivision] = useState('');
   const [selectedMandal, setSelectedMandal] = useState('');
   const [selectedVillage, setSelectedVillage] = useState('');
-  const [vehicleType, setVehicleType] = useState('');
+  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState<string[]>([]);
+  const [customVehicleType, setCustomVehicleType] = useState('');
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearched, setIsSearched] = useState(false);
   const [autoDetectLocation, setAutoDetectLocation] = useState(true);
+  const [detectingNearby, setDetectingNearby] = useState(false);
+  const [nearbyActive, setNearbyActive] = useState(false);
+  const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
@@ -49,8 +58,6 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   useEffect(() => { setSelectedMandal(''); setSelectedVillage(''); }, [selectedDivision]);
   useEffect(() => { setSelectedVillage(''); }, [selectedMandal]);
 
-  const vehicleTypes = ['Tractor', 'Harvester', 'Cultivator', 'Seed Drill', 'Thresher', 'Rotavator', 'Plough', 'Sprayer', 'Truck', 'Trailer'];
-
   const getAvailableStates = () => selectedCountry ? states[selectedCountry as keyof typeof states] || [] : [];
   const getAvailableDistricts = () => selectedState ? districts[selectedState as keyof typeof districts] || [] : [];
   const getAvailableDivisions = () => selectedDistrict ? divisions[selectedDistrict as keyof typeof divisions] || [] : [];
@@ -63,8 +70,42 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   };
   const getAvailableVillages = () => selectedMandal ? villages[selectedMandal as keyof typeof villages] || [] : [];
 
+  const toggleVehicleType = (type: string) => {
+    setSelectedVehicleTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    );
+  };
+
+  const removeVehicleType = (type: string) => {
+    setSelectedVehicleTypes(prev => prev.filter(t => t !== type));
+    if (type === 'Other') setCustomVehicleType('');
+  };
+
+  const handleNearby = async () => {
+    if (nearbyActive) { setNearbyActive(false); return; }
+    setDetectingNearby(true);
+    try {
+      await detectUserLocation();
+      setNearbyActive(true);
+      toast.success(label('Location detected!', 'లొకేషన్ గుర్తించబడింది!'));
+    } catch {
+      toast.error(label('Could not detect location', 'లొకేషన్ గుర్తించలేకపోయింది'));
+    } finally {
+      setDetectingNearby(false);
+    }
+  };
+
+  const getEffectiveVehicleTypes = () => {
+    const types = selectedVehicleTypes.filter(t => t !== 'Other');
+    if (selectedVehicleTypes.includes('Other') && customVehicleType.trim()) {
+      types.push(customVehicleType.trim());
+    }
+    return types;
+  };
+
   const handleSearch = () => {
-    if (!selectedCountry || !selectedState || !selectedDistrict || !vehicleType || !startDate || !endDate) return;
+    const effectiveTypes = getEffectiveVehicleTypes();
+    if (!selectedCountry || !selectedState || !selectedDistrict || effectiveTypes.length === 0 || !startDate || !endDate) return;
     if (districtHasDivisions && !selectedDivision) return;
 
     saveAddress({
@@ -74,22 +115,22 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
       division: selectedDivision,
       mandal: selectedMandal,
       village: selectedVillage,
-      workType: vehicleType,
+      workType: effectiveTypes.join(', '),
       category: 'Vehicle',
     });
 
-    const mockResults = [
-      { id: 1, name: 'John Deere 5050D', type: vehicleType, model: '2022', rate: '₹1500/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Ram Singh', condition: 'Excellent', availability: 'Available' },
-      { id: 2, name: 'Mahindra 575 DI', type: vehicleType, model: '2021', rate: '₹1200/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Suresh Kumar', condition: 'Good', availability: 'Available' }
-    ];
+    const mockResults = effectiveTypes.flatMap((type, i) => [
+      { id: i * 2 + 1, name: `${type} - Model A`, type, model: '2022', rate: '₹1500/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Ram Singh', condition: 'Excellent', availability: 'Available' },
+      { id: i * 2 + 2, name: `${type} - Model B`, type, model: '2021', rate: '₹1200/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Suresh Kumar', condition: 'Good', availability: 'Available' }
+    ]);
     setSearchResults(mockResults);
     setIsSearched(true);
   };
 
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
-    setVehicleType(''); setStartDate(undefined); setEndDate(undefined);
-    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true);
+    setSelectedVehicleTypes([]); setCustomVehicleType(''); setStartDate(undefined); setEndDate(undefined);
+    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true); setNearbyActive(false);
   };
 
   const findCodeByName = (list: { code: string; name: string }[], name: string) => {
@@ -138,10 +179,14 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
         }, 50);
       }, 50);
     }, 50);
-    setVehicleType(addr.workType);
+    if (addr.workType) {
+      const types = addr.workType.split(',').map(t => t.trim());
+      setSelectedVehicleTypes(types.filter(t => VEHICLE_TYPES.includes(t)));
+    }
   };
 
-  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && vehicleType && startDate && endDate;
+  const effectiveTypes = getEffectiveVehicleTypes();
+  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && effectiveTypes.length > 0 && startDate && endDate;
 
   const label = (en: string, te: string) => language === 'te' ? te : en;
 
@@ -160,12 +205,22 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
             isLimitReached={isLimitReached}
           />
 
-          <LocationDetector 
-            enabled={autoDetectLocation} 
-            onLocationDetected={handleLocationDetected}
-          />
+          <div className="flex gap-2">
+            <LocationDetector 
+              enabled={autoDetectLocation} 
+              onLocationDetected={handleLocationDetected}
+            />
+            <Button
+              variant={nearbyActive ? 'default' : 'outline'}
+              className={cn('gap-1.5', nearbyActive && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')}
+              onClick={handleNearby}
+              disabled={detectingNearby}
+            >
+              {detectingNearby ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+              {label('Nearby', 'సమీపంలో')}
+            </Button>
+          </div>
           
-          {/* Location Selection */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label>{label('Country *', 'దేశం *')}</Label>
@@ -207,12 +262,7 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
                   <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
                 </Select>
               ) : (
-                <Input 
-                  placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} 
-                  value={selectedMandal} 
-                  onChange={(e) => setSelectedMandal(e.target.value)}
-                  disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}
-                />
+                <Input placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
               )}
             </div>
             <div>
@@ -223,25 +273,63 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
                   <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
                 </Select>
               ) : (
-                <Input 
-                  placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} 
-                  value={selectedVillage} 
-                  onChange={(e) => setSelectedVillage(e.target.value)}
-                  disabled={!selectedMandal}
-                />
+                <Input placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
               )}
             </div>
           </div>
 
-          {/* Vehicle Type and Dates */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label>{label('Vehicle Type *', 'వాహన రకం *')}</Label>
-              <Select value={vehicleType} onValueChange={setVehicleType}>
-                <SelectTrigger><SelectValue placeholder={label('Select vehicle type', 'వాహన రకం ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{vehicleTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
+          {/* Vehicle Type Multi-Select */}
+          <div>
+            <Label>{label('Vehicle Type *', 'వాహన రకం *')}</Label>
+            
+            {selectedVehicleTypes.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2 mb-2">
+                {selectedVehicleTypes.map(type => (
+                  <span key={type} className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-[#2d5a27] text-white">
+                    {type === 'Other' && customVehicleType ? `Other: ${customVehicleType}` : type}
+                    <button onClick={() => removeVehicleType(type)} className="ml-1 hover:bg-white/20 rounded-full p-0.5">
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <Popover open={vehicleDropdownOpen} onOpenChange={setVehicleDropdownOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full justify-start text-left font-normal">
+                  {selectedVehicleTypes.length === 0
+                    ? <span className="text-muted-foreground">{label('Select vehicle types', 'వాహన రకాలు ఎంచుకోండి')}</span>
+                    : <span>{selectedVehicleTypes.length} {label('selected', 'ఎంచుకున్నారు')}</span>
+                  }
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-2" align="start">
+                <div className="space-y-1">
+                  {VEHICLE_TYPES.map(type => (
+                    <label key={type} className="flex items-center gap-3 px-2 py-2 rounded-md hover:bg-accent cursor-pointer">
+                      <Checkbox
+                        checked={selectedVehicleTypes.includes(type)}
+                        onCheckedChange={() => toggleVehicleType(type)}
+                      />
+                      <span className="text-sm">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {selectedVehicleTypes.includes('Other') && (
+              <Input
+                className="mt-2"
+                placeholder={label('Enter custom vehicle type', 'అనుకూల వాహన రకాన్ని నమోదు చేయండి')}
+                value={customVehicleType}
+                onChange={(e) => setCustomVehicleType(e.target.value)}
+              />
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>{label('Start Date *', 'ప్రారంభ తేదీ *')}</Label>
               <Popover>
