@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Navigation, MapPin, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,6 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
-import LocationDetector from '@/components/LocationDetector';
 import SavedAddressPicker from '@/components/SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -20,6 +19,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { detectUserLocation, calculateDistance } from '@/utils/locationUtils';
 
 const WORKER_TYPE_OPTIONS = ['Field Worker', 'Harvester', 'Planting Specialist', 'Irrigation Expert', 'Pesticide Applicator', 'General Laborer', 'Equipment Operator', 'Supervisor'];
 const WORKER_CATEGORIES = ['Single', 'Group'];
@@ -27,6 +27,7 @@ const WORKER_CATEGORIES = ['Single', 'Group'];
 const FarmWorker = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const [locationMode, setLocationMode] = useState<'nearby' | 'manual'>('nearby');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -40,15 +41,26 @@ const FarmWorker = () => {
   const [endDate, setEndDate] = useState<Date>();
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearched, setIsSearched] = useState(false);
-  const [autoDetectLocation, setAutoDetectLocation] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [workerTypeDropdownOpen, setWorkerTypeDropdownOpen] = useState(false);
+  const [detectingNearby, setDetectingNearby] = useState(false);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
+
+  const label = (en: string, te: string) => language === 'te' ? te : en;
 
   const getDisplayName = (item: { name: string; nameTe?: string }) => {
     if (language === 'te' && item.nameTe) return item.nameTe;
     return item.name;
   };
+
+  // Auto-detect location when nearby mode is active
+  useEffect(() => {
+    if (locationMode === 'nearby' && !userCoords && !detectingNearby) {
+      handleDetectNearby();
+    }
+  }, [locationMode]);
 
   useEffect(() => { setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedCountry]);
   useEffect(() => { setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedState]);
@@ -75,24 +87,44 @@ const FarmWorker = () => {
     );
   };
 
-  const handleSearch = async () => {
-    if (!selectedCountry || !selectedState || !selectedDistrict || selectedWorkerTypes.length === 0 || !workerCategory || !startDate || !endDate) return;
-    if (districtHasDivisions && !selectedDivision) return;
-    if (workerCategory === 'Group' && !numberOfWorkers) return;
-
-    saveAddress({
-      country: selectedCountry,
-      state: selectedState,
-      district: selectedDistrict,
-      division: selectedDivision,
-      mandal: selectedMandal,
-      village: selectedVillage,
-      workType: selectedWorkerTypes.join(', '),
-      category: workerCategory,
-    });
-
+  const handleDetectNearby = async () => {
+    setDetectingNearby(true);
     try {
-      // Query farm_workers from Supabase where worker_types overlaps with selected types
+      const loc = await detectUserLocation();
+      setUserCoords({ lat: loc.latitude, lon: loc.longitude });
+      toast.success(label('Location detected!', 'లొకేషన్ గుర్తించబడింది!'));
+    } catch {
+      toast.error(label('Could not detect location. Try Add Location instead.', 'లొకేషన్ గుర్తించలేకపోయింది. లొకేషన్ జోడించండి ప్రయత్నించండి.'));
+    } finally {
+      setDetectingNearby(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (selectedWorkerTypes.length === 0 || !workerCategory || !startDate || !endDate) return;
+    if (workerCategory === 'Group' && !numberOfWorkers) return;
+    if (locationMode === 'manual' && (!selectedCountry || !selectedState || !selectedDistrict)) return;
+    if (locationMode === 'manual' && districtHasDivisions && !selectedDivision) return;
+    if (locationMode === 'nearby' && !userCoords) {
+      toast.error(label('Please wait for location detection or use Add Location', 'దయచేసి లొకేషన్ గుర్తించే వరకు వేచి ఉండండి'));
+      return;
+    }
+
+    if (locationMode === 'manual') {
+      saveAddress({
+        country: selectedCountry,
+        state: selectedState,
+        district: selectedDistrict,
+        division: selectedDivision,
+        mandal: selectedMandal,
+        village: selectedVillage,
+        workType: selectedWorkerTypes.join(', '),
+        category: workerCategory,
+      });
+    }
+
+    setIsLoading(true);
+    try {
       const { data, error } = await supabase
         .from('farm_workers' as any)
         .select('*')
@@ -101,10 +133,7 @@ const FarmWorker = () => {
 
       if (error) throw error;
 
-      const workers = (data as any[]) || [];
-      
-      // Map database results to display format
-      const results = workers.map((w: any) => ({
+      let results = ((data as any[]) || []).map((w: any) => ({
         id: w.id,
         name: w.name,
         type: (w.worker_types as string[]).filter((t: string) => selectedWorkerTypes.includes(t)).join(', '),
@@ -116,7 +145,22 @@ const FarmWorker = () => {
         category: w.category || 'Single',
         avatar: w.photo_url || '',
         phone: w.phone || '',
+        latitude: w.latitude,
+        longitude: w.longitude,
+        distance: undefined as number | undefined,
       }));
+
+      // Calculate distance if nearby mode
+      if (locationMode === 'nearby' && userCoords) {
+        results = results.map(w => ({
+          ...w,
+          distance: w.latitude && w.longitude
+            ? calculateDistance(userCoords.lat, userCoords.lon, w.latitude, w.longitude)
+            : undefined,
+        }));
+        results.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
+        results = results.filter(w => w.distance !== undefined && w.distance <= 500);
+      }
 
       setSearchResults(results);
       setIsSearched(true);
@@ -127,6 +171,8 @@ const FarmWorker = () => {
     } catch (err) {
       console.error('Error searching workers:', err);
       toast.error(label('Failed to search workers', 'కార్మికులను వెతకడంలో విఫలమైంది'));
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,39 +180,11 @@ const FarmWorker = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
     setSelectedWorkerTypes([]); setWorkerCategory(''); setNumberOfWorkers('');
     setStartDate(undefined); setEndDate(undefined);
-    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true);
-  };
-
-  const findCodeByName = (list: { code: string; name: string }[], name: string) => {
-    if (!name || !list) return '';
-    const lower = name.toLowerCase();
-    const match = list.find(item => item.name.toLowerCase().includes(lower) || lower.includes(item.name.toLowerCase()));
-    return match?.code || '';
-  };
-
-  const handleLocationDetected = (location: any) => {
-    const countryMatch = countries.find(c => c.name.toLowerCase() === (location.country || '').toLowerCase());
-    const countryCode = countryMatch?.code || '';
-    if (countryCode) setSelectedCountry(countryCode);
-    const stateList = countryCode ? states[countryCode as keyof typeof states] || [] : [];
-    const stateCode = findCodeByName(stateList, location.state);
-    if (stateCode) setSelectedState(stateCode);
-    const districtList = stateCode ? districts[stateCode as keyof typeof districts] || [] : [];
-    const districtCode = findCodeByName(districtList, location.district);
-    if (districtCode) setSelectedDistrict(districtCode);
-    const divisionList = districtCode ? divisions[districtCode as keyof typeof divisions] || [] : [];
-    const divisionCode = findCodeByName(divisionList, location.division);
-    if (divisionCode) setSelectedDivision(divisionCode);
-    const mandalList = districtCode ? getMandalsForDistrict(districtCode) : [];
-    const mandalCode = findCodeByName(mandalList, location.mandal);
-    if (mandalCode) setSelectedMandal(mandalCode);
-    const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
-    const villageCode = findCodeByName(villageList, location.village);
-    if (villageCode) setSelectedVillage(villageCode);
-    setAutoDetectLocation(false);
+    setSearchResults([]); setIsSearched(false); setLocationMode('nearby'); setUserCoords(null);
   };
 
   const handleSelectSavedAddress = (addr: SavedFormAddress) => {
+    setLocationMode('manual');
     setSelectedCountry(addr.country);
     setTimeout(() => {
       setSelectedState(addr.state);
@@ -187,9 +205,8 @@ const FarmWorker = () => {
     setWorkerCategory(addr.category);
   };
 
-  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && selectedWorkerTypes.length > 0 && workerCategory && startDate && endDate && (workerCategory === 'Single' || numberOfWorkers);
-
-  const label = (en: string, te: string) => language === 'te' ? te : en;
+  const isFormValid = selectedWorkerTypes.length > 0 && workerCategory && startDate && endDate && (workerCategory === 'Single' || numberOfWorkers) &&
+    (locationMode === 'nearby' ? !!userCoords : (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
 
   return (
     <div className="min-h-screen bg-background">
@@ -204,68 +221,96 @@ const FarmWorker = () => {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-        <SavedAddressPicker addresses={savedAddresses} onSelect={handleSelectSavedAddress} onDelete={deleteAddress} isLimitReached={isLimitReached} />
-        <LocationDetector enabled={autoDetectLocation} onLocationDetected={handleLocationDetected} />
+        {/* Nearby / Add Location Toggle */}
+        <div className="flex gap-2">
+          <Button
+            variant={locationMode === 'nearby' ? 'default' : 'outline'}
+            className={cn('flex-1 gap-2', locationMode === 'nearby' && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')}
+            onClick={() => { setLocationMode('nearby'); if (!userCoords) handleDetectNearby(); }}
+            disabled={detectingNearby}
+          >
+            {detectingNearby ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+            {label('Nearby', 'సమీపంలో')}
+          </Button>
+          <Button
+            variant={locationMode === 'manual' ? 'default' : 'outline'}
+            className={cn('flex-1 gap-2', locationMode === 'manual' && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')}
+            onClick={() => setLocationMode('manual')}
+          >
+            <MapPin className="h-4 w-4" />
+            {label('+ Add Location', '+ లొకేషన్ జోడించండి')}
+          </Button>
+        </div>
+
+        {locationMode === 'nearby' && userCoords && (
+          <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 rounded-lg px-3 py-2">
+            <Navigation className="h-4 w-4" />
+            {label('GPS location detected — showing workers within 500km', 'GPS లొకేషన్ గుర్తించబడింది — 500 కి.మీ. లోపల కార్మికులు చూపబడుతాయి')}
+          </div>
+        )}
+
+        {locationMode === 'manual' && (
+          <SavedAddressPicker addresses={savedAddresses} onSelect={handleSelectSavedAddress} onDelete={deleteAddress} isLimitReached={isLimitReached} />
+        )}
 
         <div className="space-y-4">
-          {/* Country */}
-          <div>
-            <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
-            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          {/* State */}
-          <div>
-            <Label className="text-sm font-medium">{label('State *', 'రాష్ట్రం *')}</Label>
-            <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          {/* District */}
-          <div>
-            <Label className="text-sm font-medium">{label('District *', 'జిల్లా *')}</Label>
-            <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          {/* Division */}
-          {districtHasDivisions && (
-            <div>
-              <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
-              <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
+          {/* Location fields - only in manual mode */}
+          {locationMode === 'manual' && (
+            <>
+              <div>
+                <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">{label('State *', 'రాష్ట్రం *')}</Label>
+                <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">{label('District *', 'జిల్లా *')}</Label>
+                <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              {districtHasDivisions && (
+                <div>
+                  <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
+                  <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div>
+                <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
+                {getAvailableMandals().length > 0 ? (
+                  <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
+                  </Select>
+                ) : (
+                  <Input className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
+                )}
+              </div>
+              <div>
+                <Label className="text-sm font-medium">{label('Village', 'గ్రామం')}</Label>
+                {getAvailableVillages().length > 0 ? (
+                  <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                ) : (
+                  <Input className="mt-1" placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
+                )}
+              </div>
+            </>
           )}
-          {/* Mandal */}
-          <div>
-            <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
-            {getAvailableMandals().length > 0 ? (
-              <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
-              </Select>
-            ) : (
-              <Input className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
-            )}
-          </div>
-          {/* Village */}
-          <div>
-            <Label className="text-sm font-medium">{label('Village', 'గ్రామం')}</Label>
-            {getAvailableVillages().length > 0 ? (
-              <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
-              </Select>
-            ) : (
-              <Input className="mt-1" placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
-            )}
-          </div>
 
           {/* Worker Type - Multi Select */}
           <div>
@@ -362,7 +407,8 @@ const FarmWorker = () => {
 
         {/* Actions */}
         <div className="flex gap-3">
-          <Button onClick={handleSearch} disabled={!isFormValid} className="flex-1 bg-[#2d5a27] hover:bg-[#1e3d1a] text-white">
+          <Button onClick={handleSearch} disabled={!isFormValid || isLoading} className="flex-1 bg-[#2d5a27] hover:bg-[#1e3d1a] text-white">
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {label('Search Workers', 'కార్మికులను వెతకండి')}
           </Button>
           <Button variant="outline" onClick={resetForm}>{label('Reset', 'రీసెట్')}</Button>
@@ -393,6 +439,11 @@ const FarmWorker = () => {
                       </div>
                     </div>
                   </div>
+                  {worker.distance !== undefined && (
+                    <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
+                      📍 {worker.distance.toFixed(1)} km away
+                    </Badge>
+                  )}
                   {workerCategory === 'Group' && <p className="text-sm text-primary">{label(`Available for ${numberOfWorkers} workers`, `${numberOfWorkers} మంది కార్మికుల కోసం అందుబాటులో ఉంది`)}</p>}
                   <div className="text-sm space-y-1">
                     <p><strong>{label('Experience:', 'అనుభవం:')}</strong> {worker.experience}</p>
