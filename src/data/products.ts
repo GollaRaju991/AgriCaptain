@@ -346,8 +346,8 @@ It kills weeds from leaves to roots and is widely used in agriculture for broad-
     ],
   }),
   defineProduct({
-    id: 'P303',
-    name: 'Glyphosafe Herbicide',
+    id: 'P302',
+    name: 'Sumitomo Glycel Herbicide – Glyphosate 41% SL IPA Salt For Effective and Reliable Weed Control',
     brand: 'Sumitomo',
     category: 'agriculture',
     image: "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5004.webp?tr=w-800,q-auto,f-auto",
@@ -368,13 +368,13 @@ It penetrates through leaves and destroys weeds from roots, ensuring long-lastin
   forUse: 'Weed control in agricultural fields, orchards, and bund areas',
 
     variants: [
-      { variant: '500ml', sku: 'PEST-GLY-500ML-001', price: 350, originalPrice: 420, discount: 17, inStock: true },
-      { variant: '1L', sku: 'PEST-GLY-1L-001', price: 620, originalPrice: 750, discount: 17, inStock: true },
-      { variant: '5L', sku: 'PEST-GLY-5L-001', price: 2800, originalPrice: 3400, discount: 18, inStock: true },
-    ],
+  { variant: '500ml', sku: 'PEST-GLY-500ML-001', price: 299, originalPrice: 429, discount: 30, inStock: true },
+  { variant: '1L', sku: 'PEST-GLY-1L-001', price: 549, originalPrice: 815, discount: 33, inStock: true },
+  { variant: '5L', sku: 'PEST-GLY-5L-001', price: 2799, originalPrice: 3975, discount: 30, inStock: true },
+],
   }),
   defineProduct({
-    id: 'P304',
+    id: 'P303',
     name: 'Coragen Insecticide (Chlorantraniliprole 18.5% SC)',
   brand: 'FMC (DuPont)',
   category: 'insecticide',
@@ -398,132 +398,276 @@ It provides long-lasting protection and improves crop yield with minimal environ
   forUse: 'Control of lepidopteran pests in crops',
 
     variants: [
-      { variant: '100ml', sku: 'PEST-TEB-100ML-001', price: 280, originalPrice: 340, discount: 18, inStock: true },
-      { variant: '250ml', sku: 'PEST-TEB-250ML-001', price: 580, originalPrice: 700, discount: 17, inStock: true },
-      { variant: '500ml', sku: 'PEST-TEB-500ML-001', price: 1050, originalPrice: 1280, discount: 18, inStock: true },
-      { variant: '1L', sku: 'PEST-TEB-1L-001', price: 1900, originalPrice: 2300, discount: 17, inStock: true },
-    ],
+  { variant: '10ml', sku: 'CORAGEN-10ML-001', price: 129, originalPrice: 220, discount: 41, inStock: true },
+  { variant: '60ml', sku: 'CORAGEN-60ML-001', price: 549, originalPrice: 1130, discount: 51, inStock: true },
+  { variant: '150ml', sku: 'CORAGEN-150ML-001', price: 1129, originalPrice: 2792, discount: 60, inStock: true },
+],
   }),
   defineProduct({
-    id: 'P305',
-    name: 'Impactor Insecticide',
-    brand: 'Exylon',
+    id: 'P304',
+    name: 'Exponus Insecticide by BASF (Broflanilide 300G/L SC) for Effective Pest Control',
+    brand: 'BASF',
     category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-impactor-insecticide-file-20844.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-impactor-insecticide-file-20844.png', '', '', ''],
+    image: 'https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20296.webp?tr=w-800,q-auto,f-auto',
+    images: [
+  "https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20296.webp?tr=w-800,q-auto,f-auto",
+  "https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20297.webp?tr=w-800,q-auto,f-auto",
+  "https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20298.webp?tr=w-800,q-auto,f-auto",
+  "https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20299.webp?tr=w-800,q-auto,f-auto"
+],
     rating: 4.5,
     reviews: 95,
     description: 'Effective insecticide for sucking and chewing pests',
     forUse: 'Cotton, vegetables, paddy',
     variants: [
-      { variant: '250ml', sku: 'PEST-IMP-250ML-001', price: 280, originalPrice: 340, discount: 18, inStock: true },
-      { variant: '500ml', sku: 'PEST-IMP-500ML-001', price: 490, originalPrice: 600, discount: 18, inStock: true },
-      { variant: '1L', sku: 'PEST-IMP-1L-001', price: 900, originalPrice: 1100, discount: 18, inStock: true },
-    ],
+  // 🔹 Single Pack
+  { variant: '34 ml', sku: 'PEST-IMP-34ML-001', price: 1590, originalPrice: 2482, discount: 35, inStock: true, tag: 'Best Seller' },
+  { variant: '8.5 ml', sku: 'PEST-IMP-8.5ML-001', price: 565, originalPrice: 731, discount: 20, inStock: true },
+  { variant: '17 ml', sku: 'PEST-IMP-17ML-001', price: 910, originalPrice: 1326, discount: 30, inStock: true },
+
+  // 🔹 Multi Pack
+  { variant: '68 ml (34 ml x 2)', sku: 'PEST-IMP-68ML-001', price: 3280, originalPrice: 4964, discount: 34, inStock: true, tag: 'Value Pack' },
+  { variant: '136 ml (34 ml x 4)', sku: 'PEST-IMP-136ML-001', price: 6560, originalPrice: 9928, discount: 34, inStock: true },
+  { variant: '34 ml (17 ml x 2)', sku: 'PEST-IMP-34ML-002', price: 1830, originalPrice: 2652, discount: 30, inStock: true },
+],
   }),
   defineProduct({
-    id: 'P306',
-    name: 'Thunder Insecticide',
-    brand: 'Exylon',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-thunder-insecticide-file-20859.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-thunder-insecticide-file-20859.png', '', '', ''],
-    rating: 4.4,
-    reviews: 67,
-    description: 'Fast-acting insecticide for caterpillar and stem borer control',
-    forUse: 'Paddy, maize, sugarcane',
-    variants: [
-      { variant: '100ml', sku: 'PEST-THN-100ML-001', price: 180, originalPrice: 220, discount: 18, inStock: true },
-      { variant: '250ml', sku: 'PEST-THN-250ML-001', price: 380, originalPrice: 460, discount: 17, inStock: true },
-      { variant: '500ml', sku: 'PEST-THN-500ML-001', price: 700, originalPrice: 850, discount: 18, inStock: true },
-      { variant: '1L', sku: 'PEST-THN-1L-001', price: 1300, originalPrice: 1580, discount: 18, inStock: true },
-    ],
+    id: 'P305',
+  name: 'Solomon Insecticide (Beta-cyfluthrin + Imidacloprid)',
+  brand: 'Bayer',
+  category: 'insecticide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/solomon-file-779.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/solomon-file-779.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/solomon-file-780.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/solomon-file-781.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/solomon-file-782.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews:3 ,
+
+  description: `Solomon is a powerful broad-spectrum insecticide that effectively controls sucking and chewing pests.
+It provides quick knockdown action and long-lasting protection, improving crop health and yield.
+Suitable for modern farming practices with reliable performance across various crops.`,
+
+  forUse: 'Pest control in cotton, paddy, vegetables and other crops',
+
+  usage: 'Spray evenly on affected crop areas during early pest infestation',
+
+  crops: 'Cotton, Paddy, Vegetables, Chilli',
+
+  dosage: '0.5 ml per liter of water | 100–150 ml per acre',
+
+  variants: [
+    // 🔹 Single Pack
+    { variant: '100 ml', sku: 'PEST-SOL-100ML-001', price: 302, originalPrice: 450, discount: 33, inStock: true, tag: 'Best Seller' },
+    { variant: '250 ml', sku: 'PEST-SOL-250ML-001', price: 660, originalPrice: 1050, discount: 37, inStock: true },
+    { variant: '500 ml', sku: 'PEST-SOL-500ML-001', price: 1140, originalPrice: 2000, discount: 43, inStock: true },
+
+    // 🔹 Multi Pack
+    { variant: '2 L (1 L x 2)', sku: 'PEST-SOL-2L-001', price: 4442, originalPrice: 7800, discount: 43, inStock: true, tag: 'Value Pack' },
+    { variant: '5 L (1 L x 5)', sku: 'PEST-SOL-5L-001', price: 11039, originalPrice: 19500, discount: 43, inStock: true },
+    { variant: '1000 ml (500 ml x 2)', sku: 'PEST-SOL-1000ML-001', price: 2271, originalPrice: 4000, discount: 43, inStock: true },
+  ],
   }),
   defineProduct({
-    id: 'P307',
-    name: 'Garud 41 Herbicide',
-    brand: 'Exylon',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-garud-41-herbicide-file-20893.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-garud-41-herbicide-file-20893.png', '', '', ''],
-    rating: 4.3,
-    reviews: 88,
-    description: 'Systemic herbicide for broad-leaf and grassy weeds',
-    forUse: 'Non-crop areas and pre-sowing',
-    variants: [
-      { variant: '500ml', sku: 'PEST-GAR-500ML-001', price: 300, originalPrice: 370, discount: 19, inStock: true },
-      { variant: '1L', sku: 'PEST-GAR-1L-001', price: 520, originalPrice: 650, discount: 20, inStock: true },
-      { variant: '5L', sku: 'PEST-GAR-5L-001', price: 2200, originalPrice: 2800, discount: 21, inStock: true },
-    ],
-  }),
+  id: 'P307',
+  name: 'Admire Insecticide (Imidacloprid 70% WG)',
+  brand: 'Bayer',
+  category: 'insecticide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20004.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20004.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20005.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20006.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20007.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 103,
+
+  description: `Admire is a highly effective systemic insecticide used to control sucking pests.
+It provides long-lasting protection and improves crop health by eliminating harmful insects.`,
+
+  forUse: 'Control of sucking pests in crops',
+
+  usage: 'Spray evenly on crops during early pest infestation',
+
+  crops: 'Cotton, Paddy, Vegetables, Chilli',
+
+  dosage: '0.3 gm per liter of water | 60–80 gm per acre',
+
+  variants: [
+    // 🔹 Single Pack (same as screenshot)
+    { variant: '30 gms', sku: 'INSEC-ADM-30G-001', price: 379, originalPrice: 480, discount: 21, inStock: true, tag: 'Best Seller' },
+    { variant: '2 gms', sku: 'INSEC-ADM-2G-001', price: 35, originalPrice: 41, discount: 15, inStock: true },
+    { variant: '75 gms', sku: 'INSEC-ADM-75G-001', price: 999, originalPrice: 1160, discount: 14, inStock: true }
+  ]
+}),
   defineProduct({
-    id: 'P308',
-    name: 'Venus Fungicide',
-    brand: 'Exylon',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-venus-fungicide-file-20891.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-venus-fungicide-file-20891.png', '', '', ''],
-    rating: 4.7,
-    reviews: 103,
-    description: 'Systemic fungicide for downy mildew and late blight',
-    forUse: 'Grapes, potato, tomato',
-    variants: [
-      { variant: '250ml', sku: 'PEST-VEN-250ML-001', price: 380, originalPrice: 460, discount: 17, inStock: true },
-      { variant: '500ml', sku: 'PEST-VEN-500ML-001', price: 680, originalPrice: 820, discount: 17, inStock: true },
-      { variant: '1L', sku: 'PEST-VEN-1L-001', price: 1250, originalPrice: 1500, discount: 17, inStock: true },
-    ],
-  }),
+  id: 'P308',
+  name: 'Topper 77 Herbicide (Glyphosate 71% SG)',
+  brand: 'Crystal Crop Protection',
+  category: 'herbicide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/topper-77-file-11270.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/topper-77-file-11270.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/topper-77-herbicide-file-20290.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/topper-77-herbicide-file-20291.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/topper-77-herbicide-file-20291%20(1).webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.3,
+  reviews: 139,
+
+  description: `Topper 77 is a non-selective systemic herbicide used for effective weed control.
+It penetrates through leaves and destroys weeds from root level, ensuring long-lasting control.
+Suitable for use in non-crop areas and pre-planting weed management.`,
+
+  forUse: 'Weed control in non-crop areas, bunds, and pre-sowing applications',
+
+  usage: 'Spray uniformly on actively growing weeds',
+
+  crops: 'Cotton, Paddy, Plantation crops, Open fields',
+
+  dosage: '1–2 gm per liter of water | 200–300 gm per acre',
+
+  variants: [
+    // 🔹 Single Pack (like UI)
+    { variant: '1 kg', sku: 'HERB-TOP-1KG-001', price: 639, originalPrice: 1690, discount: 62, inStock: true, tag: 'Best Seller' },
+    { variant: '100 gms', sku: 'HERB-TOP-100G-001', price: 129, originalPrice: 180, discount: 28, inStock: true },
+
+    // 🔹 Multi Pack
+    { variant: '2 kg (1 kg x 2)', sku: 'HERB-TOP-2KG-001', price: 1493, originalPrice: 3380, discount: 56, inStock: true, tag: 'Value Pack' },
+    { variant: '3 kg (1 kg x 3)', sku: 'HERB-TOP-3KG-001', price: 2236, originalPrice: 5070, discount: 56, inStock: true },
+    { variant: '5 kg (1 kg x 5)', sku: 'HERB-TOP-5KG-001', price: 3708, originalPrice: 8450, discount: 56, inStock: true }
+  ]
+}),
+ defineProduct({
+  id: 'P309',
+  name: 'Antracol Fungicide (Propineb 70% WP)',
+  brand: 'Bayer',
+  category: 'fungicide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/antracol-file-659.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/antracol-file-659.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Antracol_01.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Antracol_02.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Antracol_03.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Antracol_04.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 186,
+
+  description: `Antracol is a broad-spectrum contact fungicide used to control multiple fungal diseases.
+It protects crops from leaf spots, blights, and mildew, ensuring healthy plant growth and higher yield.`,
+
+  forUse: 'Control of fungal diseases in crops',
+
+  usage: 'Spray uniformly on crop foliage at early disease stage',
+
+  crops: 'Potato, Tomato, Grapes, Vegetables',
+
+  dosage: '2–2.5 gm per liter of water | 500–700 gm per acre',
+
+  variants: [
+    // 🔹 Single Pack
+    { variant: '250 gms', sku: 'FUNG-ANT-250G-001', price: 261, originalPrice: 350, discount: 25, inStock: true, tag: 'Best Seller' },
+    { variant: '500 gms', sku: 'FUNG-ANT-500G-001', price: 451, originalPrice: 600, discount: 25, inStock: true },
+    { variant: '1 kg', sku: 'FUNG-ANT-1KG-001', price: 769, originalPrice: 1160, discount: 34, inStock: true },
+
+    // 🔹 Multi Pack
+    { variant: '2 kg (1 kg x 2)', sku: 'FUNG-ANT-2KG-001', price: 1577, originalPrice: 2320, discount: 32, inStock: true, tag: 'Value Pack' },
+    { variant: '3 kg (1 kg x 3)', sku: 'FUNG-ANT-3KG-001', price: 2362, originalPrice: 3480, discount: 32, inStock: true },
+    { variant: '10 kg (1 kg x 10)', sku: 'FUNG-ANT-10KG-001', price: 7796, originalPrice: 11600, discount: 33, inStock: true }
+  ]
+}),
   defineProduct({
-    id: 'P309',
-    name: 'Adhitya Pesticide Spray',
-    brand: 'FMC',
-    category: 'agriculture',
-    image: 'https://i.postimg.cc/FH5nTgdy/Adhitya.png',
-    images: ['https://i.postimg.cc/FH5nTgdy/Adhitya.png', '', '', ''],
-    rating: 4.5,
-    reviews: 98,
-    description: 'Organic pesticide spray for natural pest control',
-    forUse: 'Pest control for organic farming',
-    variants: [
-      { variant: '250ml', sku: 'PEST-ADH-250ML-001', price: 180, originalPrice: 220, discount: 18, inStock: true },
-      { variant: '500ml', sku: 'PEST-ADH-500ML-001', price: 299, originalPrice: 350, discount: 15, inStock: true },
-      { variant: '1L', sku: 'PEST-ADH-1L-001', price: 550, originalPrice: 650, discount: 15, inStock: true },
-    ],
-  }),
+  id: 'P310',
+  name: 'Merivon Fungicide (Fluxapyroxad + Pyraclostrobin)',
+  brand: 'BASF',
+  category: 'fungicide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4633.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4633.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4634.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4635.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4636.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 28,
+
+  description: `Merivon is a premium fungicide combining Fluxapyroxad and Pyraclostrobin for superior disease control.
+It provides long-lasting protection against fungal infections and improves crop quality and yield.`,
+
+  forUse: 'Control of fungal diseases in fruits and vegetables',
+
+  usage: 'Spray uniformly on crops at early disease stage',
+
+  crops: 'Grapes, Tomato, Chilli, Vegetables',
+
+  dosage: '1 ml per liter of water | 200 ml per acre',
+
+  variants: [
+    // 🔹 Single Pack (like UI)
+    { variant: '40 ml', sku: 'FUNG-MER-40ML-001', price: 560, originalPrice: 849, discount: 34, inStock: true, tag: 'Best Seller' },
+    { variant: '80 ml', sku: 'FUNG-MER-80ML-001', price: 1037, originalPrice: 1682, discount: 38, inStock: true },
+    { variant: '250 ml', sku: 'FUNG-MER-250ML-001', price: 3470, originalPrice: 4810, discount: 28, inStock: true },
+
+    // 🔹 Multi Pack
+    { variant: '160 ml (80 ml x 2)', sku: 'FUNG-MER-160ML-001', price: 2066, originalPrice: 3364, discount: 39, inStock: true, tag: 'Value Pack' }
+  ]
+}),
   defineProduct({
-    id: 'P310',
-    name: 'Crypton Insecticide',
-    brand: 'Exylon',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-crypton-insecticide-file-20803.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-crypton-insecticide-file-20803.png', '', '', ''],
-    rating: 4.3,
-    reviews: 56,
-    description: 'Contact and systemic insecticide for whitefly and jassid control',
-    forUse: 'Cotton, chilli, vegetables',
-    variants: [
-      { variant: '100ml', sku: 'PEST-CRP-100ML-001', price: 200, originalPrice: 250, discount: 20, inStock: true },
-      { variant: '250ml', sku: 'PEST-CRP-250ML-001', price: 420, originalPrice: 520, discount: 19, inStock: true },
-      { variant: '500ml', sku: 'PEST-CRP-500ML-001', price: 780, originalPrice: 960, discount: 19, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P311',
-    name: 'Flybird Insecticide',
-    brand: 'Exylon',
-    category: 'agriculture',
-    image: 'https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-flybird-insecticide-file-20839.png',
-    images: ['https://ik.imagekit.io/wadwvg0en/_%20BigHaat_files/exylon-flybird-insecticide-file-20839.png', '', '', ''],
-    rating: 4.2,
-    reviews: 45,
-    description: 'Targeted insecticide for fruit fly and aphid management',
-    forUse: 'Mango, guava, vegetables',
-    variants: [
-      { variant: '100ml', sku: 'PEST-FLY-100ML-001', price: 280, originalPrice: 340, discount: 18, inStock: true },
-      { variant: '250ml', sku: 'PEST-FLY-250ML-001', price: 520, originalPrice: 640, discount: 19, inStock: true },
-      { variant: '500ml', sku: 'PEST-FLY-500ML-001', price: 950, originalPrice: 1150, discount: 17, inStock: true },
-    ],
-  }),
+  id: 'P311',
+  name: 'Lesenta Insecticide (Imidacloprid 17.8% SL)',
+  brand: 'Bayer',
+  category: 'insecticide',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/lesenta-file-784.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/lesenta-file-784.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/lesenta-file-785.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/lesenta-file-787.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.3,
+  reviews: 38,
+
+  description: `Lesenta is a broad-spectrum insecticide effective against sucking and chewing pests.
+It provides fast action and long-lasting protection, ensuring healthy crop growth and improved yield.`,
+
+  forUse: 'Control of sucking pests in crops',
+
+  usage: 'Spray uniformly on affected crops during early pest infestation',
+
+  crops: 'Cotton, Paddy, Vegetables, Chilli',
+
+  dosage: '0.3 ml per liter of water | 60–80 ml per acre',
+
+  variants: [
+    // 🔹 Single Pack
+    { variant: '100 gms', sku: 'INSEC-LES-100G-001', price: 1064, originalPrice: 1900, discount: 44, inStock: true, tag: 'Best Seller' },
+    { variant: '40 gms', sku: 'INSEC-LES-40G-001', price: 478, originalPrice: 770, discount: 38, inStock: true },
+
+    // 🔹 Multi Pack
+    { variant: '400 gms (40 gms x 10)', sku: 'INSEC-LES-400G-001', price: 4561, originalPrice: 7700, discount: 41, inStock: true, tag: 'Value Pack' }
+  ]
+}),
 
   // ─── Coragen ───
   defineProduct({
