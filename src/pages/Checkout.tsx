@@ -129,11 +129,18 @@ const Checkout = () => {
         console.log('Successfully loaded addresses:', data?.length || 0);
         setAddresses(data || []);
         
-        // Auto-select default address or first address
+        // Auto-select default address or first address only if none is currently selected
         if (data && data.length > 0) {
-          const defaultAddress = data.find(addr => addr.is_default) || data[0];
-          console.log('Auto-selecting address:', defaultAddress);
-          setSelectedAddress(defaultAddress);
+          setSelectedAddress(prev => {
+            if (prev) {
+              // Keep current selection if it still exists in the list
+              const stillExists = data.find(addr => addr.id === prev.id);
+              return stillExists || data.find(addr => addr.is_default) || data[0];
+            }
+            const defaultAddress = data.find(addr => addr.is_default) || data[0];
+            console.log('Auto-selecting address:', defaultAddress);
+            return defaultAddress;
+          });
         } else {
           setSelectedAddress(null);
         }
