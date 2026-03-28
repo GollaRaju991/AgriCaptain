@@ -438,8 +438,18 @@ const DirectFromFarm: React.FC = () => {
         </Tabs>
       </div>
 
-      {/* Mobile filter chips */}
+      {/* Mobile filter chips with Nearby button */}
       <div className="lg:hidden bg-card px-4 py-1.5 flex gap-2 overflow-x-auto border-b border-border no-scrollbar">
+        <button
+          onClick={handleDetectLocation}
+          disabled={detectingLocation}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs whitespace-nowrap flex-shrink-0 font-medium ${
+            userLocation ? 'bg-green-700 text-white border border-green-700' : 'border border-border text-foreground'
+          }`}
+        >
+          {detectingLocation ? <Loader2 className="h-3 w-3 animate-spin" /> : <Navigation className="h-3 w-3" />}
+          {t('Nearby', 'సమీపంలో', 'नज़दीक')}
+        </button>
         <button
           onClick={() => setDrawerOpen(true)}
           className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-border text-xs text-foreground whitespace-nowrap flex-shrink-0"
