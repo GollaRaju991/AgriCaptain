@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, X, Navigation, Loader2 } from 'lucide-react';
+import { ArrowLeft, X, Navigation, Loader2, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
-import LocationDetector from '@/components/LocationDetector';
 import SavedAddressPicker from '@/components/SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -48,6 +47,7 @@ interface VehicleListing {
 const VehicleRent = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
+  const [locationMode, setLocationMode] = useState<'nearby' | 'manual'>('nearby');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -61,18 +61,25 @@ const VehicleRent = () => {
   const [searchResults, setSearchResults] = useState<VehicleListing[]>([]);
   const [isSearched, setIsSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [autoDetectLocation, setAutoDetectLocation] = useState(true);
   const [detectingNearby, setDetectingNearby] = useState(false);
-  const [nearbyActive, setNearbyActive] = useState(false);
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
+  const label = (en: string, te: string) => language === 'te' ? te : en;
+
   const getDisplayName = (item: { name: string; nameTe?: string }) => {
     if (language === 'te' && item.nameTe) return item.nameTe;
     return item.name;
   };
+
+  // Auto-detect location when nearby mode is active
+  useEffect(() => {
+    if (locationMode === 'nearby' && !userCoords && !detectingNearby) {
+      handleDetectNearby();
+    }
+  }, [locationMode]);
 
   useEffect(() => { setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedCountry]);
   useEffect(() => { setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedState]);
@@ -103,20 +110,14 @@ const VehicleRent = () => {
     if (type === 'Other') setCustomVehicleType('');
   };
 
-  const handleNearby = async () => {
-    if (nearbyActive) {
-      setNearbyActive(false);
-      setUserCoords(null);
-      return;
-    }
+  const handleDetectNearby = async () => {
     setDetectingNearby(true);
     try {
       const loc = await detectUserLocation();
       setUserCoords({ lat: loc.latitude, lon: loc.longitude });
-      setNearbyActive(true);
-      toast.success(label('Location detected! Click Search to find nearby vehicles.', 'లొకేషన్ గుర్తించబడింది!'));
+      toast.success(label('Location detected!', 'లొకేషన్ గుర్తించబడింది!'));
     } catch {
-      toast.error(label('Could not detect location', 'లొకేషన్ గుర్తించలేకపోయింది'));
+      toast.error(label('Could not detect location. Try Add Location instead.', 'లొకేషన్ గుర్తించలేకపోయింది.'));
     } finally {
       setDetectingNearby(false);
     }
@@ -136,10 +137,13 @@ const VehicleRent = () => {
       toast.error(label('Please select vehicle types and dates', 'దయచేసి వాహన రకాలు మరియు తేదీలు ఎంచుకోండి'));
       return;
     }
+    if (locationMode === 'nearby' && !userCoords) {
+      toast.error(label('Please wait for location detection or use Add Location', 'దయచేసి లొకేషన్ గుర్తించే వరకు వేచి ఉండండి'));
+      return;
+    }
 
     setIsLoading(true);
     try {
-      // Query vehicle_listings from Supabase
       let query = supabase
         .from('vehicle_listings')
         .select('*')
@@ -147,8 +151,7 @@ const VehicleRent = () => {
         .eq('availability', 'Available')
         .in('vehicle_type', effectiveTypes);
 
-      // If not using nearby, filter by location fields
-      if (!nearbyActive) {
+      if (locationMode === 'manual') {
         if (selectedState) query = query.ilike('state', `%${selectedState}%`);
         if (selectedDistrict) query = query.ilike('district', `%${selectedDistrict}%`);
       }
@@ -182,7 +185,6 @@ const VehicleRent = () => {
         description: v.description,
       }));
 
-      // Calculate distance if user coords available
       if (userCoords) {
         results = results.map(v => ({
           ...v,
@@ -190,16 +192,13 @@ const VehicleRent = () => {
             ? calculateDistance(userCoords.lat, userCoords.lon, v.latitude, v.longitude)
             : undefined,
         }));
-        // Sort by distance
         results.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
-        // If nearby active, only show within 500km
-        if (nearbyActive) {
+        if (locationMode === 'nearby') {
           results = results.filter(v => v.distance !== undefined && v.distance <= 500);
         }
       }
 
-      // Save address for future use
-      if (selectedCountry && selectedState && selectedDistrict) {
+      if (locationMode === 'manual' && selectedCountry && selectedState && selectedDistrict) {
         saveAddress({
           country: selectedCountry,
           state: selectedState,
@@ -216,7 +215,7 @@ const VehicleRent = () => {
       setIsSearched(true);
 
       if (results.length === 0) {
-        toast.info(label('No vehicles found. Partner vehicles will appear here once listed.', 'వాహనాలు కనుగొనబడలేదు. భాగస్వామి వాహనాలు జాబితా చేసిన తర్వాత ఇక్కడ కనిపిస్తాయి.'));
+        toast.info(label('No vehicles found. Partner vehicles will appear here once listed.', 'వాహనాలు కనుగొనబడలేదు.'));
       }
     } catch (err) {
       console.error('Search error:', err);
@@ -229,39 +228,11 @@ const VehicleRent = () => {
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
     setSelectedVehicleTypes([]); setCustomVehicleType(''); setStartDate(undefined); setEndDate(undefined);
-    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true); setNearbyActive(false); setUserCoords(null);
-  };
-
-  const findCodeByName = (list: { code: string; name: string }[], name: string) => {
-    if (!name || !list) return '';
-    const lower = name.toLowerCase();
-    const match = list.find(item => item.name.toLowerCase().includes(lower) || lower.includes(item.name.toLowerCase()));
-    return match?.code || '';
-  };
-
-  const handleLocationDetected = (location: any) => {
-    const countryMatch = countries.find(c => c.name.toLowerCase() === (location.country || '').toLowerCase());
-    const countryCode = countryMatch?.code || '';
-    if (countryCode) setSelectedCountry(countryCode);
-    const stateList = countryCode ? states[countryCode as keyof typeof states] || [] : [];
-    const stateCode = findCodeByName(stateList, location.state);
-    if (stateCode) setSelectedState(stateCode);
-    const districtList = stateCode ? districts[stateCode as keyof typeof districts] || [] : [];
-    const districtCode = findCodeByName(districtList, location.district);
-    if (districtCode) setSelectedDistrict(districtCode);
-    const divisionList = districtCode ? divisions[districtCode as keyof typeof divisions] || [] : [];
-    const divisionCode = findCodeByName(divisionList, location.division);
-    if (divisionCode) setSelectedDivision(divisionCode);
-    const mandalList = districtCode ? getMandalsForDistrict(districtCode) : [];
-    const mandalCode = findCodeByName(mandalList, location.mandal);
-    if (mandalCode) setSelectedMandal(mandalCode);
-    const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
-    const villageCode = findCodeByName(villageList, location.village);
-    if (villageCode) setSelectedVillage(villageCode);
-    setAutoDetectLocation(false);
+    setSearchResults([]); setIsSearched(false); setLocationMode('nearby'); setUserCoords(null);
   };
 
   const handleSelectSavedAddress = (addr: SavedFormAddress) => {
+    setLocationMode('manual');
     setSelectedCountry(addr.country);
     setTimeout(() => {
       setSelectedState(addr.state);
@@ -285,9 +256,7 @@ const VehicleRent = () => {
   };
 
   const effectiveTypes = getEffectiveVehicleTypes();
-  const isFormValid = effectiveTypes.length > 0 && startDate && endDate && (nearbyActive || (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
-
-  const label = (en: string, te: string) => language === 'te' ? te : en;
+  const isFormValid = effectiveTypes.length > 0 && startDate && endDate && (locationMode === 'nearby' ? !!userCoords : (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
 
   return (
     <div className="min-h-screen bg-background">
@@ -302,31 +271,45 @@ const VehicleRent = () => {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-5">
-        <SavedAddressPicker
-          addresses={savedAddresses}
-          onSelect={handleSelectSavedAddress}
-          onDelete={deleteAddress}
-          isLimitReached={isLimitReached}
-        />
-
+        {/* Nearby / Add Location Toggle */}
         <div className="flex gap-2">
-          <LocationDetector 
-            enabled={autoDetectLocation} 
-            onLocationDetected={handleLocationDetected}
-          />
           <Button
-            variant={nearbyActive ? 'default' : 'outline'}
-            className={cn('gap-1.5', nearbyActive && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')}
-            onClick={handleNearby}
+            variant={locationMode === 'nearby' ? 'default' : 'outline'}
+            className={cn('flex-1 gap-2', locationMode === 'nearby' && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')}
+            onClick={() => { setLocationMode('nearby'); if (!userCoords) handleDetectNearby(); }}
             disabled={detectingNearby}
           >
             {detectingNearby ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
             {label('Nearby', 'సమీపంలో')}
           </Button>
+          <Button
+            variant={locationMode === 'manual' ? 'default' : 'outline'}
+            className={cn('flex-1 gap-2', locationMode === 'manual' && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')}
+            onClick={() => setLocationMode('manual')}
+          >
+            <MapPin className="h-4 w-4" />
+            {label('+ Add Location', '+ లొకేషన్ జోడించండి')}
+          </Button>
         </div>
 
+        {locationMode === 'nearby' && userCoords && (
+          <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 rounded-lg px-3 py-2">
+            <Navigation className="h-4 w-4" />
+            {label('GPS location detected — showing vehicles within 500km', 'GPS లొకేషన్ గుర్తించబడింది — 500 కి.మీ. లోపల వాహనాలు చూపబడుతాయి')}
+          </div>
+        )}
+
+        {locationMode === 'manual' && (
+          <SavedAddressPicker
+            addresses={savedAddresses}
+            onSelect={handleSelectSavedAddress}
+            onDelete={deleteAddress}
+            isLimitReached={isLimitReached}
+          />
+        )}
+
         <div className="space-y-4">
-          {!nearbyActive && (
+          {locationMode === 'manual' && (
             <>
               <div>
                 <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
@@ -349,7 +332,6 @@ const VehicleRent = () => {
                   <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
-
               {districtHasDivisions && (
                 <div>
                   <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
@@ -359,7 +341,6 @@ const VehicleRent = () => {
                   </Select>
                 </div>
               )}
-
               <div>
                 <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
                 {getAvailableMandals().length > 0 ? (
@@ -383,15 +364,6 @@ const VehicleRent = () => {
                 )}
               </div>
             </>
-          )}
-
-          {nearbyActive && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-              <Navigation className="h-6 w-6 text-green-600 mx-auto mb-2" />
-              <p className="text-sm font-medium text-green-800">
-                {label('📍 Nearby mode active — showing vehicles within 500 km of your location', '📍 సమీప మోడ్ యాక్టివ్ — మీ లొకేషన్ నుండి 500 కి.మీ లోపల వాహనాలు')}
-              </p>
-            </div>
           )}
 
           {/* Vehicle Type Multi-Select */}
@@ -508,7 +480,7 @@ const VehicleRent = () => {
                       <div className="text-right">
                         <p className="font-semibold text-green-600">₹{vehicle.daily_rate}/day</p>
                         {vehicle.distance !== undefined && (
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{vehicle.distance} km</span>
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{vehicle.distance.toFixed(1)} km</span>
                         )}
                       </div>
                     </div>
