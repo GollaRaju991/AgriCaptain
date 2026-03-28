@@ -18,8 +18,9 @@ import {
 
 import { products as allStaticProducts } from '@/data/products';
 import { removeDuplicates } from '@/data/products';
+import { getProductsByCategory } from '@/data/productLoader';
 
-const categories = ['seeds', 'tools', 'equipment', 'agriculture'];
+const categories = ['seeds', 'pesticides', 'farm-tools', 'equipment'];
 
 const mapSellerCategory = (cat: string): string => {
   const lower = cat.toLowerCase();
@@ -69,17 +70,22 @@ const Products = () => {
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {
-    let filtered = removeDuplicates([...allStaticProducts, ...sellerProducts]);
+    // Use category-based loader if a category is selected
+    let baseProducts = selectedCategory
+      ? getProductsByCategory(selectedCategory)
+      : allStaticProducts;
+    
+    let filtered = removeDuplicates([...baseProducts, ...sellerProducts]);
 
     if (searchQuery) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+        (product.category || '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    if (selectedCategory) {
+    if (selectedCategory && !['seeds', 'pesticides', 'farm-tools', 'agriculture', 'plant-growth', 'tools', 'equipment'].includes(selectedCategory)) {
       filtered = filtered.filter(product => product.category === selectedCategory);
     }
 
