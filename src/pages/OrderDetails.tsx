@@ -475,7 +475,9 @@ const OrderDetails = () => {
     }
 
     if (order.status === 'cancelled' || order.status === 'returned') {
-      const refundOption = (order.payment_status === 'refunded' || returnRequest) 
+      const isCOD = order.payment_method?.toLowerCase() === 'cash on delivery' || order.payment_method?.toLowerCase() === 'cod';
+      const showRefund = !isCOD && (order.payment_status === 'refunded' || returnRequest);
+      const refundOption = showRefund
         ? { label: 'Refund Details', icon: <IndianRupee className="h-4 w-4" />, action: () => setRefundDialogOpen(true), hasArrow: true }
         : null;
       return {
