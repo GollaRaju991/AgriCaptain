@@ -7,12 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, X, Navigation, Loader2 } from 'lucide-react';
+import { CalendarIcon, X, Navigation, MapPin, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
-import LocationDetector from './LocationDetector';
 import SavedAddressPicker from './SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -29,6 +28,7 @@ interface RentVehicleDialogProps {
 
 const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChange }) => {
   const { language } = useLanguage();
+  const [locationMode, setLocationMode] = useState<'nearby' | 'manual'>('nearby');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -42,9 +42,7 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearched, setIsSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [autoDetectLocation, setAutoDetectLocation] = useState(true);
   const [detectingNearby, setDetectingNearby] = useState(false);
-  const [nearbyActive, setNearbyActive] = useState(false);
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
 
@@ -60,6 +58,13 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   useEffect(() => { setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedDistrict]);
   useEffect(() => { setSelectedMandal(''); setSelectedVillage(''); }, [selectedDivision]);
   useEffect(() => { setSelectedVillage(''); }, [selectedMandal]);
+
+  // Auto-detect GPS when nearby mode is activated
+  useEffect(() => {
+    if (locationMode === 'nearby' && !userCoords && !detectingNearby) {
+      handleDetectNearby();
+    }
+  }, [locationMode]);
 
   const getAvailableStates = () => selectedCountry ? states[selectedCountry as keyof typeof states] || [] : [];
   const getAvailableDistricts = () => selectedState ? districts[selectedState as keyof typeof districts] || [] : [];
@@ -84,13 +89,11 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
     if (type === 'Other') setCustomVehicleType('');
   };
 
-  const handleNearby = async () => {
-    if (nearbyActive) { setNearbyActive(false); setUserCoords(null); return; }
+  const handleDetectNearby = async () => {
     setDetectingNearby(true);
     try {
       const loc = await detectUserLocation();
       setUserCoords({ lat: loc.latitude, lon: loc.longitude });
-      setNearbyActive(true);
       toast.success(label('Location detected!', 'లొకేషన్ గుర్తించబడింది!'));
     } catch {
       toast.error(label('Could not detect location', 'లొకేషన్ గుర్తించలేకపోయింది'));
@@ -110,6 +113,7 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const handleSearch = async () => {
     const effectiveTypes = getEffectiveVehicleTypes();
     if (effectiveTypes.length === 0 || !startDate || !endDate) return;
+    if (locationMode === 'manual' && (!selectedCountry || !selectedState || !selectedDistrict)) return;
 
     setIsLoading(true);
     try {
@@ -120,7 +124,7 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
         .eq('availability', 'Available')
         .in('vehicle_type', effectiveTypes);
 
-      if (!nearbyActive) {
+      if (locationMode === 'manual') {
         if (selectedState) query = query.ilike('state', `%${selectedState}%`);
         if (selectedDistrict) query = query.ilike('district', `%${selectedDistrict}%`);
       }
@@ -135,12 +139,12 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
           : undefined,
       }));
 
-      if (userCoords) {
+      if (locationMode === 'nearby' && userCoords) {
+        results = results.filter((v: any) => v.distance !== undefined && v.distance <= 500);
         results.sort((a: any, b: any) => (a.distance ?? 9999) - (b.distance ?? 9999));
-        if (nearbyActive) results = results.filter((v: any) => v.distance !== undefined && v.distance <= 500);
       }
 
-      if (selectedCountry && selectedState && selectedDistrict) {
+      if (locationMode === 'manual' && selectedCountry && selectedState && selectedDistrict) {
         saveAddress({ country: selectedCountry, state: selectedState, district: selectedDistrict, division: selectedDivision, mandal: selectedMandal, village: selectedVillage, workType: effectiveTypes.join(', '), category: 'Vehicle' });
       }
 
@@ -157,39 +161,11 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
     setSelectedVehicleTypes([]); setCustomVehicleType(''); setStartDate(undefined); setEndDate(undefined);
-    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true); setNearbyActive(false); setUserCoords(null);
-  };
-
-  const findCodeByName = (list: { code: string; name: string }[], name: string) => {
-    if (!name || !list) return '';
-    const lower = name.toLowerCase();
-    const match = list.find(item => item.name.toLowerCase().includes(lower) || lower.includes(item.name.toLowerCase()));
-    return match?.code || '';
-  };
-
-  const handleLocationDetected = (location: any) => {
-    const countryMatch = countries.find(c => c.name.toLowerCase() === (location.country || '').toLowerCase());
-    const countryCode = countryMatch?.code || '';
-    if (countryCode) setSelectedCountry(countryCode);
-    const stateList = countryCode ? states[countryCode as keyof typeof states] || [] : [];
-    const stateCode = findCodeByName(stateList, location.state);
-    if (stateCode) setSelectedState(stateCode);
-    const districtList = stateCode ? districts[stateCode as keyof typeof districts] || [] : [];
-    const districtCode = findCodeByName(districtList, location.district);
-    if (districtCode) setSelectedDistrict(districtCode);
-    const divisionList = districtCode ? divisions[districtCode as keyof typeof divisions] || [] : [];
-    const divisionCode = findCodeByName(divisionList, location.division);
-    if (divisionCode) setSelectedDivision(divisionCode);
-    const mandalList = districtCode ? getMandalsForDistrict(districtCode) : [];
-    const mandalCode = findCodeByName(mandalList, location.mandal);
-    if (mandalCode) setSelectedMandal(mandalCode);
-    const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
-    const villageCode = findCodeByName(villageList, location.village);
-    if (villageCode) setSelectedVillage(villageCode);
-    setAutoDetectLocation(false);
+    setSearchResults([]); setIsSearched(false); setLocationMode('nearby'); setUserCoords(null);
   };
 
   const handleSelectSavedAddress = (addr: SavedFormAddress) => {
+    setLocationMode('manual');
     setSelectedCountry(addr.country);
     setTimeout(() => { setSelectedState(addr.state);
       setTimeout(() => { setSelectedDistrict(addr.district);
@@ -207,7 +183,8 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   };
 
   const effectiveTypes = getEffectiveVehicleTypes();
-  const isFormValid = effectiveTypes.length > 0 && startDate && endDate && (nearbyActive || (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
+  const isFormValid = effectiveTypes.length > 0 && startDate && endDate &&
+    (locationMode === 'nearby' || (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
 
   const label = (en: string, te: string) => language === 'te' ? te : en;
 
@@ -219,82 +196,115 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
         </DialogHeader>
         
         <div className="space-y-6">
-          <SavedAddressPicker addresses={savedAddresses} onSelect={handleSelectSavedAddress} onDelete={deleteAddress} isLimitReached={isLimitReached} />
-
+          {/* Location Mode Toggle Buttons */}
           <div className="flex gap-2">
-            <LocationDetector enabled={autoDetectLocation} onLocationDetected={handleLocationDetected} />
-            <Button variant={nearbyActive ? 'default' : 'outline'} className={cn('gap-1.5', nearbyActive && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white')} onClick={handleNearby} disabled={detectingNearby}>
-              {detectingNearby ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+            <Button
+              type="button"
+              variant={locationMode === 'nearby' ? 'default' : 'outline'}
+              className={cn(
+                'gap-2 flex-1 sm:flex-none',
+                locationMode === 'nearby' && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white'
+              )}
+              onClick={() => setLocationMode('nearby')}
+            >
+              {detectingNearby && locationMode === 'nearby' ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Navigation className="h-4 w-4" />
+              )}
               {label('Nearby', 'సమీపంలో')}
             </Button>
-          </div>
-          
-          {!nearbyActive && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label>{label('Country *', 'దేశం *')}</Label>
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
-                  <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>{label('State *', 'రాష్ట్రం *')}</Label>
-                <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
-                  <SelectTrigger><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
-                  <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>{label('District *', 'జిల్లా *')}</Label>
-                <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
-                  <SelectTrigger><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
-                  <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-
-              {districtHasDivisions && (
-                <div>
-                  <Label>{label('Division *', 'డివిజన్ *')}</Label>
-                  <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
-                    <SelectTrigger><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
-                    <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
-                  </Select>
-                </div>
+            <Button
+              type="button"
+              variant={locationMode === 'manual' ? 'default' : 'outline'}
+              className={cn(
+                'gap-2 flex-1 sm:flex-none',
+                locationMode === 'manual' && 'bg-[#2d5a27] hover:bg-[#1e3d1a] text-white'
               )}
+              onClick={() => setLocationMode('manual')}
+            >
+              <MapPin className="h-4 w-4" />
+              {label('+ Add Location', '+ లొకేషన్ జోడించండి')}
+            </Button>
+          </div>
 
-              <div>
-                <Label>{label('Mandal', 'మండలం')}</Label>
-                {getAvailableMandals().length > 0 ? (
-                  <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
-                    <SelectTrigger><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
-                    <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
-                  </Select>
-                ) : (
-                  <Input placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
-                )}
-              </div>
-              <div>
-                <Label>{label('Village', 'గ్రామం')}</Label>
-                {getAvailableVillages().length > 0 ? (
-                  <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
-                    <SelectTrigger><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
-                    <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
-                  </Select>
-                ) : (
-                  <Input placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
-                )}
-              </div>
-            </div>
-          )}
-
-          {nearbyActive && (
+          {/* Nearby Mode Info */}
+          {locationMode === 'nearby' && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
               <Navigation className="h-6 w-6 text-green-600 mx-auto mb-2" />
               <p className="text-sm font-medium text-green-800">
-                {label('📍 Nearby mode — showing vehicles within 500 km', '📍 సమీప మోడ్ — 500 కి.మీ లోపల వాహనాలు')}
+                {userCoords
+                  ? label('📍 Nearby mode — showing vehicles within 500 km', '📍 సమీప మోడ్ — 500 కి.మీ లోపల వాహనాలు')
+                  : detectingNearby
+                    ? label('Detecting your location...', 'మీ లొకేషన్ గుర్తిస్తోంది...')
+                    : label('Click search to detect location and find nearby vehicles', 'సమీప వాహనాలను కనుగొనడానికి వెతకండి నొక్కండి')
+                }
               </p>
             </div>
+          )}
+
+          {/* Manual Location Fields */}
+          {locationMode === 'manual' && (
+            <>
+              <SavedAddressPicker addresses={savedAddresses} onSelect={handleSelectSavedAddress} onDelete={deleteAddress} isLimitReached={isLimitReached} />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <Label>{label('Country *', 'దేశం *')}</Label>
+                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <SelectTrigger><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>{label('State *', 'రాష్ట్రం *')}</Label>
+                  <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
+                    <SelectTrigger><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>{label('District *', 'జిల్లా *')}</Label>
+                  <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
+                    <SelectTrigger><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+
+                {districtHasDivisions && (
+                  <div>
+                    <Label>{label('Division *', 'డివిజన్ *')}</Label>
+                    <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
+                      <SelectTrigger><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
+                      <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                )}
+
+                <div>
+                  <Label>{label('Mandal', 'మండలం')}</Label>
+                  {getAvailableMandals().length > 0 ? (
+                    <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
+                      <SelectTrigger><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
+                      <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
+                    </Select>
+                  ) : (
+                    <Input placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
+                  )}
+                </div>
+                <div>
+                  <Label>{label('Village', 'గ్రామం')}</Label>
+                  {getAvailableVillages().length > 0 ? (
+                    <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
+                      <SelectTrigger><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
+                      <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                  ) : (
+                    <Input placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
+                  )}
+                </div>
+              </div>
+            </>
           )}
 
           {/* Vehicle Type Multi-Select */}
