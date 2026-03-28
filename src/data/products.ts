@@ -709,32 +709,6 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     { variant: '1000 ml (500 ml x 2)', sku: 'PLANT-GEO-1000ML-001', price: 1049, originalPrice: 3000, discount: 65, inStock: true, tag: 'Value Pack' }
   ]
 }),
-
-  defineProduct({
-    id: 'P312',
-    name: 'Coragen Insecticide – Chlorantraniliprole 18.5% SC',
-    brand: 'FMC',
-    category: 'Pesticides',
-    image: 'https://ik.imagekit.io/wadwvg0en/coragen-dupont-file-1135.webp',
-    images: [
-      'https://ik.imagekit.io/wadwvg0en/coragen-dupont-file-1135.webp',
-      'https://ik.imagekit.io/wadwvg0en/Coragen_02.webp',
-      'https://ik.imagekit.io/wadwvg0en/Coragen_03.webp',
-      'https://ik.imagekit.io/wadwvg0en/Coragen_04.webp',
-    ],
-    rating: 4.8,
-    reviews: 450,
-    description: 'Safe, effective pest control with Chlorantraniliprole 18.5% SC for bollworm, stem borer, and fruit borer',
-    forUse: 'Cotton, paddy, vegetables, fruits',
-    variants: [
-      { variant: '60ml', sku: 'PEST-COR-60ML-001', price: 480, originalPrice: 580, discount: 17, inStock: true },
-      { variant: '150ml', sku: 'PEST-COR-150ML-001', price: 1100, originalPrice: 1350, discount: 19, inStock: true },
-      { variant: '300ml', sku: 'PEST-COR-300ML-001', price: 2100, originalPrice: 2550, discount: 18, inStock: true },
-    ],
-  }),
-
-  
-
   // ─── Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment ───
   defineProduct({
   id: 'P401',
@@ -879,54 +853,109 @@ Ensures uniform watering, saves water, and improves crop yield.`,
   ]
 }),
   defineProduct({
-    id: 'P404',
-    name: 'Seedling Tray – 98 Cells',
-    brand: 'TrustBasket',
-    category: 'Farm Tools & Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/51qQZU1dqaL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/51qQZU1dqaL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.4,
-    reviews: 89,
-    description: '98-cell seedling tray for germination and nursery use',
-    forUse: 'Nursery and seed germination',
-    variants: [
-      { variant: '5 Pack', sku: 'TOOL-STRAY-5PK-001', price: 320, originalPrice: 400, discount: 20, inStock: true },
-      { variant: '10 Pack', sku: 'TOOL-STRAY-10PK-001', price: 580, originalPrice: 750, discount: 23, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P405',
-    name: 'Garden Farm Tools & Farm Tools & Equipment Set',
-    brand: 'Kraft Seeds',
-    category: 'Farm Tools & Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/51EB9-p-WrL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/51EB9-p-WrL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.6,
-    reviews: 210,
-    description: 'Complete 5-piece gardening tool set for home and farm',
-    forUse: 'Home gardening and small farms',
-    variants: [
-      { variant: '5-Piece', sku: 'TOOL-SET-5PC-001', price: 750, originalPrice: 950, discount: 21, inStock: true },
-    ],
-  }),
+  id: 'P404',
+  name: 'MG Green 12V 10W Solar Panel',
+  brand: 'MG Green',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/mg-green-12v-10w-solar-panel-file-11670.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/mg-green-12v-10w-solar-panel-file-11670.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 5.0,
+  reviews: 2,
+
+  description: `Compact and efficient solar panel designed for reliable power generation.
+Ideal for small-scale applications with durable build and long-lasting performance.`,
+
+  forUse: 'Battery charging, lighting systems, small farm and home applications',
+
+  usage: 'Place in direct sunlight and connect to battery or device for power supply',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'SOLAR-10W-001',
+      price: 899,
+      originalPrice: 1299,
+      discount: 31,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
+ defineProduct({
+  id: 'P405',
+  name: 'Neptune CS-58 58CC Petrol Chain Saw (22 Inch)',
+  brand: 'Neptune',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/thumbnail_89b125b9-44fe-407f-8604-2f467a5a032e.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/thumbnail_89b125b9-44fe-407f-8604-2f467a5a032e.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 5.0,
+  reviews: 1,
+
+  description: `High-performance petrol chain saw designed for efficient wood cutting and farm use.
+It delivers strong cutting power, smooth operation, and durability for long-term usage.`,
+
+  forUse: 'Wood cutting, tree trimming, farm and garden maintenance',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'CHAIN-CS58-001',
+      price: 11700,          // ✅ reduced ₹50
+      originalPrice: 15000,
+      discount: 22,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
 
   // ─── Irrigation & Farm Tools & Equipment ───
   defineProduct({
-    id: 'P501',
-    name: 'Drip Irrigation Kit',
-    brand: 'Jain Irrigation',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/71rZ7-bV0iL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/71rZ7-bV0iL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.7,
-    reviews: 156,
-    description: 'Complete drip irrigation system for water-efficient farming',
-    forUse: 'Water-efficient crop irrigation',
-    variants: [
-      { variant: '50 Plants', sku: 'EQUIP-DRIP-50P-001', price: 1499, originalPrice: 1799, discount: 17, inStock: true },
-      { variant: '100 Plants', sku: 'EQUIP-DRIP-100P-001', price: 2499, originalPrice: 2999, discount: 17, inStock: true },
-    ],
-  }),
+  id: 'P501',
+  name: 'Farmsmart GX 35 4-Stroke Power Sprayer (25L)',
+  brand: 'Farmsmart',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage1_32___0a54445967c8433a823fb70346f93c96_1___1.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage1_32___0a54445967c8433a823fb70346f93c96_1___1.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__6___Image2_32___73a8cfd422d1412eb434e18fe6f825e9_1___3.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage3_32___2c14092e206143db85d6bcd44070d20b_1___7.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.75,
+  reviews: 4,
+
+  description: `Powerful 4-stroke knapsack sprayer with petrol engine.
+Designed for large-scale farming with strong pressure and wide spray coverage.`,
+
+  forUse: 'Pesticide spraying, fertilizer spraying, crop protection',
+
+  usage: 'Fill tank, start engine, and spray uniformly across crops',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'SPRAYER-GX35-001',
+      price: 10700,
+      originalPrice: 15500,
+      discount: 31,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
   defineProduct({
     id: 'P502',
     name: 'Sprinkler System',
@@ -935,7 +964,7 @@ Ensures uniform watering, saves water, and improves crop yield.`,
     image: 'https://ik.imagekit.io/wadwvg0en/Work/71bWbrmAuML._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/71bWbrmAuML._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.5,
-    reviews: 98,
+    reviews: 8,
     description: 'Rain-gun style sprinkler system for even water distribution',
     forUse: 'Field irrigation',
     variants: [
@@ -943,24 +972,42 @@ Ensures uniform watering, saves water, and improves crop yield.`,
     ],
   }),
   defineProduct({
-    id: 'P503',
-    name: 'Mulching Film – Black',
-    brand: 'Agro Shield',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/419Y8gbtBxL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/419Y8gbtBxL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.4,
-    reviews: 67,
-    description: 'UV-stabilized black mulching film for weed suppression and moisture retention',
-    forUse: 'Vegetable and fruit farming',
-    variants: [
-      { variant: '1m × 100m', sku: 'EQUIP-MULCH-100M-001', price: 1200, originalPrice: 1450, discount: 17, inStock: true },
-      { variant: '1m × 400m', sku: 'EQUIP-MULCH-400M-001', price: 3200, originalPrice: 3800, discount: 16, inStock: true },
-    ],
-  }),
+  id: 'P503',
+  name: 'Bharat Axe (15cm / 6 Inch) with Handle – 60 cm',
+  brand: 'Bharat Agrotech',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/bharat-axe-6-inch-with-handle-60-cm-file-13680.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/bharat-axe-6-inch-with-handle-60-cm-file-13680.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.4,
+  reviews: 2,
+
+  description: `Strong and durable axe designed for cutting wood and farm use.
+Built with a sharp blade and sturdy handle for efficient performance and long-lasting use.`,
+
+  forUse: 'Wood cutting, farming, and general outdoor work',
+
+  usage: 'Use for cutting wood, branches, and agricultural tasks',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'AXE-6IN-001',
+      price: 832,
+      originalPrice: 899,
+      discount: 7,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
   defineProduct({
     id: 'P504',
-    name: 'Greenhouse Net – UV Treated',
+    name: 'UNO Minda TL-6509M Tail Light For Tractor for Mahindra Mahindra Di 265',
     brand: 'Agro Shield',
     category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/91+NWBqm3ML._AC_UL480_FMwebp_QL65_.webp',
@@ -970,25 +1017,44 @@ Ensures uniform watering, saves water, and improves crop yield.`,
     description: 'UV-treated green shade net for nursery and polyhouse',
     forUse: 'Nursery protection and shade',
     variants: [
-      { variant: '5m × 3m', sku: 'EQUIP-GNET-5X3-001', price: 850, originalPrice: 1050, discount: 19, inStock: true },
+      { variant: '5m × 3m', sku: 'EQUIP-GNET-5X3-001', price: 800, originalPrice: 1050, discount: 19, inStock: true },
       { variant: '10m × 3m', sku: 'EQUIP-GNET-10X3-001', price: 1500, originalPrice: 1850, discount: 19, inStock: true },
     ],
   }),
-  defineProduct({
-    id: 'P505',
-    name: 'Soil Testing Kit',
-    brand: 'Agritech',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/51z5-QPDAHL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/51z5-QPDAHL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.3,
-    reviews: 55,
-    description: 'Test NPK, pH and moisture levels of your soil at home',
-    forUse: 'Soil analysis for precision farming',
-    variants: [
-      { variant: 'Standard', sku: 'EQUIP-SOIL-STD-001', price: 980, originalPrice: 1200, discount: 18, inStock: true },
-    ],
-  }),
+ defineProduct({
+  id: 'P505',
+  name: 'Soil Testing Kit (NPK, pH & Moisture)',
+  brand: 'Agritech',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/wadwvg0en/Work/51z5-QPDAHL._AC_UL480_FMwebp_QL65_.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/wadwvg0en/Work/51z5-QPDAHL._AC_UL480_FMwebp_QL65_.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.3,
+  reviews: 55,
+
+  description: `Easy-to-use soil testing kit that helps measure NPK levels, pH, and moisture content.
+Ideal for farmers and gardeners to improve soil health and increase crop productivity.`,
+
+  forUse: 'Soil testing for farming, gardening, and crop planning',
+
+  usage: 'Insert probes into soil and read values for pH, nutrients, and moisture',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'SOIL-KIT-001',
+      price: 980,
+      originalPrice: 1200,
+      discount: 18,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
   defineProduct({
     id: 'P506',
     name: 'Water Pump – 1HP',
@@ -1006,104 +1072,78 @@ Ensures uniform watering, saves water, and improves crop yield.`,
       { variant: '2HP', sku: 'EQUIP-PUMP-2HP-001', price: 7200, originalPrice: 8800, discount: 18, inStock: true },
     ],
   }),
-  defineProduct({
-    id: 'P507',
-    name: 'Tractor – Mahindra 475 DI',
-    brand: 'Mahindra',
-    category: 'Farm Tools & Equipment',
-    image: 'https://i.postimg.cc/ncVyv1mC/tractor.png',
-    images: ['https://i.postimg.cc/ncVyv1mC/tractor.png', '', '', ''],
-    rating: 4.9,
-    reviews: 312,
-    description: 'Powerful 47 HP tractor ideal for farming operations and heavy-duty agricultural work',
-    forUse: 'Large-scale farming and heavy agricultural work',
-    variants: [
-      { variant: '47HP', sku: 'EQUIP-TRAC-47HP-001', price: 625000, originalPrice: 650000, discount: 4, inStock: true },
-    ],
-  }),
 
   // ─── Specialty / Growth Promoters ───
+defineProduct({
+  id: 'P601',
+  name: 'Tractor Head Lamp Set (LH & RH) for Mahindra 275 / 575',
+  brand: 'All Parts Source',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/81A76OJm59L._SL1500_.jpg?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/81A76OJm59L._SL1500_.jpg?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/61O02-nkw5L._SL1500_.jpg?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/61CCs6V6MoL._SL1500_.jpg?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.2,
+  reviews: 10,
+
+  description: `Durable head lamp set designed for tractors, providing clear visibility during night operations.
+Suitable for Mahindra 275 and 575 models with easy installation and long-lasting performance.`,
+
+  forUse: 'Tractor front lighting and visibility',
+
+  usage: 'Install on tractor front (LH & RH sides) for proper illumination',
+
+  variants: [
+    {
+      variant: 'Set of 2 (LH & RH)',
+      sku: 'HEADLIGHT-SET-001',
+      price: 1599,
+      originalPrice: 1890,
+      discount: 15,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
   defineProduct({
-    id: 'P601',
-    name: 'Humic Acid – Growth Promoter',
-    brand: 'Aries Agro',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/61UF33H+5BL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/61UF33H+5BL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.5,
-    reviews: 130,
-    description: 'Concentrated humic acid for root development and nutrient uptake',
-    forUse: 'All crops – growth promotion',
-    variants: [
-      { variant: '500ml', sku: 'SPEC-HUM-500ML-001', price: 320, originalPrice: 400, discount: 20, inStock: true },
-      { variant: '1L', sku: 'SPEC-HUM-1L-001', price: 550, originalPrice: 680, discount: 19, inStock: true },
-      { variant: '5L', sku: 'SPEC-HUM-5L-001', price: 2200, originalPrice: 2700, discount: 19, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P602',
-    name: 'Micro Nutrients – Chelated',
-    brand: 'Multiplex',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/718mIygx+2L._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/718mIygx+2L._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.4,
-    reviews: 88,
-    description: 'Complete chelated micronutrient mix for deficiency correction',
-    forUse: 'Foliar spray – all crops',
-    variants: [
-      { variant: '250g', sku: 'SPEC-MICRO-250G-001', price: 220, originalPrice: 280, discount: 21, inStock: true },
-      { variant: '500g', sku: 'SPEC-MICRO-500G-001', price: 380, originalPrice: 480, discount: 21, inStock: true },
-      { variant: '1kg', sku: 'SPEC-MICRO-1KG-001', price: 700, originalPrice: 880, discount: 20, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P603',
-    name: 'Seed Treatment Solution',
-    brand: 'Bayer',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/51ZLAhr3u4L._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/51ZLAhr3u4L._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.6,
-    reviews: 72,
-    description: 'Systemic seed treatment for early pest and disease protection',
-    forUse: 'Seed treatment before sowing',
-    variants: [
-      { variant: '100ml', sku: 'SPEC-SEED-100ML-001', price: 180, originalPrice: 220, discount: 18, inStock: true },
-      { variant: '250ml', sku: 'SPEC-SEED-250ML-001', price: 340, originalPrice: 420, discount: 19, inStock: true },
-      { variant: '500ml', sku: 'SPEC-SEED-500ML-001', price: 620, originalPrice: 780, discount: 21, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P605',
-    name: 'Rose Plant – Grafted',
-    brand: 'Ugaoo',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/81auo7w93cL._AC_UL480_FMwebp_QL65_.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/81auo7w93cL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
-    rating: 4.7,
-    reviews: 340,
-    description: 'Grafted hybrid rose plant – blooms in multiple colors',
-    forUse: 'Home garden and landscaping',
-    variants: [
-      { variant: '1 Plant', sku: 'PLANT-ROSE-1PC-001', price: 199, originalPrice: 280, discount: 29, inStock: true },
-      { variant: '3 Plants', sku: 'PLANT-ROSE-3PC-001', price: 499, originalPrice: 750, discount: 33, inStock: true },
-    ],
-  }),
-  defineProduct({
-    id: 'P606',
-    name: 'Tulsi Plant – Holy Basil',
-    brand: 'Ugaoo',
-    category: 'Farm Tools & Equipment',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/61+u3uGpTWL._AC_SX416_CB1169409_QL70_.jpg',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/61+u3uGpTWL._AC_SX416_CB1169409_QL70_.jpg', '', '', ''],
-    rating: 4.8,
-    reviews: 420,
-    description: 'Medicinal holy basil plant – easy to grow',
-    forUse: 'Home garden and medicinal use',
-    variants: [
-      { variant: '1 Plant', sku: 'PLANT-TULS-1PC-001', price: 99, originalPrice: 150, discount: 34, inStock: true },
-      { variant: '3 Plants', sku: 'PLANT-TULS-3PC-001', price: 249, originalPrice: 400, discount: 38, inStock: true },
-    ],
-  }),
+  id: 'P605',
+  name: 'Neptune NF-767 4-Stroke Power Sprayer (25L)',
+  brand: 'Neptune',
+  category: 'Farm Tools & Equipment',
+
+  image: "https://ik.imagekit.io/nsi7x5p2x/3_YatishReddy24.webp?tr=w-800,q-auto,f-auto",
+
+  images: [
+    "https://ik.imagekit.io/nsi7x5p2x/3_YatishReddy24.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/5_YatishReddy21.webp?tr=w-800,q-auto,f-auto",
+    "https://ik.imagekit.io/nsi7x5p2x/4_YatishReddy23.webp?tr=w-800,q-auto,f-auto"
+  ],
+
+  rating: 4.75,
+  reviews: 4,
+
+  description: `High-performance 4-stroke power sprayer with petrol engine.
+Provides powerful spraying for large farms with uniform coverage and efficiency.`,
+
+  forUse: 'Pesticide spraying, fertilizer spraying, crop protection',
+
+  usage: 'Fill tank, start engine, and spray evenly across crops',
+
+  variants: [
+    {
+      variant: '1 unit',
+      sku: 'SPRAYER-NF767-001',
+      price: 12500,
+      originalPrice: 16500,
+      discount: 18,
+      inStock: true,
+      tag: 'Best Seller'
+    }
+  ]
+}),
 ];
