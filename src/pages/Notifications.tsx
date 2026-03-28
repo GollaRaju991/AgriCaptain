@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import useScrollToTop from '@/hooks/useScrollToTop';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { refreshNotificationCount } from '@/hooks/useNotificationCount';
 
 interface Notification {
   id: string;
