@@ -270,6 +270,25 @@ const SellCrop: React.FC = () => {
         }
       />
 
+      {/* Location bar (mobile) */}
+      <div className="lg:hidden bg-card px-4 py-2 border-b border-border">
+        <button
+          onClick={handleDetectLocation}
+          disabled={detectingLocation}
+          className="flex items-center gap-2 w-full"
+        >
+          {detectingLocation ? (
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          ) : (
+            <Navigation className="h-4 w-4 text-primary" />
+          )}
+          <span className="text-sm text-foreground font-medium truncate">
+            {userLocation?.address || t('Detect your location', 'మీ స్థానాన్ని గుర్తించండి', 'अपना स्थान पहचानें')}
+          </span>
+          {userLocation && <MapPin className="h-3 w-3 text-primary ml-auto flex-shrink-0" />}
+        </button>
+      </div>
+
       <div className="hidden lg:block"><Header /></div>
 
       <div className="hidden lg:block">
@@ -308,7 +327,7 @@ const SellCrop: React.FC = () => {
           <div className="text-center py-16">
             <Sprout className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
             <p className="text-lg font-semibold text-foreground mb-1">
-              {t('No crops available', 'పంటలు లేవు', 'कोई फसल उपलब्ध नहीं')}
+              {t('No crops available in your region', 'మీ ప్రాంతంలో పంటలు అందుబాటులో లేవు', 'आपके क्षेत्र में कोई फसल उपलब्ध नहीं')}
             </p>
             <p className="text-sm text-muted-foreground mb-4">
               {activeFilterCount > 0
@@ -321,6 +340,12 @@ const SellCrop: React.FC = () => {
               </Button>
             )}
           </div>
+        ) : hasLocationGrouping ? (
+          <>
+            {renderCropSection(nearbyCrops, `📍 ${t('Nearby Crops (0-100 km)', 'సమీపంలోని పంటలు (0-100 కి.మీ)', 'नज़दीकी फसलें (0-100 कि.मी.)')}`)}
+            {renderCropSection(extendedCrops, `🗺️ ${t('Extended Area (100-500 km)', 'విస్తారిత ప్రాంతం (100-500 కి.మీ)', 'विस्तारित क्षेत्र (100-500 कि.मी.)')}`)}
+            {renderCropSection(otherCrops, `🌍 ${t('Other Regions', 'ఇతర ప్రాంతాలు', 'अन्य क्षेत्र')}`)}
+          </>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredCrops.map(crop => renderCropCard(crop))}
