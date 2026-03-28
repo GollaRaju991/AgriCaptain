@@ -125,7 +125,7 @@
   }
 
   /* Better touch targets for mobile */
-  button:not([role="radio"]), a, input, select, textarea {
+  button:not([role="radio"]):not([role="checkbox"]), a, input, select, textarea {
     min-height: 44px;
   }
 
