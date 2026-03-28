@@ -30,24 +30,11 @@ const CategoryNavigation = () => {
       name: 'Pesticides', 
       icon: ShieldAlert, 
       path: '/products?category=pesticides',
-      hasDropdown: true,
-      subcategories: [
-        { name: 'Insecticides', path: '/products?category=pesticides&type=insecticides', icon: Target },
-        { name: 'Herbicides', path: '/products?category=pesticides&type=herbicides', icon: Spline },
-        { name: 'Fungicides', path: '/products?category=pesticides&type=fungicides', icon: CircleDot },
-        { name: 'Plant Growth Regulators', path: '/products?category=pesticides&type=growth-regulators', icon: Growth },
-      ]
     },
     { 
       name: 'Farm Tools & Equipment', 
       icon: Wrench, 
       path: '/products?category=farm-tools',
-      hasDropdown: true,
-      subcategories: [
-        { name: 'Sprayers & Equipment', path: '/products?category=farm-tools&type=equipment', icon: SprayCan },
-        { name: 'Irrigation Tools', path: '/products?category=farm-tools&type=irrigation', icon: Droplets },
-        { name: 'Harvesting Tools', path: '/products?category=farm-tools&type=harvesting', icon: Scissors },
-      ]
     },
     { name: 'Direct From Farm', icon: Leaf, path: '/direct-from-farm' },
     { name: 'Sell Crop', icon: Wheat, path: '/sell-crop' },
