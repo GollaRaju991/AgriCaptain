@@ -11,6 +11,7 @@ import useScrollToTop from '@/hooks/useScrollToTop';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { refreshNotificationCount } from '@/hooks/useNotificationCount';
 
 interface Notification {
   id: string;
@@ -113,6 +114,7 @@ const Notifications = () => {
             : notification
         )
       );
+      refreshNotificationCount();
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -131,6 +133,7 @@ const Notifications = () => {
       setNotifications(prev =>
         prev.map(notification => ({ ...notification, is_read: true }))
       );
+      refreshNotificationCount();
       toast.success("All notifications marked as read");
     } catch (error) {
       console.error('Error marking all as read:', error);
@@ -146,6 +149,7 @@ const Notifications = () => {
         .eq('id', id);
 
       setNotifications(prev => prev.filter(notification => notification.id !== id));
+      refreshNotificationCount();
       toast.success("Notification deleted");
     } catch (error) {
       console.error('Error deleting notification:', error);
