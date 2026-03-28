@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Eye, Filter, X, ChevronDown } from 'lucide-react';
+import { MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Filter, X, ChevronDown, Navigation, Sprout } from 'lucide-react';
 import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,12 +9,14 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Drawer, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useCart } from '@/contexts/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { calculateDistance, formatDistance, detectUserLocation, type UserLocation } from '@/utils/locationUtils';
 
 interface CropWithSeller {
   id: string;
@@ -28,6 +30,9 @@ interface CropWithSeller {
   location_address: string | null;
   created_at: string | null;
   seller_id: string | null;
+  sell_type: string | null;
+  latitude: number | null;
+  longitude: number | null;
   seller: {
     name: string;
     phone: string;
@@ -36,6 +41,7 @@ interface CropWithSeller {
     district: string | null;
     state: string | null;
   } | null;
+  distance?: number;
 }
 
 interface Filters {
@@ -71,6 +77,7 @@ const cropCategoryMap: Record<string, string> = {
 const qualityGrades = ['Grade A', 'Grade B', 'Grade C', 'Organic'];
 
 const sortOptions = [
+  { value: 'nearest', label: 'Nearest First', labelTe: 'సమీపంలో ముందు', labelHi: 'निकटतम पहले' },
   { value: 'latest', label: 'Latest Added', labelTe: 'తాజాగా జోడించబడింది', labelHi: 'नवीनतम' },
   { value: 'price_low', label: 'Price: Low to High', labelTe: 'ధర: తక్కువ నుండి ఎక్కువ', labelHi: 'कीमत: कम से अधिक' },
   { value: 'price_high', label: 'Price: High to Low', labelTe: 'ధర: ఎక్కువ నుండి తక్కువ', labelHi: 'कीमत: अधिक से कम' },
@@ -93,12 +100,28 @@ const DirectFromFarm: React.FC = () => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
 
   const t = (en: string, te: string, hi?: string) => {
     if (language === 'te') return te;
     if (language === 'hi') return hi || en;
     return en;
   };
+
+  const handleDetectLocation = useCallback(async () => {
+    setDetectingLocation(true);
+    try {
+      const loc = await detectUserLocation();
+      setUserLocation(loc);
+      toast({ title: t('Location detected!', 'స్థానం గుర్తించబడింది!', 'स्थान पहचाना गया!'), description: loc.address });
+    } catch {
+      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది', 'स्थान नहीं मिला'), variant: 'destructive' });
+    } finally {
+      setDetectingLocation(false);
+    }
+  }, []);
 
   const fetchCrops = async () => {
     setLoading(true);
@@ -126,11 +149,35 @@ const DirectFromFarm: React.FC = () => {
 
   useEffect(() => { fetchCrops(); }, []);
 
+  // Auto-detect location on mount
+  useEffect(() => {
+    handleDetectLocation();
+  }, []);
+
+  // Add distance to crops when user location changes
+  const cropsWithDistance = useMemo(() => {
+    if (!userLocation) return crops.map(c => ({ ...c, distance: undefined }));
+    return crops.map(crop => {
+      if (crop.latitude && crop.longitude) {
+        const dist = calculateDistance(userLocation.latitude, userLocation.longitude, crop.latitude, crop.longitude);
+        return { ...crop, distance: dist };
+      }
+      return { ...crop, distance: undefined };
+    });
+  }, [crops, userLocation]);
+
   const filteredCrops = useMemo(() => {
-    let result = crops.filter((crop) => {
-      // Only show crops listed for Direct From Farm
-      const sellType = (crop as any).sell_type || 'both';
-      if (sellType !== 'direct_from_farm' && sellType !== 'both') return false;
+    let result = cropsWithDistance.filter((crop) => {
+      const sellType = crop.sell_type || 'both';
+      // Tab filter
+      if (activeTab === 'direct') {
+        if (sellType !== 'direct_from_farm' && sellType !== 'both') return false;
+      } else if (activeTab === 'self') {
+        if (sellType !== 'crop_market' && sellType !== 'both') return false;
+      } else {
+        if (sellType !== 'direct_from_farm' && sellType !== 'crop_market' && sellType !== 'both') return false;
+      }
+
       const f = appliedFilters;
       if (f.search) {
         const s = f.search.toLowerCase();
@@ -157,12 +204,24 @@ const DirectFromFarm: React.FC = () => {
       return true;
     });
 
-    const sortBy = appliedFilters.sortBy || 'latest';
-    if (sortBy === 'price_low') result.sort((a, b) => parseFloat(a.price.replace(/[^0-9.]/g, '')) - parseFloat(b.price.replace(/[^0-9.]/g, '')));
-    else if (sortBy === 'price_high') result.sort((a, b) => parseFloat(b.price.replace(/[^0-9.]/g, '')) - parseFloat(a.price.replace(/[^0-9.]/g, '')));
+    const sortBy = appliedFilters.sortBy || (userLocation ? 'nearest' : 'latest');
+    if (sortBy === 'nearest') {
+      result.sort((a, b) => (a.distance ?? 99999) - (b.distance ?? 99999));
+    } else if (sortBy === 'price_low') {
+      result.sort((a, b) => parseFloat(a.price.replace(/[^0-9.]/g, '')) - parseFloat(b.price.replace(/[^0-9.]/g, '')));
+    } else if (sortBy === 'price_high') {
+      result.sort((a, b) => parseFloat(b.price.replace(/[^0-9.]/g, '')) - parseFloat(a.price.replace(/[^0-9.]/g, '')));
+    }
 
     return result;
-  }, [crops, appliedFilters, selectedCategory]);
+  }, [cropsWithDistance, appliedFilters, selectedCategory, activeTab, userLocation]);
+
+  // Group crops by distance
+  const nearbyCrops = useMemo(() => filteredCrops.filter(c => c.distance !== undefined && c.distance <= 100), [filteredCrops]);
+  const extendedCrops = useMemo(() => filteredCrops.filter(c => c.distance !== undefined && c.distance > 100 && c.distance <= 500), [filteredCrops]);
+  const otherCrops = useMemo(() => filteredCrops.filter(c => c.distance === undefined || c.distance > 500), [filteredCrops]);
+
+  const hasLocationGrouping = userLocation && filteredCrops.some(c => c.distance !== undefined);
 
   const activeFilterCount = Object.values(appliedFilters).filter(Boolean).length + (selectedCategory ? 1 : 0);
 
@@ -189,13 +248,19 @@ const DirectFromFarm: React.FC = () => {
     window.open(`tel:+91${phone}`, '_self');
   };
 
+  const getSellTypeTag = (sellType: string | null) => {
+    if (sellType === 'direct_from_farm' || sellType === 'both') return 'Direct from Farm';
+    if (sellType === 'crop_market') return 'Self Crop';
+    return null;
+  };
+
   const renderStars = (rating: number) => {
     const full = Math.floor(rating);
     const half = rating - full >= 0.5;
     return (
       <div className="flex items-center gap-0.5">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Star key={i} className={`h-3 w-3 ${i < full ? 'fill-yellow-400 text-yellow-400' : i === full && half ? 'fill-yellow-400/50 text-yellow-400' : 'text-gray-300'}`} />
+          <Star key={i} className={`h-3 w-3 ${i < full ? 'fill-yellow-400 text-yellow-400' : i === full && half ? 'fill-yellow-400/50 text-yellow-400' : 'text-muted-foreground/30'}`} />
         ))}
       </div>
     );
@@ -205,9 +270,10 @@ const DirectFromFarm: React.FC = () => {
     const rating = crop.seller ? getFarmerRating(crop.seller.name) : 4.0;
     const isOrganic = crop.quality_grade === 'Organic';
     const isPremium = crop.quality_grade === 'Grade A' || isOrganic;
+    const sellTag = getSellTypeTag(crop.sell_type);
 
     return (
-      <Card key={crop.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-white border border-gray-100 rounded-xl">
+      <Card key={crop.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-card border border-border rounded-xl">
         <Link to={`/sell-crop/${crop.id}`}>
           <div className="relative">
             <img
@@ -216,14 +282,17 @@ const DirectFromFarm: React.FC = () => {
               className="w-full h-32 sm:h-48 object-cover"
               onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
             />
+            {/* Sell type tag */}
+            {sellTag && (
+              <Badge className={`absolute top-2 left-2 text-[9px] px-1.5 py-0.5 rounded ${
+                sellTag === 'Direct from Farm' ? 'bg-green-600 text-white' : 'bg-blue-600 text-white'
+              }`}>
+                {sellTag === 'Direct from Farm' ? '✅ ' : '🌱 '}{sellTag}
+              </Badge>
+            )}
             {isPremium && (
               <Badge className="absolute bottom-2 left-2 bg-green-700/90 text-white text-[10px] px-2 py-0.5 rounded">
                 {isOrganic ? 'Organic' : 'Premium'}
-              </Badge>
-            )}
-            {crop.quality_grade && !isPremium && (
-              <Badge className="absolute bottom-2 left-2 bg-gray-600/80 text-white text-[10px] px-2 py-0.5 rounded">
-                {crop.quality_grade.replace('Grade ', '')}
               </Badge>
             )}
             {crop.seller && (
@@ -231,7 +300,7 @@ const DirectFromFarm: React.FC = () => {
                 {crop.seller.photo_url ? (
                   <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white object-cover shadow" />
                 ) : (
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-xs sm:text-sm border-2 border-white shadow">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs sm:text-sm border-2 border-white shadow">
                     {crop.seller.name.charAt(0)}
                   </div>
                 )}
@@ -241,33 +310,43 @@ const DirectFromFarm: React.FC = () => {
 
           <div className="p-2 sm:p-3">
             <div className="flex items-start justify-between gap-1">
-              <h3 className="font-semibold text-xs sm:text-sm text-gray-900 line-clamp-1">{crop.crop_name}</h3>
-              {crop.seller && <span className="text-[10px] sm:text-xs text-gray-500 flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
+              <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
+              {crop.seller && <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
             </div>
 
             <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-              <span className="text-sm sm:text-lg font-bold text-gray-900">₹{crop.price}</span>
-              <span className="text-[10px] sm:text-xs text-gray-500">/ {crop.quantity.includes('Quintal') || crop.quantity.includes('quintal') ? 'Quintal' : 'Kg'}</span>
+              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">/ {crop.quantity.includes('Quintal') || crop.quantity.includes('quintal') ? 'Quintal' : 'Kg'}</span>
             </div>
 
-            <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-gray-500">
+            <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
               <span className="flex items-center gap-0.5">
                 <span className="text-green-600">✓</span> {crop.quantity}
               </span>
             </div>
 
+            {/* Distance + Location */}
+            <div className="flex items-center justify-between mt-1 sm:mt-1.5">
+              <span className="text-[10px] sm:text-xs text-muted-foreground truncate max-w-[80px] sm:max-w-none flex items-center gap-0.5">
+                <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
+                {crop.seller?.village || crop.seller?.district || crop.location_address || ''}
+              </span>
+              {crop.distance !== undefined && (
+                <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-medium">
+                  {formatDistance(crop.distance)}
+                </Badge>
+              )}
+            </div>
+
             {crop.seller && (
-              <div className="flex items-center justify-between mt-1 sm:mt-1.5">
-                <span className="text-[10px] sm:text-xs text-gray-500 truncate max-w-[60px] sm:max-w-none">
-                  {crop.seller.village || crop.seller.district || ''}
-                </span>
+              <div className="flex items-center justify-between mt-1">
                 {renderStars(rating)}
+                <span className="text-[10px] text-muted-foreground font-medium">★ {rating.toFixed(1)}</span>
               </div>
             )}
           </div>
         </Link>
 
-        {/* Add to Cart button */}
         <div className="px-2 pb-2 sm:px-3 sm:pb-3">
           <Button
             size="sm"
@@ -279,9 +358,8 @@ const DirectFromFarm: React.FC = () => {
           </Button>
         </div>
 
-        {/* Contact farmer */}
         {crop.seller && (
-          <div className="border-t border-gray-100 px-2 py-1.5 sm:px-3 sm:py-2 flex items-center justify-between">
+          <div className="border-t border-border px-2 py-1.5 sm:px-3 sm:py-2 flex items-center justify-between">
             <button
               onClick={(e) => handleCallFarmer(crop.seller!.phone, e)}
               className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-green-700 font-medium min-h-0"
@@ -289,15 +367,31 @@ const DirectFromFarm: React.FC = () => {
               <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
               {t('Contact', 'సంప్రదించు', 'संपर्क')}
             </button>
-            <span className="text-[10px] sm:text-xs text-gray-400 font-medium">★ {rating.toFixed(1)}</span>
           </div>
         )}
       </Card>
     );
   };
 
+  const renderCropGrid = (cropsList: CropWithSeller[], sectionTitle?: string) => {
+    if (cropsList.length === 0) return null;
+    return (
+      <div className="mb-6">
+        {sectionTitle && (
+          <h2 className="text-base sm:text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+            {sectionTitle}
+            <Badge variant="secondary" className="text-xs">{cropsList.length}</Badge>
+          </h2>
+        )}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          {cropsList.map(crop => renderProductCard(crop))}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-background pb-24">
       <MobilePageHeader
         title={t('Search fresh products...', 'తాజా ఉత్పత్తులు శోధించండి...', 'ताज़ा उत्पाद खोजें...')}
         fallbackPath="/"
@@ -308,33 +402,62 @@ const DirectFromFarm: React.FC = () => {
         }
       />
 
+      {/* Location bar (mobile) */}
+      <div className="lg:hidden bg-card px-4 py-2 border-b border-border">
+        <button
+          onClick={handleDetectLocation}
+          disabled={detectingLocation}
+          className="flex items-center gap-2 w-full"
+        >
+          {detectingLocation ? (
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          ) : (
+            <Navigation className="h-4 w-4 text-primary" />
+          )}
+          <span className="text-sm text-foreground font-medium truncate">
+            {userLocation?.address || t('Detect your location', 'మీ స్థానాన్ని గుర్తించండి', 'अपना स्थान पहचानें')}
+          </span>
+          {userLocation && <MapPin className="h-3 w-3 text-green-600 ml-auto flex-shrink-0" />}
+        </button>
+      </div>
+
+      {/* Tabs: All / Direct from Farm / Self Crop */}
+      <div className="lg:hidden bg-card border-b border-border">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="w-full h-auto p-0 bg-transparent rounded-none border-b-0">
+            <TabsTrigger value="all" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent text-xs py-2.5">
+              {t('All Crops', 'అన్ని పంటలు', 'सभी फसलें')}
+            </TabsTrigger>
+            <TabsTrigger value="direct" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-green-600 data-[state=active]:bg-transparent text-xs py-2.5">
+              ✅ {t('Direct from Farm', 'పొలం నుండి', 'खेत से')}
+            </TabsTrigger>
+            <TabsTrigger value="self" className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 data-[state=active]:bg-transparent text-xs py-2.5">
+              🌱 {t('Self Crop', 'స్వంత పంట', 'स्वयं फसल')}
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Mobile filter chips */}
-      <div className="lg:hidden bg-white px-4 py-1.5 flex gap-2 overflow-x-auto border-b border-gray-100 no-scrollbar">
+      <div className="lg:hidden bg-card px-4 py-1.5 flex gap-2 overflow-x-auto border-b border-border no-scrollbar">
         <button
           onClick={() => setDrawerOpen(true)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-border text-xs text-foreground whitespace-nowrap flex-shrink-0"
         >
-          <MapPin className="h-3 w-3 text-green-600" /> {t('All Locations', 'అన్ని స్థానాలు', 'सभी स्थान')}
+          <Filter className="h-3 w-3 text-primary" /> {t('All Categories', 'అన్ని వర్గాలు', 'सभी श्रेणियां')} <ChevronDown className="h-3 w-3" />
         </button>
         <button
           onClick={() => setDrawerOpen(true)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
-        >
-          <Filter className="h-3 w-3 text-green-600" /> {t('All Categories', 'అన్ని వర్గాలు', 'सभी श्रेणियां')} <ChevronDown className="h-3 w-3" />
-        </button>
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 text-xs text-gray-700 whitespace-nowrap flex-shrink-0"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-border text-xs text-foreground whitespace-nowrap flex-shrink-0"
         >
           {t('Price', 'ధర', 'कीमत')} <ChevronDown className="h-3 w-3" />
         </button>
         <button
           onClick={() => setDrawerOpen(true)}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap flex-shrink-0 ${activeFilterCount > 0 ? 'border-green-600 bg-green-50 text-green-700' : 'border-gray-200 text-gray-700'}`}
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-xs whitespace-nowrap flex-shrink-0 ${activeFilterCount > 0 ? 'border-primary bg-primary/10 text-primary' : 'border-border text-foreground'}`}
         >
           <SlidersHorizontal className="h-3 w-3" /> {t('More Filters', 'మరిన్ని ఫిల్టర్లు', 'अधिक फिल्टर')}
-          {activeFilterCount > 0 && <span className="bg-green-600 text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center">{activeFilterCount}</span>}
+          {activeFilterCount > 0 && <span className="bg-primary text-primary-foreground rounded-full w-4 h-4 text-[10px] flex items-center justify-center">{activeFilterCount}</span>}
         </button>
       </div>
 
@@ -342,22 +465,41 @@ const DirectFromFarm: React.FC = () => {
       <div className="hidden lg:block"><Header /></div>
 
       <div className="w-full px-4 py-4 lg:py-6">
-        {/* Desktop search & filters */}
+        {/* Desktop header with location */}
         <div className="hidden lg:block mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{t('Direct From Farm', 'నేరుగా పొలం నుండి', 'सीधे खेत से')}</h1>
-              <p className="text-sm text-gray-500 mt-1">{t('Buy fresh products directly from verified farmers', 'ధృవీకరించబడిన రైతుల నుండి తాజా ఉత్పత్తులను నేరుగా కొనుగోలు చేయండి', 'सत्यापित किसानों से सीधे ताज़ा उत्पाद खरीदें')}</p>
+              <h1 className="text-2xl font-bold text-foreground">{t('Crop Marketplace', 'పంట మార్కెట్', 'फसल बाज़ार')}</h1>
+              <p className="text-sm text-muted-foreground mt-1">{t('Buy fresh crops directly from verified farmers near you', 'మీ సమీపంలోని ధృవీకరించబడిన రైతుల నుండి తాజా పంటలు కొనుగోలు చేయండి', 'अपने पास के सत्यापित किसानों से ताज़ा फसलें खरीदें')}</p>
             </div>
+            <Button
+              variant="outline"
+              onClick={handleDetectLocation}
+              disabled={detectingLocation}
+              className="gap-2"
+            >
+              {detectingLocation ? <Loader2 className="h-4 w-4 animate-spin" /> : <Navigation className="h-4 w-4" />}
+              {userLocation?.address ? userLocation.address.split(',')[0] : t('Detect Location', 'స్థానం గుర్తించు', 'स्थान पहचानें')}
+            </Button>
           </div>
+
+          {/* Desktop tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-4">
+            <TabsList>
+              <TabsTrigger value="all">{t('All Crops', 'అన్ని పంటలు', 'सभी फसलें')}</TabsTrigger>
+              <TabsTrigger value="direct">✅ {t('Direct from Farm', 'పొలం నుండి', 'खेत से')}</TabsTrigger>
+              <TabsTrigger value="self">🌱 {t('Self Crop', 'స్వంత పంట', 'स्वयं फसल')}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <div className="flex gap-3 items-center">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder={t('Search fresh products from farmers...', 'రైతుల నుండి తాజా ఉత్పత్తులు శోధించండి...', 'किसानों से ताज़ा उत्पाद खोजें...')}
+                placeholder={t('Search crops, farmers...', 'పంటలు, రైతులు శోధించండి...', 'फसल, किसान खोजें...')}
                 value={appliedFilters.search}
                 onChange={(e) => setAppliedFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="pl-9 h-10 rounded-full border-gray-200"
+                className="pl-9 h-10 rounded-full"
               />
             </div>
             <Select value={appliedFilters.qualityGrade} onValueChange={(v) => setAppliedFilters(prev => ({ ...prev, qualityGrade: v === 'all' ? '' : v }))}>
@@ -386,47 +528,51 @@ const DirectFromFarm: React.FC = () => {
                 setAppliedFilters(prev => ({ ...prev, category: prev.category === cat.key ? '' : cat.key }));
               }}
               className={`flex flex-col items-center gap-1.5 min-w-[70px] flex-shrink-0 p-2 rounded-xl transition-all ${
-                selectedCategory === cat.key ? 'bg-green-100 border-2 border-green-600' : 'bg-white border border-gray-100'
+                selectedCategory === cat.key ? 'bg-primary/10 border-2 border-primary' : 'bg-card border border-border'
               }`}
             >
               <span className="text-2xl">{cat.icon}</span>
-              <span className="text-[11px] text-gray-700 font-medium text-center leading-tight">
+              <span className="text-[11px] text-foreground font-medium text-center leading-tight">
                 {language === 'te' ? cat.labelTe : language === 'hi' ? cat.labelHi : cat.label}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Section title */}
-        <h2 className="text-lg font-bold text-gray-900 mb-3">
-          {t('Fresh Products from Verified Farmers', 'ధృవీకరించబడిన రైతుల నుండి తాజా ఉత్పత్తులు', 'सत्यापित किसानों से ताज़ा उत्पाद')}
-        </h2>
-
-        {/* Product grid */}
+        {/* Product grid with location grouping */}
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : filteredCrops.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-5xl mb-4">🌱</div>
-            <h3 className="text-lg font-semibold text-gray-700">{t('No products found', 'ఉత్పత్తులు కనుగొనబడలేదు', 'कोई उत्पाद नहीं मिला')}</h3>
-            <p className="text-sm text-gray-500 mt-1">{t('Try adjusting your filters', 'మీ ఫిల్టర్లను సవరించి ప్రయత్నించండి', 'अपने फिल्टर बदलें')}</p>
+            <Sprout className="h-16 w-16 text-muted-foreground/40 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground">{t('No crops available in your region', 'మీ ప్రాంతంలో పంటలు అందుబాటులో లేవు', 'आपके क्षेत्र में कोई फसल उपलब्ध नहीं')}</h3>
+            <p className="text-sm text-muted-foreground mt-1">{t('Try adjusting your filters or expanding your search area', 'మీ ఫిల్టర్‌లను సవరించండి లేదా శోధన ప్రాంతాన్ని విస్తరించండి', 'अपने फिल्टर बदलें या खोज क्षेत्र बढ़ाएं')}</p>
+            {activeFilterCount > 0 && (
+              <Button variant="outline" className="mt-4" onClick={() => { setAppliedFilters(defaultFilters); setSelectedCategory(''); }}>
+                {t('Clear Filters', 'ఫిల్టర్లు తీసేయండి', 'फिल्टर हटाएं')}
+              </Button>
+            )}
           </div>
+        ) : hasLocationGrouping ? (
+          <>
+            {renderCropGrid(nearbyCrops, `📍 ${t('Nearby Crops (0-100 km)', 'సమీపంలోని పంటలు (0-100 కి.మీ)', 'नज़दीकी फसलें (0-100 कि.मी.)')}`)}
+            {renderCropGrid(extendedCrops, `🗺️ ${t('Extended Area (100-500 km)', 'విస్తారిత ప్రాంతం (100-500 కి.మీ)', 'विस्तारित क्षेत्र (100-500 कि.मी.)')}`)}
+            {renderCropGrid(otherCrops, `🌍 ${t('Other Regions', 'ఇతర ప్రాంతాలు', 'अन्य क्षेत्र')}`)}
+            {nearbyCrops.length === 0 && extendedCrops.length === 0 && otherCrops.length > 0 && (
+              <p className="text-sm text-muted-foreground text-center mb-4">
+                {t('No crops found within 500 km. Showing crops from other regions.', '500 కి.మీ లోపల పంటలు కనుగొనబడలేదు. ఇతర ప్రాంతాల పంటలు చూపిస్తున్నాము.', '500 कि.मी. के भीतर कोई फसल नहीं मिली। अन्य क्षेत्रों की फसलें दिखा रहे हैं।')}
+              </p>
+            )}
+          </>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-            {filteredCrops.map(crop => renderProductCard(crop))}
-          </div>
-        )}
-
-        {/* Recommended section */}
-        {!loading && filteredCrops.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-3">
-              {t('Recommended for You', 'మీ కోసం సిఫార్సు', 'आपके लिए अनुशंसित')}
+          <div>
+            <h2 className="text-lg font-bold text-foreground mb-3">
+              {t('Available Crops', 'అందుబాటులో ఉన్న పంటలు', 'उपलब्ध फसलें')}
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-              {filteredCrops.slice(0, 4).map(crop => renderProductCard(crop))}
+              {filteredCrops.map(crop => renderProductCard(crop))}
             </div>
           </div>
         )}
@@ -439,7 +585,7 @@ const DirectFromFarm: React.FC = () => {
         <DrawerContent className="max-h-[85vh]">
           <div className="px-4 py-3 border-b flex items-center justify-between">
             <h3 className="font-bold text-lg">{t('Filters & Sort', 'ఫిల్టర్లు & క్రమం', 'फिल्टर और सॉर्ट')}</h3>
-            <button onClick={() => setDrawerOpen(false)}><X className="h-5 w-5 text-gray-500" /></button>
+            <button onClick={() => setDrawerOpen(false)}><X className="h-5 w-5 text-muted-foreground" /></button>
           </div>
           <div className="p-4 space-y-4 overflow-y-auto">
             <div>
@@ -495,7 +641,7 @@ const DirectFromFarm: React.FC = () => {
             <Button variant="outline" className="flex-1" onClick={() => { setFilters(defaultFilters); setAppliedFilters(defaultFilters); setSelectedCategory(''); setDrawerOpen(false); }}>
               {t('Clear All', 'అన్నీ తీసేయి', 'सब हटाएं')}
             </Button>
-            <Button className="flex-1 bg-green-700 hover:bg-green-800" onClick={() => { setAppliedFilters(filters); if (filters.category) setSelectedCategory(filters.category); setDrawerOpen(false); }}>
+            <Button className="flex-1" onClick={() => { setAppliedFilters(filters); if (filters.category) setSelectedCategory(filters.category); setDrawerOpen(false); }}>
               {t('Apply Filters', 'ఫిల్టర్లు వర్తించు', 'फिल्टर लागू करें')}
             </Button>
           </DrawerFooter>
