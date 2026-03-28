@@ -149,6 +149,7 @@ const Notifications = () => {
         .eq('id', id);
 
       setNotifications(prev => prev.filter(notification => notification.id !== id));
+      refreshNotificationCount();
       toast.success("Notification deleted");
     } catch (error) {
       console.error('Error deleting notification:', error);
