@@ -30,6 +30,8 @@ interface CropWithSeller {
   location_address: string | null;
   sell_type: string;
   user_id: string;
+  latitude: number | null;
+  longitude: number | null;
   seller: {
     name: string;
     phone: string;
@@ -38,6 +40,7 @@ interface CropWithSeller {
     district: string | null;
     state: string | null;
   } | null;
+  distance?: number;
 }
 
 interface Filters {
