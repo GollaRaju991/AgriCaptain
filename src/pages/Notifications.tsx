@@ -114,6 +114,7 @@ const Notifications = () => {
             : notification
         )
       );
+      refreshNotificationCount();
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
@@ -132,6 +133,7 @@ const Notifications = () => {
       setNotifications(prev =>
         prev.map(notification => ({ ...notification, is_read: true }))
       );
+      refreshNotificationCount();
       toast.success("All notifications marked as read");
     } catch (error) {
       console.error('Error marking all as read:', error);
