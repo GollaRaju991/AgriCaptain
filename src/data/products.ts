@@ -19,7 +19,18 @@ export interface Product {
   reviews: number;
   description: string;
   forUse?: string;
+  usage?: string;
+  crops?: string;
+  dosage?: string;
   variants: Variant[];
+  // Backward-compat computed fields from first variant
+  variant: string;
+  sku: string;
+  price: number;
+  originalPrice: number;
+  discount: number;
+  inStock: boolean;
+}
   // Backward-compat computed fields from first variant
   variant: string;
   sku: string;
