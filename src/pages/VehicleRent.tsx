@@ -251,10 +251,10 @@ const VehicleRent = () => {
     const villageList = mandalCode ? villages[mandalCode as keyof typeof villages] || [] : [];
     const villageCode = findCodeByName(villageList, location.village);
     if (villageCode) setSelectedVillage(villageCode);
-    setAutoDetectLocation(false);
+    // location mode already handles this
   };
 
-  const handleSelectSavedAddress = (addr: SavedFormAddress) => {
+  setLocationMode('manual');
     setSelectedCountry(addr.country);
     setTimeout(() => {
       setSelectedState(addr.state);
@@ -278,7 +278,7 @@ const VehicleRent = () => {
   };
 
   const effectiveTypes = getEffectiveVehicleTypes();
-  const isFormValid = effectiveTypes.length > 0 && startDate && endDate && (nearbyActive || (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
+  const isFormValid = effectiveTypes.length > 0 && startDate && endDate && (locationMode === 'nearby' ? !!userCoords : (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
 
   const label = (en: string, te: string) => language === 'te' ? te : en;
 
