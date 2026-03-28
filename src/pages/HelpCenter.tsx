@@ -76,7 +76,7 @@ const HelpCenter = () => {
           <h2 className="text-lg font-semibold text-foreground">Contact Us</h2>
           <div className="bg-white rounded-lg shadow-sm overflow-hidden divide-y divide-gray-100">
             <a 
-              href="tel:+911234567890" 
+              href="tel:+919912365550" 
               className="flex items-center justify-between p-4 hover:bg-gray-50"
             >
               <div className="flex items-center space-x-3">
@@ -85,7 +85,7 @@ const HelpCenter = () => {
                 </div>
                 <div>
                   <span className="text-sm font-medium text-foreground">Call Us</span>
-                  <p className="text-xs text-muted-foreground">+91 1234567890</p>
+                  <p className="text-xs text-muted-foreground">+91 9912365550</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
