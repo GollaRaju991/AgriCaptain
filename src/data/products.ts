@@ -31,14 +31,6 @@ export interface Product {
   discount: number;
   inStock: boolean;
 }
-  // Backward-compat computed fields from first variant
-  variant: string;
-  sku: string;
-  price: number;
-  originalPrice: number;
-  discount: number;
-  inStock: boolean;
-}
 
 // Helper to build a Product with variants (auto-fills compat fields from first variant)
 function defineProduct(p: Omit<Product, 'variant' | 'sku' | 'price' | 'originalPrice' | 'discount' | 'inStock'>): Product {
