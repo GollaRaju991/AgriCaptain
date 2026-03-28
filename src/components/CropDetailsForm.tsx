@@ -6,12 +6,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store } from 'lucide-react';
+import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store, Navigation } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { detectUserLocation } from '@/utils/locationUtils';
 
 interface CropDetailsFormProps {
   sellerId: string;
@@ -38,6 +39,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
   const [cropImages, setCropImages] = useState<File[]>([]);
   const [cropPreviews, setCropPreviews] = useState<string[]>([]);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   const [cropData, setCropData] = useState({
     cropName: '',
     sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market' | 'both',
@@ -47,6 +49,8 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
     qualityGrade: 'Grade A',
     availabilityLocation: 'Marketplace',
     locationAddress: '',
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
 
   const label = (en: string, te: string) => language === 'te' ? te : en;
