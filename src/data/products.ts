@@ -5,6 +5,7 @@ export interface Variant {
   originalPrice: number;
   discount: number;
   inStock: boolean;
+  tag?: string;
 }
 
 export interface Product {
