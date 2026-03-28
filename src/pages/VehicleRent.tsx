@@ -76,7 +76,7 @@ const VehicleRent = () => {
 
   useEffect(() => { setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedCountry]);
   useEffect(() => { setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedState]);
-  useEffect(() => { setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''; }, [selectedDistrict]);
+  useEffect(() => { setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage(''); }, [selectedDistrict]);
   useEffect(() => { setSelectedMandal(''); setSelectedVillage(''); }, [selectedDivision]);
   useEffect(() => { setSelectedVillage(''); }, [selectedMandal]);
 
