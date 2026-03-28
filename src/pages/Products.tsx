@@ -285,7 +285,7 @@ const Products = () => {
       <div className="hidden md:block container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-4">
-            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
+            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${categoryDisplayNames[selectedCategory] || selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
           {(searchQuery || selectedCategory || selectedBrand) && (
             <div className="flex flex-wrap items-center gap-2 mb-4">
