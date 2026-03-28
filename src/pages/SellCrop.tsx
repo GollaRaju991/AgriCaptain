@@ -76,12 +76,28 @@ const parseQuantityKg = (qty: string): number => {
 
 const SellCrop: React.FC = () => {
   const { language } = useLanguage();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [crops, setCrops] = useState<CropWithSeller[]>([]);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [appliedFilters, setAppliedFilters] = useState<Filters>(defaultFilters);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
+
+  const handleDetectLocation = useCallback(async () => {
+    setDetectingLocation(true);
+    try {
+      const loc = await detectUserLocation();
+      setUserLocation(loc);
+      toast({ title: t('Location detected!', 'స్థానం గుర్తించబడింది!', 'स्थान पहचाना गया!'), description: loc.address });
+    } catch {
+      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది'), variant: 'destructive' });
+    } finally {
+      setDetectingLocation(false);
+    }
+  }, []);
   
 
   const t = (en: string, te: string, hi?: string) => {
