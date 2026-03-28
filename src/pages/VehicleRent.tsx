@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, X, Navigation, Loader2 } from 'lucide-react';
@@ -16,10 +17,33 @@ import LocationDetector from '@/components/LocationDetector';
 import SavedAddressPicker from '@/components/SavedAddressPicker';
 import { useSavedFormAddresses, SavedFormAddress } from '@/hooks/useSavedFormAddresses';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { detectUserLocation } from '@/utils/locationUtils';
+import { detectUserLocation, calculateDistance } from '@/utils/locationUtils';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const VEHICLE_TYPES = ['Auto', 'Mini Truck', 'Tractor', 'Lorry', 'Other'];
+
+interface VehicleListing {
+  id: string;
+  owner_name: string;
+  owner_phone: string;
+  vehicle_type: string;
+  vehicle_name: string | null;
+  model_year: string | null;
+  daily_rate: number;
+  condition: string;
+  availability: string;
+  district: string | null;
+  state: string | null;
+  mandal: string | null;
+  village: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  location_address: string | null;
+  vehicle_images: string[] | null;
+  description: string | null;
+  distance?: number;
+}
 
 const VehicleRent = () => {
   const navigate = useNavigate();
@@ -34,11 +58,13 @@ const VehicleRent = () => {
   const [customVehicleType, setCustomVehicleType] = useState('');
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<VehicleListing[]>([]);
   const [isSearched, setIsSearched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [autoDetectLocation, setAutoDetectLocation] = useState(true);
   const [detectingNearby, setDetectingNearby] = useState(false);
   const [nearbyActive, setNearbyActive] = useState(false);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
@@ -70,9 +96,6 @@ const VehicleRent = () => {
     setSelectedVehicleTypes(prev =>
       prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     );
-    if (type !== 'Other') {
-      // keep dropdown open for multi-select
-    }
   };
 
   const removeVehicleType = (type: string) => {
@@ -83,13 +106,15 @@ const VehicleRent = () => {
   const handleNearby = async () => {
     if (nearbyActive) {
       setNearbyActive(false);
+      setUserCoords(null);
       return;
     }
     setDetectingNearby(true);
     try {
       const loc = await detectUserLocation();
+      setUserCoords({ lat: loc.latitude, lon: loc.longitude });
       setNearbyActive(true);
-      toast.success(label('Location detected! Showing nearby results.', 'లొకేషన్ గుర్తించబడింది!'));
+      toast.success(label('Location detected! Click Search to find nearby vehicles.', 'లొకేషన్ గుర్తించబడింది!'));
     } catch {
       toast.error(label('Could not detect location', 'లొకేషన్ గుర్తించలేకపోయింది'));
     } finally {
@@ -105,34 +130,106 @@ const VehicleRent = () => {
     return types;
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const effectiveTypes = getEffectiveVehicleTypes();
-    if (!selectedCountry || !selectedState || !selectedDistrict || effectiveTypes.length === 0 || !startDate || !endDate) return;
-    if (districtHasDivisions && !selectedDivision) return;
+    if (effectiveTypes.length === 0 || !startDate || !endDate) {
+      toast.error(label('Please select vehicle types and dates', 'దయచేసి వాహన రకాలు మరియు తేదీలు ఎంచుకోండి'));
+      return;
+    }
 
-    saveAddress({
-      country: selectedCountry,
-      state: selectedState,
-      district: selectedDistrict,
-      division: selectedDivision,
-      mandal: selectedMandal,
-      village: selectedVillage,
-      workType: effectiveTypes.join(', '),
-      category: 'Vehicle',
-    });
+    setIsLoading(true);
+    try {
+      // Query vehicle_listings from Supabase
+      let query = supabase
+        .from('vehicle_listings')
+        .select('*')
+        .eq('is_active', true)
+        .eq('availability', 'Available')
+        .in('vehicle_type', effectiveTypes);
 
-    const mockResults = effectiveTypes.flatMap((type, i) => [
-      { id: i * 2 + 1, name: `${type} - Model A`, type, model: '2022', rate: '₹1500/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Ram Singh', condition: 'Excellent', availability: 'Available' },
-      { id: i * 2 + 2, name: `${type} - Model B`, type, model: '2021', rate: '₹1200/day', location: `${selectedDistrict}, ${selectedState}`, owner: 'Suresh Kumar', condition: 'Good', availability: 'Available' }
-    ]);
-    setSearchResults(mockResults);
-    setIsSearched(true);
+      // If not using nearby, filter by location fields
+      if (!nearbyActive) {
+        if (selectedState) query = query.ilike('state', `%${selectedState}%`);
+        if (selectedDistrict) query = query.ilike('district', `%${selectedDistrict}%`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching vehicles:', error);
+        toast.error(label('Error fetching vehicles', 'వాహనాలు పొందడంలో లోపం'));
+        return;
+      }
+
+      let results: VehicleListing[] = (data || []).map((v: any) => ({
+        id: v.id,
+        owner_name: v.owner_name,
+        owner_phone: v.owner_phone,
+        vehicle_type: v.vehicle_type,
+        vehicle_name: v.vehicle_name,
+        model_year: v.model_year,
+        daily_rate: v.daily_rate,
+        condition: v.condition,
+        availability: v.availability,
+        district: v.district,
+        state: v.state,
+        mandal: v.mandal,
+        village: v.village,
+        latitude: v.latitude,
+        longitude: v.longitude,
+        location_address: v.location_address,
+        vehicle_images: v.vehicle_images,
+        description: v.description,
+      }));
+
+      // Calculate distance if user coords available
+      if (userCoords) {
+        results = results.map(v => ({
+          ...v,
+          distance: v.latitude && v.longitude
+            ? calculateDistance(userCoords.lat, userCoords.lon, v.latitude, v.longitude)
+            : undefined,
+        }));
+        // Sort by distance
+        results.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
+        // If nearby active, only show within 500km
+        if (nearbyActive) {
+          results = results.filter(v => v.distance !== undefined && v.distance <= 500);
+        }
+      }
+
+      // Save address for future use
+      if (selectedCountry && selectedState && selectedDistrict) {
+        saveAddress({
+          country: selectedCountry,
+          state: selectedState,
+          district: selectedDistrict,
+          division: selectedDivision,
+          mandal: selectedMandal,
+          village: selectedVillage,
+          workType: effectiveTypes.join(', '),
+          category: 'Vehicle',
+        });
+      }
+
+      setSearchResults(results);
+      setIsSearched(true);
+
+      if (results.length === 0) {
+        toast.info(label('No vehicles found. Partner vehicles will appear here once listed.', 'వాహనాలు కనుగొనబడలేదు. భాగస్వామి వాహనాలు జాబితా చేసిన తర్వాత ఇక్కడ కనిపిస్తాయి.'));
+      }
+    } catch (err) {
+      console.error('Search error:', err);
+      toast.error(label('Search failed', 'శోధన విఫలమైంది'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
     setSelectedVehicleTypes([]); setCustomVehicleType(''); setStartDate(undefined); setEndDate(undefined);
-    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true); setNearbyActive(false);
+    setSearchResults([]); setIsSearched(false); setAutoDetectLocation(true); setNearbyActive(false); setUserCoords(null);
   };
 
   const findCodeByName = (list: { code: string; name: string }[], name: string) => {
@@ -188,13 +285,12 @@ const VehicleRent = () => {
   };
 
   const effectiveTypes = getEffectiveVehicleTypes();
-  const isFormValid = selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision) && effectiveTypes.length > 0 && startDate && endDate;
+  const isFormValid = effectiveTypes.length > 0 && startDate && endDate && (nearbyActive || (selectedCountry && selectedState && selectedDistrict && (!districtHasDivisions || selectedDivision)));
 
   const label = (en: string, te: string) => language === 'te' ? te : en;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
       <div className="sticky top-0 z-50 bg-[#2d5a27] text-white">
         <div className="flex items-center justify-between px-4 py-4">
           <button onClick={() => { if (window.history.length > 1) navigate(-1); else navigate('/'); }} className="p-1">
@@ -229,68 +325,79 @@ const VehicleRent = () => {
           </Button>
         </div>
 
-        {/* Location Fields */}
         <div className="space-y-4">
-          <div>
-            <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
-            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-sm font-medium">{label('State *', 'రాష్ట్రం *')}</Label>
-            <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-sm font-medium">{label('District *', 'జిల్లా *')}</Label>
-            <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
-              <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
-              <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
-            </Select>
-          </div>
+          {!nearbyActive && (
+            <>
+              <div>
+                <Label className="text-sm font-medium">{label('Country *', 'దేశం *')}</Label>
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select country', 'దేశం ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{countries.map((c) => <SelectItem key={c.code} value={c.code}>{c.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">{label('State *', 'రాష్ట్రం *')}</Label>
+                <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select state', 'రాష్ట్రం ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableStates().map((s) => <SelectItem key={s.code} value={s.code}>{s.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">{label('District *', 'జిల్లా *')}</Label>
+                <Select value={selectedDistrict} onValueChange={setSelectedDistrict} disabled={!selectedState}>
+                  <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select district', 'జిల్లా ఎంచుకోండి')} /></SelectTrigger>
+                  <SelectContent>{getAvailableDistricts().map((d) => <SelectItem key={d.code} value={d.code}>{getDisplayName(d)}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
 
-          {districtHasDivisions && (
-            <div>
-              <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
-              <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
+              {districtHasDivisions && (
+                <div>
+                  <Label className="text-sm font-medium">{label('Division *', 'డివిజన్ *')}</Label>
+                  <Select value={selectedDivision} onValueChange={setSelectedDivision} disabled={!selectedDistrict}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select division', 'డివిజన్ ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableDivisions().map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div>
+                <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
+                {getAvailableMandals().length > 0 ? (
+                  <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
+                  </Select>
+                ) : (
+                  <Input className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
+                )}
+              </div>
+              <div>
+                <Label className="text-sm font-medium">{label('Village', 'గ్రామం')}</Label>
+                {getAvailableVillages().length > 0 ? (
+                  <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
+                    <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
+                  </Select>
+                ) : (
+                  <Input className="mt-1" placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
+                )}
+              </div>
+            </>
           )}
 
-          <div>
-            <Label className="text-sm font-medium">{label('Mandal', 'మండలం')}</Label>
-            {getAvailableMandals().length > 0 ? (
-              <Select value={selectedMandal} onValueChange={setSelectedMandal} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select mandal', 'మండలం ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{getAvailableMandals().map((m) => <SelectItem key={m.code} value={m.code}>{getDisplayName(m)}</SelectItem>)}</SelectContent>
-              </Select>
-            ) : (
-              <Input className="mt-1" placeholder={label('Enter mandal', 'మండలం నమోదు చేయండి')} value={selectedMandal} onChange={(e) => setSelectedMandal(e.target.value)} disabled={districtHasDivisions ? !selectedDivision : !selectedDistrict} />
-            )}
-          </div>
-          <div>
-            <Label className="text-sm font-medium">{label('Village', 'గ్రామం')}</Label>
-            {getAvailableVillages().length > 0 ? (
-              <Select value={selectedVillage} onValueChange={setSelectedVillage} disabled={!selectedMandal}>
-                <SelectTrigger className="mt-1"><SelectValue placeholder={label('Select village', 'గ్రామం ఎంచుకోండి')} /></SelectTrigger>
-                <SelectContent>{getAvailableVillages().map((v) => <SelectItem key={v.code} value={v.code}>{v.name}</SelectItem>)}</SelectContent>
-              </Select>
-            ) : (
-              <Input className="mt-1" placeholder={label('Enter village', 'గ్రామం నమోదు చేయండి')} value={selectedVillage} onChange={(e) => setSelectedVillage(e.target.value)} disabled={!selectedMandal} />
-            )}
-          </div>
+          {nearbyActive && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+              <Navigation className="h-6 w-6 text-green-600 mx-auto mb-2" />
+              <p className="text-sm font-medium text-green-800">
+                {label('📍 Nearby mode active — showing vehicles within 500 km of your location', '📍 సమీప మోడ్ యాక్టివ్ — మీ లొకేషన్ నుండి 500 కి.మీ లోపల వాహనాలు')}
+              </p>
+            </div>
+          )}
 
           {/* Vehicle Type Multi-Select */}
           <div>
             <Label className="text-sm font-medium">{label('Vehicle Type *', 'వాహన రకం *')}</Label>
             
-            {/* Selected chips */}
             {selectedVehicleTypes.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2 mb-2">
                 {selectedVehicleTypes.map(type => (
@@ -304,7 +411,6 @@ const VehicleRent = () => {
               </div>
             )}
 
-            {/* Dropdown with checkboxes */}
             <Popover open={vehicleDropdownOpen} onOpenChange={setVehicleDropdownOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full justify-start text-left font-normal mt-1">
@@ -329,7 +435,6 @@ const VehicleRent = () => {
               </PopoverContent>
             </Popover>
 
-            {/* Custom input for "Other" */}
             {selectedVehicleTypes.includes('Other') && (
               <Input
                 className="mt-2"
@@ -373,9 +478,9 @@ const VehicleRent = () => {
           </div>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-3">
-          <Button onClick={handleSearch} disabled={!isFormValid} className="flex-1 bg-[#2d5a27] hover:bg-[#1e3d1a] text-white">
+          <Button onClick={handleSearch} disabled={!isFormValid || isLoading} className="flex-1 bg-[#2d5a27] hover:bg-[#1e3d1a] text-white">
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
             {label('Search Vehicles', 'వాహనాలను వెతకండి')}
           </Button>
           <Button variant="outline" onClick={resetForm}>{label('Reset', 'రీసెట్')}</Button>
@@ -385,28 +490,40 @@ const VehicleRent = () => {
         {isSearched && (
           <div className="space-y-4 pb-8">
             <h3 className="text-lg font-semibold">{label('Available Vehicles', 'అందుబాటులో ఉన్న వాహనాలు')} ({searchResults.length})</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {searchResults.map((vehicle) => (
-                <div key={vehicle.id} className="border border-border rounded-lg p-4 space-y-2 bg-card">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-semibold">{vehicle.name}</h4>
-                      <p className="text-sm text-muted-foreground">{vehicle.type} - {vehicle.model}</p>
+            
+            {searchResults.length === 0 ? (
+              <div className="text-center py-12 bg-card border border-border rounded-lg">
+                <p className="text-muted-foreground text-lg mb-2">{label('No vehicles available yet', 'ఇంకా వాహనాలు అందుబాటులో లేవు')}</p>
+                <p className="text-sm text-muted-foreground">{label('Partner vehicles will appear here once they are listed on the Agrizin platform.', 'అగ్రిజిన్ ప్లాట్‌ఫాంలో జాబితా చేయబడిన తర్వాత భాగస్వామి వాహనాలు ఇక్కడ కనిపిస్తాయి.')}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {searchResults.map((vehicle) => (
+                  <div key={vehicle.id} className="border border-border rounded-lg p-4 space-y-2 bg-card">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-semibold">{vehicle.vehicle_name || vehicle.vehicle_type}</h4>
+                        <p className="text-sm text-muted-foreground">{vehicle.vehicle_type}{vehicle.model_year ? ` - ${vehicle.model_year}` : ''}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold text-green-600">₹{vehicle.daily_rate}/day</p>
+                        {vehicle.distance !== undefined && (
+                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{vehicle.distance} km</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold text-green-600">{vehicle.rate}</p>
+                    <div className="text-sm space-y-1">
+                      <p><strong>{label('Owner:', 'యజమాని:')}</strong> {vehicle.owner_name}</p>
+                      <p><strong>{label('Phone:', 'ఫోన్:')}</strong> {vehicle.owner_phone}</p>
+                      <p><strong>{label('Location:', 'ప్రాంతం:')}</strong> {vehicle.location_address || `${vehicle.district || ''}, ${vehicle.state || ''}`}</p>
+                      <p><strong>{label('Condition:', 'పరిస్థితి:')}</strong> {vehicle.condition}</p>
+                      <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className="text-green-600">{vehicle.availability}</span></p>
                     </div>
+                    <Button className="w-full" size="sm">{label('Book Vehicle', 'వాహనాన్ని బుక్ చేయండి')}</Button>
                   </div>
-                  <div className="text-sm space-y-1">
-                    <p><strong>{label('Owner:', 'యజమాని:')}</strong> {vehicle.owner}</p>
-                    <p><strong>{label('Location:', 'ప్రాంతం:')}</strong> {vehicle.location}</p>
-                    <p><strong>{label('Condition:', 'పరిస్థితి:')}</strong> {vehicle.condition}</p>
-                    <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className={vehicle.availability === 'Available' ? 'text-green-600' : 'text-orange-600'}>{vehicle.availability}</span></p>
-                  </div>
-                  <Button className="w-full" size="sm">{label('Book Vehicle', 'వాహనాన్ని బుక్ చేయండి')}</Button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
