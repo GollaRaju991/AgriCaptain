@@ -163,6 +163,8 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
         availability_location: cropData.availabilityLocation,
         location_address: cropData.locationAddress || null,
         crop_images: allImageUrls,
+        latitude: cropData.latitude,
+        longitude: cropData.longitude,
       };
 
       if (editCropId) {
@@ -329,12 +331,46 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             </Select>
           </div>
 
-          {/* Location Address */}
+          {/* Location Address with GPS detect */}
           <div>
             <Label htmlFor="locationAddress" className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground" /> {label('Location Details', 'స్థాన వివరాలు')}
             </Label>
-            <Input id="locationAddress" name="locationAddress" value={cropData.locationAddress} onChange={handleCropInputChange} className="mt-1" placeholder={label('e.g., Cold storage near Guntur road', 'ఉదా., గుంటూరు రోడ్ కోల్డ్ స్టోరేజ్')} />
+            <div className="flex gap-2 mt-1">
+              <Input id="locationAddress" name="locationAddress" value={cropData.locationAddress} onChange={handleCropInputChange} className="flex-1" placeholder={label('e.g., Cold storage near Guntur road', 'ఉదా., గుంటూరు రోడ్ కోల్డ్ స్టోరేజ్')} />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={detectingLocation}
+                onClick={async () => {
+                  setDetectingLocation(true);
+                  try {
+                    const loc = await detectUserLocation();
+                    setCropData(prev => ({
+                      ...prev,
+                      latitude: loc.latitude,
+                      longitude: loc.longitude,
+                      locationAddress: loc.address || prev.locationAddress,
+                    }));
+                    toast({ title: label('Location detected!', 'స్థానం గుర్తించబడింది!') });
+                  } catch {
+                    toast({ title: label('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది'), variant: 'destructive' });
+                  } finally {
+                    setDetectingLocation(false);
+                  }
+                }}
+                className="gap-1 text-xs whitespace-nowrap"
+              >
+                {detectingLocation ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Navigation className="h-3.5 w-3.5" />}
+                {label('GPS', 'GPS')}
+              </Button>
+            </div>
+            {cropData.latitude && (
+              <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                <Check className="h-3 w-3" /> {label('GPS location captured', 'GPS స్థానం సేవ్ చేయబడింది')}
+              </p>
+            )}
           </div>
 
           {/* Crop Images - minimum 2 required */}
