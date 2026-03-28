@@ -324,7 +324,7 @@ Suitable for all seasons and performs well in Indian climatic conditions.`,
     id: 'P301',
     name: 'Bayer Roundup Herbicide (Glyphosate 41% SL) for Non-Selective Weed Control',
     brand: 'Bayer',
-    category: 'agriculture',
+    category: 'Pesticides',
     image: "https://ik.imagekit.io/nsi7x5p2x/roundup-herbicide-file-2203.webp?tr=w-800,q-auto,f-auto",
 
   images: [
@@ -338,7 +338,7 @@ Suitable for all seasons and performs well in Indian climatic conditions.`,
   reviews: 200,
 
   description: `Roundup is a non-selective systemic herbicide used for effective weed control.
-It kills weeds from leaves to roots and is widely used in agriculture for broad-spectrum weed management.`,
+It kills weeds from leaves to roots and is widely used in Pesticides for broad-spectrum weed management.`,
 
   forUse: 'Weed control in crops, bunds, and open fields',
 
@@ -353,7 +353,7 @@ It kills weeds from leaves to roots and is widely used in agriculture for broad-
     id: 'P302',
     name: 'Sumitomo Glycel Herbicide – Glyphosate 41% SL IPA Salt For Effective and Reliable Weed Control',
     brand: 'Sumitomo',
-    category: 'agriculture',
+    category: 'Pesticides',
     image: "https://ik.imagekit.io/nsi7x5p2x/glycel-herbicide-1-file-5004.webp?tr=w-800,q-auto,f-auto",
 
   images: [
@@ -381,7 +381,7 @@ It penetrates through leaves and destroys weeds from roots, ensuring long-lastin
     id: 'P303',
     name: 'Coragen Insecticide (Chlorantraniliprole 18.5% SC)',
   brand: 'FMC (DuPont)',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/coragen-dupont-file-1135%20(1).webp?tr=w-800,q-auto,f-auto",
 
@@ -411,7 +411,7 @@ It provides long-lasting protection and improves crop yield with minimal environ
     id: 'P304',
     name: 'Exponus Insecticide by BASF (Broflanilide 300G/L SC) for Effective Pest Control',
     brand: 'BASF',
-    category: 'agriculture',
+    category: 'Pesticides',
     image: 'https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20296.webp?tr=w-800,q-auto,f-auto',
     images: [
   "https://ik.imagekit.io/nsi7x5p2x/exponus-insecticide-file-20296.webp?tr=w-800,q-auto,f-auto",
@@ -439,7 +439,7 @@ It provides long-lasting protection and improves crop yield with minimal environ
     id: 'P305',
   name: 'Solomon Insecticide (Beta-cyfluthrin + Imidacloprid)',
   brand: 'Bayer',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/solomon-file-779.webp?tr=w-800,q-auto,f-auto",
 
@@ -481,7 +481,7 @@ Suitable for modern farming practices with reliable performance across various c
   id: 'P307',
   name: 'Admire Insecticide (Imidacloprid 70% WG)',
   brand: 'Bayer',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/admire-insecticide-file-20004.webp?tr=w-800,q-auto,f-auto",
 
@@ -517,7 +517,7 @@ It provides long-lasting protection and improves crop health by eliminating harm
   id: 'P308',
   name: 'Topper 77 Herbicide (Glyphosate 71% SG)',
   brand: 'Crystal Crop Protection',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/topper-77-file-11270.webp?tr=w-800,q-auto,f-auto",
 
@@ -558,7 +558,7 @@ Suitable for use in non-crop areas and pre-planting weed management.`,
   id: 'P309',
   name: 'Antracol Fungicide (Propineb 70% WP)',
   brand: 'Bayer',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/antracol-file-659.webp?tr=w-800,q-auto,f-auto",
 
@@ -600,7 +600,7 @@ It protects crops from leaf spots, blights, and mildew, ensuring healthy plant g
   id: 'P310',
   name: 'Merivon Fungicide (Fluxapyroxad + Pyraclostrobin)',
   brand: 'BASF',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/merivon-fungicide-file-4633.webp?tr=w-800,q-auto,f-auto",
 
@@ -639,7 +639,7 @@ It provides long-lasting protection against fungal infections and improves crop 
   id: 'P311',
   name: 'Lesenta Insecticide (Imidacloprid 17.8% SL)',
   brand: 'Bayer',
-  category: 'agriculture',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/lesenta-file-784.webp?tr=w-800,q-auto,f-auto",
 
@@ -675,7 +675,7 @@ It provides fast action and long-lasting protection, ensuring healthy crop growt
   id: 'P312',
   name: 'Geolife No Virus Chilli Special',
   brand: 'Geolife Agritech India Pvt Ltd',
-  category: 'plant-growth',
+  category: 'Pesticides',
 
   image: "https://ik.imagekit.io/nsi7x5p2x/Reserved_ImageAttachment__13___ProductImage1_32___e728d54c1d884b3d93bdc2ba6e0f3744_1___1.webp?tr=w-800,q-auto,f-auto",
 
@@ -710,12 +710,11 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
   ]
 }),
 
-  // ─── tools ───
   defineProduct({
     id: 'P312',
     name: 'Coragen Insecticide – Chlorantraniliprole 18.5% SC',
     brand: 'FMC',
-    category: 'agriculture',
+    category: 'Pesticides',
     image: 'https://ik.imagekit.io/wadwvg0en/coragen-dupont-file-1135.webp',
     images: [
       'https://ik.imagekit.io/wadwvg0en/coragen-dupont-file-1135.webp',
@@ -734,14 +733,16 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     ],
   }),
 
-  // ─── Tools & Equipment ───
+  
+
+  // ─── Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment ───
   defineProduct({
     id: 'P401',
     name: 'Hand Cultivator – Garden Tool',
     brand: 'Kraft Seeds',
-    category: 'tools',
-    image: 'https://ik.imagekit.io/wadwvg0en/Work/Kraft%20Seeds%20Hand%20Cultivator%20-%201%20PC%20%20Cultivator%20Agriculture%20Tool%20for%20Home%20Gardening%20%20Farming%20Tiller%20for%20Plants%20in%20Garden%20Durable%20Hand%20Cultivator%20for%20Garden%20(Red%20Handle,%20Black%20Metal)%20%20Garden%20Tiller.webp',
-    images: ['https://ik.imagekit.io/wadwvg0en/Work/Kraft%20Seeds%20Hand%20Cultivator%20-%201%20PC%20%20Cultivator%20Agriculture%20Tool%20for%20Home%20Gardening%20%20Farming%20Tiller%20for%20Plants%20in%20Garden%20Durable%20Hand%20Cultivator%20for%20Garden%20(Red%20Handle,%20Black%20Metal)%20%20Garden%20Tiller.webp', '', '', ''],
+    category: 'Farm Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment',
+    image: 'https://ik.imagekit.io/wadwvg0en/Work/Kraft%20Seeds%20Hand%20Cultivator%20-%201%20PC%20%20Cultivator%20Pesticides%20Tool%20for%20Home%20Gardening%20%20Farming%20Tiller%20for%20Plants%20in%20Garden%20Durable%20Hand%20Cultivator%20for%20Garden%20(Red%20Handle,%20Black%20Metal)%20%20Garden%20Tiller.webp',
+    images: ['https://ik.imagekit.io/wadwvg0en/Work/Kraft%20Pesticides%20Hand%20Cultivator%20-%201%20PC%20%20Cultivator%20Pesticides%20Tool%20for%20Home%20Gardening%20%20Farming%20Tiller%20for%20Plants%20in%20Garden%20Durable%20Hand%20Cultivator%20for%20Garden%20(Red%20Handle,%20Black%20Metal)%20%20Garden%20Tiller.webp', '', '', ''],
     rating: 4.3,
     reviews: 230,
     description: 'Durable hand cultivator for home gardening and farming',
@@ -754,7 +755,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P402',
     name: 'Battery Sprayer – 16L',
     brand: 'Neptune',
-    category: 'tools',
+    category: 'Farm Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/61g8uKD8JoL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/61g8uKD8JoL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.6,
@@ -769,7 +770,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P403',
     name: 'Pruning Shears – Professional',
     brand: 'Falcon',
-    category: 'tools',
+    category: 'Farm Farm Tools & Farm Tools & Equipment & Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/71cTTKlTkYL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/71cTTKlTkYL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.5,
@@ -784,7 +785,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P404',
     name: 'Seedling Tray – 98 Cells',
     brand: 'TrustBasket',
-    category: 'tools',
+    category: 'Farm Tools & Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/51qQZU1dqaL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/51qQZU1dqaL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.4,
@@ -798,9 +799,9 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
   }),
   defineProduct({
     id: 'P405',
-    name: 'Garden Tools Set',
+    name: 'Garden Farm Tools & Farm Tools & Equipment Set',
     brand: 'Kraft Seeds',
-    category: 'tools',
+    category: 'Farm Tools & Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/51EB9-p-WrL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/51EB9-p-WrL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.6,
@@ -812,12 +813,12 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     ],
   }),
 
-  // ─── Irrigation & Equipment ───
+  // ─── Irrigation & Farm Tools & Equipment ───
   defineProduct({
     id: 'P501',
     name: 'Drip Irrigation Kit',
     brand: 'Jain Irrigation',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/71rZ7-bV0iL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/71rZ7-bV0iL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.7,
@@ -833,7 +834,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P502',
     name: 'Sprinkler System',
     brand: 'Jain Irrigation',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/71bWbrmAuML._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/71bWbrmAuML._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.5,
@@ -848,7 +849,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P503',
     name: 'Mulching Film – Black',
     brand: 'Agro Shield',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/419Y8gbtBxL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/419Y8gbtBxL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.4,
@@ -864,7 +865,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P504',
     name: 'Greenhouse Net – UV Treated',
     brand: 'Agro Shield',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/91+NWBqm3ML._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/91+NWBqm3ML._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.5,
@@ -880,7 +881,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P505',
     name: 'Soil Testing Kit',
     brand: 'Agritech',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/51z5-QPDAHL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/51z5-QPDAHL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.3,
@@ -895,7 +896,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P506',
     name: 'Water Pump – 1HP',
     brand: 'Kirloskar',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/71qB0+lIfkL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/71qB0+lIfkL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.8,
@@ -912,7 +913,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P507',
     name: 'Tractor – Mahindra 475 DI',
     brand: 'Mahindra',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://i.postimg.cc/ncVyv1mC/tractor.png',
     images: ['https://i.postimg.cc/ncVyv1mC/tractor.png', '', '', ''],
     rating: 4.9,
@@ -929,7 +930,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P601',
     name: 'Humic Acid – Growth Promoter',
     brand: 'Aries Agro',
-    category: 'fertilizers',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/61UF33H+5BL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/61UF33H+5BL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.5,
@@ -946,7 +947,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P602',
     name: 'Micro Nutrients – Chelated',
     brand: 'Multiplex',
-    category: 'fertilizers',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/718mIygx+2L._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/718mIygx+2L._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.4,
@@ -963,7 +964,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P603',
     name: 'Seed Treatment Solution',
     brand: 'Bayer',
-    category: 'agriculture',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/51ZLAhr3u4L._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/51ZLAhr3u4L._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.6,
@@ -980,7 +981,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P605',
     name: 'Rose Plant – Grafted',
     brand: 'Ugaoo',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/81auo7w93cL._AC_UL480_FMwebp_QL65_.webp',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/81auo7w93cL._AC_UL480_FMwebp_QL65_.webp', '', '', ''],
     rating: 4.7,
@@ -996,7 +997,7 @@ It enhances plant immunity, improves resistance against viral diseases, and boos
     id: 'P606',
     name: 'Tulsi Plant – Holy Basil',
     brand: 'Ugaoo',
-    category: 'equipment',
+    category: 'Farm Tools & Equipment',
     image: 'https://ik.imagekit.io/wadwvg0en/Work/61+u3uGpTWL._AC_SX416_CB1169409_QL70_.jpg',
     images: ['https://ik.imagekit.io/wadwvg0en/Work/61+u3uGpTWL._AC_SX416_CB1169409_QL70_.jpg', '', '', ''],
     rating: 4.8,
