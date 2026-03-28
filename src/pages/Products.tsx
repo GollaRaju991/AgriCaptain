@@ -148,7 +148,7 @@ const Products = () => {
       <div className="md:hidden">
         <div className="px-4 pt-4 pb-2">
           <h1 className="text-2xl font-bold text-foreground">
-            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
+            {selectedBrand ? `${selectedBrand} Products` : selectedCategory ? `${categoryDisplayNames[selectedCategory] || selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} Products` : 'All Products'}
           </h1>
         </div>
 
