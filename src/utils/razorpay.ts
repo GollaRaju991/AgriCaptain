@@ -51,6 +51,8 @@ export const openRazorpayCheckout = (
         resolve({
           success: true,
           paymentId: response.razorpay_payment_id,
+          orderId: response.razorpay_order_id || '',
+          signature: response.razorpay_signature || '',
         });
       },
       modal: {
