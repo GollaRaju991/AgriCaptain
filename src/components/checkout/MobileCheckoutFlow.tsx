@@ -10,7 +10,7 @@ import AddressManager from '@/components/AddressManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import UpiAppsList from './UpiAppsList';
+
 import { openRazorpayCheckout } from '@/utils/razorpay';
 
 interface Address {
@@ -150,10 +150,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
       toast({ title: "Select payment method", variant: "destructive" });
       return;
     }
-    if (paymentMethod === 'upi' && !selectedUpiApp && !upiVerified) {
-      toast({ title: "Select UPI app or verify UPI ID", variant: "destructive" });
-      return;
-    }
+    // UPI: no extra validation — Razorpay handles app selection
     if (paymentMethod === 'card') {
       if (selectedSavedCard) {
         if (savedCardCvv.length < 3) {
@@ -398,40 +395,14 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               isOpen={paymentMethod === 'upi'}
               onToggle={() => setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi')}
             >
-              <div className="mt-1">
-                <UpiAppsList
-                  selectedApp={selectedUpiApp}
-                  onSelect={(appId) => { setSelectedUpiApp(appId); setUpiId(''); setUpiVerified(false); }}
-                />
-                {/* UPI ID manual entry */}
-                <div className="border-t border-border/30 pt-3 mt-1">
-                  <p className="text-xs font-medium text-muted-foreground mb-2">Or enter UPI ID</p>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="name@ybl, name@paytm"
-                      value={upiId}
-                      onChange={(e) => { setUpiId(e.target.value); setUpiVerified(false); setSelectedUpiApp(''); }}
-                      className="flex-1 h-9 text-xs rounded-lg"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-9 rounded-lg text-brand-green border-brand-green"
-                      disabled={upiVerifying || !upiId.trim()}
-                      onClick={() => {
-                        const upiRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9]+$/;
-                        if (!upiRegex.test(upiId)) {
-                          toast({ title: "Invalid UPI ID", description: "Format: name@bankname", variant: "destructive" });
-                          return;
-                        }
-                        setUpiVerifying(true);
-                        setTimeout(() => { setUpiVerifying(false); setUpiVerified(true); }, 1500);
-                      }}
-                    >
-                      {upiVerifying ? <Loader2 className="h-3 w-3 animate-spin" /> : upiVerified ? '✓ Verified' : 'Verify'}
-                    </Button>
-                  </div>
-                </div>
+              <div className="mt-1 space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Click below to pay securely via UPI. Choose your preferred UPI app in the payment window.
+                </p>
+                <p className="text-[11px] text-center text-muted-foreground">
+                  <Lock className="h-3 w-3 inline mr-1" />
+                  Secure payment powered by Razorpay
+                </p>
               </div>
             </PaymentOptionCard>
 
