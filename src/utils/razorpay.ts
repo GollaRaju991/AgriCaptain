@@ -13,7 +13,7 @@ interface RazorpayPaymentOptions {
   description?: string;
 }
 
-interface RazorpayPaymentResult {
+export interface RazorpayPaymentResult {
   success: boolean;
   paymentId?: string;
   orderId?: string;
