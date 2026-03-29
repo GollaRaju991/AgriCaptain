@@ -16,6 +16,7 @@ import useScrollToTop from '@/hooks/useScrollToTop';
 import { supabase } from '@/integrations/supabase/client';
 import { dualBackendService } from '@/services/dualBackendService';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { openRazorpayCheckout } from '@/utils/razorpay';
 
 
 interface Address {
@@ -332,8 +333,40 @@ const Checkout = () => {
       return;
     }
 
-    // Show payment processing dialog for all online methods
-    setShowPaymentDialog(true);
+    // Open Razorpay for all online methods
+    setIsSubmitting(true);
+    try {
+      const result = await openRazorpayCheckout({
+        amount: finalTotal,
+        customerName: user?.user_metadata?.name || selectedAddress?.name || '',
+        customerEmail: user?.email || '',
+        customerPhone: user?.phone || selectedAddress?.phone || '',
+        description: `Order - ${items.length} item(s)`,
+      });
+
+      if (result.success) {
+        const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
+        const orderDetails = {
+          orderNumber: orderNum,
+          date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
+          items: items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price, image: item.image })),
+          shippingAddress: selectedAddress,
+          paymentSummary: { subtotal: totalPrice, delivery: deliveryFee, discount: upiDiscount + couponDiscount, total: finalTotal },
+          paymentMethod: paymentMethod.toUpperCase(),
+          razorpayPaymentId: result.paymentId,
+        };
+        await saveOrderToDatabase(orderDetails);
+        toast({ title: "Payment Successful!", description: `Payment ID: ${result.paymentId}` });
+        clearCart();
+        navigate('/order-confirmation', { state: { orderDetails } });
+      } else {
+        toast({ title: "Payment Failed", description: result.error || "Please try again", variant: "destructive" });
+      }
+    } catch (error: any) {
+      toast({ title: "Payment Error", description: error?.message || "Something went wrong", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const completeOrder = async () => {

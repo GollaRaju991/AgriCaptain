@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import UpiAppsList from './UpiAppsList';
+import { openRazorpayCheckout } from '@/utils/razorpay';
 
 interface Address {
   id: string;
@@ -180,37 +181,36 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
       return;
     }
 
-    // Start processing overlay for online payments
-    setShowProcessing(true);
-    setProcessingStep(0);
+    // Open Razorpay for online payments
+    setIsSubmitting(true);
+    try {
+      const result = await openRazorpayCheckout({
+        amount: finalTotal,
+        customerName: user?.user_metadata?.name || selectedAddress?.name || '',
+        customerEmail: user?.email || '',
+        customerPhone: user?.phone || selectedAddress?.phone || '',
+        description: `Order - ${items.length} item(s)`,
+      });
 
-    const txnId = 'TXN' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
-    setTransactionId(txnId);
-
-    const steps = paymentMethod === 'upi' ? 4 : paymentMethod === 'card' ? 4 : 3;
-    for (let i = 0; i < steps; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      setProcessingStep(i + 1);
-    }
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    const success = Math.random() > 0.1;
-    setShowProcessing(false);
-
-    if (success) {
-      setIsSubmitting(true);
-      const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
-      setOrderNumber(orderNum);
-      try {
-        await onCompleteOrder(paymentMethod, { upiId, cardNumber, selectedUpiApp });
-        setShowSuccess(true);
-      } catch {
-        setShowFailed(true);
-      } finally {
-        setIsSubmitting(false);
+      if (result.success) {
+        const orderNum = '#AG' + crypto.randomUUID().replace(/-/g, '').substring(0, 9).toUpperCase();
+        setOrderNumber(orderNum);
+        setTransactionId(result.paymentId || '');
+        try {
+          await onCompleteOrder(paymentMethod, { razorpayPaymentId: result.paymentId });
+          setShowSuccess(true);
+        } catch {
+          setShowFailed(true);
+        }
+      } else {
+        if (result.error !== 'Payment cancelled by user') {
+          toast({ title: "Payment Failed", description: result.error || "Please try again", variant: "destructive" });
+        }
       }
-    } else {
-      setShowFailed(true);
+    } catch (error: any) {
+      toast({ title: "Payment Error", description: error?.message || "Something went wrong", variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
