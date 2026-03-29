@@ -258,39 +258,7 @@ const Checkout = () => {
       return;
     }
 
-    // UPI: no extra validation needed — Razorpay handles everything
-
-    // Validation for card
-    if (paymentMethod === 'card' && (!cardNumber || !expiryDate || !cvv || !nameOnCard)) {
-      toast({ title: "Complete card details", description: "Please fill in all card details", variant: "destructive" });
-      return;
-    }
-
-    if (paymentMethod === 'card') {
-      const cleanCard = cardNumber.replace(/\s/g, '');
-      if (cleanCard.length < 13 || cleanCard.length > 19 || !/^\d+$/.test(cleanCard)) {
-        toast({ title: "Invalid card number", description: "Please enter a valid card number", variant: "destructive" });
-        return;
-      }
-      if (!/^\d{2}\s?\/\s?\d{2}$/.test(expiryDate)) {
-        toast({ title: "Invalid expiry", description: "Use MM/YY format", variant: "destructive" });
-        return;
-      }
-      if (cvv.length < 3) {
-        toast({ title: "Invalid CVV", description: "CVV must be 3-4 digits", variant: "destructive" });
-        return;
-      }
-    }
-
-    if (paymentMethod === 'netbanking' && !selectedBank) {
-      toast({ title: "Select Bank", description: "Please select your bank for Net Banking", variant: "destructive" });
-      return;
-    }
-
-    if (paymentMethod === 'emi' && !selectedEMI) {
-      toast({ title: "Select EMI Option", description: "Please select an EMI option", variant: "destructive" });
-      return;
-    }
+    // All online payment validation is handled by Razorpay checkout
 
     // For COD, skip payment dialog — place order directly with success popup
     if (paymentMethod === 'cod') {
