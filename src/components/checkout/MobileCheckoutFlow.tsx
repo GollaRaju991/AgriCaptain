@@ -150,18 +150,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
       toast({ title: "Select payment method", variant: "destructive" });
       return;
     }
-    // UPI: no extra validation — Razorpay handles app selection
-    if (paymentMethod === 'card') {
-      if (selectedSavedCard) {
-        if (savedCardCvv.length < 3) {
-          toast({ title: "Enter CVV", variant: "destructive" });
-          return;
-        }
-      } else if (!cardNumber || !expiryDate || !cvv || !nameOnCard) {
-        toast({ title: "Complete card details", variant: "destructive" });
-        return;
-      }
-    }
+    // All online payment validation is handled by Razorpay checkout
     // COD: skip payment processing, directly place order
     if (paymentMethod === 'cod') {
       setIsSubmitting(true);
@@ -386,128 +375,23 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
             <h2 className="text-sm font-bold text-foreground">Select Payment Method</h2>
           </div>
           <div className="p-3 space-y-2">
-            {/* UPI */}
+            {/* UPI / Credit / Debit Card (Razorpay handles all) */}
             <PaymentOptionCard
               icon={<Smartphone className="h-5 w-5 text-brand-green" />}
-              title="UPI"
+              title="UPI / Credit / Debit Card"
               badge="Recommended"
-              subtitle="Pay using UPI apps"
-              isOpen={paymentMethod === 'upi'}
-              onToggle={() => setPaymentMethod(paymentMethod === 'upi' ? '' : 'upi')}
+              subtitle="Pay securely via Razorpay"
+              isOpen={paymentMethod === 'upi' || paymentMethod === 'card'}
+              onToggle={() => setPaymentMethod((paymentMethod === 'upi' || paymentMethod === 'card') ? '' : 'upi')}
             >
               <div className="mt-1 space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  Click below to pay securely via UPI. Choose your preferred UPI app in the payment window.
+                  Tap <strong>Pay Securely</strong> below to open the payment window. Choose UPI, Credit Card, Debit Card, or other methods there.
                 </p>
                 <p className="text-[11px] text-center text-muted-foreground">
                   <Lock className="h-3 w-3 inline mr-1" />
                   Secure payment powered by Razorpay
                 </p>
-              </div>
-            </PaymentOptionCard>
-
-            {/* Card */}
-            <PaymentOptionCard
-              icon={<CreditCard className="h-5 w-5 text-muted-foreground" />}
-              title="Credit / Debit Card"
-              subtitle="Secure card payment"
-              isOpen={paymentMethod === 'card'}
-              onToggle={() => setPaymentMethod(paymentMethod === 'card' ? '' : 'card')}
-            >
-              <div className="space-y-3 mt-1">
-                {savedCards.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-xs font-medium text-muted-foreground">Saved Cards</p>
-                    {savedCards.map(card => (
-                      <button
-                        key={card.id}
-                        onClick={() => { setSelectedSavedCard(card.id); setShowNewCardForm(false); setSavedCardCvv(''); }}
-                        className={`w-full flex items-center gap-3 p-3 rounded-xl border text-left transition-all ${
-                          selectedSavedCard === card.id ? 'border-brand-green bg-brand-green/5' : 'border-border'
-                        }`}
-                      >
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">•••• {card.card_number_last4}</p>
-                          <p className="text-xs text-muted-foreground">{card.card_holder_name}</p>
-                        </div>
-                        {selectedSavedCard === card.id && <CheckCircle className="h-4 w-4 text-brand-green" />}
-                      </button>
-                    ))}
-                    {selectedSavedCard && (
-                      <div className="w-20">
-                        <Label className="text-xs text-muted-foreground">CVV</Label>
-                        <Input
-                          type="password"
-                          placeholder="•••"
-                          value={savedCardCvv}
-                          onChange={(e) => setSavedCardCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                          maxLength={3}
-                          className="h-9 text-sm mt-0.5"
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-                {(savedCards.length === 0 || showNewCardForm) ? (
-                  <div className="space-y-3">
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Card Number</Label>
-                      <Input
-                        placeholder="XXXX XXXX XXXX XXXX"
-                        value={cardNumber}
-                        onChange={(e) => {
-                          const raw = e.target.value.replace(/\D/g, '').slice(0, 16);
-                          setCardNumber(raw.replace(/(.{4})/g, '$1 ').trim());
-                        }}
-                        maxLength={19}
-                        className="h-10 text-sm mt-0.5"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-muted-foreground">Card Holder Name</Label>
-                      <Input placeholder="Name" value={nameOnCard} onChange={(e) => setNameOnCard(e.target.value)} className="h-10 text-sm mt-0.5" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <Label className="text-xs text-muted-foreground">Expiry</Label>
-                        <Input
-                          placeholder="MM/YY"
-                          value={expiryDate}
-                          onChange={(e) => {
-                            let val = e.target.value.replace(/[^\d/]/g, '');
-                            if (val.length === 2 && !val.includes('/') && expiryDate.length < val.length) val += '/';
-                            if (val.length > 5) return;
-                            const month = parseInt(val.substring(0, 2));
-                            if (val.length >= 2 && (month < 1 || month > 12)) return;
-                            setExpiryDate(val);
-                          }}
-                          maxLength={5}
-                          className="h-10 text-sm mt-0.5"
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-muted-foreground">CVV</Label>
-                        <Input
-                          type="password"
-                          placeholder="***"
-                          value={cvv}
-                          onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                          maxLength={3}
-                          className="h-10 text-sm mt-0.5"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="save-card-m" checked={saveNewCard} onCheckedChange={(c) => setSaveNewCard(!!c)} />
-                      <Label htmlFor="save-card-m" className="text-xs text-muted-foreground">Save card for future</Label>
-                    </div>
-                  </div>
-                ) : (
-                  <button onClick={() => { setShowNewCardForm(true); setSelectedSavedCard(''); }} className="text-xs text-brand-green font-medium">
-                    + Add New Card
-                  </button>
-                )}
               </div>
             </PaymentOptionCard>
 
