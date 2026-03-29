@@ -13,9 +13,11 @@ interface RazorpayPaymentOptions {
   description?: string;
 }
 
-interface RazorpayPaymentResult {
+export interface RazorpayPaymentResult {
   success: boolean;
   paymentId?: string;
+  orderId?: string;
+  signature?: string;
   error?: string;
 }
 
@@ -49,6 +51,8 @@ export const openRazorpayCheckout = (
         resolve({
           success: true,
           paymentId: response.razorpay_payment_id,
+          orderId: response.razorpay_order_id || '',
+          signature: response.razorpay_signature || '',
         });
       },
       modal: {

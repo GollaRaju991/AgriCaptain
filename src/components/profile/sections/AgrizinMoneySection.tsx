@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ReferralDialog from '@/components/ReferralDialog';
+import { openRazorpayCheckout } from '@/utils/razorpay';
 
 const RECHARGE_AMOUNTS = [100, 200, 500, 1000, 2000];
 
@@ -69,8 +70,27 @@ const AgrizinMoneySection: React.FC = () => {
     }
     setProcessing(true);
     try {
+      // Open Razorpay checkout for wallet recharge
+      const result = await openRazorpayCheckout({
+        amount,
+        customerName: user?.user_metadata?.name || 'Customer',
+        customerEmail: user?.email || '',
+        customerPhone: user?.phone || '',
+        description: 'Agrizin Wallet Recharge',
+      });
+
+      if (!result.success || !result.paymentId) {
+        throw new Error('Payment was not completed');
+      }
+
+      // Send payment details to server for verification and wallet credit
       const { data, error } = await supabase.functions.invoke('wallet-recharge', {
-        body: { amount },
+        body: {
+          amount,
+          razorpay_payment_id: result.paymentId,
+          razorpay_order_id: result.orderId || '',
+          razorpay_signature: result.signature || '',
+        },
       });
 
       if (error || !data?.success) {

@@ -6,6 +6,25 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function verifyRazorpaySignature(
+  orderId: string,
+  paymentId: string,
+  signature: string,
+  secret: string
+): Promise<boolean> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${orderId}|${paymentId}`);
+  const key = encoder.encode(secret);
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw", key, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", cryptoKey, data);
+  const expectedSignature = Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+  return expectedSignature === signature;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -38,7 +57,7 @@ serve(async (req) => {
       });
     }
 
-    const { amount } = await req.json();
+    const { amount, razorpay_payment_id, razorpay_order_id, razorpay_signature } = await req.json();
 
     // Validate amount
     const parsedAmount = parseFloat(amount);
@@ -49,11 +68,73 @@ serve(async (req) => {
       });
     }
 
-    // NOTE: In production, integrate a real payment gateway (Razorpay, Paytm, etc.)
-    // and verify the payment callback before crediting the wallet.
-    // For now, this edge function ensures server-side control over wallet operations.
+    // Verify Razorpay payment signature
+    if (!razorpay_payment_id || !razorpay_signature) {
+      return new Response(JSON.stringify({ error: "Missing payment verification details" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
-    // Get current wallet
+    const razorpaySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
+    if (!razorpaySecret) {
+      console.error("RAZORPAY_KEY_SECRET not configured");
+      return new Response(JSON.stringify({ error: "Payment verification not configured" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // If we have an order_id, verify signature with HMAC
+    if (razorpay_order_id) {
+      const isValid = await verifyRazorpaySignature(
+        razorpay_order_id, razorpay_payment_id, razorpay_signature, razorpaySecret
+      );
+      if (!isValid) {
+        console.error("Razorpay signature verification failed");
+        return new Response(JSON.stringify({ error: "Payment verification failed" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else {
+      // Fallback: verify payment exists via Razorpay API
+      const razorpayKeyId = Deno.env.get("RAZORPAY_KEY_ID") || "rzp_live_SX4NYEslAbwwUn";
+      const authString = btoa(`${razorpayKeyId}:${razorpaySecret}`);
+      const verifyResponse = await fetch(
+        `https://api.razorpay.com/v1/payments/${razorpay_payment_id}`,
+        {
+          headers: { "Authorization": `Basic ${authString}` },
+        }
+      );
+
+      if (!verifyResponse.ok) {
+        console.error("Razorpay payment verification API failed");
+        return new Response(JSON.stringify({ error: "Payment verification failed" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const paymentData = await verifyResponse.json();
+      if (paymentData.status !== "captured" && paymentData.status !== "authorized") {
+        return new Response(JSON.stringify({ error: "Payment not completed" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Verify the payment amount matches
+      const paidAmountInRupees = paymentData.amount / 100;
+      if (Math.abs(paidAmountInRupees - parsedAmount) > 0.01) {
+        return new Response(JSON.stringify({ error: "Payment amount mismatch" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Payment verified - now credit wallet
     const { data: wallet } = await supabase
       .from("wallets")
       .select("*")
@@ -67,7 +148,6 @@ serve(async (req) => {
       });
     }
 
-    // Update wallet balance server-side
     const { error: updateError } = await supabase
       .from("wallets")
       .update({ balance: wallet.balance + parsedAmount })
@@ -87,6 +167,7 @@ serve(async (req) => {
       type: "credit",
       description: "Wallet Recharge",
       reference_type: "recharge",
+      reference_id: razorpay_payment_id,
     });
 
     if (txError) {
