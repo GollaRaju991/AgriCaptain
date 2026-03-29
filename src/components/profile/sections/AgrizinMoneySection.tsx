@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import ReferralDialog from '@/components/ReferralDialog';
-import { openRazorpayCheckout } from '@/utils/razorpay';
+import { openRazorpayCheckout, type RazorpayPaymentResult } from '@/utils/razorpay';
 
 const RECHARGE_AMOUNTS = [100, 200, 500, 1000, 2000];
 

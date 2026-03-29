@@ -1,10 +1,11 @@
+/* Razorpay payment gateway utilities */
 declare global {
   interface Window {
     Razorpay: any;
   }
 }
 
-interface RazorpayPaymentOptions {
+export interface RazorpayPaymentOptions {
   amount: number; // in INR (will be converted to paise)
   orderId?: string;
   customerName?: string;
