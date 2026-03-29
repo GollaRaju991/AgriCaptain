@@ -16,6 +16,8 @@ interface RazorpayPaymentOptions {
 interface RazorpayPaymentResult {
   success: boolean;
   paymentId?: string;
+  orderId?: string;
+  signature?: string;
   error?: string;
 }
 
