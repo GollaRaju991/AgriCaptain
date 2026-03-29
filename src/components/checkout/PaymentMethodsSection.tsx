@@ -8,7 +8,7 @@ import { CreditCard, Smartphone, Truck, CheckCircle, ChevronDown, ChevronUp, Hel
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import UpiAppsList from './UpiAppsList';
+
 
 interface SavedCard {
   id: string;
