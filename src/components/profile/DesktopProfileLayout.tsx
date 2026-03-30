@@ -119,8 +119,6 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
           {sectionHeader(<CreditCard className="h-5 w-5" />, 'Payments')}
           <div className="border-b pb-1">
             <span className={sidebarLinkClass('agrizin-money')} onClick={() => setActiveSection('agrizin-money')}>Agrizin Money</span>
-            <span className={sidebarLinkClass('saved-cards')} onClick={() => setActiveSection('saved-cards')}>Saved Credit / Debit Cards</span>
-            <span className={sidebarLinkClass('saved-upi')} onClick={() => setActiveSection('saved-upi')}>Saved UPI</span>
             <span className={sidebarLinkClass('gift-cards')} onClick={() => setActiveSection('gift-cards')}>Gift Cards</span>
           </div>
 
