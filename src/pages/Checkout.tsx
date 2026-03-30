@@ -536,10 +536,16 @@ const Checkout = () => {
                   <span className="text-muted-foreground">Delivery Fee</span>
                   <span className="text-brand-green font-medium">Free</span>
                 </div>
-                {discount > 0 && (
+                {couponDiscount > 0 && (
                   <div className="flex justify-between text-sm lg:text-base">
-                    <span className="text-muted-foreground">Discount</span>
-                    <span className="text-brand-green font-medium">−₹{discount.toLocaleString()}</span>
+                    <span className="text-brand-green">Coupon Discount ({appliedCoupon})</span>
+                    <span className="text-brand-green font-medium">−₹{couponDiscount.toLocaleString()}</span>
+                  </div>
+                )}
+                {upiDiscount > 0 && (
+                  <div className="flex justify-between text-sm lg:text-base">
+                    <span className="text-brand-green">UPI Discount (10%)</span>
+                    <span className="text-brand-green font-medium">−₹{upiDiscount.toLocaleString()}</span>
                   </div>
                 )}
                 {/* Coupon */}
