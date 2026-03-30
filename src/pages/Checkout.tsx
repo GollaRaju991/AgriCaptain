@@ -462,7 +462,7 @@ const Checkout = () => {
   }
 
   const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
-  const discount = upiDiscount + couponDiscount;
+  
 
   return (
     <div className="min-h-screen bg-muted/50">
