@@ -456,6 +456,7 @@ const Checkout = () => {
         setCouponCode={setCouponCode}
         appliedCoupon={appliedCoupon}
         onCouponApply={handleCouponApply}
+        onAppliedCouponChange={setAppliedCoupon}
       />
     );
   }
