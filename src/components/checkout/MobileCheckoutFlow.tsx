@@ -65,9 +65,9 @@ interface MobileCheckoutFlowProps {
 const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   items,
   totalPrice,
-  finalTotal,
-  upiDiscount,
-  couponDiscount,
+  finalTotal: _parentFinalTotal,
+  upiDiscount: _parentUpiDiscount,
+  couponDiscount: _parentCouponDiscount,
   deliveryFee,
   addresses,
   selectedAddress,
@@ -79,6 +79,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   setCouponCode,
   appliedCoupon,
   onCouponApply,
+  onAppliedCouponChange,
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -110,8 +111,19 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const [transactionId, setTransactionId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
+  // Recalculate discounts based on LOCAL payment method
+  const { couponDiscount, upiDiscount, finalTotal } = calculateDiscounts(totalPrice, appliedCoupon, paymentMethod);
   const discount = upiDiscount + couponDiscount;
+
+  // Remove UPI-only coupons when switching away from UPI
+  useEffect(() => {
+    if (appliedCoupon === 'UPI10' && paymentMethod !== 'upi' && onAppliedCouponChange) {
+      onAppliedCouponChange(null);
+      toast({ title: "Coupon Removed", description: "UPI10 requires UPI payment method." });
+    }
+  }, [paymentMethod]);
+
+  const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
 
   useEffect(() => {
     if (user) fetchSavedCards();
