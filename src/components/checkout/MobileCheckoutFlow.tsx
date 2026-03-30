@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { calculateDiscounts } from '@/utils/discountUtils';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Plus, Smartphone, CreditCard, Truck, CheckCircle, XCircle, Lock, Loader2, ChevronRight, Shield, Headphones, Package, Receipt, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,7 @@ interface MobileCheckoutFlowProps {
   setCouponCode: (code: string) => void;
   appliedCoupon: string | null;
   onCouponApply: () => void;
+  onAppliedCouponChange?: (coupon: string | null) => void;
 }
 
 
@@ -63,9 +65,9 @@ interface MobileCheckoutFlowProps {
 const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   items,
   totalPrice,
-  finalTotal,
-  upiDiscount,
-  couponDiscount,
+  finalTotal: _parentFinalTotal,
+  upiDiscount: _parentUpiDiscount,
+  couponDiscount: _parentCouponDiscount,
   deliveryFee,
   addresses,
   selectedAddress,
@@ -77,6 +79,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   setCouponCode,
   appliedCoupon,
   onCouponApply,
+  onAppliedCouponChange,
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -108,8 +111,19 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const [transactionId, setTransactionId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
+  // Recalculate discounts based on LOCAL payment method
+  const { couponDiscount, upiDiscount, finalTotal } = calculateDiscounts(totalPrice, appliedCoupon, paymentMethod);
   const discount = upiDiscount + couponDiscount;
+
+  // Remove UPI-only coupons when switching away from UPI
+  useEffect(() => {
+    if (appliedCoupon === 'UPI10' && paymentMethod !== 'upi' && onAppliedCouponChange) {
+      onAppliedCouponChange(null);
+      toast({ title: "Coupon Removed", description: "UPI10 requires UPI payment method." });
+    }
+  }, [paymentMethod]);
+
+  const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
 
   useEffect(() => {
     if (user) fetchSavedCards();
@@ -335,10 +349,16 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               <span className="text-muted-foreground">Delivery Fee</span>
               <span className="text-brand-green font-medium">Free</span>
             </div>
-            {discount > 0 && (
+            {couponDiscount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Discount</span>
-                <span className="text-brand-green font-medium">−₹{discount.toLocaleString()}</span>
+                <span className="text-brand-green">Coupon ({appliedCoupon})</span>
+                <span className="text-brand-green font-medium">−₹{couponDiscount.toLocaleString()}</span>
+              </div>
+            )}
+            {upiDiscount > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-brand-green">UPI Discount (10%)</span>
+                <span className="text-brand-green font-medium">−₹{upiDiscount.toLocaleString()}</span>
               </div>
             )}
             {/* Coupon input */}

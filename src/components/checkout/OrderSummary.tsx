@@ -100,20 +100,16 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             <span>Delivery Charges</span>
             <span>₹0 Free</span>
           </div>
-          <div className="flex justify-between text-green-600">
-            <span>Packaging Charges</span>
-            <span>₹0 Free</span>
-          </div>
+          {appliedCoupon && couponDiscount > 0 && (
+            <div className="flex justify-between text-green-600">
+              <span>Coupon Discount ({appliedCoupon})</span>
+              <span>-₹{couponDiscount.toFixed(2)}</span>
+            </div>
+          )}
           {upiDiscount > 0 && (
             <div className="flex justify-between text-green-600">
               <span>UPI Discount (10%)</span>
               <span>-₹{upiDiscount.toFixed(2)}</span>
-            </div>
-          )}
-          {appliedCoupon && couponDiscount > 0 && (
-            <div className="flex justify-between text-green-600">
-              <span>Coupon Discount</span>
-              <span>-₹{couponDiscount.toFixed(2)}</span>
             </div>
           )}
           <Separator />

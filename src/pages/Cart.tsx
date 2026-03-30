@@ -12,12 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-
-const COUPONS: Record<string, { type: 'percent'; value: number; minOrder: number; label: string }> = {
-  SAVE10: { type: 'percent', value: 10, minOrder: 1000, label: '10% off on orders above ₹1000' },
-  FIRST20: { type: 'percent', value: 20, minOrder: 0, label: '20% off for first time buyers' },
-  UPI10: { type: 'percent', value: 10, minOrder: 0, label: 'Extra 10% off with UPI payment' },
-};
+import { COUPONS, validateCoupon, calculateDiscounts } from '@/utils/discountUtils';
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
@@ -28,14 +23,9 @@ const Cart = () => {
 
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
-  const [couponDiscount, setCouponDiscount] = useState(0);
 
-  const deliveryCharges = 0;
-  const platformCharges = 0;
-  const discountAmount = Math.round(totalPrice * 0.05);
-  const upiDiscount = Math.round(totalPrice * 0.1);
-  const totalAfterDiscount = totalPrice - discountAmount - couponDiscount;
-  const totalWithUPI = totalAfterDiscount - upiDiscount;
+  // Cart page doesn't know payment method yet, so no UPI discount here
+  const { couponDiscount, finalTotal } = calculateDiscounts(totalPrice, appliedCoupon, '');
 
   const handleApplyCoupon = () => {
     const code = couponCode.trim().toUpperCase();
@@ -43,24 +33,23 @@ const Cart = () => {
       toast({ title: 'Enter a coupon code', variant: 'destructive' });
       return;
     }
-    const coupon = COUPONS[code];
-    if (!coupon) {
-      toast({ title: 'Invalid Coupon', description: `"${code}" is not a valid coupon code.`, variant: 'destructive' });
+    const result = validateCoupon(code, totalPrice, '', true);
+    if (!result.valid) {
+      toast({ title: 'Invalid Coupon', description: result.error, variant: 'destructive' });
       return;
     }
-    if (totalPrice < coupon.minOrder) {
-      toast({ title: 'Minimum order not met', description: `This coupon requires a minimum order of ₹${coupon.minOrder}.`, variant: 'destructive' });
+    const coupon = COUPONS[code];
+    if (coupon.requiresUPI) {
+      toast({ title: 'UPI Required', description: 'This coupon can only be applied at checkout when UPI is selected.', variant: 'destructive' });
       return;
     }
     const discount = Math.round(totalPrice * (coupon.value / 100));
-    setCouponDiscount(discount);
     setAppliedCoupon(code);
     toast({ title: 'Coupon Applied!', description: `${code} — You save ₹${discount}` });
   };
 
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
-    setCouponDiscount(0);
     setCouponCode('');
     toast({ title: 'Coupon Removed' });
   };
@@ -211,11 +200,7 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{translations.platform_charges || 'Platform Fee'}</span>
-                  <span className="font-semibold text-foreground">₹{platformCharges}</span>
-                </div>
-                <div className="flex justify-between text-green-600">
-                  <span className="font-medium">{translations.discount_amount || 'Discount'}</span>
-                  <span className="font-semibold">-₹{discountAmount}</span>
+                  <span className="font-semibold text-foreground">₹0</span>
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
@@ -223,16 +208,15 @@ const Cart = () => {
                     <span className="font-semibold">-₹{couponDiscount}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-green-600">
-                  <span className="font-medium">{translations.upi_discount || 'UPI Discount (10%)'}</span>
-                  <span className="font-semibold">-₹{upiDiscount}</span>
-                </div>
               </div>
               <div className="border-t border-gray-200 mt-4 pt-4">
                 <div className="flex justify-between text-xl font-bold text-foreground">
                   <span>{translations.total || 'Total Amount'}</span>
-                  <span>₹{totalAfterDiscount}</span>
+                  <span>₹{finalTotal}</span>
                 </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Extra 10% off with UPI at checkout
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -305,15 +289,11 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>{translations.delivery_charges}</span>
-                    <span className="text-green-600">₹{deliveryCharges}</span>
+                    <span className="text-green-600">FREE</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{translations.platform_charges}</span>
-                    <span className="text-green-600">₹{platformCharges}</span>
-                  </div>
-                  <div className="flex justify-between text-green-600">
-                    <span>{translations.discount_amount}</span>
-                    <span>-₹{discountAmount}</span>
+                    <span className="text-green-600">₹0</span>
                   </div>
                   {couponDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
@@ -321,23 +301,15 @@ const Cart = () => {
                       <span>-₹{couponDiscount}</span>
                     </div>
                   )}
-                  <div className="flex justify-between text-green-600">
-                    <span>{translations.upi_discount}</span>
-                    <span>-₹{upiDiscount}</span>
-                  </div>
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>{translations.tax}</span>
-                    <span>{translations.tax_at_checkout}</span>
-                  </div>
                 </div>
                 <div className="border-t pt-4 mb-6">
                   <div className="flex justify-between text-lg font-bold">
                     <span>{translations.total}</span>
-                    <span>₹{totalAfterDiscount}</span>
+                    <span>₹{finalTotal}</span>
                   </div>
-                  <div className="text-sm text-green-600 mt-1">
-                    {translations.with_upi}: ₹{totalWithUPI}
-                  </div>
+                  <p className="text-xs text-green-600 mt-1">
+                    Extra 10% off with UPI at checkout
+                  </p>
                 </div>
                 <Button className="w-full mb-4" onClick={handleCheckoutClick}>
                   {user ? translations.checkout : translations.login_to_checkout}

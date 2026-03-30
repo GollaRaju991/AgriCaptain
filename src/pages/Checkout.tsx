@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { dualBackendService } from '@/services/dualBackendService';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { openRazorpayCheckout } from '@/utils/razorpay';
+import { calculateDiscounts, validateCoupon, COUPONS as COUPONS_MAP } from '@/utils/discountUtils';
 
 
 interface Address {
@@ -72,13 +73,11 @@ const Checkout = () => {
   // Submission guard
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Pricing calculations
+  // Pricing calculations using centralized logic
   const deliveryFee = 0;
   const platformFee = 0;
   const handlingFee = 0;
-  const upiDiscount = (paymentMethod === 'upi' && upiId.trim()) ? Math.round(totalPrice * 0.1) : 0;
-  const couponDiscount = appliedCoupon === 'WELCOME50' ? 50 : appliedCoupon === 'SAVE10' ? 20 : appliedCoupon === 'FIRST20' ? 20 : 0;
-  const finalTotal = Math.max(0, totalPrice + deliveryFee + platformFee + handlingFee - upiDiscount - couponDiscount);
+  const { couponDiscount, upiDiscount, finalTotal } = calculateDiscounts(totalPrice, appliedCoupon, paymentMethod);
 
   useScrollToTop();
 
@@ -165,21 +164,31 @@ const Checkout = () => {
   };
 
   const handleCouponApply = () => {
-    const validCoupons = ['SAVE10', 'FIRST20', 'UPI10', 'WELCOME50'];
-    if (validCoupons.includes(couponCode.toUpperCase())) {
-      setAppliedCoupon(couponCode.toUpperCase());
-      toast({
-        title: "Coupon Applied!",
-        description: `You saved ₹${couponCode.toUpperCase() === 'WELCOME50' ? 50 : 20} with coupon ${couponCode.toUpperCase()}`,
-      });
-    } else {
-      toast({
-        title: "Invalid Coupon",
-        description: "Please enter a valid coupon code",
-        variant: "destructive",
-      });
+    const code = couponCode.trim().toUpperCase();
+    if (!code) {
+      toast({ title: "Enter a coupon code", variant: "destructive" });
+      return;
     }
+    const result = validateCoupon(code, totalPrice, paymentMethod, true);
+    if (!result.valid) {
+      toast({ title: "Invalid Coupon", description: result.error, variant: "destructive" });
+      return;
+    }
+    setAppliedCoupon(code);
+    const discount = Math.round(totalPrice * (COUPONS_MAP[code]?.value || 0) / 100);
+    toast({ title: "Coupon Applied!", description: `You saved ₹${discount} with coupon ${code}` });
   };
+
+  // Remove coupon if conditions change (e.g., UPI10 but switched away from UPI)
+  React.useEffect(() => {
+    if (appliedCoupon) {
+      const coupon = COUPONS_MAP[appliedCoupon];
+      if (coupon?.requiresUPI && paymentMethod !== 'upi') {
+        setAppliedCoupon(null);
+        toast({ title: "Coupon Removed", description: "UPI10 coupon requires UPI payment method." });
+      }
+    }
+  }, [paymentMethod]);
 
 
   const saveOrderToDatabase = async (orderDetails: any) => {
@@ -447,12 +456,13 @@ const Checkout = () => {
         setCouponCode={setCouponCode}
         appliedCoupon={appliedCoupon}
         onCouponApply={handleCouponApply}
+        onAppliedCouponChange={setAppliedCoupon}
       />
     );
   }
 
   const expectedDelivery = new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'long' });
-  const discount = upiDiscount + couponDiscount;
+  
 
   return (
     <div className="min-h-screen bg-muted/50">
@@ -526,10 +536,16 @@ const Checkout = () => {
                   <span className="text-muted-foreground">Delivery Fee</span>
                   <span className="text-brand-green font-medium">Free</span>
                 </div>
-                {discount > 0 && (
+                {couponDiscount > 0 && (
                   <div className="flex justify-between text-sm lg:text-base">
-                    <span className="text-muted-foreground">Discount</span>
-                    <span className="text-brand-green font-medium">−₹{discount.toLocaleString()}</span>
+                    <span className="text-brand-green">Coupon Discount ({appliedCoupon})</span>
+                    <span className="text-brand-green font-medium">−₹{couponDiscount.toLocaleString()}</span>
+                  </div>
+                )}
+                {upiDiscount > 0 && (
+                  <div className="flex justify-between text-sm lg:text-base">
+                    <span className="text-brand-green">UPI Discount (10%)</span>
+                    <span className="text-brand-green font-medium">−₹{upiDiscount.toLocaleString()}</span>
                   </div>
                 )}
                 {/* Coupon */}
