@@ -125,15 +125,17 @@ const Notifications = () => {
       const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
       if (unreadIds.length === 0) return;
 
-      await supabase
-        .from('notifications')
-        .update({ is_read: true })
-        .in('id', unreadIds);
+      // Update each notification individually to ensure RLS compliance
+      const updatePromises = unreadIds.map(id =>
+        supabase.from('notifications').update({ is_read: true }).eq('id', id)
+      );
+      await Promise.all(updatePromises);
 
       setNotifications(prev =>
         prev.map(notification => ({ ...notification, is_read: true }))
       );
-      refreshNotificationCount();
+      // Force refresh the global notification count immediately
+      setTimeout(() => refreshNotificationCount(), 100);
       toast.success("All notifications marked as read");
     } catch (error) {
       console.error('Error marking all as read:', error);
