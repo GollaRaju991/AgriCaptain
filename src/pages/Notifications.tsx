@@ -221,7 +221,7 @@ const Notifications = () => {
               <Card 
                 key={notification.id} 
                 className={`hover:shadow-md transition-shadow cursor-pointer ${
-                  !notification.is_read ? 'border-l-4 border-l-blue-500 bg-blue-50' : ''
+                  !notification.is_read ? 'border-l-4 border-l-blue-500 bg-blue-50' : 'border border-gray-200 bg-white'
                 }`}
                 onClick={() => handleNotificationClick(notification)}
               >
