@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { dualBackendService } from '@/services/dualBackendService';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { openRazorpayCheckout } from '@/utils/razorpay';
+import { calculateDiscounts, validateCoupon, COUPONS as COUPONS_MAP } from '@/utils/discountUtils';
 
 
 interface Address {
