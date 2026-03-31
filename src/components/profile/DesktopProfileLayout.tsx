@@ -20,6 +20,7 @@ import {
   FileText,
   MessageCircleQuestion,
   Headphones,
+  Trash2,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileInformation from './sections/ProfileInformation';
