@@ -17,7 +17,7 @@ const TermsPolicies = () => {
 
   const policies = [
     { icon: FileText, title: 'Terms of Use', description: 'Terms and conditions for using Agrizin', href: '#terms' },
-    { icon: Lock, title: 'Privacy Policy', description: 'How we collect and use your data', href: '#privacy' },
+    { icon: Lock, title: 'Privacy Policy', description: 'How we collect and use your data', href: '/privacy-policy' },
     { icon: Shield, title: 'Return Policy', description: 'Our return and refund guidelines', href: '#returns' },
     { icon: ScrollText, title: 'Shipping Policy', description: 'Delivery terms and conditions', href: '#shipping' },
     { icon: Scale, title: 'Grievance Policy', description: 'How to raise and resolve complaints', href: '#grievance' },

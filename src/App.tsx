@@ -108,6 +108,7 @@ const App = () => (
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                     <Route path="/refund-policy" element={<RefundPolicy />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                     <Route path="/shipping-policy" element={<ShippingPolicy />} />
                     <Route path="/agrizin-money" element={<AgrizinMoney />} />
                     <Route path="/seller/add-product" element={<AddProduct />} />
