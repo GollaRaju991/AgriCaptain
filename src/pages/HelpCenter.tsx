@@ -145,7 +145,7 @@ const HelpCenter = () => {
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </a>
         </div>
-      
+      </div>
       <div className="h-20 lg:hidden"></div>
       <MobileBottomNav />
       <Footer />
