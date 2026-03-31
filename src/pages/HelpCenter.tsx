@@ -12,7 +12,8 @@ import {
   Package,
   CreditCard,
   Truck,
-  RotateCcw
+  RotateCcw,
+  Trash2
 } from 'lucide-react';
 import useScrollToTop from '@/hooks/useScrollToTop';
 
@@ -124,8 +125,27 @@ const HelpCenter = () => {
             </a>
           </div>
         </div>
+
+        {/* Delete Account */}
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground">Account</h2>
+          <a
+            href="/delete-account"
+            className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="bg-red-100 p-2 rounded-lg">
+                <Trash2 className="h-5 w-5 text-destructive" />
+              </div>
+              <div>
+                <span className="text-sm font-medium text-destructive">Delete My Account</span>
+                <p className="text-xs text-muted-foreground">Permanently remove your account and data</p>
+              </div>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </a>
+        </div>
       </div>
-      
       <div className="h-20 lg:hidden"></div>
       <MobileBottomNav />
       <Footer />
