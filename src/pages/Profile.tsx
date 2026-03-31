@@ -262,16 +262,8 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Delete & Logout Buttons */}
-          <div className="bg-gray-100 px-4 py-4 space-y-3">
-            <a href="/delete-account">
-              <Button
-                variant="outline"
-                className="w-full border-destructive text-destructive font-semibold hover:bg-destructive/5"
-              >
-                Delete Account
-              </Button>
-            </a>
+          {/* Logout Button */}
+          <div className="bg-gray-100 px-4 py-4">
             <Button
               variant="outline"
               className="w-full border-gray-300 text-brand-green font-semibold hover:bg-gray-50"

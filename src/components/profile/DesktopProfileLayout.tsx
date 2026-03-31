@@ -160,15 +160,6 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
             </span>
           </div>
 
-          {/* DELETE ACCOUNT */}
-          <div
-            className="flex items-center gap-3 px-6 py-4 cursor-pointer hover:bg-destructive/10 transition-colors border-b"
-            onClick={() => navigate('/delete-account')}
-          >
-            <Trash2 className="h-5 w-5 text-destructive" />
-            <span className="text-sm font-semibold text-destructive">Delete Account</span>
-          </div>
-
           {/* LOGOUT */}
           <div
             className="flex items-center gap-3 px-6 py-5 cursor-pointer hover:bg-destructive/10 transition-colors"
