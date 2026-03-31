@@ -12,7 +12,8 @@ import {
   Package,
   CreditCard,
   Truck,
-  RotateCcw
+  RotateCcw,
+  Trash2
 } from 'lucide-react';
 import useScrollToTop from '@/hooks/useScrollToTop';
 
