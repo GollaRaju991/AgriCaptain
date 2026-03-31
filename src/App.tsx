@@ -38,6 +38,7 @@ import FAQs from "./pages/FAQs";
 import Contact from "./pages/Contact";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import RefundPolicy from "./pages/RefundPolicy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import SavedUPI from "./pages/SavedUPI";
 import SavedCards from "./pages/SavedCards";
