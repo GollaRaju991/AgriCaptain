@@ -20,6 +20,7 @@ import {
   FileText,
   MessageCircleQuestion,
   Headphones,
+  Trash2,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileInformation from './sections/ProfileInformation';
@@ -157,6 +158,15 @@ const DesktopProfileLayout: React.FC<DesktopProfileLayoutProps> = ({
             >
               Help Center
             </span>
+          </div>
+
+          {/* DELETE ACCOUNT */}
+          <div
+            className="flex items-center gap-3 px-6 py-4 cursor-pointer hover:bg-destructive/10 transition-colors border-b"
+            onClick={() => navigate('/delete-account')}
+          >
+            <Trash2 className="h-5 w-5 text-destructive" />
+            <span className="text-sm font-semibold text-destructive">Delete Account</span>
           </div>
 
           {/* LOGOUT */}

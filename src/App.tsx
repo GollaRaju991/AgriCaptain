@@ -50,6 +50,7 @@ import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
 import SupportChat from "./pages/SupportChat";
+import DeleteAccount from "./pages/DeleteAccount";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -117,6 +118,7 @@ const App = () => (
                     <Route path="/scanner" element={<Scanner />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
                     <Route path="/support-chat" element={<SupportChat />} />
+                    <Route path="/delete-account" element={<DeleteAccount />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
