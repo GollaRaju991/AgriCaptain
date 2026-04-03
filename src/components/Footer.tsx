@@ -32,7 +32,7 @@ const Footer = () => {
   return (
     <footer className="lg:bg-gray-900 lg:text-white">
       {/* Referral Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 py-8">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 py-8 text-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-4 mb-4 md:mb-0">
