@@ -179,6 +179,9 @@ const AgrizinMoney = () => {
           </CardContent>
         </Card>
 
+        {/* Referral Earnings */}
+        <ReferralEarningsCard />
+
         {/* Recharge Section */}
         {showRecharge && (
           <Card className="mb-6">

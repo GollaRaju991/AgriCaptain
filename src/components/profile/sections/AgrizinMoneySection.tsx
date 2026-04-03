@@ -140,6 +140,9 @@ const AgrizinMoneySection: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Referral Earnings */}
+      <ReferralEarningsCard />
+
       {/* Recharge */}
       {showRecharge && (
         <Card className="mb-6">
