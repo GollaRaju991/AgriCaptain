@@ -173,7 +173,7 @@ const AgrizinMoney = () => {
                 className="bg-white/20 hover:bg-white/30 text-white border-0"
                 onClick={() => setShowReferral(true)}
               >
-                <Share2 className="h-4 w-4 mr-1" /> Refer & Earn ₹25
+                <Share2 className="h-4 w-4 mr-1" /> Refer & Earn ₹5
               </Button>
             </div>
           </CardContent>
