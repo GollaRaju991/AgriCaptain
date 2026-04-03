@@ -7,10 +7,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Copy, Check, Loader2 } from 'lucide-react';
+import { Copy, Check, Loader2, Users, Gift } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Progress } from '@/components/ui/progress';
 
 interface ReferralDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [referralCount, setReferralCount] = useState(0);
+  const [referralEarnings, setReferralEarnings] = useState(0);
 
   useEffect(() => {
     if (open && user) {
@@ -34,7 +36,6 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
   const fetchOrCreateReferralCode = async () => {
     setLoading(true);
     try {
-      // Check if user already has a referral code
       const { data: existing } = await supabase
         .from('referrals')
         .select('*')
@@ -44,26 +45,27 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
 
       if (existing && existing.length > 0) {
         setReferralCode(existing[0].referral_code);
-        // Count completed referrals
         const { count } = await supabase
           .from('referrals')
           .select('*', { count: 'exact', head: true })
           .eq('referrer_id', user!.id)
           .eq('status', 'completed');
-        setReferralCount(count || 0);
+        const completedCount = count || 0;
+        setReferralCount(completedCount);
+        setReferralEarnings(completedCount * 5);
       } else {
-        // Generate new code
         const { data: codeData } = await supabase.rpc('generate_referral_code');
         const code = codeData as string;
 
         await supabase.from('referrals').insert({
           referrer_id: user!.id,
           referral_code: code,
-          bonus_amount: 25,
+          bonus_amount: 5,
         });
 
         setReferralCode(code);
         setReferralCount(0);
+        setReferralEarnings(0);
       }
     } catch (err) {
       console.error(err);
@@ -79,10 +81,9 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareText = `Join Agrizin using my referral code: ${referralCode} and get ₹25 in your wallet! Download now: ${window.location.origin}/auth?ref=${referralCode}`;
+  const shareText = `Join Agrizin using my referral code: ${referralCode} and get started! Download now: ${window.location.origin}/auth?ref=${referralCode}`;
 
   const handleShare = async (platform?: 'whatsapp' | 'facebook') => {
-    // Always try navigator.share first on mobile
     if (navigator.share) {
       try {
         await navigator.share({
@@ -91,12 +92,9 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
           url: `${window.location.origin}/auth?ref=${referralCode}`,
         });
         return;
-      } catch (e) {
-        // User cancelled or not supported, fall through to platform-specific
-      }
+      } catch (e) {}
     }
 
-    // Fallback: open in new window (works on desktop)
     let url = '';
     if (platform === 'whatsapp') {
       url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
@@ -111,11 +109,14 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
     }
   };
 
+  const progressPercent = Math.min((referralCount / 10) * 100, 100);
+  const canWithdraw = referralCount >= 10;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Refer & Earn ₹25</DialogTitle>
+          <DialogTitle className="text-xl font-bold">Refer & Earn ₹5</DialogTitle>
         </DialogHeader>
 
         {loading ? (
@@ -125,8 +126,31 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
         ) : (
           <div className="space-y-5">
             <p className="text-sm text-muted-foreground">
-              Share Agrizin with your friends and family. Earn ₹25 for each successful referral!
+              Share Agrizin with your friends. Earn <span className="font-bold text-primary">₹5</span> for each successful referral! 
+              Complete <span className="font-bold">10 referrals</span> to earn <span className="font-bold text-primary">₹50</span> and unlock withdrawal.
             </p>
+
+            {/* Referral Progress */}
+            <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Referral Progress</span>
+                </div>
+                <span className="text-sm font-bold text-primary">{referralCount}/10</span>
+              </div>
+              <Progress value={progressPercent} className="h-2" />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Earned: ₹{referralEarnings}</span>
+                {canWithdraw ? (
+                  <span className="text-green-600 font-medium flex items-center gap-1">
+                    <Gift className="h-3 w-3" /> Withdrawal unlocked!
+                  </span>
+                ) : (
+                  <span>{10 - referralCount} more to unlock</span>
+                )}
+              </div>
+            </div>
 
             {/* Referral Code Display */}
             <div className="flex items-center gap-2">
@@ -171,9 +195,15 @@ const ReferralDialog: React.FC<ReferralDialogProps> = ({ open, onOpenChange }) =
               </Button>
             </div>
 
-            <p className="text-xs text-center text-muted-foreground">
-              {referralCount > 0 ? `${referralCount} successful referral${referralCount > 1 ? 's' : ''}` : '50 successful referrals = ₹1000 directly to your UPI!'}
-            </p>
+            {/* Earnings Info */}
+            <div className="bg-primary/5 rounded-lg p-3 space-y-1">
+              <p className="text-xs font-semibold text-primary">How it works:</p>
+              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                <li>1 referral = <span className="font-bold">₹5</span> added to your Agrizin Money</li>
+                <li>10 referrals = <span className="font-bold">₹50</span> total earnings</li>
+                <li>Use earnings to buy products or withdraw after <span className="font-bold">10 referrals</span></li>
+              </ul>
+            </div>
           </div>
         )}
       </DialogContent>

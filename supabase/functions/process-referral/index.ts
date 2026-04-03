@@ -150,7 +150,7 @@ serve(async (req) => {
       await supabase.from("referrals").insert({
         referrer_id: referral.referrer_id,
         referral_code: newCode,
-        bonus_amount: 25,
+        bonus_amount: 5,
       });
     }
 
