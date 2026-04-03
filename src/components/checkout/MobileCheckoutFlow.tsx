@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { calculateDiscounts } from '@/utils/discountUtils';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Plus, Smartphone, CreditCard, Truck, CheckCircle, XCircle, Lock, Loader2, ChevronRight, Shield, Headphones, Package, Receipt, IndianRupee } from 'lucide-react';
+import { ArrowLeft, MapPin, Plus, Smartphone, CreditCard, Truck, CheckCircle, XCircle, Lock, Loader2, ChevronRight, Shield, Package, Receipt, IndianRupee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
