@@ -30,7 +30,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="hidden lg:block bg-gray-900 text-white">
       {/* Referral Section */}
       <div className="bg-gradient-to-r from-green-600 to-green-700 py-8">
         <div className="container mx-auto px-4">
