@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Wallet, Plus, ArrowDownLeft, ArrowUpRight, Loader2, Share2 } from 'lucide-react';
+import ReferralEarningsCard from '@/components/ReferralEarningsCard';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
@@ -172,11 +173,14 @@ const AgrizinMoney = () => {
                 className="bg-white/20 hover:bg-white/30 text-white border-0"
                 onClick={() => setShowReferral(true)}
               >
-                <Share2 className="h-4 w-4 mr-1" /> Refer & Earn ₹25
+                <Share2 className="h-4 w-4 mr-1" /> Refer & Earn ₹5
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Referral Earnings */}
+        <ReferralEarningsCard />
 
         {/* Recharge Section */}
         {showRecharge && (

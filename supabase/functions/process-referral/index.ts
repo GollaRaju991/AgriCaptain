@@ -96,7 +96,7 @@ serve(async (req) => {
       });
     }
 
-    const bonusAmount = referral.bonus_amount || 25;
+    const bonusAmount = referral.bonus_amount || 5;
 
     // Update referral status (acts as a lock - subsequent requests will fail the check above)
     const { error: updateErr } = await supabase
@@ -150,7 +150,7 @@ serve(async (req) => {
       await supabase.from("referrals").insert({
         referrer_id: referral.referrer_id,
         referral_code: newCode,
-        bonus_amount: 25,
+        bonus_amount: 5,
       });
     }
 
