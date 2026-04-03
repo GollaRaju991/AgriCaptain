@@ -30,9 +30,9 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="lg:bg-gray-900 lg:text-white">
       {/* Referral Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 py-8">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 py-8 text-white">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center space-x-4 mb-4 md:mb-0">
@@ -60,8 +60,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12">
+      {/* Main Footer Content - Desktop Only */}
+      <div className="hidden lg:block container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
@@ -146,8 +146,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-gray-800">
+      {/* Bottom Bar - Desktop Only */}
+      <div className="hidden lg:block border-t border-gray-800">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
