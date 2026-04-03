@@ -60,8 +60,8 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-12">
+      {/* Main Footer Content - Desktop Only */}
+      <div className="hidden lg:block container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
