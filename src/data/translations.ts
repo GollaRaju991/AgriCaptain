@@ -296,8 +296,8 @@ export const translations: Record<string, Record<string, string>> = {
     'privacy_policy': 'Privacy Policy',
     'terms': 'Terms of Service',
     'cookies': 'Cookie Policy',
-    'refer_earn': 'Refer Friends & Earn ₹25',
-    'refer_desc': 'Get ₹25 for each successful referral. 50 referrals = ₹1000 directly to your UPI!',
+    'refer_earn': 'Refer Friends & Earn ₹5',
+    'refer_desc': 'Get ₹5 for each successful referral. 10 referrals = ₹50 directly to your bank account!',
     'refer_now': 'Refer Now',
     'learn_more': 'Learn More',
 
