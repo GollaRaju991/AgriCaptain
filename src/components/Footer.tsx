@@ -172,11 +172,11 @@ const Footer = () => {
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Refer & Earn ₹25</DialogTitle>
+            <DialogTitle className="text-xl font-bold">Refer & Earn ₹5</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-gray-600">
-              Share Agrizin with your friends and family. Earn ₹25 for each successful referral!
+              Share Agrizin with your friends and family. Earn ₹5 for each successful referral!
             </p>
             
             <div className="space-y-3">
