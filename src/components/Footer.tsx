@@ -209,7 +209,7 @@ const Footer = () => {
             
             <div className="pt-4 border-t">
               <p className="text-sm text-gray-500 text-center">
-                50 successful referrals = ₹1000 directly to your UPI!
+                10 successful referrals = ₹50 directly to your bank account!
               </p>
             </div>
           </div>
