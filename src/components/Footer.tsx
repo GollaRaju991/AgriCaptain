@@ -40,8 +40,8 @@ const Footer = () => {
                 <Users className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Refer Friends & Earn ₹25</h3>
-                <p className="text-green-100">Get ₹25 for each successful referral. 50 referrals = ₹1000 directly to your UPI!</p>
+                <h3 className="text-xl font-bold">Refer Friends & Earn ₹5</h3>
+                <p className="text-green-100">Get ₹5 for each successful referral. 10 referrals = ₹50 directly to your bank account!</p>
               </div>
             </div>
             <div className="flex space-x-3">
