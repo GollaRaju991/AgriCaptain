@@ -1040,8 +1040,8 @@ export const translations: Record<string, Record<string, string>> = {
     'privacy_policy': 'गोपनीयता नीति',
     'terms': 'सेवा की शर्तें',
     'cookies': 'कुकी नीति',
-    'refer_earn': 'दोस्तों को रेफर करें और ₹25 कमाएं',
-    'refer_desc': 'हर सफल रेफरल के लिए ₹25 पाएं। 50 रेफरल = सीधे आपके UPI में ₹1000!',
+    'refer_earn': 'दोस्तों को रेफर करें और ₹5 कमाएं',
+    'refer_desc': 'हर सफल रेफरल के लिए ₹5 पाएं। 10 रेफरल = सीधे आपके बैंक खाते में ₹50!',
     'refer_now': 'अभी रेफर करें',
     'learn_more': 'और जानें',
 
