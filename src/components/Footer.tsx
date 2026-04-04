@@ -40,8 +40,8 @@ const Footer = () => {
                 <Users className="h-6 w-6" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Refer Friends & Earn ₹25</h3>
-                <p className="text-green-100">Get ₹25 for each successful referral. 50 referrals = ₹1000 directly to your UPI!</p>
+                <h3 className="text-xl font-bold">Refer Friends & Earn ₹5</h3>
+                <p className="text-green-100">Get ₹5 for each successful referral. 10 referrals = ₹50 directly to your bank account!</p>
               </div>
             </div>
             <div className="flex space-x-3">
@@ -172,11 +172,11 @@ const Footer = () => {
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Refer & Earn ₹25</DialogTitle>
+            <DialogTitle className="text-xl font-bold">Refer & Earn ₹5</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-gray-600">
-              Share Agrizin with your friends and family. Earn ₹25 for each successful referral!
+              Share Agrizin with your friends and family. Earn ₹5 for each successful referral!
             </p>
             
             <div className="space-y-3">
@@ -209,7 +209,7 @@ const Footer = () => {
             
             <div className="pt-4 border-t">
               <p className="text-sm text-gray-500 text-center">
-                50 successful referrals = ₹1000 directly to your UPI!
+                10 successful referrals = ₹50 directly to your bank account!
               </p>
             </div>
           </div>
