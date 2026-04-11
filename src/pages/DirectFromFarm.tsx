@@ -149,9 +149,18 @@ const DirectFromFarm: React.FC = () => {
 
   useEffect(() => { fetchCrops(); }, []);
 
-  // Auto-detect location on mount
+  // Try auto-detect location on mount (will silently skip if permission not granted)
   useEffect(() => {
-    handleDetectLocation();
+    // Check if permission is already granted before auto-detecting
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'granted') {
+          handleDetectLocation();
+        }
+      }).catch(() => {
+        // permissions API not supported, skip auto-detect
+      });
+    }
   }, []);
 
   // Add distance to crops when user location changes

@@ -134,7 +134,16 @@ const SellCrop: React.FC = () => {
   };
 
   useEffect(() => { fetchCrops(); }, []);
-  useEffect(() => { handleDetectLocation(); }, []);
+  // Try auto-detect only if permission already granted
+  useEffect(() => {
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'granted') {
+          handleDetectLocation();
+        }
+      }).catch(() => {});
+    }
+  }, []);
 
   // Add distance to crops
   const cropsWithDistance = useMemo(() => {
