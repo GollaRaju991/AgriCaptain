@@ -55,6 +55,8 @@ const ProductDetails = () => {
   const { language, translations } = useLanguage();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
   const [sellerProduct, setSellerProduct] = useState<any>(null);
@@ -375,6 +377,19 @@ const ProductDetails = () => {
             <div 
               className="relative cursor-zoom-in group bg-white border border-gray-200 rounded-xl shadow-sm lg:shadow-md overflow-hidden"
               onClick={() => setZoomModalOpen(true)}
+              onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; touchEndX.current = null; }}
+              onTouchMove={(e) => { touchEndX.current = e.touches[0].clientX; }}
+              onTouchEnd={() => {
+                if (touchStartX.current !== null && touchEndX.current !== null) {
+                  const diff = touchStartX.current - touchEndX.current;
+                  if (Math.abs(diff) > 50) {
+                    if (diff > 0) nextImage();
+                    else prevImage();
+                  }
+                }
+                touchStartX.current = null;
+                touchEndX.current = null;
+              }}
             >
               <img
                 src={product.images[selectedImage]}
