@@ -391,7 +391,6 @@ const ProductDetails = () => {
                 touchEndX.current = null;
               }}
             >
-            >
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
