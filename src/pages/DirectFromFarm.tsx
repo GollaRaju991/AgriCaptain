@@ -116,8 +116,8 @@ const DirectFromFarm: React.FC = () => {
       const loc = await detectUserLocation();
       setUserLocation(loc);
       toast({ title: t('Location detected!', 'స్థానం గుర్తించబడింది!', 'स्थान पहचाना गया!'), description: loc.address });
-    } catch {
-      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది', 'स्थान नहीं मिला'), variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది', 'स्थान नहीं मिला'), description: err?.message, variant: 'destructive' });
     } finally {
       setDetectingLocation(false);
     }
@@ -149,9 +149,18 @@ const DirectFromFarm: React.FC = () => {
 
   useEffect(() => { fetchCrops(); }, []);
 
-  // Auto-detect location on mount
+  // Try auto-detect location on mount (will silently skip if permission not granted)
   useEffect(() => {
-    handleDetectLocation();
+    // Check if permission is already granted before auto-detecting
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'granted') {
+          handleDetectLocation();
+        }
+      }).catch(() => {
+        // permissions API not supported, skip auto-detect
+      });
+    }
   }, []);
 
   // Add distance to crops when user location changes
