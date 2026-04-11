@@ -55,6 +55,8 @@ const ProductDetails = () => {
   const { language, translations } = useLanguage();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [zoomModalOpen, setZoomModalOpen] = useState(false);
   const [sellerProduct, setSellerProduct] = useState<any>(null);
