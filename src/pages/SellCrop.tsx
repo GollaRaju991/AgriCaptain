@@ -92,8 +92,8 @@ const SellCrop: React.FC = () => {
       const loc = await detectUserLocation();
       setUserLocation(loc);
       toast({ title: t('Location detected!', 'స్థానం గుర్తించబడింది!', 'स्थान पहचाना गया!'), description: loc.address });
-    } catch {
-      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది'), variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: t('Could not detect location', 'స్థానాన్ని గుర్తించలేకపోయింది'), description: err?.message, variant: 'destructive' });
     } finally {
       setDetectingLocation(false);
     }
