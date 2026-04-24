@@ -8,6 +8,7 @@ import { CreditCard, Smartphone, Truck, CheckCircle, ChevronDown, ChevronUp, Hel
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 
 interface SavedCard {
@@ -67,6 +68,7 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { translations: t } = useLanguage();
   const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
   const [selectedSavedCard, setSelectedSavedCard] = useState<string>('');
   const [savedCardCvv, setSavedCardCvv] = useState('');
@@ -121,18 +123,18 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
         <div className="flex items-center justify-between">
           <CardTitle className="text-base lg:text-lg font-bold flex items-center gap-3">
             <span className="bg-primary text-primary-foreground rounded-full w-7 h-7 flex items-center justify-center text-sm">2</span>
-            Payments
+            {t.payments_title}
           </CardTitle>
           <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
             <Lock className="h-4 w-4" />
-            100% Secure
+            {t.secure_100}
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
         {/* Total Amount Bar */}
         <div className="bg-blue-50 mx-5 mt-5 rounded-xl px-5 py-3.5 flex items-center justify-between">
-          <span className="text-sm lg:text-base font-medium text-primary">Total Amount</span>
+          <span className="text-sm lg:text-base font-medium text-primary">{t.total_amount}</span>
           <span className="text-lg lg:text-xl font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
         </div>
 
@@ -142,19 +144,19 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* ── UPI / Credit / Debit Card (Razorpay handles all) ── */}
           <DesktopPaymentCard
             icon={<Smartphone className="h-5 w-5 text-brand-green" />}
-            title="UPI / Credit / Debit Card"
-            badge="Recommended"
-            subtitle="Pay securely via Razorpay"
+            title={t.upi_credit_debit}
+            badge={t.recommended}
+            subtitle={t.pay_securely_razorpay}
             isOpen={paymentMethod === 'upi' || paymentMethod === 'card'}
             onToggle={() => { setPaymentMethod((paymentMethod === 'upi' || paymentMethod === 'card') ? '' : 'upi'); }}
           >
             <div className="space-y-3 mt-2">
               <p className="text-sm text-muted-foreground">
-                Click the <strong>Pay</strong> button below to open the secure payment window. You can choose UPI, Credit Card, Debit Card, or other methods there.
+                {t.click_pay_button_info}
               </p>
               <p className="text-xs text-center text-muted-foreground">
                 <Lock className="h-3 w-3 inline mr-1" />
-                Secure payment powered by Razorpay
+                {t.secure_powered_razorpay}
               </p>
             </div>
           </DesktopPaymentCard>
@@ -162,14 +164,14 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           {/* ── Cash on Delivery ── */}
           <DesktopPaymentCard
             icon={<Truck className="h-5 w-5 text-brand-green" />}
-            title="Cash on Delivery"
-            subtitle="Pay when order arrives"
+            title={t.cash_on_delivery}
+            subtitle={t.pay_when_arrives}
             isOpen={paymentMethod === 'cod'}
             onToggle={() => setPaymentMethod(paymentMethod === 'cod' ? '' : 'cod')}
           >
             <div className="mt-2">
               <p className="text-sm text-muted-foreground">
-                Pay the full amount when your order is delivered to your doorstep.
+                {t.pay_full_on_delivery}
               </p>
             </div>
           </DesktopPaymentCard>
@@ -180,15 +182,15 @@ const PaymentMethodsSection: React.FC<PaymentMethodsSectionProps> = ({
           <div className="mx-5 mb-5 bg-muted/30 rounded-xl p-4 space-y-2.5 border border-border/40">
             <div className="flex items-center gap-2 mb-1">
               <Shield className="h-4 w-4 text-brand-green" />
-              <span className="text-sm font-bold text-foreground">Payment Info</span>
+              <span className="text-sm font-bold text-foreground">{t.payment_info}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Payment Method</span>
-              <span className="text-foreground font-medium">Cash on Delivery</span>
+              <span className="text-muted-foreground">{t.payment_method}</span>
+              <span className="text-foreground font-medium">{t.cash_on_delivery}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Status</span>
-              <span className="text-amber-600 font-medium text-xs bg-amber-50 px-2 py-0.5 rounded-full">Pending</span>
+              <span className="text-muted-foreground">{t.order_status || 'Status'}</span>
+              <span className="text-amber-600 font-medium text-xs bg-amber-50 px-2 py-0.5 rounded-full">{t.pending}</span>
             </div>
           </div>
         )}
