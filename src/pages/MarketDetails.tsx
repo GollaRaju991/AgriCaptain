@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Footer from '@/components/Footer';
-import { MapPin, Calendar, TrendingUp, TrendingDown, Minus, Sprout, BarChart3, Users } from 'lucide-react';
+import { MapPin, Calendar, TrendingUp, TrendingDown, Minus, Sprout, BarChart3, Users, ChevronDown } from 'lucide-react';
 
 // ── Crop SVG icon components ──
 const CottonIcon = () => (
@@ -361,18 +361,19 @@ const MarketDetails = () => {
             <select
               value={selectedMarket}
               onChange={e => setSelectedMarket(e.target.value)}
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-green-200 bg-white text-sm font-medium appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-green-200 bg-white text-sm font-medium appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-300"
             >
               <option value="All Markets">{t('All Markets', 'అన్ని మార్కెట్లు', 'सभी बाज़ार')}</option>
               {markets.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600 pointer-events-none" />
           </div>
           <div className="relative flex-1 min-w-[140px] max-w-[220px]">
             <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-600 pointer-events-none" />
             <select
               value={selectedPeriod}
               onChange={e => setSelectedPeriod(e.target.value as DatePeriod)}
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-green-200 bg-white text-sm font-medium appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-300"
+              className="w-full pl-9 pr-9 py-2.5 rounded-xl border border-green-200 bg-white text-sm font-medium appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-300"
             >
               {(Object.keys(datePeriodLabels) as DatePeriod[]).map(key => (
                 <option key={key} value={key}>{getName(datePeriodLabels[key])}</option>
