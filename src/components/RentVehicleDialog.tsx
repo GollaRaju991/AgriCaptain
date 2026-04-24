@@ -116,6 +116,10 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const handleSearch = async () => {
     const effectiveTypes = getEffectiveVehicleTypes();
     if (effectiveTypes.length === 0 || !startDate || !endDate) return;
+    if (endDate < startDate) {
+      toast.error(label('End date cannot be earlier than start date', 'ముగింపు తేదీ ప్రారంభ తేదీ కంటే ముందు ఉండకూడదు'));
+      return;
+    }
     if (locationMode === 'manual' && (!selectedCountry || !selectedState || !selectedDistrict)) return;
 
     setIsLoading(true);
