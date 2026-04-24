@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { MapPin, Plus } from 'lucide-react';
 import AddressManager from '@/components/AddressManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Address {
   id: string;
