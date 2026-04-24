@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Footer from '@/components/Footer';
-import { MapPin, Calendar, TrendingUp, TrendingDown, Minus, Sprout, BarChart3, Users, ChevronDown } from 'lucide-react';
+import { MapPin, Calendar, TrendingUp, TrendingDown, Minus, Sprout, BarChart3, Users, ChevronDown, ArrowLeft } from 'lucide-react';
 
 // ── Crop SVG icon components ──
 const CottonIcon = () => (
