@@ -11,6 +11,7 @@ import AddressManager from '@/components/AddressManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 import { openRazorpayCheckout } from '@/utils/razorpay';
 
@@ -84,6 +85,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { translations: t } = useLanguage();
 
   const [showAddressManager, setShowAddressManager] = useState(false);
   const [addressManagerScreen, setAddressManagerScreen] = useState<'list' | 'form'>('list');
