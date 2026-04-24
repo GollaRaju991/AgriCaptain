@@ -9,7 +9,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, X, Navigation, MapPin, Loader2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { format } from 'date-fns';
+import { format, startOfDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { countries, states, districts, divisions, mandals, villages, getMandalsForDistrict, hasDivisions } from '@/data/locationData';
 import SavedAddressPicker from './SavedAddressPicker';
@@ -47,7 +47,8 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const today = startOfDay(new Date());
+  const isBeforeToday = (date: Date) => startOfDay(date).getTime() < today.getTime();
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
@@ -362,7 +363,7 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={startDate} onSelect={(d) => { setStartDate(d); setStartDateOpen(false); if (d && endDate && endDate < d) setEndDate(undefined); }} disabled={(date) => date < today} initialFocus className="pointer-events-auto" />
+                  <Calendar mode="single" selected={startDate} onSelect={(d) => { if (!d || isBeforeToday(d)) return; setStartDate(d); setStartDateOpen(false); if (endDate && startOfDay(endDate).getTime() < startOfDay(d).getTime()) setEndDate(undefined); }} disabled={isBeforeToday} initialFocus className="pointer-events-auto" />
                 </PopoverContent>
               </Popover>
             </div>
@@ -376,7 +377,7 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar mode="single" selected={endDate} onSelect={(d) => { setEndDate(d); setEndDateOpen(false); }} disabled={(date) => date < (startDate || today)} initialFocus className="pointer-events-auto" />
+                  <Calendar mode="single" selected={endDate} onSelect={(d) => { if (!d) return; setEndDate(d); setEndDateOpen(false); }} disabled={(date) => startOfDay(date).getTime() < startOfDay(startDate || today).getTime()} initialFocus className="pointer-events-auto" />
                 </PopoverContent>
               </Popover>
             </div>
