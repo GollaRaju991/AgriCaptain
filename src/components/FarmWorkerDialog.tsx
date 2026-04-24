@@ -98,6 +98,10 @@ const FarmWorkerDialog: React.FC<FarmWorkerDialogProps> = ({ open, onOpenChange 
 
   const handleSearch = async () => {
     if (!workerType || !workerCategory || !startDate || !endDate) return;
+    if (endDate < startDate) {
+      toast.error(label('End date cannot be earlier than start date', 'ముగింపు తేదీ ప్రారంభ తేదీ కంటే ముందు ఉండకూడదు'));
+      return;
+    }
     if (workerCategory === 'Group' && !numberOfWorkers) return;
     if (locationMode === 'manual' && (!selectedCountry || !selectedState || !selectedDistrict)) return;
     if (locationMode === 'manual' && districtHasDivisions && !selectedDivision) return;
