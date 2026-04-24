@@ -45,6 +45,9 @@ const RentVehicleDialog: React.FC<RentVehicleDialogProps> = ({ open, onOpenChang
   const [detectingNearby, setDetectingNearby] = useState(false);
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [vehicleDropdownOpen, setVehicleDropdownOpen] = useState(false);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
 
   const { addresses: savedAddresses, saveAddress, deleteAddress, isLimitReached } = useSavedFormAddresses();
 
