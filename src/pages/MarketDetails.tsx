@@ -247,6 +247,11 @@ interface CropData {
 
 const MarketDetails = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
+  const handleBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate('/');
+  };
   const [selectedMarket, setSelectedMarket] = useState('All Markets');
   const [selectedPeriod, setSelectedPeriod] = useState<DatePeriod>('today');
 
@@ -348,7 +353,14 @@ const MarketDetails = () => {
     <div className="min-h-screen flex flex-col bg-[#f0fdf4]">
       <main className="flex-1 w-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Header Section */}
-        <div className="mb-4 sm:mb-6">
+        <div className="mb-4 sm:mb-6 flex items-center gap-3">
+          <button
+            onClick={handleBack}
+            aria-label={t('Back', 'వెనుకకు', 'वापस')}
+            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white border border-green-200 text-green-700 hover:bg-green-50 transition-colors shadow-sm"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
             {t('Market', 'మార్కెట్', 'मार्केट')}{' '}
             <span className="text-green-600">{t('Rates', 'ధరలు', 'दरें')}</span>
