@@ -115,6 +115,162 @@ export type Database = {
           },
         ]
       }
+      driver_listings: {
+        Row: {
+          age: number | null
+          created_at: string | null
+          district: string | null
+          driver_name: string | null
+          driving_license_number: string | null
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          location_address: string | null
+          mandal: string | null
+          phone: string | null
+          preferred_location: string | null
+          profile_photo_url: string | null
+          source_id: string
+          state: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          vehicle_number: string | null
+          vehicle_type: string | null
+          village: string | null
+          work_duration: string | null
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string | null
+          district?: string | null
+          driver_name?: string | null
+          driving_license_number?: string | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          location_address?: string | null
+          mandal?: string | null
+          phone?: string | null
+          preferred_location?: string | null
+          profile_photo_url?: string | null
+          source_id: string
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          vehicle_number?: string | null
+          vehicle_type?: string | null
+          village?: string | null
+          work_duration?: string | null
+        }
+        Update: {
+          age?: number | null
+          created_at?: string | null
+          district?: string | null
+          driver_name?: string | null
+          driving_license_number?: string | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          location_address?: string | null
+          mandal?: string | null
+          phone?: string | null
+          preferred_location?: string | null
+          profile_photo_url?: string | null
+          source_id?: string
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          vehicle_number?: string | null
+          vehicle_type?: string | null
+          village?: string | null
+          work_duration?: string | null
+        }
+        Relationships: []
+      }
+      farm_worker_listings: {
+        Row: {
+          age: number | null
+          availability: string | null
+          category: string | null
+          created_at: string | null
+          district: string | null
+          expected_wage: number | null
+          experience_years: number | null
+          gender: string | null
+          group_count: number | null
+          id: string
+          is_active: boolean | null
+          location_address: string | null
+          mandal: string | null
+          phone: string | null
+          profile_photo_url: string | null
+          skills: string[] | null
+          source_id: string
+          state: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          village: string | null
+          wage_type: string | null
+          worker_name: string | null
+        }
+        Insert: {
+          age?: number | null
+          availability?: string | null
+          category?: string | null
+          created_at?: string | null
+          district?: string | null
+          expected_wage?: number | null
+          experience_years?: number | null
+          gender?: string | null
+          group_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          location_address?: string | null
+          mandal?: string | null
+          phone?: string | null
+          profile_photo_url?: string | null
+          skills?: string[] | null
+          source_id: string
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          village?: string | null
+          wage_type?: string | null
+          worker_name?: string | null
+        }
+        Update: {
+          age?: number | null
+          availability?: string | null
+          category?: string | null
+          created_at?: string | null
+          district?: string | null
+          expected_wage?: number | null
+          experience_years?: number | null
+          gender?: string | null
+          group_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          location_address?: string | null
+          mandal?: string | null
+          phone?: string | null
+          profile_photo_url?: string | null
+          skills?: string[] | null
+          source_id?: string
+          state?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          village?: string | null
+          wage_type?: string | null
+          worker_name?: string | null
+        }
+        Relationships: []
+      }
       farm_workers: {
         Row: {
           availability: string
@@ -931,6 +1087,7 @@ export type Database = {
           model_year: string | null
           owner_name: string
           owner_phone: string
+          source_id: string | null
           state: string | null
           updated_at: string
           user_id: string
@@ -956,6 +1113,7 @@ export type Database = {
           model_year?: string | null
           owner_name: string
           owner_phone: string
+          source_id?: string | null
           state?: string | null
           updated_at?: string
           user_id: string
@@ -981,6 +1139,7 @@ export type Database = {
           model_year?: string | null
           owner_name?: string
           owner_phone?: string
+          source_id?: string | null
           state?: string | null
           updated_at?: string
           user_id?: string
@@ -1310,6 +1469,133 @@ export type Database = {
       generate_gift_card_code: { Args: never; Returns: string }
       generate_order_number: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      search_drivers: {
+        Args: {
+          _district?: string
+          _limit?: number
+          _mandal?: string
+          _offset?: number
+          _state?: string
+          _vehicle_type?: string
+          _village?: string
+        }
+        Returns: {
+          age: number | null
+          created_at: string | null
+          district: string | null
+          driver_name: string | null
+          driving_license_number: string | null
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          location_address: string | null
+          mandal: string | null
+          phone: string | null
+          preferred_location: string | null
+          profile_photo_url: string | null
+          source_id: string
+          state: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          vehicle_number: string | null
+          vehicle_type: string | null
+          village: string | null
+          work_duration: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "driver_listings"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      search_farm_workers: {
+        Args: {
+          _district?: string
+          _limit?: number
+          _mandal?: string
+          _offset?: number
+          _skill?: string
+          _state?: string
+          _village?: string
+        }
+        Returns: {
+          age: number | null
+          availability: string | null
+          category: string | null
+          created_at: string | null
+          district: string | null
+          expected_wage: number | null
+          experience_years: number | null
+          gender: string | null
+          group_count: number | null
+          id: string
+          is_active: boolean | null
+          location_address: string | null
+          mandal: string | null
+          phone: string | null
+          profile_photo_url: string | null
+          skills: string[] | null
+          source_id: string
+          state: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+          village: string | null
+          wage_type: string | null
+          worker_name: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "farm_worker_listings"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      search_vehicles: {
+        Args: {
+          _district?: string
+          _limit?: number
+          _mandal?: string
+          _offset?: number
+          _state?: string
+          _vehicle_type?: string
+          _village?: string
+        }
+        Returns: {
+          availability: string
+          condition: string
+          country: string | null
+          created_at: string
+          daily_rate: number
+          description: string | null
+          district: string | null
+          id: string
+          is_active: boolean
+          latitude: number | null
+          location_address: string | null
+          longitude: number | null
+          mandal: string | null
+          model_year: string | null
+          owner_name: string
+          owner_phone: string
+          source_id: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+          vehicle_images: string[] | null
+          vehicle_name: string | null
+          vehicle_type: string
+          village: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "vehicle_listings"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       validate_referral_code: { Args: { code: string }; Returns: boolean }
     }
     Enums: {
