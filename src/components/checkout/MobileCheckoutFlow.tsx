@@ -11,6 +11,7 @@ import AddressManager from '@/components/AddressManager';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 import { openRazorpayCheckout } from '@/utils/razorpay';
 
@@ -84,6 +85,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { translations: t } = useLanguage();
 
   const [showAddressManager, setShowAddressManager] = useState(false);
   const [addressManagerScreen, setAddressManagerScreen] = useState<'list' | 'form'>('list');
@@ -223,7 +225,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
             <button onClick={() => setShowAddressManager(false)} className="p-1">
               <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
-            <h1 className="text-base font-bold text-foreground">Manage Address</h1>
+            <h1 className="text-base font-bold text-foreground">{t.manage_address}</h1>
           </div>
         )}
         <div className="p-4">
@@ -249,18 +251,18 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         <button onClick={() => navigate(-1)} className="p-1 -ml-1">
           <ArrowLeft className="h-5 w-5 text-foreground" />
         </button>
-        <h1 className="text-base font-bold text-foreground flex-1">Payment Details</h1>
+        <h1 className="text-base font-bold text-foreground flex-1">{t.payment_details || 'Payment Details'}</h1>
       </div>
 
       <div className="p-4 space-y-4">
 
         {/* ── SECTION 1: DELIVERY ADDRESS ── */}
         <div>
-          <h2 className="text-sm font-bold text-foreground mb-2.5">Delivery Address</h2>
+          <h2 className="text-sm font-bold text-foreground mb-2.5">{t.delivery_address}</h2>
           {addressesLoading ? (
             <div className="bg-white rounded-2xl shadow-sm border border-border/50 p-6 text-center">
               <Loader2 className="h-5 w-5 animate-spin text-brand-green mx-auto mb-2" />
-              <p className="text-xs text-muted-foreground">Loading...</p>
+              <p className="text-xs text-muted-foreground">{t.loading}</p>
             </div>
           ) : selectedAddress ? (
             <div className="bg-white rounded-2xl shadow-sm border border-border/40 p-4">
@@ -282,19 +284,19 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
                   onClick={() => setShowAddressManager(true)}
                   className="text-sm font-semibold text-brand-green px-4 py-2 border border-brand-green rounded-xl shrink-0 ml-3 hover:bg-brand-green/5 transition-colors"
                 >
-                  Change
+                  {t.change}
                 </button>
               </div>
             </div>
           ) : (
             <div className="bg-white rounded-2xl shadow-sm border border-border/40 p-6 text-center">
               <MapPin className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground mb-3">No address added</p>
+              <p className="text-sm text-muted-foreground mb-3">{t.no_addresses_found}</p>
               <button
                 onClick={() => setShowAddressManager(true)}
                 className="text-sm font-semibold text-white bg-brand-green rounded-xl px-5 py-2.5 inline-flex items-center gap-1.5 shadow-sm"
               >
-                <Plus className="h-4 w-4" /> Add Address
+                <Plus className="h-4 w-4" /> {t.add_delivery_address}
               </button>
             </div>
           )}
@@ -304,7 +306,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         <div className="bg-white rounded-2xl shadow-sm border border-border/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
             <Package className="h-4 w-4 text-brand-green" />
-            <h2 className="text-sm font-bold text-foreground">Order Details</h2>
+            <h2 className="text-sm font-bold text-foreground">{t.order_details}</h2>
           </div>
           <div className="divide-y divide-border/30">
             {items.map((item, idx) => (
@@ -324,10 +326,10 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               <Truck className="h-4 w-4 text-brand-green" />
             </div>
             <div className="flex-1">
-              <p className="text-[11px] text-muted-foreground">Expected Delivery</p>
+              <p className="text-[11px] text-muted-foreground">{t.estimated_delivery}</p>
               <p className="text-sm font-semibold text-foreground">{expectedDelivery}</p>
             </div>
-            <span className="text-xs font-bold text-brand-green">FREE</span>
+            <span className="text-xs font-bold text-brand-green">{t.free}</span>
           </div>
         </div>
 
@@ -335,26 +337,26 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         <div className="bg-white rounded-2xl shadow-sm border border-border/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
             <Receipt className="h-4 w-4 text-brand-green" />
-            <h2 className="text-sm font-bold text-foreground">Invoice Details</h2>
+            <h2 className="text-sm font-bold text-foreground">{t.price_details}</h2>
           </div>
           <div className="p-4 space-y-2.5">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Items Total ({items.reduce((s, i) => s + i.quantity, 0)})</span>
+              <span className="text-muted-foreground">{t.subtotal} ({items.reduce((s, i) => s + i.quantity, 0)})</span>
               <span className="text-foreground">₹{totalPrice.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Delivery Fee</span>
-              <span className="text-brand-green font-medium">Free</span>
+              <span className="text-muted-foreground">{t.delivery_charges}</span>
+              <span className="text-brand-green font-medium">{t.free}</span>
             </div>
             {couponDiscount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-green">Coupon ({appliedCoupon})</span>
+                <span className="text-brand-green">{t.coupon_discount} ({appliedCoupon})</span>
                 <span className="text-brand-green font-medium">−₹{couponDiscount.toLocaleString()}</span>
               </div>
             )}
             {upiDiscount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-brand-green">UPI Discount (10%)</span>
+                <span className="text-brand-green">{t.upi_discount}</span>
                 <span className="text-brand-green font-medium">−₹{upiDiscount.toLocaleString()}</span>
               </div>
             )}
@@ -362,24 +364,24 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
             <div className="pt-1 pb-1">
               <div className="flex gap-2">
                 <Input
-                  placeholder="Enter coupon code"
+                  placeholder={t.enter_coupon}
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
                   className="flex-1 h-9 text-xs rounded-lg"
                 />
                 <Button variant="outline" size="sm" onClick={onCouponApply} className="text-brand-green border-brand-green text-xs h-9 rounded-lg px-4">
-                  Apply
+                  {t.apply}
                 </Button>
               </div>
               {appliedCoupon && (
                 <div className="bg-brand-green/5 rounded-lg p-2 mt-2 flex items-center gap-2">
                   <CheckCircle className="h-3.5 w-3.5 text-brand-green" />
-                  <span className="text-xs text-brand-green font-medium">{appliedCoupon} applied — saved ₹{couponDiscount}</span>
+                  <span className="text-xs text-brand-green font-medium">{appliedCoupon} {t.coupon_applied} — {t.you_saved} ₹{couponDiscount}</span>
                 </div>
               )}
             </div>
             <div className="border-t border-border/50 pt-3 flex justify-between items-center">
-              <span className="text-sm font-bold text-foreground">Total Amount</span>
+              <span className="text-sm font-bold text-foreground">{t.total_amount}</span>
               <span className="text-lg font-bold text-foreground">₹{finalTotal.toLocaleString()}</span>
             </div>
           </div>
@@ -389,25 +391,25 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
         <div className="bg-white rounded-2xl shadow-sm border border-border/50 overflow-hidden">
           <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
             <IndianRupee className="h-4 w-4 text-brand-green" />
-            <h2 className="text-sm font-bold text-foreground">Select Payment Method</h2>
+            <h2 className="text-sm font-bold text-foreground">{t.payment_method}</h2>
           </div>
           <div className="p-3 space-y-2">
             {/* UPI / Credit / Debit Card (Razorpay handles all) */}
             <PaymentOptionCard
               icon={<Smartphone className="h-5 w-5 text-brand-green" />}
-              title="UPI / Credit / Debit Card"
-              badge="Recommended"
-              subtitle="Pay securely via Razorpay"
+              title={t.upi_credit_debit}
+              badge={t.recommended}
+              subtitle={t.pay_securely_razorpay}
               isOpen={paymentMethod === 'upi' || paymentMethod === 'card'}
               onToggle={() => setPaymentMethod((paymentMethod === 'upi' || paymentMethod === 'card') ? '' : 'upi')}
             >
               <div className="mt-1 space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  Tap <strong>Pay Securely</strong> below to open the payment window. Choose UPI, Credit Card, Debit Card, or other methods there.
+                  {t.click_pay_button_info}
                 </p>
                 <p className="text-[11px] text-center text-muted-foreground">
                   <Lock className="h-3 w-3 inline mr-1" />
-                  Secure payment powered by Razorpay
+                  {t.secure_powered_razorpay}
                 </p>
               </div>
             </PaymentOptionCard>
@@ -415,14 +417,14 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
             {/* COD */}
             <PaymentOptionCard
               icon={<Truck className="h-5 w-5 text-brand-green" />}
-              title="Cash on Delivery"
-              subtitle="Pay when order arrives"
+              title={t.cash_on_delivery}
+              subtitle={t.pay_when_arrives}
               isOpen={paymentMethod === 'cod'}
               onToggle={() => setPaymentMethod(paymentMethod === 'cod' ? '' : 'cod')}
             >
               <div className="mt-1">
                 <p className="text-xs text-muted-foreground">
-                  Pay the full amount when your order is delivered to your doorstep.
+                  {t.pay_full_on_delivery}
                 </p>
               </div>
             </PaymentOptionCard>
@@ -434,16 +436,16 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
           <div className="bg-white rounded-2xl shadow-sm border border-border/50 overflow-hidden">
             <div className="px-4 py-3 border-b border-border/30 flex items-center gap-2">
               <Shield className="h-4 w-4 text-brand-green" />
-              <h2 className="text-sm font-bold text-foreground">Payment Info</h2>
+              <h2 className="text-sm font-bold text-foreground">{t.payment_info}</h2>
             </div>
             <div className="p-4 space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Payment Method</span>
+                <span className="text-muted-foreground">{t.payment_method}</span>
                 <span className="text-foreground font-medium">{getPaymentMethodLabel()}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Status</span>
-                <span className="text-amber-600 font-medium text-xs bg-amber-50 px-2 py-0.5 rounded-full">Pending</span>
+                <span className="text-muted-foreground">{t.order_status}</span>
+                <span className="text-amber-600 font-medium text-xs bg-amber-50 px-2 py-0.5 rounded-full">{t.pending}</span>
               </div>
             </div>
           </div>
@@ -454,12 +456,12 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border/50 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] p-4 z-20">
         <div className="flex items-center justify-between mb-2.5">
           <div>
-            <p className="text-[11px] text-muted-foreground">Total Amount</p>
+            <p className="text-[11px] text-muted-foreground">{t.total_amount}</p>
             <p className="text-xl font-bold text-foreground">₹{finalTotal.toLocaleString()}</p>
           </div>
           <div className="flex items-center gap-1 text-brand-green">
             <Lock className="h-3 w-3" />
-            <span className="text-[10px] font-medium">100% Secure</span>
+            <span className="text-[10px] font-medium">{t.secure_100}</span>
           </div>
         </div>
         <Button
@@ -470,12 +472,12 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
           {paymentMethod === 'cod' ? (
             <>
               <Package className="h-4 w-4 mr-2" />
-              Place Order
+              {t.place_order}
             </>
           ) : (
             <>
               <Shield className="h-4 w-4 mr-2" />
-              Pay Securely
+              {t.pay_amount} ₹{finalTotal.toLocaleString()}
             </>
           )}
         </Button>
@@ -491,7 +493,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               <Smartphone className="h-6 w-6 text-brand-green" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-foreground">Processing Payment</p>
+              <p className="text-lg font-semibold text-foreground">{t.processing_payment}</p>
               <p className="text-2xl font-bold text-brand-green mt-1">₹{finalTotal.toLocaleString()}</p>
             </div>
             <div className="space-y-2 text-left max-w-xs mx-auto">
@@ -508,7 +510,7 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Do not close or press back</p>
+            <p className="text-xs text-muted-foreground">{t.do_not_close}</p>
           </div>
         </div>
       )}
@@ -532,23 +534,22 @@ const MobileCheckoutFlow: React.FC<MobileCheckoutFlowProps> = ({
               <XCircle className="h-12 w-12 text-red-500" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-foreground">Payment Failed</h2>
-              <p className="text-sm text-muted-foreground mt-2">Transaction could not be completed.</p>
-              <p className="text-xs text-muted-foreground mt-1">Your money has not been deducted.</p>
+              <h2 className="text-xl font-bold text-foreground">{t.payment_failed}</h2>
+              <p className="text-sm text-muted-foreground mt-2">{t.transaction_failed_msg}</p>
             </div>
             <div className="space-y-2.5 pt-2">
               <Button
                 onClick={() => setShowFailed(false)}
                 className="w-full h-11 bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl"
               >
-                Retry Payment
+                {t.retry_payment}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => { setPaymentMethod(''); setShowFailed(false); }}
                 className="w-full h-11 border-border text-foreground font-semibold rounded-xl"
               >
-                Change Payment Method
+                {t.choose_another_method}
               </Button>
             </div>
           </div>

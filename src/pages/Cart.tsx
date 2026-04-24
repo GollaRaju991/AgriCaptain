@@ -178,7 +178,7 @@ const Cart = () => {
                   </div>
                   <button onClick={() => removeFromCart(item.id)} className="flex items-center gap-1 text-muted-foreground hover:text-red-600 text-sm">
                     <Trash2 className="h-4 w-4" />
-                    <span>Remove</span>
+                    <span>{translations.remove || 'Remove'}</span>
                   </button>
                 </div>
               </CardContent>
@@ -196,7 +196,7 @@ const Cart = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{translations.delivery_charges || 'Delivery'}</span>
-                  <span className="font-semibold text-green-600">FREE</span>
+                  <span className="font-semibold text-green-600">{translations.free || 'FREE'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{translations.platform_charges || 'Platform Fee'}</span>
@@ -204,7 +204,7 @@ const Cart = () => {
                 </div>
                 {couponDiscount > 0 && (
                   <div className="flex justify-between text-green-600">
-                    <span className="font-medium">Coupon ({appliedCoupon})</span>
+                    <span className="font-medium">{translations.coupon_discount || 'Coupon'} ({appliedCoupon})</span>
                     <span className="font-semibold">-₹{couponDiscount}</span>
                   </div>
                 )}
@@ -215,7 +215,7 @@ const Cart = () => {
                   <span>₹{finalTotal}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Extra 10% off with UPI at checkout
+                  {translations.extra_upi_off || 'Extra 10% off with UPI at checkout'}
                 </p>
               </div>
             </CardContent>
@@ -289,7 +289,7 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-between">
                     <span>{translations.delivery_charges}</span>
-                    <span className="text-green-600">FREE</span>
+                    <span className="text-green-600">{translations.free || 'FREE'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>{translations.platform_charges}</span>
@@ -297,7 +297,7 @@ const Cart = () => {
                   </div>
                   {couponDiscount > 0 && (
                     <div className="flex justify-between text-green-600">
-                      <span>Coupon ({appliedCoupon})</span>
+                      <span>{translations.coupon_discount || 'Coupon'} ({appliedCoupon})</span>
                       <span>-₹{couponDiscount}</span>
                     </div>
                   )}
@@ -308,7 +308,7 @@ const Cart = () => {
                     <span>₹{finalTotal}</span>
                   </div>
                   <p className="text-xs text-green-600 mt-1">
-                    Extra 10% off with UPI at checkout
+                    {translations.extra_upi_off || 'Extra 10% off with UPI at checkout'}
                   </p>
                 </div>
                 <Button className="w-full mb-4" onClick={handleCheckoutClick}>

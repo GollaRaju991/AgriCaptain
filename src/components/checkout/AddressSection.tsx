@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { MapPin, Plus } from 'lucide-react';
 import AddressManager from '@/components/AddressManager';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Address {
   id: string;
@@ -34,6 +35,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   onAddressRefresh
 }) => {
   const [showAddressManager, setShowAddressManager] = useState(false);
+  const { translations: t } = useLanguage();
 
   const handleAddressSelected = (address: Address) => {
     onAddressSelect(address);
@@ -46,9 +48,9 @@ const AddressSection: React.FC<AddressSectionProps> = ({
       <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-border/30 flex items-center gap-2">
           <button onClick={() => setShowAddressManager(false)} className="text-sm text-brand-green font-medium hover:underline">
-            ← Back
+            ← {t.back}
           </button>
-          <h2 className="text-base font-bold text-foreground ml-2">Manage Address</h2>
+          <h2 className="text-base font-bold text-foreground ml-2">{t.manage_address}</h2>
         </div>
         <div className="p-5">
           <AddressManager 
@@ -65,13 +67,13 @@ const AddressSection: React.FC<AddressSectionProps> = ({
     <div className="bg-card border border-border/50 rounded-2xl shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b border-border/30 flex items-center gap-3">
         <div className="w-7 h-7 bg-brand-green rounded-full flex items-center justify-center text-white text-xs font-bold">1</div>
-        <h2 className="text-base font-bold text-foreground">Delivery Address</h2>
+        <h2 className="text-base font-bold text-foreground">{t.delivery_address}</h2>
       </div>
       <div className="p-5">
         {addressesLoading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-brand-green"></div>
-            <span className="ml-3 text-muted-foreground text-sm">Loading addresses...</span>
+            <span className="ml-3 text-muted-foreground text-sm">{t.loading_addresses}</span>
           </div>
         ) : selectedAddress ? (
           <div className="space-y-4">
@@ -106,7 +108,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                   onClick={() => setShowAddressManager(true)}
                   className="text-sm font-semibold text-brand-green px-4 py-2 border border-brand-green rounded-xl shrink-0 ml-4 hover:bg-brand-green/5 transition-colors"
                 >
-                  Change
+                  {t.change}
                 </button>
               </div>
             </div>
@@ -114,14 +116,14 @@ const AddressSection: React.FC<AddressSectionProps> = ({
         ) : (
           <div className="text-center py-8">
             <MapPin className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-            <p className="text-muted-foreground mb-2 text-sm">No delivery addresses found</p>
-            <p className="text-xs text-muted-foreground mb-4">Add your first address to proceed with checkout</p>
+            <p className="text-muted-foreground mb-2 text-sm">{t.no_addresses_found}</p>
+            <p className="text-xs text-muted-foreground mb-4">{t.add_first_address}</p>
             <button 
               onClick={() => setShowAddressManager(true)}
               className="bg-brand-green hover:bg-brand-green/90 text-white font-semibold rounded-xl px-6 py-2.5 text-sm inline-flex items-center gap-2 shadow-sm"
             >
               <Plus className="h-4 w-4" />
-              Add Delivery Address
+              {t.add_delivery_address}
             </button>
           </div>
         )}

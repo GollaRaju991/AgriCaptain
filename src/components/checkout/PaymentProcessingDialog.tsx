@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { CheckCircle, XCircle, Loader2, Smartphone, CreditCard, Building } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type PaymentStatus = 'processing' | 'success' | 'failed';
 
@@ -24,6 +25,7 @@ const PaymentProcessingDialog: React.FC<PaymentProcessingDialogProps> = ({
   onSuccess,
   onRetry,
 }) => {
+  const { translations: t } = useLanguage();
   const [status, setStatus] = useState<PaymentStatus>('processing');
   const [step, setStep] = useState(0);
 
@@ -107,7 +109,7 @@ const PaymentProcessingDialog: React.FC<PaymentProcessingDialogProps> = ({
               <div className="text-primary">{getIcon()}</div>
             </div>
             <div>
-              <p className="font-semibold text-lg text-foreground">Processing Payment</p>
+              <p className="font-semibold text-lg text-foreground">{t.processing_payment}</p>
               <p className="text-2xl font-bold text-primary mt-1">₹{amount.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground mt-1">{paymentDetail}</p>
             </div>
@@ -125,7 +127,7 @@ const PaymentProcessingDialog: React.FC<PaymentProcessingDialogProps> = ({
                 </div>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Do not close this window or press back</p>
+            <p className="text-xs text-muted-foreground">{t.do_not_close}</p>
           </div>
         )}
 
@@ -135,11 +137,11 @@ const PaymentProcessingDialog: React.FC<PaymentProcessingDialogProps> = ({
               <CheckCircle className="h-10 w-10 text-green-600" />
             </div>
             <div>
-              <p className="font-semibold text-lg text-green-700">Payment Successful!</p>
+              <p className="font-semibold text-lg text-green-700">{t.payment_successful}</p>
               <p className="text-2xl font-bold text-foreground mt-1">₹{amount.toLocaleString()}</p>
-              <p className="text-xs text-muted-foreground mt-1">Transaction ID: TXN{Date.now().toString().slice(-10)}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t.transaction_id}: TXN{Date.now().toString().slice(-10)}</p>
             </div>
-            <p className="text-sm text-muted-foreground">Redirecting to order confirmation...</p>
+            <p className="text-sm text-muted-foreground">{t.redirecting_confirmation}</p>
           </div>
         )}
 
@@ -149,17 +151,17 @@ const PaymentProcessingDialog: React.FC<PaymentProcessingDialogProps> = ({
               <XCircle className="h-10 w-10 text-red-600" />
             </div>
             <div>
-              <p className="font-semibold text-lg text-red-700">Payment Failed</p>
+              <p className="font-semibold text-lg text-red-700">{t.payment_failed}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Transaction could not be completed. Your money has not been deducted.
+                {t.transaction_failed_msg}
               </p>
             </div>
             <div className="space-y-2 pt-2">
               <Button onClick={onRetry} className="w-full">
-                Retry Payment
+                {t.retry_payment}
               </Button>
               <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">
-                Choose Another Method
+                {t.choose_another_method}
               </Button>
             </div>
           </div>
