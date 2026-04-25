@@ -283,7 +283,7 @@ const DirectFromFarm: React.FC = () => {
 
     return (
       <Card key={crop.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-card border border-border rounded-xl">
-        <Link to={`/sell-crop/${crop.id}`}>
+        <Link to={`/sell-crop/${crop.id}`} state={{ from: '/direct-from-farm' }}>
           <div className="relative">
             <img
               src={getFirstImage(crop.crop_images)}
