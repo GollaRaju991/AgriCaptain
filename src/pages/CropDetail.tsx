@@ -67,6 +67,15 @@ const CropDetailPage: React.FC = () => {
         }
         setCrop({ ...(cropData as any), seller } as unknown as CropDetail);
       }
+
+      // Fetch related farm products (other crops, excluding current)
+      const { data: relatedData } = await supabase
+        .from('public_farmer_crops' as any)
+        .select('id, crop_name, price, quantity, crop_images, availability_location')
+        .neq('id', id)
+        .limit(12);
+      if (relatedData) setRelated(relatedData as any);
+
       setLoading(false);
     };
     fetchCrop();
