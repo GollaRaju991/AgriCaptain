@@ -231,40 +231,7 @@ const CropDetailPage: React.FC = () => {
             <h3 className="text-lg font-bold text-foreground mb-3">
               {label('Related Farm Products', 'సంబంధిత వ్యవసాయ ఉత్పత్తులు')}
             </h3>
-            {/* Mobile: horizontal scroll with larger cards */}
-            <div className="lg:hidden -mx-4 px-4 overflow-x-auto scrollbar-hide">
-              <div className="flex gap-3 pb-2" style={{ scrollSnapType: 'x mandatory' }}>
-                {related.map((r) => {
-                  const img = r.crop_images && r.crop_images.length > 0 ? r.crop_images[0] : '/placeholder.svg';
-                  return (
-                    <button
-                      key={r.id}
-                      onClick={() => navigate(`/crop/${r.id}`, { state: { from: fromPath } })}
-                      className="bg-card border border-border rounded-xl overflow-hidden text-left hover:shadow-md transition-shadow flex-shrink-0 w-44 active:scale-95"
-                      style={{ scrollSnapAlign: 'start' }}
-                    >
-                      <div className="w-44 h-44 bg-muted">
-                        <img
-                          src={img}
-                          alt={r.crop_name}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                          onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
-                        />
-                      </div>
-                      <div className="p-3">
-                        <p className="font-semibold text-sm text-foreground truncate">{r.crop_name}</p>
-                        <p className="text-xs text-muted-foreground truncate">{r.quantity}</p>
-                        <p className="text-base font-bold text-green-600 mt-1">₹{r.price}</p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Desktop: grid */}
-            <div className="hidden lg:grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {related.map((r) => {
                 const img = r.crop_images && r.crop_images.length > 0 ? r.crop_images[0] : '/placeholder.svg';
                 return (
