@@ -36,6 +36,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
   const [submitting, setSubmitting] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(!!editCropId);
   const [harvestDate, setHarvestDate] = useState<Date>();
+  const [harvestDateOpen, setHarvestDateOpen] = useState(false);
   const [cropImages, setCropImages] = useState<File[]>([]);
   const [cropPreviews, setCropPreviews] = useState<string[]>([]);
   const [existingImageUrls, setExistingImageUrls] = useState<string[]>([]);
@@ -288,7 +289,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             <Label className="flex items-center gap-2">
               <CalendarDays className="h-4 w-4 text-muted-foreground" /> {label('Harvest Date', 'పంట తేదీ')}
             </Label>
-            <Popover>
+            <Popover open={harvestDateOpen} onOpenChange={setHarvestDateOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !harvestDate && "text-muted-foreground")}>
                   <CalendarDays className="mr-2 h-4 w-4" />
@@ -296,7 +297,15 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={harvestDate} onSelect={setHarvestDate} className={cn("p-3 pointer-events-auto")} />
+                <Calendar
+                  mode="single"
+                  selected={harvestDate}
+                  onSelect={(date) => {
+                    setHarvestDate(date);
+                    if (date) setHarvestDateOpen(false);
+                  }}
+                  className={cn("p-3 pointer-events-auto")}
+                />
               </PopoverContent>
             </Popover>
           </div>

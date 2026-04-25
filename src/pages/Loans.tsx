@@ -36,6 +36,7 @@ const Loans = () => {
   const [selectedLoanType, setSelectedLoanType] = useState<LoanType>(null);
   const [loanSubmitted, setLoanSubmitted] = useState(false);
   const [kccDetails, setKccDetails] = useState<any>(null);
+  const [dateOfBirthOpen, setDateOfBirthOpen] = useState(false);
   
   const [loanFormData, setLoanFormData] = useState<LoanFormData>({
     fullName: '',
@@ -236,7 +237,7 @@ const Loans = () => {
 
                 <div className="space-y-2">
                   <Label>Date of Birth *</Label>
-                  <Popover>
+                  <Popover open={dateOfBirthOpen} onOpenChange={setDateOfBirthOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -253,7 +254,10 @@ const Loans = () => {
                       <Calendar
                         mode="single"
                         selected={loanFormData.dateOfBirth}
-                        onSelect={(date) => setLoanFormData(prev => ({ ...prev, dateOfBirth: date }))}
+                        onSelect={(date) => {
+                          setLoanFormData(prev => ({ ...prev, dateOfBirth: date }));
+                          if (date) setDateOfBirthOpen(false);
+                        }}
                         disabled={(date) => date > new Date() || date < new Date("1940-01-01")}
                         initialFocus
                         className="pointer-events-auto"
