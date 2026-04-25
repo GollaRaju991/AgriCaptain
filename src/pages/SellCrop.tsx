@@ -207,7 +207,7 @@ const SellCrop: React.FC = () => {
   const renderCropCard = (crop: CropWithSeller) => (
     <Card key={crop.id} className="overflow-hidden hover:shadow-md transition-shadow">
       <CardContent className="p-0">
-        <Link to={`/sell-crop/${crop.id}`}>
+        <Link to={`/sell-crop/${crop.id}`} state={{ from: '/sell-crop' }}>
           <div className="flex">
             <div className="w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0 bg-muted relative">
               <img src={getFirstImage(crop.crop_images)} alt={crop.crop_name} className="w-full h-full object-cover" onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }} />
