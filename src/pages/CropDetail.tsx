@@ -83,7 +83,7 @@ const CropDetailPage: React.FC = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <p className="text-lg text-muted-foreground">Crop not found</p>
-        <Button onClick={() => navigate('/sell-crop')}>Go Back</Button>
+        <Button onClick={() => navigate(fromPath)}>Go Back</Button>
       </div>
     );
   }
@@ -96,7 +96,7 @@ const CropDetailPage: React.FC = () => {
     <div className="min-h-screen bg-background pb-24">
       {/* Mobile header */}
       <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-3 px-4 py-3">
-        <button onClick={() => navigate(-1)}>
+        <button onClick={handleBack}>
           <ArrowLeft className="h-6 w-6" />
         </button>
         <h1 className="text-lg font-bold truncate">{crop.crop_name}</h1>
@@ -106,8 +106,8 @@ const CropDetailPage: React.FC = () => {
 
       {/* Desktop back button */}
       <div className="hidden lg:flex container mx-auto max-w-2xl px-4 pt-4">
-        <Button variant="outline" size="sm" onClick={() => navigate('/sell-crop')} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> {label('Back to Sell Crop', 'పంట అమ్మకానికి తిరిగి')}
+        <Button variant="outline" size="sm" onClick={handleBack} className="gap-2">
+          <ArrowLeft className="h-4 w-4" /> {label(backLabelEn, backLabelTe)}
         </Button>
       </div>
 
