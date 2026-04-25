@@ -29,6 +29,14 @@ interface CropDetail {
 const CropDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as { from?: string } | null)?.from || '/sell-crop';
+  const backLabelEn = fromPath === '/direct-from-farm' ? 'Back to Direct From Farm' : 'Back to Sell Crop';
+  const backLabelTe = fromPath === '/direct-from-farm' ? 'డైరెక్ట్ ఫ్రమ్ ఫార్మ్‌కి తిరిగి' : 'పంట అమ్మకానికి తిరిగి';
+  const handleBack = () => {
+    if (window.history.length > 2) navigate(-1);
+    else navigate(fromPath);
+  };
   const { language } = useLanguage();
   const [crop, setCrop] = useState<CropDetail | null>(null);
   const [loading, setLoading] = useState(true);
