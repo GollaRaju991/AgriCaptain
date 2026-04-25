@@ -41,6 +41,7 @@ const CropDetailPage: React.FC = () => {
   const [crop, setCrop] = useState<CropDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
 
   useEffect(() => {
     const fetchCrop = async () => {
@@ -66,6 +67,15 @@ const CropDetailPage: React.FC = () => {
         }
         setCrop({ ...(cropData as any), seller } as unknown as CropDetail);
       }
+
+      // Fetch related farm products (other crops, excluding current)
+      const { data: relatedData } = await supabase
+        .from('public_farmer_crops' as any)
+        .select('id, crop_name, price, quantity, crop_images, availability_location')
+        .neq('id', id)
+        .limit(12);
+      if (relatedData) setRelated(relatedData as any);
+
       setLoading(false);
     };
     fetchCrop();
@@ -213,6 +223,42 @@ const CropDetailPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Related Farm Products */}
+        {related.length > 0 && (
+          <div className="mt-6">
+            <h3 className="text-lg font-bold text-foreground mb-3">
+              {label('Related Farm Products', 'సంబంధిత వ్యవసాయ ఉత్పత్తులు')}
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {related.map((r) => {
+                const img = r.crop_images && r.crop_images.length > 0 ? r.crop_images[0] : '/placeholder.svg';
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => navigate(`/crop/${r.id}`, { state: { from: fromPath } })}
+                    className="bg-card border border-border rounded-lg overflow-hidden text-left hover:shadow-md transition-shadow"
+                  >
+                    <div className="aspect-square bg-muted">
+                      <img
+                        src={img}
+                        alt={r.crop_name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
+                      />
+                    </div>
+                    <div className="p-2">
+                      <p className="font-semibold text-sm text-foreground truncate">{r.crop_name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{r.quantity}</p>
+                      <p className="text-sm font-bold text-green-600 mt-1">₹{r.price}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         )}
       </main>
 
