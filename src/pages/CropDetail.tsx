@@ -71,7 +71,22 @@ const CropDetailPage: React.FC = () => {
           if (sellerError) console.error('Seller fetch error:', sellerError);
           if (sellerData) seller = sellerData as any;
         }
-        // Fallback so the Farmer Details section is always shown
+        // Robust fallback: use a SECURITY DEFINER RPC to fetch the contact
+        // even if the seller is not exposed via the public view for any reason.
+        if (!seller || !seller.phone) {
+          const { data: contactData, error: contactError } = await supabase
+            .rpc('get_farmer_crop_contact' as any, { _crop_id: id });
+          if (contactError) console.error('Contact RPC error:', contactError);
+          const contact = Array.isArray(contactData) ? contactData[0] : contactData;
+          if (contact && (contact as any).phone) {
+            seller = {
+              name: (contact as any).name || seller?.name || 'Farmer',
+              phone: (contact as any).phone || '',
+              photo_url: (contact as any).photo_url || seller?.photo_url || null,
+            };
+          }
+        }
+        // Final fallback so the Farmer Details section is always shown
         if (!seller) {
           seller = { name: 'Farmer', phone: '', photo_url: null };
         }
