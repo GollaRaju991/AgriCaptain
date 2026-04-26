@@ -356,40 +356,38 @@ const DirectFromFarm: React.FC = () => {
           </div>
         </Link>
 
-        <div className="px-2 pb-2 sm:px-3 sm:pb-3">
+        <div className="px-2 pb-2 sm:px-3 sm:pb-3 flex justify-end">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
             );
             if (!cartItem) {
               return (
-                <Button
-                  size="sm"
-                  className="w-full bg-green-700 hover:bg-green-800 text-[10px] sm:text-xs px-2 sm:px-3 h-7 sm:h-9 rounded-lg min-h-0"
+                <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
+                  className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-sm"
                 >
-                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
-                  {t('Add', 'జోడించు', 'जोड़ें')}
-                </Button>
+                  <Plus className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={3} />
+                </button>
               );
             }
             return (
-              <div className="flex items-center justify-between gap-1 bg-green-700 rounded-lg h-7 sm:h-9 px-1">
+              <div className="flex items-center justify-between gap-1 bg-green-600 rounded-xl h-9 sm:h-10 w-[7.5rem] sm:w-36 px-1 shadow-sm">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white p-1 hover:bg-green-800 rounded"
+                  className="text-white p-1.5 hover:bg-green-700 rounded-lg active:scale-95 transition"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Minus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
                 </button>
-                <span className="text-white font-semibold text-xs sm:text-sm">{cartItem.quantity}</span>
+                <span className="text-white font-bold text-sm sm:text-base">{cartItem.quantity}</span>
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white p-1 hover:bg-green-800 rounded"
+                  className="text-white p-1.5 hover:bg-green-700 rounded-lg active:scale-95 transition"
                   aria-label="Increase"
                 >
-                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
                 </button>
               </div>
             );
