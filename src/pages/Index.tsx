@@ -15,6 +15,7 @@ import AgrizinDoctorBanner from "@/components/AgrizinDoctorBanner";
 import ProductAdBanner from "@/components/ProductAdBanner";
 import ScannerPromoBanner from "@/components/ScannerPromoBanner";
 import ServicesSection from "@/components/ServicesSection";
+import HomeDirectFromFarm from "@/components/HomeDirectFromFarm";
 import { products } from "@/data/products";
 
 const Index = () => {
