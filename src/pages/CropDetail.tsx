@@ -309,7 +309,7 @@ const CropDetailPage: React.FC = () => {
                 return (
                   <button
                     key={r.id}
-                    onClick={() => navigate(`/crop/${r.id}`, { state: { from: fromPath } })}
+                    onClick={() => navigate(`/sell-crop/${r.id}`, { state: { from: fromPath } })}
                     className="bg-card border border-border rounded-lg overflow-hidden text-left hover:shadow-md transition-shadow"
                   >
                     <div className="aspect-square bg-muted">
