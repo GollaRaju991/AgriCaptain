@@ -16,6 +16,7 @@ interface CropDetail {
   crop_name: string;
   quantity: string;
   price: string;
+  sell_type: string | null;
   crop_images: string[] | null;
   harvest_date: string | null;
   quality_grade: string;
@@ -238,132 +239,180 @@ const CropDetailPage: React.FC = () => {
           )}
         </div>
 
-        {/* Crop info */}
-        <Card className="mb-4">
-          <CardContent className="p-4 space-y-3">
-            <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-muted/50 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground">{label('Quantity', 'పరిమాణం')}</p>
-                <p className="font-semibold text-foreground">{crop.quantity}</p>
-              </div>
-              <div className="bg-muted/50 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground">{label('Price', 'ధర')}</p>
-                <p className="font-semibold text-foreground">₹{crop.price}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
-                <Award className="h-4 w-4 text-green-600" />
-                <div>
-                  <p className="text-xs text-muted-foreground">{label('Quality', 'నాణ్యత')}</p>
-                  <p className="font-semibold text-sm text-foreground">{crop.quality_grade}</p>
-                </div>
-              </div>
-              {crop.harvest_date && (
-                <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
-                  <Calendar className="h-4 w-4 text-green-600" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">{label('Harvest Date', 'పంట తేదీ')}</p>
-                    <p className="font-semibold text-sm text-foreground">{new Date(crop.harvest_date).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Location */}
-            <div className="flex items-start gap-2 bg-muted/50 rounded-lg p-3">
-              <Warehouse className="h-4 w-4 text-green-600 mt-0.5" />
-              <div>
-                <p className="text-xs text-muted-foreground">{label('Availability Location', 'అందుబాటు స్థానం')}</p>
-                <p className="font-semibold text-sm text-foreground">{crop.availability_location}</p>
-                {crop.location_address && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                    <MapPin className="h-3 w-3" /> {crop.location_address}
-                  </p>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Farmer info - shown first so buyers can enquire about the product */}
-        {crop.seller && (
-          <Card className="mb-4 border-green-200">
-            <CardContent className="p-4">
-              <p className="text-xs text-muted-foreground mb-3">{label('Farmer Details', 'రైతు వివరాలు')}</p>
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  {crop.seller.photo_url ? (
-                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-12 h-12 rounded-full object-cover border-2 border-green-500" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg">
-                      {crop.seller.name.charAt(0)}
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <p className="font-bold text-foreground truncate">{crop.seller.name}</p>
-                    {crop.seller.phone ? (
-                      <a
-                        href={`tel:+91${crop.seller.phone}`}
-                        className="text-sm text-green-700 font-semibold hover:underline flex items-center gap-1"
-                      >
-                        <Phone className="h-3.5 w-3.5" /> +91 {crop.seller.phone}
-                      </a>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">{label('Contact not available', 'సంప్రదింపు అందుబాటులో లేదు')}</p>
-                    )}
-                  </div>
-                </div>
-                {crop.seller.phone && (
-                  <a href={`tel:+91${crop.seller.phone}`} className="flex-shrink-0">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                      <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
-                    </Button>
-                  </a>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Call to enquire - prominent CTA for buyers */}
-        {crop.seller?.phone && (
-          <a href={`tel:+91${crop.seller.phone}`} className="block mb-3">
-            <Button
-              variant="outline"
-              className="w-full h-12 text-base font-bold border-2 border-green-600 text-green-700 hover:bg-green-50"
-            >
-              <Phone className="h-5 w-5 mr-2" />
-              {label('Call Farmer to Enquire', 'రైతుకు కాల్ చేసి విచారించండి')}
-            </Button>
-          </a>
-        )}
-
-        {/* Add to Cart */}
-        <Button
-          className="w-full mb-4 bg-green-600 hover:bg-green-700 h-12 text-base font-bold"
-          onClick={() => {
+        {(() => {
+          const pricePerKg = (() => {
+            const p = parseFloat(String(crop.price).replace(/[^0-9.]/g, '')) || 0;
+            const isQuintal = (crop.quantity || '').toLowerCase().includes('quintal') || String(crop.price).toLowerCase().includes('quintal');
+            return isQuintal ? Math.round(p / 100) : p;
+          })();
+          const isDFF = crop.sell_type === 'direct_from_farm' || crop.sell_type === 'both' || !crop.sell_type;
+          const total = pricePerKg * qtyKg;
+          const handleAdd = (navigateAfter = false) => {
             const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
+            const addQty = isDFF ? qtyKg : 1;
             if (cartItem) {
-              updateQuantity(crop.id, cartItem.quantity + 1);
+              updateQuantity(crop.id, cartItem.quantity + addQty);
             } else {
               addToCart({
                 id: crop.id,
-                name: crop.crop_name,
-                price: Number(crop.price) || 0,
+                name: isDFF ? `${crop.crop_name} (${qtyKg} kg)` : crop.crop_name,
+                price: isDFF ? total : pricePerKg,
                 image: img,
                 category: 'Direct From Farm',
               });
             }
-            toast({ title: label('Added to cart', 'కార్ట్‌కి జోడించబడింది'), description: crop.crop_name });
-          }}
-        >
-          <ShoppingCart className="h-5 w-5 mr-2" />
-          {label('ADD TO CART', 'కార్ట్‌కి జోడించు')}
-        </Button>
+            toast({
+              title: label('Added to cart', 'కార్ట్‌కి జోడించబడింది'),
+              description: isDFF ? `${crop.crop_name} — ${qtyKg} kg • ₹${total}` : crop.crop_name,
+            });
+            if (navigateAfter) navigate('/cart');
+          };
+          return (
+            <>
+              {/* Crop info */}
+              <Card className="mb-4">
+                <CardContent className="p-4 space-y-3">
+                  <div>
+                    {crop.quality_grade === 'Organic' && (
+                      <span className="inline-block text-[11px] font-semibold text-green-700 border border-green-300 bg-green-50 rounded-full px-2 py-0.5 mb-1">
+                        {label('Organic', 'ఆర్గానిక్')}
+                      </span>
+                    )}
+                    <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <span className="text-2xl font-bold text-foreground">₹{pricePerKg}</span>
+                      <span className="text-sm text-muted-foreground">/ kg</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-1">
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
+                      <Award className="h-4 w-4 text-green-600" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">{label('Quality', 'నాణ్యత')}</p>
+                        <p className="font-semibold text-sm text-foreground">{crop.quality_grade}</p>
+                      </div>
+                    </div>
+                    {crop.harvest_date && (
+                      <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
+                        <Calendar className="h-4 w-4 text-green-600" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">{label('Harvest Date', 'పంట తేదీ')}</p>
+                          <p className="font-semibold text-sm text-foreground">{new Date(crop.harvest_date).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-start gap-2 bg-muted/50 rounded-lg p-3">
+                    <Warehouse className="h-4 w-4 text-green-600 mt-0.5" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">{label('Availability Location', 'అందుబాటు స్థానం')}</p>
+                      <p className="font-semibold text-sm text-foreground">
+                        {crop.location_address || crop.availability_location}
+                      </p>
+                      {crop.location_address && crop.availability_location && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                          <MapPin className="h-3 w-3" /> {crop.availability_location}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Farmer info */}
+              {crop.seller && (
+                <Card className="mb-4 border-green-200">
+                  <CardContent className="p-4">
+                    <p className="text-xs text-muted-foreground mb-3">{label('Farmer Details', 'రైతు వివరాలు')}</p>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {crop.seller.photo_url ? (
+                          <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-12 h-12 rounded-full object-cover border-2 border-green-500" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg">
+                            {crop.seller.name.charAt(0)}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-bold text-foreground truncate">{crop.seller.name}</p>
+                          {crop.seller.phone ? (
+                            <a
+                              href={`tel:+91${crop.seller.phone}`}
+                              className="text-sm text-green-700 font-semibold hover:underline flex items-center gap-1"
+                            >
+                              <Phone className="h-3.5 w-3.5" /> +91 {crop.seller.phone}
+                            </a>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">{label('Contact not available', 'సంప్రదింపు అందుబాటులో లేదు')}</p>
+                          )}
+                        </div>
+                      </div>
+                      {crop.seller.phone && (
+                        <a href={`tel:+91${crop.seller.phone}`} className="flex-shrink-0">
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 rounded-full h-10 w-10 p-0">
+                            <Phone className="h-4 w-4" />
+                          </Button>
+                        </a>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Per-kg quantity selector — Direct From Farm only */}
+              {isDFF && (
+                <div className="mb-4">
+                  <p className="font-semibold text-foreground mb-2">{label('Select Quantity (Per kg)', 'పరిమాణం ఎంచుకోండి (ప్రతి కిలో)')}</p>
+                  <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                    {[1, 2, 5, 10].map((kg) => {
+                      const active = qtyKg === kg;
+                      return (
+                        <button
+                          key={kg}
+                          type="button"
+                          onClick={() => setQtyKg(kg)}
+                          className={`flex-shrink-0 min-w-[78px] rounded-xl border-2 px-3 py-2 text-center transition-all ${
+                            active
+                              ? 'border-green-600 bg-green-50 shadow-sm'
+                              : 'border-border bg-card hover:border-green-300'
+                          }`}
+                        >
+                          <p className={`text-sm font-bold ${active ? 'text-green-700' : 'text-foreground'}`}>{kg} kg</p>
+                          <p className={`text-xs mt-0.5 ${active ? 'text-green-700' : 'text-muted-foreground'}`}>₹{pricePerKg * kg}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1">
+                    <Award className="h-3 w-3 text-green-600" /> {label('Fresh produce directly from farmers', 'రైతుల నుండి నేరుగా తాజా ఉత్పత్తులు')}
+                  </p>
+                </div>
+              )}
+
+              {/* Add to Cart + Buy Now */}
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <Button
+                  variant="outline"
+                  onClick={() => handleAdd(false)}
+                  className="h-12 text-base font-bold border-2 border-green-600 text-green-700 hover:bg-green-50"
+                >
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  {label('Add to Cart', 'కార్ట్‌కి జోడించు')}
+                </Button>
+                <Button
+                  onClick={() => handleAdd(true)}
+                  className="h-12 text-base font-bold bg-green-600 hover:bg-green-700 flex flex-col leading-tight"
+                >
+                  <span>{label('Buy Now', 'ఇప్పుడే కొనండి')}</span>
+                  {isDFF && <span className="text-[11px] font-medium opacity-90">{label('at', 'వద్ద')} ₹{total}</span>}
+                </Button>
+              </div>
+            </>
+          );
+        })()}
 
         {/* Related Farm Products */}
         {related.length > 0 && (
