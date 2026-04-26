@@ -323,7 +323,7 @@ const DirectFromFarm: React.FC = () => {
             )}
           </div>
 
-          <div className="p-2 sm:p-3 pr-12 sm:pr-14">
+          <div className="p-2 sm:p-3 pr-10 sm:pr-12">
             <div className="flex items-start justify-between gap-1">
               <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
               {crop.seller && <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
@@ -343,14 +343,14 @@ const DirectFromFarm: React.FC = () => {
               </span>
             </div>
 
-            {/* Distance + Location */}
-            <div className="flex items-center justify-between mt-1 sm:mt-1.5">
-              <span className="text-[10px] sm:text-xs text-muted-foreground truncate max-w-[80px] sm:max-w-none flex items-center gap-0.5">
+            {/* Location + Distance (inline, distance right-aligned) */}
+            <div className="flex items-center justify-between gap-2 mt-1 sm:mt-1.5">
+              <span className="text-[10px] sm:text-xs text-muted-foreground truncate flex items-center gap-0.5 min-w-0 flex-1">
                 <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
-                {crop.seller?.village || crop.seller?.district || crop.location_address || ''}
+                <span className="truncate">{crop.seller?.village || crop.seller?.district || crop.location_address || ''}</span>
               </span>
               {crop.distance !== undefined && (
-                <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-medium">
+                <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-medium flex-shrink-0 whitespace-nowrap">
                   {formatDistance(crop.distance)}
                 </Badge>
               )}
@@ -368,8 +368,8 @@ const DirectFromFarm: React.FC = () => {
         {/* Farmer contact details intentionally removed from listing cards — shown only on product detail page */}
 
 
-        {/* + / quantity stepper - positioned between image and details (overlapping image bottom-right) */}
-        <div className="absolute right-2 sm:right-3 z-10 top-[7rem] sm:top-[11rem]">
+        {/* + / quantity stepper - compact, overlapping image bottom-right */}
+        <div className="absolute right-2 sm:right-3 z-10 top-[7.25rem] sm:top-[10.75rem]">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
@@ -379,28 +379,28 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-5 w-9 sm:h-9 sm:w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
+                  className="flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-green-600 hover:bg-green-700 text-white active:scale-95 transition shadow-md ring-2 ring-white"
                 >
-                  <Plus className="h-3 w-3 sm:h-5 sm:w-5" strokeWidth={3} />
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={3} />
                 </button>
               );
             }
             return (
-              <div className="flex items-center justify-between gap-0.5 bg-green-600 rounded-lg h-5 w-[4.5rem] sm:h-9 sm:w-10 sm:flex-col sm:py-0.5 px-1 sm:px-0 shadow-md">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
-                  aria-label="Increase"
-                >
-                  <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={3} />
-                </button>
-                <span className="text-white font-bold text-[9px] sm:text-[10px] leading-none">{cartItem.quantity}kg</span>
+              <div className="flex items-center gap-1 bg-green-600 rounded-full h-7 sm:h-8 px-1.5 shadow-md ring-2 ring-white">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
+                  className="text-white hover:bg-green-700 rounded-full h-5 w-5 flex items-center justify-center active:scale-95 transition"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={3} />
+                  <Minus className="h-3 w-3" strokeWidth={3} />
+                </button>
+                <span className="text-white font-bold text-[10px] leading-none min-w-[1.75rem] text-center">{cartItem.quantity}kg</span>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                  className="text-white hover:bg-green-700 rounded-full h-5 w-5 flex items-center justify-center active:scale-95 transition"
+                  aria-label="Increase"
+                >
+                  <Plus className="h-3 w-3" strokeWidth={3} />
                 </button>
               </div>
             );
