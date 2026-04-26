@@ -258,31 +258,58 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             </div>
           </div>
 
-          {/* Quantity */}
-          <div>
-            <Label htmlFor="quantity" className="flex items-center gap-2">
-              <Scale className="h-4 w-4 text-muted-foreground" /> {label('Quantity', 'పరిమాణం')} *
-            </Label>
-            <div className="flex gap-2 mt-1">
-              <Input id="quantity" name="quantity" value={cropData.quantity} onChange={handleCropInputChange} required className="flex-1" placeholder="e.g., 10" type="number" min="0" />
-              <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
-                <SelectTrigger className="w-[120px]"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Kg">Kg</SelectItem>
-                  <SelectItem value="Quintal">Quintal</SelectItem>
-                  <SelectItem value="Ton">Ton</SelectItem>
-                </SelectContent>
-              </Select>
+          {/* Direct From Farm benefits banner */}
+          {cropData.sellType === 'direct_from_farm' && (
+            <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center shrink-0">
+                <Check className="h-5 w-5 text-white" strokeWidth={3} />
+              </div>
+              <div>
+                <p className="font-bold text-green-700 text-sm">{label('Direct From Farm', 'నేరుగా పొలం నుండి')}</p>
+                <p className="text-xs text-green-700/80 mt-0.5">
+                  {label('Best Prices • No Middlemen • Sell directly to buyers',
+                    'ఉత్తమ ధరలు • మధ్యవర్తులు లేరు • నేరుగా కొనుగోలుదారులకు అమ్మండి')}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Pricing (Per Kg) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="flex items-center gap-1.5 text-xs">
+                <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Unit (Auto)', 'యూనిట్ (ఆటో)')}
+              </Label>
+              <div className="mt-1 flex items-center gap-2 rounded-xl border-2 border-green-200 bg-green-50/40 px-3 py-2.5 h-[42px]">
+                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                  <Scale className="h-4 w-4 text-green-700" />
+                </div>
+                <div className="leading-tight">
+                  <p className="font-bold text-sm text-foreground">1 Kg</p>
+                  <p className="text-[10px] text-muted-foreground">{label('(Per Kg)', '(ప్రతి కిలో)')}</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
+                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price per Kg', 'కిలో ధర')} *
+              </Label>
+              <Input
+                id="price"
+                name="price"
+                value={cropData.price}
+                onChange={handleCropInputChange}
+                required
+                type="number"
+                min="1"
+                className="mt-1 h-[42px]"
+                placeholder={label('Enter price per kg', 'కిలో ధర నమోదు చేయండి')}
+              />
             </div>
           </div>
-
-          {/* Price */}
-          <div>
-            <Label htmlFor="price" className="flex items-center gap-2">
-              <IndianRupee className="h-4 w-4 text-muted-foreground" /> {label('Price', 'ధర')} *
-            </Label>
-            <Input id="price" name="price" value={cropData.price} onChange={handleCropInputChange} required className="mt-1" placeholder="e.g., ₹2000 per quintal" />
-          </div>
+          <p className="text-xs text-green-700 -mt-2">
+            {label('Price is per kg (auto)', 'ధర ప్రతి కిలో (ఆటో)')}
+          </p>
 
           {/* Harvest Date */}
           <div>
