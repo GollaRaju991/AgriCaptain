@@ -223,11 +223,11 @@ const CropDetailPage: React.FC = () => {
 
         {/* Farmer info - shown first so buyers can enquire about the product */}
         {crop.seller && (
-          <Card className="mb-4">
+          <Card className="mb-4 border-green-200">
             <CardContent className="p-4">
               <p className="text-xs text-muted-foreground mb-3">{label('Farmer Details', 'రైతు వివరాలు')}</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   {crop.seller.photo_url ? (
                     <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-12 h-12 rounded-full object-cover border-2 border-green-500" />
                   ) : (
@@ -235,15 +235,22 @@ const CropDetailPage: React.FC = () => {
                       {crop.seller.name.charAt(0)}
                     </div>
                   )}
-                  <div>
-                    <p className="font-bold text-foreground">{crop.seller.name}</p>
-                    {crop.seller.phone && (
-                      <p className="text-sm text-muted-foreground">+91 {crop.seller.phone}</p>
+                  <div className="min-w-0">
+                    <p className="font-bold text-foreground truncate">{crop.seller.name}</p>
+                    {crop.seller.phone ? (
+                      <a
+                        href={`tel:+91${crop.seller.phone}`}
+                        className="text-sm text-green-700 font-semibold hover:underline flex items-center gap-1"
+                      >
+                        <Phone className="h-3.5 w-3.5" /> +91 {crop.seller.phone}
+                      </a>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">{label('Contact not available', 'సంప్రదింపు అందుబాటులో లేదు')}</p>
                     )}
                   </div>
                 </div>
                 {crop.seller.phone && (
-                  <a href={`tel:+91${crop.seller.phone}`}>
+                  <a href={`tel:+91${crop.seller.phone}`} className="flex-shrink-0">
                     <Button size="sm" className="bg-green-600 hover:bg-green-700">
                       <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
                     </Button>
@@ -252,6 +259,19 @@ const CropDetailPage: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Call to enquire - prominent CTA for buyers */}
+        {crop.seller?.phone && (
+          <a href={`tel:+91${crop.seller.phone}`} className="block mb-3">
+            <Button
+              variant="outline"
+              className="w-full h-12 text-base font-bold border-2 border-green-600 text-green-700 hover:bg-green-50"
+            >
+              <Phone className="h-5 w-5 mr-2" />
+              {label('Call Farmer to Enquire', 'రైతుకు కాల్ చేసి విచారించండి')}
+            </Button>
+          </a>
         )}
 
         {/* Add to Cart */}
