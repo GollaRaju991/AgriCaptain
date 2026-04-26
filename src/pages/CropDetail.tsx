@@ -61,14 +61,19 @@ const CropDetailPage: React.FC = () => {
 
       if (!cropError && cropData) {
         // Fetch seller info from public view
-        let seller = null;
+        let seller: { name: string; phone: string; photo_url: string | null } | null = null;
         if ((cropData as any).seller_id) {
-          const { data: sellerData } = await supabase
+          const { data: sellerData, error: sellerError } = await supabase
             .from('public_sellers' as any)
             .select('name, phone, photo_url')
             .eq('id', (cropData as any).seller_id)
-            .single();
-          seller = sellerData;
+            .maybeSingle();
+          if (sellerError) console.error('Seller fetch error:', sellerError);
+          if (sellerData) seller = sellerData as any;
+        }
+        // Fallback so the Farmer Details section is always shown
+        if (!seller) {
+          seller = { name: 'Farmer', phone: '', photo_url: null };
         }
         setCrop({ ...(cropData as any), seller } as unknown as CropDetail);
       }
