@@ -365,17 +365,31 @@ const DirectFromFarm: React.FC = () => {
           </div>
         </Link>
 
-        {/* Farmer contact bar - lets buyer call farmer to enquire */}
-        {crop.seller?.phone && (
-          <div className="px-2 sm:px-3 pb-2 -mt-1">
-            <button
-              onClick={(e) => handleCallFarmer(crop.seller!.phone, e)}
-              className="w-full flex items-center justify-center gap-1 bg-green-50 hover:bg-green-100 border border-green-600 text-green-700 rounded-md py-1 text-[10px] sm:text-xs font-semibold active:scale-95 transition"
-              aria-label={t('Call farmer', 'రైతుకి కాల్ చేయండి', 'किसान को कॉल करें')}
-            >
-              <Phone className="h-3 w-3" />
-              <span className="truncate">{t('Call', 'కాల్', 'कॉल')} {crop.seller.name}</span>
-            </button>
+        {/* Farmer details bar - name + phone always visible, with quick Call action */}
+        {(crop.seller?.name || crop.seller?.phone) && (
+          <div className="px-2 sm:px-3 pb-2 -mt-1 space-y-1">
+            <div className="flex items-center justify-between gap-1 bg-muted/40 rounded-md px-2 py-1">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] sm:text-xs font-semibold text-foreground truncate">
+                  👤 {crop.seller?.name || t('Farmer', 'రైతు', 'किसान')}
+                </p>
+                {crop.seller?.phone && (
+                  <p className="text-[9px] sm:text-[11px] text-muted-foreground truncate">
+                    📞 +91 {crop.seller.phone}
+                  </p>
+                )}
+              </div>
+            </div>
+            {crop.seller?.phone && (
+              <button
+                onClick={(e) => handleCallFarmer(crop.seller!.phone, e)}
+                className="w-full flex items-center justify-center gap-1 bg-green-50 hover:bg-green-100 border border-green-600 text-green-700 rounded-md py-1 text-[10px] sm:text-xs font-semibold active:scale-95 transition"
+                aria-label={t('Call farmer', 'రైతుకి కాల్ చేయండి', 'किसान को कॉल करें')}
+              >
+                <Phone className="h-3 w-3" />
+                <span className="truncate">{t('Call Farmer', 'రైతుకి కాల్', 'किसान को कॉल')}</span>
+              </button>
+            )}
           </div>
         )}
 
