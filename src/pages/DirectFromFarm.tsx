@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Filter, X, ChevronDown, Navigation, Sprout } from 'lucide-react';
+import { MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Filter, X, ChevronDown, Navigation, Sprout, Plus, Minus } from 'lucide-react';
 import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
