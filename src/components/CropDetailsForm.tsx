@@ -240,7 +240,11 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => setCropData({ ...cropData, sellType: option.value })}
+                  onClick={() => setCropData({
+                    ...cropData,
+                    sellType: option.value,
+                    quantityUnit: option.value === 'direct_from_farm' ? 'Kg' : (cropData.quantityUnit || 'Quintal'),
+                  })}
                   className={cn(
                     "flex-1 flex items-center justify-center gap-1.5 rounded-xl border-2 py-3 px-1 font-medium transition-all duration-200 min-w-0",
                     cropData.sellType === option.value
