@@ -231,8 +231,9 @@ const CropDetailPage: React.FC = () => {
                   <a href={`tel:+91${crop.seller.phone}`}>
                     <Button size="sm" className="bg-green-600 hover:bg-green-700">
                       <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
-                  </Button>
-                </a>
+                    </Button>
+                  </a>
+                )}
               </div>
             </CardContent>
           </Card>
