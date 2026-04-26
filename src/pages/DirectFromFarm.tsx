@@ -368,8 +368,8 @@ const DirectFromFarm: React.FC = () => {
         {/* Farmer contact details intentionally removed from listing cards — shown only on product detail page */}
 
 
-        {/* + / quantity stepper - positioned between image and details (overlapping image bottom-right) */}
-        <div className="absolute right-2 sm:right-3 z-10 top-[7rem] sm:top-[11rem]">
+        {/* + / quantity stepper - compact, overlapping image bottom-right */}
+        <div className="absolute right-2 sm:right-3 z-10 top-[7.25rem] sm:top-[10.75rem]">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
@@ -379,28 +379,28 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-5 w-9 sm:h-9 sm:w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
+                  className="flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-green-600 hover:bg-green-700 text-white active:scale-95 transition shadow-md ring-2 ring-white"
                 >
-                  <Plus className="h-3 w-3 sm:h-5 sm:w-5" strokeWidth={3} />
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={3} />
                 </button>
               );
             }
             return (
-              <div className="flex items-center justify-between gap-0.5 bg-green-600 rounded-lg h-5 w-[4.5rem] sm:h-9 sm:w-10 sm:flex-col sm:py-0.5 px-1 sm:px-0 shadow-md">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
-                  aria-label="Increase"
-                >
-                  <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={3} />
-                </button>
-                <span className="text-white font-bold text-[9px] sm:text-[10px] leading-none">{cartItem.quantity}kg</span>
+              <div className="flex items-center gap-1 bg-green-600 rounded-full h-7 sm:h-8 px-1.5 shadow-md ring-2 ring-white">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
+                  className="text-white hover:bg-green-700 rounded-full h-5 w-5 flex items-center justify-center active:scale-95 transition"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={3} />
+                  <Minus className="h-3 w-3" strokeWidth={3} />
+                </button>
+                <span className="text-white font-bold text-[10px] leading-none min-w-[1.75rem] text-center">{cartItem.quantity}kg</span>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                  className="text-white hover:bg-green-700 rounded-full h-5 w-5 flex items-center justify-center active:scale-95 transition"
+                  aria-label="Increase"
+                >
+                  <Plus className="h-3 w-3" strokeWidth={3} />
                 </button>
               </div>
             );
