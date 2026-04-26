@@ -41,6 +41,9 @@ const Index = () => {
         <ProductCategories />
       </div>
 
+      {/* Direct From Farm Section */}
+      <HomeDirectFromFarm />
+
       {/* Services Section */}
       <ServicesSection />
 
