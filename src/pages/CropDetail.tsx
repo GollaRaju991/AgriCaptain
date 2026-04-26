@@ -370,7 +370,6 @@ const CropDetailPage: React.FC = () => {
                   className="h-12 text-base font-bold bg-green-600 hover:bg-green-700 flex flex-col leading-tight"
                 >
                   <span>{label('Buy Now', 'ఇప్పుడే కొనండి')}</span>
-                  {isDFF && <span className="text-[11px] font-medium opacity-90">{label('at', 'వద్ద')} ₹{total}</span>}
                 </Button>
               </div>
             </>
