@@ -61,14 +61,19 @@ const CropDetailPage: React.FC = () => {
 
       if (!cropError && cropData) {
         // Fetch seller info from public view
-        let seller = null;
+        let seller: { name: string; phone: string; photo_url: string | null } | null = null;
         if ((cropData as any).seller_id) {
-          const { data: sellerData } = await supabase
+          const { data: sellerData, error: sellerError } = await supabase
             .from('public_sellers' as any)
             .select('name, phone, photo_url')
             .eq('id', (cropData as any).seller_id)
-            .single();
-          seller = sellerData;
+            .maybeSingle();
+          if (sellerError) console.error('Seller fetch error:', sellerError);
+          if (sellerData) seller = sellerData as any;
+        }
+        // Fallback so the Farmer Details section is always shown
+        if (!seller) {
+          seller = { name: 'Farmer', phone: '', photo_url: null };
         }
         setCrop({ ...(cropData as any), seller } as unknown as CropDetail);
       }
@@ -217,14 +222,18 @@ const CropDetailPage: React.FC = () => {
                   )}
                   <div>
                     <p className="font-bold text-foreground">{crop.seller.name}</p>
-                    <p className="text-sm text-muted-foreground">+91 {crop.seller.phone}</p>
+                    {crop.seller.phone && (
+                      <p className="text-sm text-muted-foreground">+91 {crop.seller.phone}</p>
+                    )}
                   </div>
                 </div>
-                <a href={`tel:+91${crop.seller.phone}`}>
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                    <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
-                  </Button>
-                </a>
+                {crop.seller.phone && (
+                  <a href={`tel:+91${crop.seller.phone}`}>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
+                    </Button>
+                  </a>
+                )}
               </div>
             </CardContent>
           </Card>
