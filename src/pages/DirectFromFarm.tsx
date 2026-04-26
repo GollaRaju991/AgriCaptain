@@ -368,8 +368,11 @@ const DirectFromFarm: React.FC = () => {
             </div>
 
             <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">/ {crop.quantity.includes('Quintal') || crop.quantity.includes('quintal') ? 'Quintal' : 'Kg'}</span>
+              <span className="text-sm sm:text-lg font-bold text-foreground">₹{getPricePerKg(crop)}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">/ kg</span>
+              {(crop.quantity?.toLowerCase().includes('quintal')) && (
+                <span className="text-[9px] sm:text-[10px] text-muted-foreground ml-1">(₹{crop.price}/Quintal)</span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
