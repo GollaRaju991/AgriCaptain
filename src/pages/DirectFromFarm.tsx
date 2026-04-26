@@ -323,7 +323,7 @@ const DirectFromFarm: React.FC = () => {
             )}
           </div>
 
-          <div className="p-2 sm:p-3 pr-12 sm:pr-14">
+          <div className="p-2 sm:p-3 pr-10 sm:pr-12">
             <div className="flex items-start justify-between gap-1">
               <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
               {crop.seller && <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
@@ -343,14 +343,14 @@ const DirectFromFarm: React.FC = () => {
               </span>
             </div>
 
-            {/* Distance + Location */}
-            <div className="flex items-center justify-between mt-1 sm:mt-1.5">
-              <span className="text-[10px] sm:text-xs text-muted-foreground truncate max-w-[80px] sm:max-w-none flex items-center gap-0.5">
+            {/* Location + Distance (inline, distance right-aligned) */}
+            <div className="flex items-center justify-between gap-2 mt-1 sm:mt-1.5">
+              <span className="text-[10px] sm:text-xs text-muted-foreground truncate flex items-center gap-0.5 min-w-0 flex-1">
                 <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
-                {crop.seller?.village || crop.seller?.district || crop.location_address || ''}
+                <span className="truncate">{crop.seller?.village || crop.seller?.district || crop.location_address || ''}</span>
               </span>
               {crop.distance !== undefined && (
-                <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-medium">
+                <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-medium flex-shrink-0 whitespace-nowrap">
                   {formatDistance(crop.distance)}
                 </Badge>
               )}
