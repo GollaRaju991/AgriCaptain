@@ -376,28 +376,28 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-7 w-7 rounded-md bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-sm"
+                  className="flex items-center justify-center h-12 w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-sm"
                 >
-                  <Plus className="h-4 w-4" strokeWidth={3} />
+                  <Plus className="h-5 w-5" strokeWidth={3} />
                 </button>
               );
             }
             return (
-              <div className="flex items-center justify-between gap-1 bg-green-600 rounded-md h-7 w-[5.5rem] px-1 shadow-sm">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white px-0.5 hover:bg-green-700 rounded active:scale-95 transition"
-                  aria-label="Decrease"
-                >
-                  <Minus className="h-3.5 w-3.5" strokeWidth={3} />
-                </button>
-                <span className="text-white font-bold text-[11px] leading-none">{cartItem.quantity} kg</span>
+              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-12 w-10 py-1 shadow-sm">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white px-0.5 hover:bg-green-700 rounded active:scale-95 transition"
+                  className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
                   aria-label="Increase"
                 >
                   <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+                </button>
+                <span className="text-white font-bold text-[10px] leading-none">{cartItem.quantity}kg</span>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
+                  className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
+                  aria-label="Decrease"
+                >
+                  <Minus className="h-3.5 w-3.5" strokeWidth={3} />
                 </button>
               </div>
             );
