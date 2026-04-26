@@ -222,12 +222,15 @@ const CropDetailPage: React.FC = () => {
                   )}
                   <div>
                     <p className="font-bold text-foreground">{crop.seller.name}</p>
-                    <p className="text-sm text-muted-foreground">+91 {crop.seller.phone}</p>
+                    {crop.seller.phone && (
+                      <p className="text-sm text-muted-foreground">+91 {crop.seller.phone}</p>
+                    )}
                   </div>
                 </div>
-                <a href={`tel:+91${crop.seller.phone}`}>
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                    <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
+                {crop.seller.phone && (
+                  <a href={`tel:+91${crop.seller.phone}`}>
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Phone className="h-4 w-4 mr-1" /> {label('Call', 'కాల్')}
                   </Button>
                 </a>
               </div>
