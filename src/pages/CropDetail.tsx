@@ -16,6 +16,7 @@ interface CropDetail {
   crop_name: string;
   quantity: string;
   price: string;
+  sell_type: string | null;
   crop_images: string[] | null;
   harvest_date: string | null;
   quality_grade: string;
