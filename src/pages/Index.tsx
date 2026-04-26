@@ -15,6 +15,7 @@ import AgrizinDoctorBanner from "@/components/AgrizinDoctorBanner";
 import ProductAdBanner from "@/components/ProductAdBanner";
 import ScannerPromoBanner from "@/components/ScannerPromoBanner";
 import ServicesSection from "@/components/ServicesSection";
+import HomeDirectFromFarm from "@/components/HomeDirectFromFarm";
 import { products } from "@/data/products";
 
 const Index = () => {
@@ -39,6 +40,9 @@ const Index = () => {
       <div className="w-full px-2 md:px-4 py-4 md:py-6 bg-white">
         <ProductCategories />
       </div>
+
+      {/* Direct From Farm Section */}
+      <HomeDirectFromFarm />
 
       {/* Services Section */}
       <ServicesSection />
