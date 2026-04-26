@@ -166,7 +166,7 @@ const Cart = () => {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base text-foreground">{translateProductName(item.name, language)}</h3>
                     <p className="text-sm text-muted-foreground capitalize">{item.category}</p>
-                    <p className="text-lg font-bold text-foreground mt-0.5">₹{item.price}</p>
+                    <p className="text-lg font-bold text-foreground mt-0.5">₹{item.price}{item.category === 'Direct From Farm' ? <span className="text-sm font-medium text-muted-foreground"> / kg</span> : ''}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-3">
