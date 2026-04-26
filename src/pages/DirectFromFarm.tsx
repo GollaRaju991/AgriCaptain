@@ -378,7 +378,7 @@ const DirectFromFarm: React.FC = () => {
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
                   className="flex items-center justify-center h-5 w-9 sm:h-9 sm:w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
                 >
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
+                  <Plus className="h-3 w-3 sm:h-5 sm:w-5" strokeWidth={3} />
                 </button>
               );
             }
