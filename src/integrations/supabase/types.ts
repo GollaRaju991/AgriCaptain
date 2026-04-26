@@ -1469,6 +1469,14 @@ export type Database = {
       generate_gift_card_code: { Args: never; Returns: string }
       generate_order_number: { Args: never; Returns: string }
       generate_referral_code: { Args: never; Returns: string }
+      get_farmer_crop_contact: {
+        Args: { _crop_id: string }
+        Returns: {
+          name: string
+          phone: string
+          photo_url: string
+        }[]
+      }
       search_drivers: {
         Args: {
           _district?: string
