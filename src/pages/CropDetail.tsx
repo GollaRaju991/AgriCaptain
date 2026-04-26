@@ -245,7 +245,9 @@ const CropDetailPage: React.FC = () => {
             const isQuintal = (crop.quantity || '').toLowerCase().includes('quintal') || String(crop.price).toLowerCase().includes('quintal');
             return isQuintal ? Math.round(p / 100) : p;
           })();
-          const isDFF = crop.sell_type === 'direct_from_farm' || crop.sell_type === 'both' || !crop.sell_type;
+          // Per-kg quantity selector applies to Sell Crop (crop_market) only
+          const isSellCrop = crop.sell_type === 'crop_market';
+          const isDFF = isSellCrop;
           const total = pricePerKg * qtyKg;
           const handleAdd = (navigateAfter = false) => {
             const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
