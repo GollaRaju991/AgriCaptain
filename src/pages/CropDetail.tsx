@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -44,7 +44,7 @@ const CropDetailPage: React.FC = () => {
   const [crop, setCrop] = useState<CropDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
-  const [qtyKg, setQtyKg] = useState(1);
+  
   const { items, addToCart, updateQuantity } = useCart();
   const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
