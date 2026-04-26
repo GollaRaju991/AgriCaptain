@@ -166,13 +166,13 @@ const Cart = () => {
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-base text-foreground">{translateProductName(item.name, language)}</h3>
                     <p className="text-sm text-muted-foreground capitalize">{item.category}</p>
-                    <p className="text-lg font-bold text-foreground mt-0.5">₹{item.price}</p>
+                    <p className="text-lg font-bold text-foreground mt-0.5">₹{item.price}{item.category === 'Direct From Farm' ? <span className="text-sm font-medium text-muted-foreground"> / kg</span> : ''}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100">−</button>
-                    <span className="w-10 h-10 flex items-center justify-center text-base font-semibold border-x border-gray-300">{item.quantity}</span>
+                    <span className="min-w-[3.5rem] px-2 h-10 flex items-center justify-center text-base font-semibold border-x border-gray-300">{item.quantity}{item.category === 'Direct From Farm' ? ' kg' : ''}</span>
                     <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100">+</button>
                     <span className="bg-green-700 text-white font-bold px-4 h-10 flex items-center justify-center text-base rounded-r-lg">₹{item.price * item.quantity}</span>
                   </div>
@@ -255,13 +255,13 @@ const Cart = () => {
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg">{translateProductName(item.name, language)}</h3>
                       <p className="text-muted-foreground capitalize">{item.category}</p>
-                      <p className="text-green-600 font-bold">₹{item.price}</p>
+                      <p className="text-green-600 font-bold">₹{item.price}{item.category === 'Direct From Farm' ? ' / kg' : ''}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <span className="w-12 text-center">{item.quantity}</span>
+                      <span className="min-w-[3rem] text-center">{item.quantity}{item.category === 'Direct From Farm' ? ' kg' : ''}</span>
                       <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                         <Plus className="h-4 w-4" />
                       </Button>

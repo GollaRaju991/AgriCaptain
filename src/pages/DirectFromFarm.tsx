@@ -239,12 +239,18 @@ const DirectFromFarm: React.FC = () => {
     return '/placeholder.svg';
   };
 
-  const handleAddToCart = (crop: CropWithSeller) => {
+  const getPricePerKg = (crop: CropWithSeller): number => {
     const priceNum = parseFloat(crop.price.replace(/[^0-9.]/g, '')) || 0;
+    const isQuintal = crop.quantity?.toLowerCase().includes('quintal') || crop.price?.toLowerCase().includes('quintal');
+    // 1 Quintal = 100 kg
+    return isQuintal ? Math.round(priceNum / 100) : priceNum;
+  };
+
+  const handleAddToCart = (crop: CropWithSeller) => {
     addToCart({
       id: crop.id,
       name: crop.crop_name,
-      price: priceNum,
+      price: getPricePerKg(crop),
       image: getFirstImage(crop.crop_images),
       category: 'Direct From Farm'
     });
@@ -299,6 +305,44 @@ const DirectFromFarm: React.FC = () => {
                 {sellTag === 'Direct from Farm' ? '✅ ' : '🌱 '}{sellTag}
               </Badge>
             )}
+            {/* Top-right + / quantity stepper overlay */}
+            <div className="absolute top-2 right-2 z-10">
+              {(() => {
+                const cartItem = cartItems.find(
+                  (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
+                );
+                if (!cartItem) {
+                  return (
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
+                      aria-label={t('Add', 'జోడించు', 'जोड़ें')}
+                      className="flex items-center justify-center h-9 w-9 rounded-xl bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
+                    >
+                      <Plus className="h-5 w-5" strokeWidth={3} />
+                    </button>
+                  );
+                }
+                return (
+                  <div className="flex items-center justify-between gap-1 bg-green-600 rounded-xl h-9 w-[6.5rem] px-1 shadow-md">
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
+                      className="text-white p-1 hover:bg-green-700 rounded-lg active:scale-95 transition"
+                      aria-label="Decrease"
+                    >
+                      <Minus className="h-4 w-4" strokeWidth={3} />
+                    </button>
+                    <span className="text-white font-bold text-xs">{cartItem.quantity} kg</span>
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                      className="text-white p-1 hover:bg-green-700 rounded-lg active:scale-95 transition"
+                      aria-label="Increase"
+                    >
+                      <Plus className="h-4 w-4" strokeWidth={3} />
+                    </button>
+                  </div>
+                );
+              })()}
+            </div>
             {isPremium && (
               <Badge className="absolute bottom-2 left-2 bg-green-700/90 text-white text-[10px] px-2 py-0.5 rounded">
                 {isOrganic ? 'Organic' : 'Premium'}
@@ -324,8 +368,11 @@ const DirectFromFarm: React.FC = () => {
             </div>
 
             <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">/ {crop.quantity.includes('Quintal') || crop.quantity.includes('quintal') ? 'Quintal' : 'Kg'}</span>
+              <span className="text-sm sm:text-lg font-bold text-foreground">₹{getPricePerKg(crop)}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">/ kg</span>
+              {(crop.quantity?.toLowerCase().includes('quintal')) && (
+                <span className="text-[9px] sm:text-[10px] text-muted-foreground ml-1">(₹{crop.price}/Quintal)</span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
@@ -355,44 +402,6 @@ const DirectFromFarm: React.FC = () => {
             )}
           </div>
         </Link>
-
-        <div className="px-2 pb-2 sm:px-3 sm:pb-3 flex justify-end">
-          {(() => {
-            const cartItem = cartItems.find(
-              (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
-            );
-            if (!cartItem) {
-              return (
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
-                  aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-sm"
-                >
-                  <Plus className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={3} />
-                </button>
-              );
-            }
-            return (
-              <div className="flex items-center justify-between gap-1 bg-green-600 rounded-xl h-9 sm:h-10 w-[7.5rem] sm:w-36 px-1 shadow-sm">
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white p-1.5 hover:bg-green-700 rounded-lg active:scale-95 transition"
-                  aria-label="Decrease"
-                >
-                  <Minus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
-                </button>
-                <span className="text-white font-bold text-sm sm:text-base">{cartItem.quantity}</span>
-                <button
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white p-1.5 hover:bg-green-700 rounded-lg active:scale-95 transition"
-                  aria-label="Increase"
-                >
-                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
-                </button>
-              </div>
-            );
-          })()}
-        </div>
 
       </Card>
     );
