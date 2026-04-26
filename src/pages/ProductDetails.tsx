@@ -390,12 +390,21 @@ const ProductDetails = () => {
                 touchStartX.current = null;
                 touchEndX.current = null;
               }}
-            >
-              <img
-                src={product.images[selectedImage]}
-                alt={product.name}
-                className="w-full h-[350px] md:h-[420px] lg:h-96 object-contain bg-white p-4"
-              />
+             >
+              <div
+                className="flex w-full h-[350px] md:h-[420px] lg:h-96 transition-transform duration-300 ease-out touch-pan-y select-none"
+                style={{ transform: `translateX(-${selectedImage * 100}%)` }}
+              >
+                {product.images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`${product.name} ${i + 1}`}
+                    draggable={false}
+                    className="w-full h-full flex-shrink-0 object-contain bg-white p-4"
+                  />
+                ))}
+              </div>
               
               <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
                 <button
