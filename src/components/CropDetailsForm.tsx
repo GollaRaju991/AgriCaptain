@@ -497,12 +497,14 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             <input ref={cropFileInputRef} type="file" accept="image/*" multiple onChange={handleCropImageChange} className="hidden" />
           </div>
 
-          <Button type="submit" disabled={submitting || !cropData.cropName} className="w-full py-3 text-base">
+          <Button type="submit" disabled={submitting || !cropData.cropName} className={cn("w-full py-3 text-base", cropData.sellType === 'crop_market' && "h-[52px] rounded-xl font-semibold")}>
             {submitting
               ? label('Submitting...', 'సబ్మిట్ అవుతోంది...')
               : editCropId
                 ? label('✏️ Update Crop', '✏️ పంట అప్‌డేట్')
-                : label('🌾 Submit Crop', '🌾 పంట సబ్మిట్')}
+                : cropData.sellType === 'crop_market'
+                  ? label('☁️ Save & List Crop', '☁️ సేవ్ & లిస్ట్ క్రాప్')
+                  : label('🌾 Submit Crop', '🌾 పంట సబ్మిట్')}
           </Button>
         </form>
       </CardContent>
