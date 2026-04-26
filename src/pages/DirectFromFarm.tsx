@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Filter, X, ChevronDown, Navigation, Sprout } from 'lucide-react';
+import { MapPin, Loader2, Search, SlidersHorizontal, Phone, Star, ShoppingCart, Filter, X, ChevronDown, Navigation, Sprout, Plus, Minus } from 'lucide-react';
 import MobilePageHeader from '@/components/MobilePageHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -91,7 +91,7 @@ const getFarmerRating = (name: string): number => {
 
 const DirectFromFarm: React.FC = () => {
   const { language, translations } = useLanguage();
-  const { addToCart } = useCart();
+  const { addToCart, items: cartItems, updateQuantity } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [crops, setCrops] = useState<CropWithSeller[]>([]);
@@ -357,14 +357,43 @@ const DirectFromFarm: React.FC = () => {
         </Link>
 
         <div className="px-2 pb-2 sm:px-3 sm:pb-3">
-          <Button
-            size="sm"
-            className="w-full bg-green-700 hover:bg-green-800 text-[10px] sm:text-xs px-2 sm:px-3 h-7 sm:h-9 rounded-lg min-h-0"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
-          >
-            <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0 mr-1" />
-            {t('Add to Cart', 'కార్ట్‌కు జోడించు', 'कार्ट में डालें')}
-          </Button>
+          {(() => {
+            const cartItem = cartItems.find(
+              (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
+            );
+            if (!cartItem) {
+              return (
+                <Button
+                  size="sm"
+                  className="w-full bg-green-700 hover:bg-green-800 text-[10px] sm:text-xs px-2 sm:px-3 h-7 sm:h-9 rounded-lg min-h-0"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
+                  aria-label={t('Add', 'జోడించు', 'जोड़ें')}
+                >
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1" />
+                  {t('Add', 'జోడించు', 'जोड़ें')}
+                </Button>
+              );
+            }
+            return (
+              <div className="flex items-center justify-between gap-1 bg-green-700 rounded-lg h-7 sm:h-9 px-1">
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
+                  className="text-white p-1 hover:bg-green-800 rounded"
+                  aria-label="Decrease"
+                >
+                  <Minus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </button>
+                <span className="text-white font-semibold text-xs sm:text-sm">{cartItem.quantity}</span>
+                <button
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                  className="text-white p-1 hover:bg-green-800 rounded"
+                  aria-label="Increase"
+                >
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </button>
+              </div>
+            );
+          })()}
         </div>
 
       </Card>
