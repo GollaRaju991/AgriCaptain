@@ -43,9 +43,9 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [cropData, setCropData] = useState({
     cropName: '',
-    sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market' | 'both',
-    quantity: '1',
-    quantityUnit: 'Kg',
+    sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market',
+    quantity: '',
+    quantityUnit: 'Quintal',
     price: '',
     qualityGrade: 'Grade A',
     availabilityLocation: 'Marketplace',
@@ -76,7 +76,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
 
         setCropData({
           cropName: crop.crop_name,
-          sellType: crop.sell_type || 'both',
+          sellType: (crop.sell_type === 'crop_market' ? 'crop_market' : 'direct_from_farm'),
           quantity: qtyNum,
           quantityUnit: qtyUnit,
           price: crop.price,
@@ -236,7 +236,6 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
               {([
                 { value: 'direct_from_farm', label: label('Direct From Farm', 'నేరుగా పొలం నుండి') },
                 { value: 'crop_market', label: label('Crop Market', 'పంట మార్కెట్') },
-                { value: 'both', label: label('Both', 'రెండూ') },
               ] as const).map((option) => (
                 <button
                   key={option.value}
@@ -258,109 +257,57 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             </div>
           </div>
 
-          {/* Sell Crop (Crop Market) per-kg banner */}
-          {cropData.sellType === 'crop_market' && (
-            <div className="rounded-xl border-2 border-green-200 bg-green-50 p-3 flex items-start gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center shrink-0">
-                <Check className="h-5 w-5 text-white" strokeWidth={3} />
-              </div>
-              <div>
-                <p className="font-bold text-green-700 text-sm">{label('Sell Crop (Per Kg)', 'పంట అమ్మకం (ప్రతి కిలో)')}</p>
-                <p className="text-xs text-green-700/80 mt-0.5">
-                  {label('Simple per-kg pricing • Buyers pick quantity',
-                    'సులభమైన ప్రతి కిలో ధర • కొనుగోలుదారులు పరిమాణం ఎంచుకుంటారు')}
-                </p>
+          {/* Quantity + Unit and Price (same UI for Direct From Farm and Crop Market) */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="quantity" className="flex items-center gap-1.5 text-xs">
+                <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Quantity', 'పరిమాణం')} *
+              </Label>
+              <div className="mt-1 flex gap-2">
+                <Input
+                  id="quantity"
+                  name="quantity"
+                  type="number"
+                  min="1"
+                  value={cropData.quantity}
+                  onChange={handleCropInputChange}
+                  required
+                  className="h-[42px] flex-1"
+                  placeholder={label('e.g., 10', 'ఉదా., 10')}
+                />
+                <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
+                  <SelectTrigger className="h-[42px] w-[110px]"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {['Kg', 'Quintal', 'Ton'].map(u => (
+                      <SelectItem key={u} value={u}>{u}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-          )}
-
-          {/* Pricing — per-kg flow only for Sell Crop (crop_market) */}
-          {cropData.sellType === 'crop_market' ? (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="flex items-center gap-1.5 text-xs">
-                    <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Unit (Auto)', 'యూనిట్ (ఆటో)')}
-                  </Label>
-                  <div className="mt-1 flex items-center gap-2 rounded-xl border-2 border-green-200 bg-green-50/40 px-3 py-2.5 h-[42px]">
-                    <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
-                      <Scale className="h-4 w-4 text-green-700" />
-                    </div>
-                    <div className="leading-tight">
-                      <p className="font-bold text-sm text-foreground">1 Kg</p>
-                      <p className="text-[10px] text-muted-foreground">{label('(Per Kg)', '(ప్రతి కిలో)')}</p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
-                    <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price per Kg', 'కిలో ధర')} *
-                  </Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    value={cropData.price}
-                    onChange={handleCropInputChange}
-                    required
-                    type="number"
-                    min="1"
-                    className="mt-1 h-[42px]"
-                    placeholder={label('Enter price per kg', 'కిలో ధర నమోదు చేయండి')}
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-green-700 -mt-2">
-                {label('Price is per kg (auto)', 'ధర ప్రతి కిలో (ఆటో)')}
-              </p>
-            </>
-          ) : (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="quantity" className="flex items-center gap-1.5 text-xs">
-                    <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Quantity', 'పరిమాణం')} *
-                  </Label>
-                  <div className="mt-1 flex gap-2">
-                    <Input
-                      id="quantity"
-                      name="quantity"
-                      type="number"
-                      min="1"
-                      value={cropData.quantity}
-                      onChange={handleCropInputChange}
-                      required
-                      className="h-[42px] flex-1"
-                      placeholder={label('Qty', 'పరిమాణం')}
-                    />
-                    <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
-                      <SelectTrigger className="h-[42px] w-[110px]"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {['Kg', 'Quintal', 'Ton'].map(u => (
-                          <SelectItem key={u} value={u}>{u}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
-                    <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price', 'ధర')} *
-                  </Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    value={cropData.price}
-                    onChange={handleCropInputChange}
-                    required
-                    type="number"
-                    min="1"
-                    className="mt-1 h-[42px]"
-                    placeholder={label('Enter total price', 'మొత్తం ధరను నమోదు చేయండి')}
-                  />
-                </div>
-              </div>
-            </>
-          )}
+            <div>
+              <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
+                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price', 'ధర')} *
+              </Label>
+              <Input
+                id="price"
+                name="price"
+                value={cropData.price}
+                onChange={handleCropInputChange}
+                required
+                type="number"
+                min="1"
+                className="mt-1 h-[42px]"
+                placeholder={
+                  cropData.quantityUnit === 'Kg'
+                    ? label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')
+                    : cropData.quantityUnit === 'Ton'
+                      ? label('e.g., ₹20000 per ton', 'ఉదా., ₹20000 ప్రతి టన్ను')
+                      : label('e.g., ₹2000 per quintal', 'ఉదా., ₹2000 ప్రతి క్వింటాల్')
+                }
+              />
+            </div>
+          </div>
 
           {/* Harvest Date */}
           <div>
