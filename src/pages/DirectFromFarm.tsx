@@ -91,7 +91,7 @@ const getFarmerRating = (name: string): number => {
 
 const DirectFromFarm: React.FC = () => {
   const { language, translations } = useLanguage();
-  const { addToCart } = useCart();
+  const { addToCart, items: cartItems, updateQuantity } = useCart();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [crops, setCrops] = useState<CropWithSeller[]>([]);
