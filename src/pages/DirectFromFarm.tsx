@@ -383,7 +383,7 @@ const DirectFromFarm: React.FC = () => {
               );
             }
             return (
-              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-10 w-9 sm:h-12 sm:w-10 py-1 shadow-md">
+              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-8 w-9 sm:h-9 sm:w-10 py-0.5 shadow-md">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
                   className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
