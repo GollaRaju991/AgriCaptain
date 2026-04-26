@@ -364,7 +364,7 @@ const CropDetailPage: React.FC = () => {
                 </Card>
               )}
 
-              {/* Per-kg quantity selector — Direct From Farm only */}
+              {/* Per-kg quantity selector — Sell Crop only */}
               {isDFF && (
                 <div className="mb-4">
                   <p className="font-semibold text-foreground mb-2">{label('Select Quantity (Per kg)', 'పరిమాణం ఎంచుకోండి (ప్రతి కిలో)')}</p>
