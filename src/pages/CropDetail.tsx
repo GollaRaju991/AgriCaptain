@@ -240,32 +240,23 @@ const CropDetailPage: React.FC = () => {
         </div>
 
         {(() => {
-          const pricePerKg = (() => {
-            const p = parseFloat(String(crop.price).replace(/[^0-9.]/g, '')) || 0;
-            const isQuintal = (crop.quantity || '').toLowerCase().includes('quintal') || String(crop.price).toLowerCase().includes('quintal');
-            return isQuintal ? Math.round(p / 100) : p;
-          })();
-          // Per-kg quantity selector applies to Sell Crop (crop_market) only
-          const isSellCrop = crop.sell_type === 'crop_market';
-          const isDFF = isSellCrop;
-          const total = pricePerKg * qtyKg;
           const handleAdd = (navigateAfter = false) => {
             const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
-            const addQty = isDFF ? qtyKg : 1;
+            const priceNum = parseFloat(String(crop.price).replace(/[^0-9.]/g, '')) || 0;
             if (cartItem) {
-              updateQuantity(crop.id, cartItem.quantity + addQty);
+              updateQuantity(crop.id, cartItem.quantity + 1);
             } else {
               addToCart({
                 id: crop.id,
-                name: isDFF ? `${crop.crop_name} (${qtyKg} kg)` : crop.crop_name,
-                price: isDFF ? total : pricePerKg,
+                name: crop.crop_name,
+                price: priceNum,
                 image: img,
                 category: 'Direct From Farm',
               });
             }
             toast({
               title: label('Added to cart', 'కార్ట్‌కి జోడించబడింది'),
-              description: isDFF ? `${crop.crop_name} — ${qtyKg} kg • ₹${total}` : crop.crop_name,
+              description: crop.crop_name,
             });
             if (navigateAfter) navigate('/cart');
           };
@@ -281,9 +272,9 @@ const CropDetailPage: React.FC = () => {
                       </span>
                     )}
                     <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
-                    <div className="flex items-baseline gap-1 mt-1">
-                      <span className="text-2xl font-bold text-foreground">₹{pricePerKg}</span>
-                      <span className="text-sm text-muted-foreground">/ kg</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="text-2xl font-bold text-foreground">₹{crop.price}</span>
+                      <span className="text-sm text-muted-foreground">• {crop.quantity}</span>
                     </div>
                   </div>
 
@@ -362,36 +353,6 @@ const CropDetailPage: React.FC = () => {
                     </div>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Per-kg quantity selector — Sell Crop only */}
-              {isDFF && (
-                <div className="mb-4">
-                  <p className="font-semibold text-foreground mb-2">{label('Select Quantity (Per kg)', 'పరిమాణం ఎంచుకోండి (ప్రతి కిలో)')}</p>
-                  <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-                    {[1, 2, 5, 10].map((kg) => {
-                      const active = qtyKg === kg;
-                      return (
-                        <button
-                          key={kg}
-                          type="button"
-                          onClick={() => setQtyKg(kg)}
-                          className={`flex-shrink-0 min-w-[78px] rounded-xl border-2 px-3 py-2 text-center transition-all ${
-                            active
-                              ? 'border-green-600 bg-green-50 shadow-sm'
-                              : 'border-border bg-card hover:border-green-300'
-                          }`}
-                        >
-                          <p className={`text-sm font-bold ${active ? 'text-green-700' : 'text-foreground'}`}>{kg} kg</p>
-                          <p className={`text-xs mt-0.5 ${active ? 'text-green-700' : 'text-muted-foreground'}`}>₹{pricePerKg * kg}</p>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1">
-                    <Award className="h-3 w-3 text-green-600" /> {label('Fresh produce directly from farmers', 'రైతుల నుండి నేరుగా తాజా ఉత్పత్తులు')}
-                  </p>
-                </div>
               )}
 
               {/* Add to Cart + Buy Now */}
