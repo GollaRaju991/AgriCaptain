@@ -43,9 +43,9 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [cropData, setCropData] = useState({
     cropName: '',
-    sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market' | 'both',
-    quantity: '1',
-    quantityUnit: 'Kg',
+    sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market',
+    quantity: '',
+    quantityUnit: 'Quintal',
     price: '',
     qualityGrade: 'Grade A',
     availabilityLocation: 'Marketplace',
@@ -76,7 +76,7 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
 
         setCropData({
           cropName: crop.crop_name,
-          sellType: crop.sell_type || 'both',
+          sellType: (crop.sell_type === 'crop_market' ? 'crop_market' : 'direct_from_farm'),
           quantity: qtyNum,
           quantityUnit: qtyUnit,
           price: crop.price,
@@ -236,7 +236,6 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
               {([
                 { value: 'direct_from_farm', label: label('Direct From Farm', 'నేరుగా పొలం నుండి') },
                 { value: 'crop_market', label: label('Crop Market', 'పంట మార్కెట్') },
-                { value: 'both', label: label('Both', 'రెండూ') },
               ] as const).map((option) => (
                 <button
                   key={option.value}
