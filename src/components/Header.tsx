@@ -152,7 +152,7 @@ const Header = () => {
 
         {/* Product page mobile header: back + search + cart */}
         {isProductPage && !isStandalonePage && (
-          <div className="lg:hidden flex items-center px-2 py-2 bg-white gap-2">
+          <div className="lg:hidden flex items-center px-2 py-2 bg-white gap-2 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
             <button onClick={() => navigate(-1)} className="p-1">
               <ArrowLeft className="h-5 w-5 text-gray-700" />
             </button>
@@ -192,7 +192,7 @@ const Header = () => {
         {!isProductPage && !hideFullMobileHeader && (
           <>
             {/* Green gradient header area */}
-            <div className="lg:hidden" style={{ background: 'linear-gradient(135deg, #1FAF5A 0%, #0E8A43 100%)' }}>
+            <div className="lg:hidden pt-[env(safe-area-inset-top)]" style={{ background: 'linear-gradient(135deg, #1FAF5A 0%, #0E8A43 100%)' }}>
               {/* Row 1: Logo + actions - hides on scroll */}
               <div
                 className={`flex items-center px-3 py-2.5 gap-2 transition-all duration-300 overflow-hidden ${
