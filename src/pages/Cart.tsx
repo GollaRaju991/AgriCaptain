@@ -255,13 +255,13 @@ const Cart = () => {
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg">{translateProductName(item.name, language)}</h3>
                       <p className="text-muted-foreground capitalize">{item.category}</p>
-                      <p className="text-green-600 font-bold">₹{item.price}</p>
+                      <p className="text-green-600 font-bold">₹{item.price}{item.category === 'Direct From Farm' ? ' / kg' : ''}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <span className="w-12 text-center">{item.quantity}</span>
+                      <span className="min-w-[3rem] text-center">{item.quantity}{item.category === 'Direct From Farm' ? ' kg' : ''}</span>
                       <Button variant="outline" size="sm" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                         <Plus className="h-4 w-4" />
                       </Button>
