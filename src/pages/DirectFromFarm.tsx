@@ -366,7 +366,7 @@ const DirectFromFarm: React.FC = () => {
         </Link>
 
         {/* + / quantity stepper - positioned between image and details (overlapping image bottom-right) */}
-        <div className="absolute right-2 sm:right-3 z-10 top-[6.75rem] sm:top-[10.75rem]">
+        <div className="absolute right-2 sm:right-3 z-10 top-[7rem] sm:top-[11rem]">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
@@ -376,14 +376,14 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-10 w-9 sm:h-12 sm:w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
+                  className="flex items-center justify-center h-8 w-9 sm:h-9 sm:w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
                 >
                   <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
                 </button>
               );
             }
             return (
-              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-10 w-9 sm:h-12 sm:w-10 py-1 shadow-md">
+              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-8 w-9 sm:h-9 sm:w-10 py-0.5 shadow-md">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
                   className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
