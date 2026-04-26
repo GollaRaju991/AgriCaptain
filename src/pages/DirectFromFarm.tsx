@@ -239,12 +239,18 @@ const DirectFromFarm: React.FC = () => {
     return '/placeholder.svg';
   };
 
-  const handleAddToCart = (crop: CropWithSeller) => {
+  const getPricePerKg = (crop: CropWithSeller): number => {
     const priceNum = parseFloat(crop.price.replace(/[^0-9.]/g, '')) || 0;
+    const isQuintal = crop.quantity?.toLowerCase().includes('quintal') || crop.price?.toLowerCase().includes('quintal');
+    // 1 Quintal = 100 kg
+    return isQuintal ? Math.round(priceNum / 100) : priceNum;
+  };
+
+  const handleAddToCart = (crop: CropWithSeller) => {
     addToCart({
       id: crop.id,
       name: crop.crop_name,
-      price: priceNum,
+      price: getPricePerKg(crop),
       image: getFirstImage(crop.crop_images),
       category: 'Direct From Farm'
     });
