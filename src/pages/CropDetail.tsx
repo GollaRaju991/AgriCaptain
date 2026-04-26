@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2 } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -41,6 +43,9 @@ const CropDetailPage: React.FC = () => {
   const [crop, setCrop] = useState<CropDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [qtyKg, setQtyKg] = useState(1);
+  const { items, addToCart, updateQuantity } = useCart();
+  const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
 
   useEffect(() => {
@@ -193,6 +198,60 @@ const CropDetailPage: React.FC = () => {
                 )}
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Add to Cart */}
+        <Card className="mb-4">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs text-muted-foreground">{label('Quantity (kg)', 'పరిమాణం (కేజీ)')}</p>
+                <div className="flex items-center gap-2 mt-2">
+                  <button
+                    onClick={() => setQtyKg(q => Math.max(1, q - 1))}
+                    className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80"
+                    aria-label="decrease"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="font-bold text-lg w-12 text-center">{qtyKg} kg</span>
+                  <button
+                    onClick={() => setQtyKg(q => q + 1)}
+                    className="h-9 w-9 rounded-full bg-green-600 text-white flex items-center justify-center hover:bg-green-700"
+                    aria-label="increase"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">{label('Total', 'మొత్తం')}</p>
+                <p className="text-xl font-bold text-green-600">₹{(Number(crop.price) || 0) * qtyKg}</p>
+              </div>
+            </div>
+            <Button
+              className="w-full mt-4 bg-green-600 hover:bg-green-700 h-11 text-base font-bold"
+              onClick={() => {
+                const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
+                if (cartItem) {
+                  updateQuantity(crop.id, cartItem.quantity + qtyKg);
+                } else {
+                  addToCart({
+                    id: crop.id,
+                    name: crop.crop_name,
+                    price: Number(crop.price) || 0,
+                    image: img,
+                    category: 'Direct From Farm',
+                  });
+                  if (qtyKg > 1) updateQuantity(crop.id, qtyKg);
+                }
+                toast({ title: label('Added to cart', 'కార్ట్‌కి జోడించబడింది'), description: `${crop.crop_name} × ${qtyKg} kg` });
+              }}
+            >
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              {label('ADD TO CART', 'కార్ట్‌కి జోడించు')}
+            </Button>
           </CardContent>
         </Card>
 
