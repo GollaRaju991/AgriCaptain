@@ -44,8 +44,8 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
   const [cropData, setCropData] = useState({
     cropName: '',
     sellType: 'direct_from_farm' as 'direct_from_farm' | 'crop_market' | 'both',
-    quantity: '',
-    quantityUnit: 'Quintal',
+    quantity: '1',
+    quantityUnit: 'Kg',
     price: '',
     qualityGrade: 'Grade A',
     availabilityLocation: 'Marketplace',
