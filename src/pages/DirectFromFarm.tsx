@@ -305,44 +305,6 @@ const DirectFromFarm: React.FC = () => {
                 {sellTag === 'Direct from Farm' ? '✅ ' : '🌱 '}{sellTag}
               </Badge>
             )}
-            {/* Top-right + / quantity stepper overlay */}
-            <div className="absolute top-2 right-2 z-10">
-              {(() => {
-                const cartItem = cartItems.find(
-                  (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
-                );
-                if (!cartItem) {
-                  return (
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
-                      aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                      className="flex items-center justify-center h-9 w-9 rounded-xl bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
-                    >
-                      <Plus className="h-5 w-5" strokeWidth={3} />
-                    </button>
-                  );
-                }
-                return (
-                  <div className="flex items-center justify-between gap-1 bg-green-600 rounded-xl h-9 w-[6.5rem] px-1 shadow-md">
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                      className="text-white p-1 hover:bg-green-700 rounded-lg active:scale-95 transition"
-                      aria-label="Decrease"
-                    >
-                      <Minus className="h-4 w-4" strokeWidth={3} />
-                    </button>
-                    <span className="text-white font-bold text-xs">{cartItem.quantity} kg</span>
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                      className="text-white p-1 hover:bg-green-700 rounded-lg active:scale-95 transition"
-                      aria-label="Increase"
-                    >
-                      <Plus className="h-4 w-4" strokeWidth={3} />
-                    </button>
-                  </div>
-                );
-              })()}
-            </div>
             {isPremium && (
               <Badge className="absolute bottom-2 left-2 bg-green-700/90 text-white text-[10px] px-2 py-0.5 rounded">
                 {isOrganic ? 'Organic' : 'Premium'}
