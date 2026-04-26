@@ -172,7 +172,7 @@ const Cart = () => {
                 <div className="flex items-center justify-between mt-3">
                   <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
                     <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100">−</button>
-                    <span className="w-10 h-10 flex items-center justify-center text-base font-semibold border-x border-gray-300">{item.quantity}</span>
+                    <span className="min-w-[3.5rem] px-2 h-10 flex items-center justify-center text-base font-semibold border-x border-gray-300">{item.quantity}{item.category === 'Direct From Farm' ? ' kg' : ''}</span>
                     <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-10 h-10 flex items-center justify-center text-lg font-bold text-foreground hover:bg-gray-100">+</button>
                     <span className="bg-green-700 text-white font-bold px-4 h-10 flex items-center justify-center text-base rounded-r-lg">₹{item.price * item.quantity}</span>
                   </div>
