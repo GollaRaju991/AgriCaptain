@@ -262,108 +262,150 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
           </div>
 
           {/* Quantity + Unit and Price */}
-          {/* Direct From Farm: Kg only (locked). Crop Market: Quantity + Unit dropdown (Kg/Quintal/Ton) */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="quantity" className="flex items-center gap-1.5 text-xs">
-                <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Quantity', 'పరిమాణం')} *
-              </Label>
-              <div className="mt-1 flex gap-2">
-                <Input
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  min="1"
-                  value={cropData.quantity}
-                  onChange={handleCropInputChange}
-                  required
-                  className="h-[42px] flex-1"
-                  placeholder={label('e.g., 10', 'ఉదా., 10')}
-                />
-                {cropData.sellType === 'direct_from_farm' ? (
+          {/* Direct From Farm: Kg only (locked) - keeps original combined layout. */}
+          {/* Crop Market: NEW UI - Quantity & Unit in 2 cols, Price full-width below. */}
+          {cropData.sellType === 'direct_from_farm' ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="quantity" className="flex items-center gap-1.5 text-xs">
+                  <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Quantity', 'పరిమాణం')} *
+                </Label>
+                <div className="mt-1 flex gap-2">
+                  <Input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    min="1"
+                    value={cropData.quantity}
+                    onChange={handleCropInputChange}
+                    required
+                    className="h-[42px] flex-1"
+                    placeholder={label('e.g., 10', 'ఉదా., 10')}
+                  />
                   <div className="h-[42px] w-[110px] flex items-center justify-center rounded-md border border-input bg-muted/50 text-sm font-semibold text-foreground">
                     Kg
                   </div>
-                ) : (
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
+                  <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price per Kg', 'కిలోకి ధర')} *
+                </Label>
+                <Input
+                  id="price"
+                  name="price"
+                  value={cropData.price}
+                  onChange={handleCropInputChange}
+                  required
+                  type="number"
+                  min="1"
+                  className="mt-1 h-[42px]"
+                  placeholder={label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')}
+                />
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Quantity + Unit row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="quantity" className="flex items-center gap-2">
+                    <Scale className="h-4 w-4 text-primary" /> {label('Quantity', 'పరిమాణం')} *
+                  </Label>
+                  <Input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    min="1"
+                    value={cropData.quantity}
+                    onChange={handleCropInputChange}
+                    required
+                    className="mt-1 h-[48px] rounded-xl"
+                    placeholder={label('e.g., 10', 'ఉదా., 10')}
+                  />
+                </div>
+                <div>
+                  <Label className="flex items-center gap-2">
+                    <Warehouse className="h-4 w-4 text-primary" /> {label('Unit', 'యూనిట్')} *
+                  </Label>
                   <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
-                    <SelectTrigger className="h-[42px] w-[110px]"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="mt-1 h-[48px] rounded-xl"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {['Kg', 'Quintal', 'Ton'].map(u => (
                         <SelectItem key={u} value={u}>{u}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                )}
+                </div>
               </div>
-            </div>
-            <div>
-              <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
-                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" />{' '}
-                {cropData.sellType === 'direct_from_farm'
-                  ? label('Price per Kg', 'కిలోకి ధర')
-                  : label('Price', 'ధర')} *
-              </Label>
-              <Input
-                id="price"
-                name="price"
-                value={cropData.price}
-                onChange={handleCropInputChange}
-                required
-                type="number"
-                min="1"
-                className="mt-1 h-[42px]"
-                placeholder={
-                  cropData.sellType === 'direct_from_farm'
-                    ? label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')
-                    : cropData.quantityUnit === 'Kg'
+
+              {/* Price - full width */}
+              <div>
+                <Label htmlFor="price" className="flex items-center gap-2">
+                  <IndianRupee className="h-4 w-4 text-primary" /> {label('Price', 'ధర')} *
+                </Label>
+                <Input
+                  id="price"
+                  name="price"
+                  value={cropData.price}
+                  onChange={handleCropInputChange}
+                  required
+                  type="number"
+                  min="1"
+                  className="mt-1 h-[48px] rounded-xl"
+                  placeholder={
+                    cropData.quantityUnit === 'Kg'
                       ? label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')
                       : cropData.quantityUnit === 'Ton'
                         ? label('e.g., ₹20000 per ton', 'ఉదా., ₹20000 ప్రతి టన్ను')
                         : label('e.g., ₹2000 per quintal', 'ఉదా., ₹2000 ప్రతి క్వింటాల్')
-                }
-              />
-            </div>
-          </div>
-
-          {/* Harvest Date */}
-          <div>
-            <Label className="flex items-center gap-2">
-              <CalendarDays className="h-4 w-4 text-muted-foreground" /> {label('Harvest Date', 'పంట తేదీ')}
-            </Label>
-            <Popover open={harvestDateOpen} onOpenChange={setHarvestDateOpen}>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", !harvestDate && "text-muted-foreground")}>
-                  <CalendarDays className="mr-2 h-4 w-4" />
-                  {harvestDate ? format(harvestDate, 'PPP') : label('Pick a date', 'తేదీ ఎంచుకోండి')}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={harvestDate}
-                  onSelect={(date) => {
-                    setHarvestDate(date);
-                    if (date) setHarvestDateOpen(false);
-                  }}
-                  className={cn("p-3 pointer-events-auto")}
+                  }
                 />
-              </PopoverContent>
-            </Popover>
-          </div>
+              </div>
+            </>
+          )}
 
-          {/* Quality Grade */}
-          <div>
-            <Label className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-muted-foreground" /> {label('Quality Grade', 'నాణ్యత గ్రేడ్')} *
-            </Label>
-            <Select value={cropData.qualityGrade} onValueChange={(v) => setCropData({ ...cropData, qualityGrade: v })}>
-              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {qualityGrades.map(g => (
-                  <SelectItem key={g} value={g}>{g}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Harvest Date + Quality Grade */}
+          {/* Crop Market shows them side-by-side per new design; Direct From Farm keeps stacked. */}
+          <div className={cn(cropData.sellType === 'crop_market' ? 'grid grid-cols-2 gap-3' : 'space-y-5')}>
+            <div>
+              <Label className="flex items-center gap-2">
+                <CalendarDays className="h-4 w-4 text-primary" /> {label('Harvest Date', 'పంట తేదీ')} *
+              </Label>
+              <Popover open={harvestDateOpen} onOpenChange={setHarvestDateOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-full mt-1 justify-start text-left font-normal", cropData.sellType === 'crop_market' && "h-[48px] rounded-xl", !harvestDate && "text-muted-foreground")}>
+                    <CalendarDays className="mr-2 h-4 w-4" />
+                    {harvestDate ? format(harvestDate, 'PPP') : label('Pick a date', 'తేదీ ఎంచుకోండి')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={harvestDate}
+                    onSelect={(date) => {
+                      setHarvestDate(date);
+                      if (date) setHarvestDateOpen(false);
+                    }}
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div>
+              <Label className="flex items-center gap-2">
+                <Star className="h-4 w-4 text-primary" /> {label('Quality Grade', 'నాణ్యత గ్రేడ్')} *
+              </Label>
+              <Select value={cropData.qualityGrade} onValueChange={(v) => setCropData({ ...cropData, qualityGrade: v })}>
+                <SelectTrigger className={cn("mt-1", cropData.sellType === 'crop_market' && "h-[48px] rounded-xl")}><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {qualityGrades.map(g => (
+                    <SelectItem key={g} value={g}>{g}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Availability Location */}
@@ -455,12 +497,14 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             <input ref={cropFileInputRef} type="file" accept="image/*" multiple onChange={handleCropImageChange} className="hidden" />
           </div>
 
-          <Button type="submit" disabled={submitting || !cropData.cropName} className="w-full py-3 text-base">
+          <Button type="submit" disabled={submitting || !cropData.cropName} className={cn("w-full py-3 text-base", cropData.sellType === 'crop_market' && "h-[52px] rounded-xl font-semibold")}>
             {submitting
               ? label('Submitting...', 'సబ్మిట్ అవుతోంది...')
               : editCropId
                 ? label('✏️ Update Crop', '✏️ పంట అప్‌డేట్')
-                : label('🌾 Submit Crop', '🌾 పంట సబ్మిట్')}
+                : cropData.sellType === 'crop_market'
+                  ? label('☁️ Save & List Crop', '☁️ సేవ్ & లిస్ట్ క్రాప్')
+                  : label('🌾 Submit Crop', '🌾 పంట సబ్మిట్')}
           </Button>
         </form>
       </CardContent>
