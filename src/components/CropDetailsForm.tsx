@@ -257,7 +257,8 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             </div>
           </div>
 
-          {/* Quantity + Unit and Price (same UI for Direct From Farm and Crop Market) */}
+          {/* Quantity + Unit and Price */}
+          {/* Direct From Farm: Kg only (locked). Crop Market: Quantity + Unit dropdown (Kg/Quintal/Ton) */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="quantity" className="flex items-center gap-1.5 text-xs">
@@ -275,19 +276,28 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                   className="h-[42px] flex-1"
                   placeholder={label('e.g., 10', 'ఉదా., 10')}
                 />
-                <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
-                  <SelectTrigger className="h-[42px] w-[110px]"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {['Kg', 'Quintal', 'Ton'].map(u => (
-                      <SelectItem key={u} value={u}>{u}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {cropData.sellType === 'direct_from_farm' ? (
+                  <div className="h-[42px] w-[110px] flex items-center justify-center rounded-md border border-input bg-muted/50 text-sm font-semibold text-foreground">
+                    Kg
+                  </div>
+                ) : (
+                  <Select value={cropData.quantityUnit} onValueChange={(v) => setCropData({ ...cropData, quantityUnit: v })}>
+                    <SelectTrigger className="h-[42px] w-[110px]"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {['Kg', 'Quintal', 'Ton'].map(u => (
+                        <SelectItem key={u} value={u}>{u}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
             <div>
               <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
-                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price', 'ధర')} *
+                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" />{' '}
+                {cropData.sellType === 'direct_from_farm'
+                  ? label('Price per Kg', 'కిలోకి ధర')
+                  : label('Price', 'ధర')} *
               </Label>
               <Input
                 id="price"
@@ -299,11 +309,13 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                 min="1"
                 className="mt-1 h-[42px]"
                 placeholder={
-                  cropData.quantityUnit === 'Kg'
+                  cropData.sellType === 'direct_from_farm'
                     ? label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')
-                    : cropData.quantityUnit === 'Ton'
-                      ? label('e.g., ₹20000 per ton', 'ఉదా., ₹20000 ప్రతి టన్ను')
-                      : label('e.g., ₹2000 per quintal', 'ఉదా., ₹2000 ప్రతి క్వింటాల్')
+                    : cropData.quantityUnit === 'Kg'
+                      ? label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')
+                      : cropData.quantityUnit === 'Ton'
+                        ? label('e.g., ₹20000 per ton', 'ఉదా., ₹20000 ప్రతి టన్ను')
+                        : label('e.g., ₹2000 per quintal', 'ఉదా., ₹2000 ప్రతి క్వింటాల్')
                 }
               />
             </div>
