@@ -347,7 +347,7 @@ const DirectFromFarm: React.FC = () => {
             <div className="flex items-center justify-between gap-2 mt-1 sm:mt-1.5">
               <span className="text-[10px] sm:text-xs text-muted-foreground truncate flex items-center gap-0.5 min-w-0 flex-1">
                 <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
-                <span className="truncate">{crop.seller?.village || crop.seller?.district || crop.location_address || ''}</span>
+                <span className="truncate">{crop.location_address || crop.availability_location || crop.seller?.village || crop.seller?.district || ''}</span>
               </span>
               {crop.distance !== undefined && (
                 <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0 h-4 border-primary/30 text-primary font-medium flex-shrink-0 whitespace-nowrap">
