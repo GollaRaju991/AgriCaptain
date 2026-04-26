@@ -37,13 +37,8 @@ const getFarmerRating = (name: string): number => {
   return 3.5 + (Math.abs(hash) % 16) / 10;
 };
 
-const getPricePerKg = (crop: CropWithSeller): number => {
-  const priceNum = parseFloat(crop.price.replace(/[^0-9.]/g, '')) || 0;
-  const isQuintal =
-    crop.quantity?.toLowerCase().includes('quintal') ||
-    crop.price?.toLowerCase().includes('quintal');
-  return isQuintal ? Math.round(priceNum / 100) : priceNum;
-};
+const getPriceNum = (crop: CropWithSeller): number =>
+  parseFloat(crop.price.replace(/[^0-9.]/g, '')) || 0;
 
 const getFirstImage = (images: string[] | null) =>
   images && images.length > 0 ? images[0] : '/placeholder.svg';
@@ -122,7 +117,7 @@ const HomeDirectFromFarm: React.FC = () => {
     addToCart({
       id: crop.id,
       name: crop.crop_name,
-      price: getPricePerKg(crop),
+      price: getPriceNum(crop),
       image: getFirstImage(crop.crop_images),
       category: 'Direct From Farm',
     });
@@ -211,11 +206,11 @@ const HomeDirectFromFarm: React.FC = () => {
                       <h3 className="font-semibold text-xs md:text-sm text-gray-900 line-clamp-1">
                         {crop.crop_name}
                       </h3>
-                      <div className="flex items-baseline gap-0.5 mt-0.5">
+                      <div className="flex items-baseline gap-1 mt-0.5">
                         <span className="text-sm md:text-base font-bold text-gray-900">
-                          ₹{getPricePerKg(crop)}
+                          ₹{crop.price}
                         </span>
-                        <span className="text-[10px] text-gray-500 font-medium">/ kg</span>
+                        <span className="text-[10px] text-gray-500">• {crop.quantity}</span>
                       </div>
 
                       <div className="flex items-center justify-between gap-1 mt-1">

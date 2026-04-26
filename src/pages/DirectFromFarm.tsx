@@ -239,18 +239,15 @@ const DirectFromFarm: React.FC = () => {
     return '/placeholder.svg';
   };
 
-  const getPricePerKg = (crop: CropWithSeller): number => {
-    const priceNum = parseFloat(crop.price.replace(/[^0-9.]/g, '')) || 0;
-    const isQuintal = crop.quantity?.toLowerCase().includes('quintal') || crop.price?.toLowerCase().includes('quintal');
-    // 1 Quintal = 100 kg
-    return isQuintal ? Math.round(priceNum / 100) : priceNum;
+  const getPriceNum = (crop: CropWithSeller): number => {
+    return parseFloat(crop.price.replace(/[^0-9.]/g, '')) || 0;
   };
 
   const handleAddToCart = (crop: CropWithSeller) => {
     addToCart({
       id: crop.id,
       name: crop.crop_name,
-      price: getPricePerKg(crop),
+      price: getPriceNum(crop),
       image: getFirstImage(crop.crop_images),
       category: 'Direct From Farm'
     });
@@ -330,11 +327,8 @@ const DirectFromFarm: React.FC = () => {
             </div>
 
             <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-              <span className="text-sm sm:text-lg font-bold text-foreground">₹{getPricePerKg(crop)}</span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground font-medium">/ kg</span>
-              {(crop.quantity?.toLowerCase().includes('quintal')) && (
-                <span className="text-[9px] sm:text-[10px] text-muted-foreground ml-1">(₹{crop.price}/Quintal)</span>
-              )}
+              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
