@@ -147,14 +147,82 @@ const CropDetailPage: React.FC = () => {
       </div>
 
       <main className="container mx-auto px-4 py-4 max-w-2xl">
-        {/* Image gallery */}
+        {/* Image gallery - swipeable on mobile */}
         <div className="rounded-xl overflow-hidden bg-muted mb-4">
-          <img
-            src={images[activeImage]}
-            alt={crop.crop_name}
-            className="w-full h-64 sm:h-80 object-contain bg-white"
-            onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
-          />
+          <div
+            className="relative w-full h-64 sm:h-80 bg-white overflow-hidden touch-pan-y select-none"
+            onTouchStart={(e) => {
+              (e.currentTarget as any)._tsx = e.touches[0].clientX;
+              (e.currentTarget as any)._tsy = e.touches[0].clientY;
+            }}
+            onTouchEnd={(e) => {
+              const startX = (e.currentTarget as any)._tsx as number | undefined;
+              const startY = (e.currentTarget as any)._tsy as number | undefined;
+              if (startX == null || startY == null) return;
+              const endX = e.changedTouches[0].clientX;
+              const endY = e.changedTouches[0].clientY;
+              const dx = endX - startX;
+              const dy = endY - startY;
+              if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                if (dx < 0) setActiveImage((activeImage + 1) % images.length);
+                else setActiveImage((activeImage - 1 + images.length) % images.length);
+              }
+            }}
+          >
+            <div
+              className="flex h-full w-full transition-transform duration-300 ease-out"
+              style={{ transform: `translateX(-${activeImage * 100}%)` }}
+            >
+              {images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt={`${crop.crop_name} ${i + 1}`}
+                  className="w-full h-full object-contain bg-white flex-shrink-0"
+                  draggable={false}
+                  onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
+                />
+              ))}
+            </div>
+
+            {images.length > 1 && (
+              <>
+                {/* Desktop arrows */}
+                <button
+                  type="button"
+                  aria-label="Previous image"
+                  onClick={() => setActiveImage((activeImage - 1 + images.length) % images.length)}
+                  className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full bg-white/80 hover:bg-white shadow"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next image"
+                  onClick={() => setActiveImage((activeImage + 1) % images.length)}
+                  className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full bg-white/80 hover:bg-white shadow"
+                >
+                  <ArrowLeft className="h-5 w-5 rotate-180" />
+                </button>
+
+                {/* Dot indicators */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <span
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-4 bg-green-600' : 'w-1.5 bg-black/30'}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Counter */}
+                <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full">
+                  {activeImage + 1} / {images.length}
+                </div>
+              </>
+            )}
+          </div>
+
           {images.length > 1 && (
             <div className="flex gap-2 p-3 overflow-x-auto">
               {images.map((img, i) => (
