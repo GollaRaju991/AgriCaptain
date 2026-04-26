@@ -367,17 +367,6 @@ const DirectFromFarm: React.FC = () => {
           </Button>
         </div>
 
-        {crop.seller && (
-          <div className="border-t border-border px-2 py-1.5 sm:px-3 sm:py-2 flex items-center justify-between">
-            <button
-              onClick={(e) => handleCallFarmer(crop.seller!.phone, e)}
-              className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs text-green-700 font-medium min-h-0"
-            >
-              <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
-              {t('Contact', 'సంప్రదించు', 'संपर्क')}
-            </button>
-          </div>
-        )}
       </Card>
     );
   };
