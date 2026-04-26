@@ -365,6 +365,20 @@ const DirectFromFarm: React.FC = () => {
           </div>
         </Link>
 
+        {/* Farmer contact bar - lets buyer call farmer to enquire */}
+        {crop.seller?.phone && (
+          <div className="px-2 sm:px-3 pb-2 -mt-1">
+            <button
+              onClick={(e) => handleCallFarmer(crop.seller!.phone, e)}
+              className="w-full flex items-center justify-center gap-1 bg-green-50 hover:bg-green-100 border border-green-600 text-green-700 rounded-md py-1 text-[10px] sm:text-xs font-semibold active:scale-95 transition"
+              aria-label={t('Call farmer', 'రైతుకి కాల్ చేయండి', 'किसान को कॉल करें')}
+            >
+              <Phone className="h-3 w-3" />
+              <span className="truncate">{t('Call', 'కాల్', 'कॉल')} {crop.seller.name}</span>
+            </button>
+          </div>
+        )}
+
         {/* + / quantity stepper - positioned between image and details (overlapping image bottom-right) */}
         <div className="absolute right-2 sm:right-3 z-10 top-[7rem] sm:top-[11rem]">
           {(() => {
