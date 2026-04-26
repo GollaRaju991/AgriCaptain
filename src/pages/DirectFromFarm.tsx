@@ -366,8 +366,7 @@ const DirectFromFarm: React.FC = () => {
         </Link>
 
         {/* + / quantity stepper - positioned between image and details (overlapping image bottom-right) */}
-        <div className="absolute right-2 sm:right-3 z-10" style={{ top: 'calc(8rem - 1.25rem)' }}>
-          <div className="sm:[--top-offset:calc(12rem-1.25rem)] hidden sm:block" />
+        <div className="absolute right-2 sm:right-3 z-10 top-[6.75rem] sm:top-[10.75rem]">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
