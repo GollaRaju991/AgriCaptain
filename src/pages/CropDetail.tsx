@@ -201,32 +201,9 @@ const CropDetailPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Add to Cart */}
-        <Button
-          className="w-full mb-4 bg-green-600 hover:bg-green-700 h-12 text-base font-bold"
-          onClick={() => {
-            const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
-            if (cartItem) {
-              updateQuantity(crop.id, cartItem.quantity + 1);
-            } else {
-              addToCart({
-                id: crop.id,
-                name: crop.crop_name,
-                price: Number(crop.price) || 0,
-                image: img,
-                category: 'Direct From Farm',
-              });
-            }
-            toast({ title: label('Added to cart', 'కార్ట్‌కి జోడించబడింది'), description: crop.crop_name });
-          }}
-        >
-          <ShoppingCart className="h-5 w-5 mr-2" />
-          {label('ADD TO CART', 'కార్ట్‌కి జోడించు')}
-        </Button>
-
-        {/* Farmer info */}
+        {/* Farmer info - shown first so buyers can enquire about the product */}
         {crop.seller && (
-          <Card>
+          <Card className="mb-4">
             <CardContent className="p-4">
               <p className="text-xs text-muted-foreground mb-3">{label('Farmer Details', 'రైతు వివరాలు')}</p>
               <div className="flex items-center justify-between">
@@ -252,6 +229,29 @@ const CropDetailPage: React.FC = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Add to Cart */}
+        <Button
+          className="w-full mb-4 bg-green-600 hover:bg-green-700 h-12 text-base font-bold"
+          onClick={() => {
+            const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
+            if (cartItem) {
+              updateQuantity(crop.id, cartItem.quantity + 1);
+            } else {
+              addToCart({
+                id: crop.id,
+                name: crop.crop_name,
+                price: Number(crop.price) || 0,
+                image: img,
+                category: 'Direct From Farm',
+              });
+            }
+            toast({ title: label('Added to cart', 'కార్ట్‌కి జోడించబడింది'), description: crop.crop_name });
+          }}
+        >
+          <ShoppingCart className="h-5 w-5 mr-2" />
+          {label('ADD TO CART', 'కార్ట్‌కి జోడించు')}
+        </Button>
 
         {/* Related Farm Products */}
         {related.length > 0 && (
