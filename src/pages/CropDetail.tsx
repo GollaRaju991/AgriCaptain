@@ -245,7 +245,9 @@ const CropDetailPage: React.FC = () => {
             const isQuintal = (crop.quantity || '').toLowerCase().includes('quintal') || String(crop.price).toLowerCase().includes('quintal');
             return isQuintal ? Math.round(p / 100) : p;
           })();
-          const isDFF = crop.sell_type === 'direct_from_farm' || crop.sell_type === 'both' || !crop.sell_type;
+          // Per-kg quantity selector applies to Sell Crop (crop_market) only
+          const isSellCrop = crop.sell_type === 'crop_market';
+          const isDFF = isSellCrop;
           const total = pricePerKg * qtyKg;
           const handleAdd = (navigateAfter = false) => {
             const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
@@ -362,7 +364,7 @@ const CropDetailPage: React.FC = () => {
                 </Card>
               )}
 
-              {/* Per-kg quantity selector — Direct From Farm only */}
+              {/* Per-kg quantity selector — Sell Crop only */}
               {isDFF && (
                 <div className="mb-4">
                   <p className="font-semibold text-foreground mb-2">{label('Select Quantity (Per kg)', 'పరిమాణం ఎంచుకోండి (ప్రతి కిలో)')}</p>
