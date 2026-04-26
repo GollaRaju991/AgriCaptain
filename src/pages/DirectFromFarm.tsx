@@ -288,7 +288,7 @@ const DirectFromFarm: React.FC = () => {
     const sellTag = getSellTypeTag(crop.sell_type);
 
     return (
-      <Card key={crop.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-card border border-border rounded-xl">
+      <Card key={crop.id} className="overflow-hidden hover:shadow-lg transition-shadow bg-card border border-border rounded-xl relative">
         <Link to={`/sell-crop/${crop.id}`} state={{ from: '/direct-from-farm' }}>
           <div className="relative">
             <img
@@ -323,7 +323,7 @@ const DirectFromFarm: React.FC = () => {
             )}
           </div>
 
-          <div className="p-2 sm:p-3">
+          <div className="p-2 sm:p-3 pr-12 sm:pr-14">
             <div className="flex items-start justify-between gap-1">
               <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
               {crop.seller && <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
@@ -365,8 +365,8 @@ const DirectFromFarm: React.FC = () => {
           </div>
         </Link>
 
-        {/* Small + / quantity stepper at bottom-right of card body */}
-        <div className="px-2 pb-2 sm:px-3 sm:pb-2 -mt-1 flex justify-end">
+        {/* + / quantity stepper - positioned between image and details (overlapping image bottom-right) */}
+        <div className="absolute right-2 sm:right-3 z-10 top-[6.75rem] sm:top-[10.75rem]">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
@@ -376,28 +376,28 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-12 w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-sm"
+                  className="flex items-center justify-center h-10 w-9 sm:h-12 sm:w-10 rounded-lg bg-white border-2 border-green-600 text-green-700 hover:bg-green-50 active:scale-95 transition shadow-md"
                 >
-                  <Plus className="h-5 w-5" strokeWidth={3} />
+                  <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={3} />
                 </button>
               );
             }
             return (
-              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-12 w-10 py-1 shadow-sm">
+              <div className="flex flex-col items-center justify-between bg-green-600 rounded-lg h-10 w-9 sm:h-12 sm:w-10 py-1 shadow-md">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
                   className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
                   aria-label="Increase"
                 >
-                  <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+                  <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={3} />
                 </button>
-                <span className="text-white font-bold text-[10px] leading-none">{cartItem.quantity}kg</span>
+                <span className="text-white font-bold text-[9px] sm:text-[10px] leading-none">{cartItem.quantity}kg</span>
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
                   className="text-white hover:bg-green-700 rounded active:scale-95 transition leading-none"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3.5 w-3.5" strokeWidth={3} />
+                  <Minus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={3} />
                 </button>
               </div>
             );
