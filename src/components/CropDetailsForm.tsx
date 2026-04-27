@@ -174,7 +174,9 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
         user_id: userId,
         crop_name: cropData.cropName,
         sell_type: cropData.sellType,
-        quantity: `${cropData.quantity} ${cropData.quantityUnit}`,
+        quantity: cropData.sellType === 'direct_from_farm'
+          ? `${cropData.quantity || '1'} Kg`
+          : `${cropData.quantity} ${cropData.quantityUnit}`,
         price: cropData.price,
         harvest_date: harvestDate ? format(harvestDate, 'yyyy-MM-dd') : null,
         quality_grade: cropData.qualityGrade,
@@ -311,44 +313,21 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
           {/* Direct From Farm: Kg only (locked) - keeps original combined layout. */}
           {/* Crop Market: NEW UI - Quantity & Unit in 2 cols, Price full-width below. */}
           {cropData.sellType === 'direct_from_farm' ? (
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="quantity" className="flex items-center gap-1.5 text-xs">
-                  <Scale className="h-3.5 w-3.5 text-muted-foreground" /> {label('Quantity', 'పరిమాణం')} *
-                </Label>
-                <div className="mt-1 flex gap-2">
-                  <Input
-                    id="quantity"
-                    name="quantity"
-                    type="number"
-                    min="1"
-                    value={cropData.quantity}
-                    onChange={handleCropInputChange}
-                    required
-                    className="h-[42px] flex-1"
-                    placeholder={label('e.g., 10', 'ఉదా., 10')}
-                  />
-                  <div className="h-[42px] w-[110px] flex items-center justify-center rounded-md border border-input bg-muted/50 text-sm font-semibold text-foreground">
-                    Kg
-                  </div>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
-                  <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price per Kg', 'కిలోకి ధర')} *
-                </Label>
-                <Input
-                  id="price"
-                  name="price"
-                  value={cropData.price}
-                  onChange={handleCropInputChange}
-                  required
-                  type="number"
-                  min="1"
-                  className="mt-1 h-[42px]"
-                  placeholder={label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')}
-                />
-              </div>
+            <div>
+              <Label htmlFor="price" className="flex items-center gap-1.5 text-xs">
+                <IndianRupee className="h-3.5 w-3.5 text-muted-foreground" /> {label('Price per Kg', 'కిలోకి ధర')} *
+              </Label>
+              <Input
+                id="price"
+                name="price"
+                value={cropData.price}
+                onChange={handleCropInputChange}
+                required
+                type="number"
+                min="1"
+                className="mt-1 h-[42px]"
+                placeholder={label('e.g., ₹50 per kg', 'ఉదా., ₹50 ప్రతి కిలో')}
+              />
             </div>
           ) : (
             <>
