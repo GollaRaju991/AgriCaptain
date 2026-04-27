@@ -116,12 +116,6 @@ const Cart = () => {
                   <span className="text-muted-foreground">{translations.platform_charges || 'Platform Fee'}</span>
                   <span className="font-semibold text-foreground">₹0</span>
                 </div>
-                {couponDiscount > 0 && (
-                  <div className="flex justify-between text-green-600">
-                    <span className="font-medium">{translations.coupon_discount || 'Coupon'} ({appliedCoupon})</span>
-                    <span className="font-semibold">-₹{couponDiscount}</span>
-                  </div>
-                )}
               </div>
               <div className="border-t border-gray-200 mt-4 pt-4">
                 <div className="flex justify-between text-xl font-bold text-foreground">
