@@ -263,7 +263,7 @@ const Products = () => {
 
         <div className="mx-4 mb-3 bg-muted/40 rounded-xl py-2.5 px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            Showing {filteredAndSortedProducts.length} products
+            Showing {filteredAndSortedProducts.length + farmCrops.length} results
           </p>
         </div>
 
