@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -8,7 +8,7 @@ import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { X, SlidersHorizontal } from 'lucide-react';
+import { X, SlidersHorizontal, Sprout, MapPin } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -48,6 +48,7 @@ const Products = () => {
   const [priceRange, setPriceRange] = useState('all');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sellerProducts, setSellerProducts] = useState<any[]>([]);
+  const [farmCrops, setFarmCrops] = useState<any[]>([]);
 
   const searchQuery = searchParams.get('search') || '';
   const selectedCategory = searchParams.get('category') || '';
@@ -79,6 +80,22 @@ const Products = () => {
     fetchSellerProducts();
   }, []);
 
+  // Search Direct From Farm + Sell Crop listings whenever user types a search query
+  useEffect(() => {
+    const fetchFarmCrops = async () => {
+      if (!searchQuery.trim()) {
+        setFarmCrops([]);
+        return;
+      }
+      const q = searchQuery.trim();
+      const { data } = await (supabase.from('farmer_crops') as any)
+        .select('id, crop_name, price, quantity, crop_images, availability_location, location_address, sell_type')
+        .ilike('crop_name', `%${q}%`)
+        .limit(40);
+      setFarmCrops(data || []);
+    };
+    fetchFarmCrops();
+  }, [searchQuery]);
   const filteredAndSortedProducts = useMemo(() => {
     // Use category-based loader if a category is selected
     let baseProducts = selectedCategory
@@ -152,6 +169,52 @@ const Products = () => {
   };
 
   const activeFilterCount = [searchQuery, selectedCategory, selectedBrand, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
+  const hasFarmResults = farmCrops.length > 0;
+  const hasAnyResults = filteredAndSortedProducts.length > 0 || hasFarmResults;
+
+  const FarmCropsSection = () => {
+    if (!hasFarmResults) return null;
+    return (
+      <div className="mb-6">
+        <div className="flex items-center gap-2 px-4 mb-3">
+          <Sprout className="h-4 w-4 text-green-600" />
+          <h2 className="text-base md:text-lg font-bold text-foreground">From Farms ({farmCrops.length})</h2>
+          <span className="text-xs text-muted-foreground">Direct From Farm / Sell Crop</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
+          {farmCrops.map((c) => {
+            const img = c.crop_images?.[0] || '/placeholder.svg';
+            const isDirect = c.sell_type === 'direct_from_farm';
+            return (
+              <Link
+                key={c.id}
+                to={`/crop/${c.id}`}
+                state={{ from: isDirect ? '/direct-from-farm' : '/sell-crop' }}
+                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="relative aspect-square bg-muted">
+                  <img src={img} alt={c.crop_name} className="w-full h-full object-cover" loading="lazy" />
+                  <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white ${isDirect ? 'bg-green-600' : 'bg-orange-500'}`}>
+                    {isDirect ? 'Farm' : 'Market'}
+                  </span>
+                </div>
+                <div className="p-2">
+                  <h3 className="text-sm font-semibold text-foreground line-clamp-1">{c.crop_name}</h3>
+                  <p className="text-base font-bold text-green-700 mt-0.5">₹{c.price}<span className="text-xs text-muted-foreground font-normal"> / {c.quantity?.split(' ')[1] || 'unit'}</span></p>
+                  {c.location_address && (
+                    <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1 line-clamp-1">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      {c.location_address}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -200,7 +263,7 @@ const Products = () => {
 
         <div className="mx-4 mb-3 bg-muted/40 rounded-xl py-2.5 px-4 text-center">
           <p className="text-muted-foreground text-sm">
-            Showing {filteredAndSortedProducts.length} products
+            Showing {filteredAndSortedProducts.length + farmCrops.length} results
           </p>
         </div>
 
@@ -224,18 +287,20 @@ const Products = () => {
           </div>
         )}
 
+        <FarmCropsSection />
+
         {filteredAndSortedProducts.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 px-4 mb-6">
             {filteredAndSortedProducts.map(product => (
               <ProductCard key={product.id} product={product} variant="grid" />
             ))}
           </div>
-        ) : (
+        ) : !hasFarmResults ? (
           <div className="text-center py-12 px-4">
-            <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
+            <p className="text-muted-foreground text-lg">No results found matching your criteria.</p>
             <Button className="mt-4" onClick={clearFilters}>Clear Filters</Button>
           </div>
-        )}
+        ) : null}
 
         <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
           <SheetContent side="bottom" className="rounded-t-2xl max-h-[70vh]">
@@ -378,7 +443,7 @@ const Products = () => {
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6 bg-card p-4 rounded-lg shadow-sm">
               <p className="text-muted-foreground">
-                Showing {filteredAndSortedProducts.length} products
+                Showing {filteredAndSortedProducts.length + farmCrops.length} results
               </p>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">Sort by:</span>
@@ -397,18 +462,20 @@ const Products = () => {
               </div>
             </div>
 
+            <FarmCropsSection />
+
             {filteredAndSortedProducts.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 {filteredAndSortedProducts.map(product => (
                   <ProductCard key={product.id} product={product} variant="grid" />
                 ))}
               </div>
-            ) : (
+            ) : !hasFarmResults ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
+                <p className="text-muted-foreground text-lg">No results found matching your criteria.</p>
                 <Button className="mt-4" onClick={clearFilters}>Clear Filters</Button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
