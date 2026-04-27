@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store, Navigation } from 'lucide-react';
+import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store, Navigation, Home } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -232,32 +232,54 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
             <Label className="flex items-center gap-2 mb-2">
               <Store className="h-4 w-4 text-muted-foreground" /> {label('Sell Type', 'అమ్మకం రకం')} *
             </Label>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {([
-                { value: 'direct_from_farm', label: label('Direct From Farm', 'నేరుగా పొలం నుండి') },
-                { value: 'crop_market', label: label('Crop Market', 'పంట మార్కెట్') },
-              ] as const).map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setCropData({
-                    ...cropData,
-                    sellType: option.value,
-                    quantityUnit: option.value === 'direct_from_farm' ? 'Kg' : (cropData.quantityUnit || 'Quintal'),
-                  })}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-1.5 rounded-xl border-2 py-3 px-1 font-medium transition-all duration-200 min-w-0",
-                    cropData.sellType === option.value
-                      ? "border-primary bg-primary text-primary-foreground shadow-md"
-                      : "border-border bg-card text-foreground hover:border-primary/50"
-                  )}
-                >
-                  {cropData.sellType === option.value && (
-                    <Check className="h-3.5 w-3.5 shrink-0" />
-                  )}
-                  <span className="text-[11px] sm:text-sm leading-tight text-center">{option.label}</span>
-                </button>
-              ))}
+                {
+                  value: 'direct_from_farm',
+                  title: label('Direct From Farm', 'నేరుగా పొలం నుండి'),
+                  subtitle: label('Sell directly to buyers', 'కొనుగోలుదారులకు నేరుగా అమ్మండి'),
+                  Icon: Home,
+                },
+                {
+                  value: 'crop_market',
+                  title: label('Crop Market', 'పంట మార్కెట్'),
+                  subtitle: label('List in the crop marketplace', 'పంట మార్కెట్‌లో జాబితా చేయండి'),
+                  Icon: Store,
+                },
+              ] as const).map((option) => {
+                const selected = cropData.sellType === option.value;
+                const Icon = option.Icon;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setCropData({
+                      ...cropData,
+                      sellType: option.value,
+                      quantityUnit: option.value === 'direct_from_farm' ? 'Kg' : (cropData.quantityUnit || 'Quintal'),
+                    })}
+                    className={cn(
+                      "relative flex flex-col items-center justify-center text-center rounded-xl border-2 px-3 py-4 transition-all duration-200",
+                      selected
+                        ? "border-[hsl(var(--brand-green))] bg-[hsl(var(--brand-green)/0.08)] shadow-sm"
+                        : "border-border bg-card hover:border-[hsl(var(--brand-green)/0.5)]"
+                    )}
+                  >
+                    {selected && (
+                      <span className="absolute top-2 right-2 h-5 w-5 rounded-full bg-[hsl(var(--brand-green))] flex items-center justify-center">
+                        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                      </span>
+                    )}
+                    <Icon className={cn("h-7 w-7 mb-2", selected ? "text-[hsl(var(--brand-green))]" : "text-muted-foreground")} />
+                    <span className={cn("text-sm font-semibold leading-tight", selected ? "text-foreground" : "text-foreground")}>
+                      {option.title}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
+                      {option.subtitle}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
