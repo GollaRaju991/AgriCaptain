@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check, ChevronRight, Sprout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +51,7 @@ const AddCropPage: React.FC = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [deletingSeller, setDeletingSeller] = useState(false);
   const [step, setStep] = useState<PageStep>('profile-selection');
+  const [existingCropCount, setExistingCropCount] = useState(0);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '',
@@ -262,6 +263,20 @@ const AddCropPage: React.FC = () => {
     setSelectedSeller(seller);
     setStep('crop-form');
   };
+
+  // Fetch existing crop count for the selected seller
+  useEffect(() => {
+    if (!selectedSeller) { setExistingCropCount(0); return; }
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from('farmer_crops')
+        .select('*', { count: 'exact', head: true })
+        .eq('seller_id', selectedSeller.id);
+      if (!cancelled) setExistingCropCount(count || 0);
+    })();
+    return () => { cancelled = true; };
+  }, [selectedSeller, step]);
 
   if (loading) {
     return (
@@ -568,6 +583,28 @@ const AddCropPage: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* View existing crop details — shown only when this farmer already has crops */}
+            {existingCropCount > 0 && !editCropId && (
+              <button
+                type="button"
+                onClick={() => navigate(`/sell-crop/my-crops/${selectedSeller.id}`)}
+                className="w-full mb-4 rounded-xl border-2 border-green-500 bg-green-50 hover:bg-green-100 transition-colors p-4 flex items-center gap-3 text-left"
+              >
+                <div className="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
+                  <Sprout className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-green-800 text-sm">
+                    {label('View existing crop details', 'ఇప్పటికే ఉన్న పంట వివరాలను చూడండి', 'मौजूदा फसल विवरण देखें')}
+                  </p>
+                  <p className="text-xs text-green-700/80 mt-0.5">
+                    {existingCropCount} {label(existingCropCount === 1 ? 'crop already added' : 'crops already added', 'పంటలు ఇప్పటికే జోడించబడ్డాయి', 'फसलें पहले से जोड़ी गईं')}
+                  </p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-green-700 flex-shrink-0" />
+              </button>
+            )}
 
             <CropDetailsForm
               sellerId={selectedSeller.id}
