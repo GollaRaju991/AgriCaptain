@@ -1,59 +1,24 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { translateProductName } from '@/data/translations';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Trash2, Plus, Minus, ShoppingBag, X, Tag, CheckCircle2 } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useToast } from '@/hooks/use-toast';
-import { COUPONS, validateCoupon, calculateDiscounts } from '@/utils/discountUtils';
 
 const Cart = () => {
   const { items, removeFromCart, updateQuantity, totalPrice, clearCart } = useCart();
   const { user, setRedirectAfterLogin } = useAuth();
   const { language, translations } = useLanguage();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
-
-  // Cart page doesn't know payment method yet, so no UPI discount here
-  const { couponDiscount, finalTotal } = calculateDiscounts(totalPrice, appliedCoupon, '');
-
-  const handleApplyCoupon = () => {
-    const code = couponCode.trim().toUpperCase();
-    if (!code) {
-      toast({ title: 'Enter a coupon code', variant: 'destructive' });
-      return;
-    }
-    const result = validateCoupon(code, totalPrice, '', true);
-    if (!result.valid) {
-      toast({ title: 'Invalid Coupon', description: result.error, variant: 'destructive' });
-      return;
-    }
-    const coupon = COUPONS[code];
-    if (coupon.requiresUPI) {
-      toast({ title: 'UPI Required', description: 'This coupon can only be applied at checkout when UPI is selected.', variant: 'destructive' });
-      return;
-    }
-    const discount = Math.round(totalPrice * (coupon.value / 100));
-    setAppliedCoupon(code);
-    toast({ title: 'Coupon Applied!', description: `${code} — You save ₹${discount}` });
-  };
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setCouponCode('');
-    toast({ title: 'Coupon Removed' });
-  };
-
+  const finalTotal = totalPrice;
   const handleCheckoutClick = () => {
     if (user) {
       navigate('/checkout');
