@@ -79,6 +79,23 @@ const SellerRegistrationForm = () => {
     return (districts as any)[stateObj.code] || [];
   }, [formData.state]);
 
+  // PIN code auto-fill
+  const { data: pinData, loading: pinLoading, error: pinError } = usePincodeLookup(formData.pincode);
+  useEffect(() => {
+    if (!pinData) return;
+    setFormData((prev) => {
+      const matchedState = allIndianStates.find(s => s.name.toLowerCase() === pinData.state.toLowerCase());
+      const stateName = matchedState ? matchedState.name : prev.state;
+      let districtName = prev.district;
+      if (matchedState) {
+        const distList = (districts as any)[matchedState.code] || [];
+        const matched = distList.find((d: any) => d.name.toLowerCase() === pinData.district.toLowerCase());
+        if (matched) districtName = matched.name;
+      }
+      return { ...prev, state: stateName, district: districtName };
+    });
+  }, [pinData]);
+
   const handleFileSelect = (file: File | undefined, setter: (f: File | null) => void, previewSetter?: (s: string | null) => void) => {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
