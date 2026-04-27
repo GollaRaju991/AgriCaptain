@@ -106,27 +106,65 @@ const MyCropDetail: React.FC = () => {
       </div>
 
       <main className="container mx-auto max-w-3xl px-4 py-4">
-        {/* Banner image */}
-        <div className="relative rounded-2xl overflow-hidden bg-muted mb-4">
-          <img
-            src={images[activeImage]}
-            alt={crop.crop_name}
-            className="w-full h-64 sm:h-80 object-cover"
-            onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
-          />
-          {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {images.map((_, i) => (
-                <button
+        {/* Banner image — swipeable slider (matches Direct From Farm) */}
+        <div className="rounded-2xl overflow-hidden bg-muted mb-4">
+          <div
+            className="relative w-full h-64 sm:h-80 bg-white overflow-hidden touch-pan-y select-none"
+            onTouchStart={(e) => {
+              (e.currentTarget as any)._tsx = e.touches[0].clientX;
+              (e.currentTarget as any)._tsy = e.touches[0].clientY;
+            }}
+            onTouchEnd={(e) => {
+              const startX = (e.currentTarget as any)._tsx as number | undefined;
+              const startY = (e.currentTarget as any)._tsy as number | undefined;
+              if (startX == null || startY == null) return;
+              const endX = e.changedTouches[0].clientX;
+              const endY = e.changedTouches[0].clientY;
+              const dx = endX - startX;
+              const dy = endY - startY;
+              if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                if (dx < 0) setActiveImage((activeImage + 1) % images.length);
+                else setActiveImage((activeImage - 1 + images.length) % images.length);
+              }
+            }}
+          >
+            <div
+              className="flex h-full w-full transition-transform duration-300 ease-out"
+              style={{ transform: `translateX(-${activeImage * 100}%)` }}
+            >
+              {images.map((img, i) => (
+                <img
                   key={i}
-                  onClick={() => setActiveImage(i)}
-                  className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-white' : 'w-1.5 bg-white/50'}`}
+                  src={img}
+                  alt={`${crop.crop_name} ${i + 1}`}
+                  className="w-full h-full object-contain bg-white flex-shrink-0"
+                  draggable={false}
+                  onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
                 />
               ))}
             </div>
-          )}
-          <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-            {activeImage + 1} / {images.length}
+
+            {images.length > 1 && (
+              <>
+                {/* Bar indicators */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      aria-label={`Go to image ${i + 1}`}
+                      onClick={() => setActiveImage(i)}
+                      className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-white' : 'w-1.5 bg-white/60'}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Image count */}
+                <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                  {activeImage + 1} / {images.length}
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -240,9 +278,9 @@ const MyCropDetail: React.FC = () => {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>{t('Delete this crop?', 'ఈ పంట తొలగించాలా?', 'इस फसल को हटाएं?')}</AlertDialogTitle>
+                <AlertDialogTitle>{t('Are you sure you want to delete this crop?', 'మీరు ఖచ్చితంగా ఈ పంటను తొలగించాలనుకుంటున్నారా?', 'क्या आप वाकई इस फसल को हटाना चाहते हैं?')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  {t('This action cannot be undone.', 'ఈ చర్య రద్దు చేయబడదు.', 'यह क्रिया वापस नहीं की जा सकती।')}
+                  {t('This will permanently remove the crop from your listings. This action cannot be undone.', 'ఇది మీ జాబితాల నుండి పంటను శాశ్వతంగా తొలగిస్తుంది. ఈ చర్య రద్దు చేయబడదు.', 'यह आपकी सूची से फसल को स्थायी रूप से हटा देगा। यह क्रिया वापस नहीं की जा सकती।')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
