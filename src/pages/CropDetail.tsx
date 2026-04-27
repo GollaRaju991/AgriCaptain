@@ -47,6 +47,7 @@ const CropDetailPage: React.FC = () => {
   
   const { items, addToCart, updateQuantity } = useCart();
   const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
+  const [selectedKg, setSelectedKg] = useState<number>(1);
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
 
   useEffect(() => {
@@ -240,16 +241,32 @@ const CropDetailPage: React.FC = () => {
         </div>
 
         {(() => {
+          const priceNum = parseFloat(String(crop.price).replace(/[^0-9.]/g, '')) || 0;
+          const isDirectFromFarm = crop.sell_type === 'direct_from_farm' || crop.sell_type === 'both';
+
+          // Tiered pricing: bulk discount per kg
+          const tiers = [
+            { kg: 1, perKg: priceNum },
+            { kg: 2, perKg: Math.max(0, priceNum - 1) },
+            { kg: 5, perKg: Math.max(0, priceNum - 2) },
+            { kg: 10, perKg: Math.max(0, priceNum - 3) },
+          ].map(t => ({
+            ...t,
+            total: Math.round(t.perKg * t.kg),
+            save: Math.round((priceNum - t.perKg) * t.kg),
+          }));
+          const selectedTier = tiers.find(t => t.kg === selectedKg) || tiers[0];
+
           const handleAdd = (navigateAfter = false) => {
             const img = crop.crop_images && crop.crop_images.length > 0 ? crop.crop_images[0] : '/placeholder.svg';
-            const priceNum = parseFloat(String(crop.price).replace(/[^0-9.]/g, '')) || 0;
+            const unitPrice = isDirectFromFarm ? selectedTier.total : priceNum;
             if (cartItem) {
               updateQuantity(crop.id, cartItem.quantity + 1);
             } else {
               addToCart({
                 id: crop.id,
-                name: crop.crop_name,
-                price: priceNum,
+                name: isDirectFromFarm ? `${crop.crop_name} (${selectedTier.kg} kg)` : crop.crop_name,
+                price: unitPrice,
                 image: img,
                 category: 'Direct From Farm',
               });
@@ -274,7 +291,7 @@ const CropDetailPage: React.FC = () => {
                     <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="text-2xl font-bold text-foreground">₹{crop.price}</span>
-                      <span className="text-sm text-muted-foreground">• {crop.quantity}</span>
+                      <span className="text-sm text-muted-foreground">{isDirectFromFarm ? '/ kg' : `• ${crop.quantity}`}</span>
                     </div>
                   </div>
 
@@ -355,6 +372,41 @@ const CropDetailPage: React.FC = () => {
                 </Card>
               )}
 
+              {/* Quantity selector — Direct From Farm only */}
+              {isDirectFromFarm && (
+                <div className="mb-4">
+                  <p className="text-sm font-bold text-foreground mb-2">
+                    {label('Select Quantity (Per kg)', 'పరిమాణం ఎంచుకోండి (కిలోకి)')}
+                  </p>
+                  <div className="grid grid-cols-4 gap-2">
+                    {tiers.map((t) => {
+                      const active = selectedKg === t.kg;
+                      return (
+                        <button
+                          key={t.kg}
+                          type="button"
+                          onClick={() => setSelectedKg(t.kg)}
+                          className={`rounded-lg border-2 p-2 text-center transition ${
+                            active
+                              ? 'border-green-600 bg-green-50'
+                              : 'border-border bg-card hover:border-green-300'
+                          }`}
+                        >
+                          <p className="text-sm font-bold text-foreground">{t.kg} kg</p>
+                          <p className="text-base font-extrabold text-foreground">₹{t.total}</p>
+                          <p className="text-[10px] text-muted-foreground">₹{t.perKg} per kg</p>
+                          {t.save > 0 && (
+                            <span className="inline-block mt-1 text-[10px] font-semibold text-green-700 bg-green-100 rounded px-1.5 py-0.5">
+                              {label(`Save ₹${t.save}`, `₹${t.save} ఆదా`)}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Add to Cart + Buy Now */}
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <Button
@@ -370,6 +422,9 @@ const CropDetailPage: React.FC = () => {
                   className="h-12 text-base font-bold bg-green-600 hover:bg-green-700 flex flex-col leading-tight"
                 >
                   <span>{label('Buy Now', 'ఇప్పుడే కొనండి')}</span>
+                  {isDirectFromFarm && (
+                    <span className="text-xs font-normal opacity-90">at ₹{selectedTier.total}</span>
+                  )}
                 </Button>
               </div>
             </>
