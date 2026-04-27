@@ -584,6 +584,28 @@ const AddCropPage: React.FC = () => {
               </CardContent>
             </Card>
 
+            {/* View existing crop details — shown only when this farmer already has crops */}
+            {existingCropCount > 0 && !editCropId && (
+              <button
+                type="button"
+                onClick={() => navigate(`/sell-crop/my-crops/${selectedSeller.id}`)}
+                className="w-full mb-4 rounded-xl border-2 border-green-500 bg-green-50 hover:bg-green-100 transition-colors p-4 flex items-center gap-3 text-left"
+              >
+                <div className="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
+                  <Sprout className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-green-800 text-sm">
+                    {label('View existing crop details', 'ఇప్పటికే ఉన్న పంట వివరాలను చూడండి', 'मौजूदा फसल विवरण देखें')}
+                  </p>
+                  <p className="text-xs text-green-700/80 mt-0.5">
+                    {existingCropCount} {label(existingCropCount === 1 ? 'crop already added' : 'crops already added', 'పంటలు ఇప్పటికే జోడించబడ్డాయి', 'फसलें पहले से जोड़ी गईं')}
+                  </p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-green-700 flex-shrink-0" />
+              </button>
+            )}
+
             <CropDetailsForm
               sellerId={selectedSeller.id}
               userId={userId!}
