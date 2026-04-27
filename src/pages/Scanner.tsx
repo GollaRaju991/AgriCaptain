@@ -218,14 +218,8 @@ const ResultCard = ({ result, capturedImage, onRetake, translations }: { result:
         </div>
       )}
 
-      {/* Action Buttons - show scan again prominently for not-plant/unclear */}
-      {(isNotPlant || isUnclear) ? (
-        <div className="max-w-sm mx-auto">
-          <Button onClick={onRetake} className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-11 font-semibold">
-            <Camera className="h-4 w-4 mr-2" /> {translations.scanner_scan_again}
-          </Button>
-        </div>
-      ) : (
+      {/* Action Buttons - hidden for not-plant/unclear (bottom Scan Again/Close already shown) */}
+      {!(isNotPlant || isUnclear) && (
         <div className="max-w-sm mx-auto flex gap-2">
           <Link to="/scanner" className="flex-1">
             <Button className="w-full bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-semibold">
