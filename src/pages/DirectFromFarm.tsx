@@ -307,28 +307,32 @@ const DirectFromFarm: React.FC = () => {
                 {isOrganic ? 'Organic' : 'Premium'}
               </Badge>
             )}
-            {crop.seller && (
-              <div className="absolute bottom-2 right-2">
-                {crop.seller.photo_url ? (
-                  <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white object-cover shadow" />
-                ) : (
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs sm:text-sm border-2 border-white shadow">
-                    {crop.seller.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
-          <div className="p-2 sm:p-3 pr-10 sm:pr-12">
-            <div className="flex items-start justify-between gap-1">
-              <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
-              {crop.seller && <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 truncate max-w-[60px] sm:max-w-none">{crop.seller.name}</span>}
-            </div>
-
-            <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
+          <div className="p-2 sm:p-3 pr-12 sm:pr-14">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
+                <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
+                  <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
+                </div>
+              </div>
+              {crop.seller && (
+                <div className="flex items-center gap-1.5 flex-shrink-0">
+                  {crop.seller.photo_url ? (
+                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-border" />
+                  ) : (
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[10px] sm:text-xs border border-border">
+                      {crop.seller.name.charAt(0)}
+                    </div>
+                  )}
+                  <div className="leading-tight">
+                    <p className="text-[10px] sm:text-xs font-semibold text-foreground truncate max-w-[60px]">{crop.seller.name}</p>
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground">{t('Farmer', 'రైతు', 'किसान')}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
@@ -362,8 +366,8 @@ const DirectFromFarm: React.FC = () => {
         {/* Farmer contact details intentionally removed from listing cards — shown only on product detail page */}
 
 
-        {/* + / quantity stepper - compact, overlapping image bottom-right */}
-        <div className="absolute right-2 sm:right-3 z-10 top-[7.25rem] sm:top-[10.75rem]">
+        {/* + / quantity stepper - 36x36 rounded square at bottom-right of card body */}
+        <div className="absolute right-2 sm:right-3 bottom-2 sm:bottom-3 z-10">
           {(() => {
             const cartItem = cartItems.find(
               (i) => i.id === crop.id || (i.name === crop.crop_name && i.category === 'Direct From Farm')
@@ -373,28 +377,28 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 rounded-full bg-green-600 hover:bg-green-700 text-white active:scale-95 transition shadow-md ring-2 ring-white"
+                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-green-600 hover:bg-green-700 text-white active:scale-95 transition shadow-md"
                 >
-                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={3} />
+                  <Plus className="h-5 w-5" strokeWidth={2.5} />
                 </button>
               );
             }
             return (
-              <div className="flex items-center gap-1 bg-green-600 rounded-full h-7 sm:h-8 px-1.5 shadow-md ring-2 ring-white">
+              <div className="flex items-center gap-1 bg-green-600 rounded-lg h-9 px-1.5 shadow-md">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white hover:bg-green-700 rounded-full h-5 w-5 flex items-center justify-center active:scale-95 transition"
+                  className="text-white hover:bg-green-700 rounded h-6 w-6 flex items-center justify-center active:scale-95 transition"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3 w-3" strokeWidth={3} />
+                  <Minus className="h-3.5 w-3.5" strokeWidth={3} />
                 </button>
-                <span className="text-white font-bold text-[10px] leading-none min-w-[1.75rem] text-center">{cartItem.quantity}kg</span>
+                <span className="text-white font-bold text-[11px] leading-none min-w-[1.75rem] text-center">{cartItem.quantity}kg</span>
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white hover:bg-green-700 rounded-full h-5 w-5 flex items-center justify-center active:scale-95 transition"
+                  className="text-white hover:bg-green-700 rounded h-6 w-6 flex items-center justify-center active:scale-95 transition"
                   aria-label="Increase"
                 >
-                  <Plus className="h-3 w-3" strokeWidth={3} />
+                  <Plus className="h-3.5 w-3.5" strokeWidth={3} />
                 </button>
               </div>
             );
