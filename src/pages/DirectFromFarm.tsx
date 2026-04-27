@@ -307,32 +307,29 @@ const DirectFromFarm: React.FC = () => {
                 {isOrganic ? 'Organic' : 'Premium'}
               </Badge>
             )}
-          </div>
-
-          <div className="p-2 sm:p-3 pr-12 sm:pr-14">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
-                <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-                  <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
+            {/* Farmer details - top right corner overlay on image */}
+            {crop.seller && (
+              <div className="absolute top-2 right-2 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-full pl-0.5 pr-1.5 py-0.5 shadow-sm border border-border/50 max-w-[60%]">
+                {crop.seller.photo_url ? (
+                  <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover flex-shrink-0" />
+                ) : (
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[9px] sm:text-[10px] flex-shrink-0">
+                    {crop.seller.name.charAt(0)}
+                  </div>
+                )}
+                <div className="leading-tight min-w-0">
+                  <p className="text-[9px] sm:text-[10px] font-semibold text-foreground truncate">{crop.seller.name}</p>
+                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-none">{t('Farmer', 'రైతు', 'किसान')}</p>
                 </div>
               </div>
-              {crop.seller && (
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {crop.seller.photo_url ? (
-                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-border" />
-                  ) : (
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[10px] sm:text-xs border border-border">
-                      {crop.seller.name.charAt(0)}
-                    </div>
-                  )}
-                  <div className="leading-tight">
-                    <p className="text-[10px] sm:text-xs font-semibold text-foreground truncate max-w-[60px]">{crop.seller.name}</p>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground">{t('Farmer', 'రైతు', 'किसान')}</p>
-                  </div>
-                </div>
-              )}
+            )}
+          </div>
+
+          <div className="p-2 sm:p-3 pr-10 sm:pr-11">
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
+            <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
+              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
@@ -377,28 +374,28 @@ const DirectFromFarm: React.FC = () => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleAddToCart(crop); }}
                   aria-label={t('Add', 'జోడించు', 'जोड़ें')}
-                  className="flex items-center justify-center h-9 w-9 rounded-lg bg-green-600 hover:bg-green-700 text-white active:scale-95 transition shadow-md"
+                  className="flex items-center justify-center h-7 w-7 rounded-md bg-green-600 hover:bg-green-700 text-white active:scale-95 transition shadow-md"
                 >
-                  <Plus className="h-5 w-5" strokeWidth={2.5} />
+                  <Plus className="h-4 w-4" strokeWidth={2.5} />
                 </button>
               );
             }
             return (
-              <div className="flex items-center gap-1 bg-green-600 rounded-lg h-9 px-1.5 shadow-md">
+              <div className="flex items-center gap-0.5 bg-green-600 rounded-md h-7 px-1 shadow-md">
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
-                  className="text-white hover:bg-green-700 rounded h-6 w-6 flex items-center justify-center active:scale-95 transition"
+                  className="text-white hover:bg-green-700 rounded h-5 w-5 flex items-center justify-center active:scale-95 transition"
                   aria-label="Decrease"
                 >
-                  <Minus className="h-3.5 w-3.5" strokeWidth={3} />
+                  <Minus className="h-3 w-3" strokeWidth={3} />
                 </button>
-                <span className="text-white font-bold text-[11px] leading-none min-w-[1.75rem] text-center">{cartItem.quantity}kg</span>
+                <span className="text-white font-bold text-[10px] leading-none min-w-[1.5rem] text-center">{cartItem.quantity}kg</span>
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
-                  className="text-white hover:bg-green-700 rounded h-6 w-6 flex items-center justify-center active:scale-95 transition"
+                  className="text-white hover:bg-green-700 rounded h-5 w-5 flex items-center justify-center active:scale-95 transition"
                   aria-label="Increase"
                 >
-                  <Plus className="h-3.5 w-3.5" strokeWidth={3} />
+                  <Plus className="h-3 w-3" strokeWidth={3} />
                 </button>
               </div>
             );
