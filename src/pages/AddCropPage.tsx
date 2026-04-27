@@ -14,6 +14,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import CropDetailsForm from '@/components/CropDetailsForm';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { states, districts, divisions, mandals, villages, getMandalsForDistrict } from '@/data/locationData';
+import { usePincodeLookup } from '@/hooks/usePincodeLookup';
 
 const allIndianStates = states.IN || [];
 
@@ -114,6 +115,24 @@ const AddCropPage: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  // PIN code auto-fill
+  const { data: pinData, loading: pinLoading, error: pinError } = usePincodeLookup(formData.pincode);
+  useEffect(() => {
+    if (!pinData) return;
+    setFormData((prev) => {
+      const matchedState = allIndianStates.find(s => s.name.toLowerCase() === pinData.state.toLowerCase());
+      const stateName = matchedState ? matchedState.name : prev.state || pinData.state;
+      let districtName = prev.district;
+      if (matchedState) {
+        const distList = (districts as any)[matchedState.code] || [];
+        const matched = distList.find((d: any) => d.name.toLowerCase() === pinData.district.toLowerCase());
+        if (matched) districtName = matched.name;
+        else if (!districtName) districtName = pinData.district;
+      }
+      return { ...prev, state: stateName, district: districtName };
+    });
+  }, [pinData]);
 
   const handleSelectChange = (field: string, value: string) => {
     const resets: Record<string, string[]> = {
@@ -471,7 +490,24 @@ const AddCropPage: React.FC = () => {
                   <Label htmlFor="pincode" className="flex items-center gap-2">
                     <Hash className="h-4 w-4 text-muted-foreground" /> {label('Pin Code', 'పిన్ కోడ్')} *
                   </Label>
-                  <Input id="pincode" name="pincode" value={formData.pincode} onChange={handleInputChange} required className="mt-1" placeholder="XXXXXX" maxLength={6} />
+                  <div className="relative mt-1">
+                    <Input
+                      id="pincode"
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
+                      required
+                      placeholder="XXXXXX"
+                      maxLength={6}
+                      inputMode="numeric"
+                      className="pr-9"
+                    />
+                    {pinLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary animate-spin" />}
+                  </div>
+                  {pinError && <p className="text-xs text-destructive mt-1">{pinError}</p>}
+                  {pinData && !pinError && (
+                    <p className="text-xs text-primary mt-1">✓ {pinData.district}, {pinData.state}</p>
+                  )}
                 </div>
 
                 {/* Photo */}
