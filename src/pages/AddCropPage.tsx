@@ -416,9 +416,11 @@ const AddCropPage: React.FC = () => {
               </Card>
             ))}
 
-            <Button variant="outline" className="w-full py-3" onClick={startCreateNew}>
-              <Plus className="h-4 w-4 mr-2" /> {label('Create New Farmer Profile', 'కొత్త రైతు ప్రొఫైల్ సృష్టించండి')}
-            </Button>
+            {sellerProfiles.length === 0 && (
+              <Button variant="outline" className="w-full py-3" onClick={startCreateNew}>
+                <Plus className="h-4 w-4 mr-2" /> {label('Create Farmer Profile', 'రైతు ప్రొఫైల్ సృష్టించండి')}
+              </Button>
+            )}
           </div>
         )}
 
