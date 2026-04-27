@@ -338,13 +338,54 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
               />
             </div>
 
-            {/* City & Pincode */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Building className="h-4 w-4 text-brand-green" />
-                  City
-                </Label>
+            {/* Pincode (auto-fills city & state) */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Navigation className="h-4 w-4 text-brand-green" />
+                Pincode
+              </Label>
+              <div className="relative">
+                <Input
+                  value={formData.pincode}
+                  onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
+                  placeholder="Enter 6-digit pincode"
+                  className="h-11 rounded-xl border-border/60 text-sm pr-10"
+                  maxLength={6}
+                  required
+                  inputMode="numeric"
+                />
+                {pinLoading && (
+                  <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-green animate-spin" />
+                )}
+              </div>
+              {pinError && <p className="text-xs text-destructive">{pinError}</p>}
+              {pinData && !pinError && (
+                <p className="text-xs text-brand-green">✓ {pinData.district}, {pinData.state}</p>
+              )}
+            </div>
+
+            {/* City / Locality */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Building className="h-4 w-4 text-brand-green" />
+                City / Area
+              </Label>
+              {pinData && pinData.localities.length > 1 ? (
+                <div className="relative">
+                  <select
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className="w-full h-11 rounded-xl border border-border/60 bg-background px-3 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green"
+                    required
+                  >
+                    <option value="">Select area</option>
+                    {pinData.localities.map((loc) => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                </div>
+              ) : (
                 <Input
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -352,21 +393,7 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
                   className="h-11 rounded-xl border-border/60 text-sm"
                   required
                 />
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Navigation className="h-4 w-4 text-brand-green" />
-                  Pincode
-                </Label>
-                <Input
-                  value={formData.pincode}
-                  onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                  placeholder="Enter pincode"
-                  className="h-11 rounded-xl border-border/60 text-sm"
-                  maxLength={6}
-                  required
-                />
-              </div>
+              )}
             </div>
 
             {/* State */}
