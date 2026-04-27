@@ -65,6 +65,17 @@ const AddressManager: React.FC<AddressManagerProps> = ({ onAddressSelect, select
     pincode: '',
     address_type: 'home' as string
   });
+  const { data: pinData, loading: pinLoading, error: pinError } = usePincodeLookup(formData.pincode);
+
+  useEffect(() => {
+    if (pinData) {
+      setFormData((prev) => ({
+        ...prev,
+        state: prev.state || pinData.state,
+        city: prev.city || pinData.city,
+      }));
+    }
+  }, [pinData]);
 
   useEffect(() => {
     if (user && session) {
