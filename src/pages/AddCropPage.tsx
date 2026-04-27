@@ -14,6 +14,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import CropDetailsForm from '@/components/CropDetailsForm';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { states, districts, divisions, mandals, villages, getMandalsForDistrict } from '@/data/locationData';
+import { usePincodeLookup } from '@/hooks/usePincodeLookup';
 
 const allIndianStates = states.IN || [];
 
