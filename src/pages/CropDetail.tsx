@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -46,6 +46,7 @@ const CropDetailPage: React.FC = () => {
   const [activeImage, setActiveImage] = useState(0);
   
   const { items, addToCart, updateQuantity } = useCart();
+  const cartCount = items.reduce((sum, i) => sum + (i.quantity || 0), 0);
   const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
   const [selectedKg, setSelectedKg] = useState<number>(1);
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
@@ -131,12 +132,30 @@ const CropDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Mobile header */}
-      <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-3 px-4 py-3">
-        <button onClick={handleBack}>
-          <ArrowLeft className="h-6 w-6" />
+      {/* Mobile header: back + search + cart */}
+      <div className="lg:hidden sticky top-0 z-50 bg-green-600 text-white flex items-center gap-2 px-3 py-2.5 shadow-md">
+        <button onClick={handleBack} className="p-1 -ml-1 shrink-0" aria-label="Back">
+          <ArrowLeft className="h-6 w-6" strokeWidth={2.5} />
         </button>
-        <h1 className="text-lg font-bold truncate">{crop.crop_name}</h1>
+        <button
+          onClick={() => navigate('/products')}
+          className="flex-1 flex items-center gap-2 bg-white/95 text-gray-600 rounded-full px-3 py-1.5 text-sm"
+        >
+          <Search className="h-4 w-4 text-green-700" />
+          <span className="truncate">Search products...</span>
+        </button>
+        <button
+          onClick={() => navigate('/cart')}
+          className="relative p-1.5 shrink-0"
+          aria-label="Cart"
+        >
+          <ShoppingCart className="h-6 w-6" strokeWidth={2.2} />
+          {cartCount > 0 && (
+            <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
+              {cartCount > 9 ? '9+' : cartCount}
+            </span>
+          )}
+        </button>
       </div>
 
       <div className="hidden lg:block"><Header /></div>
