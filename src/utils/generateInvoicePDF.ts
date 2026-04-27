@@ -51,6 +51,10 @@ export const generateInvoicePDF = (order: InvoiceOrder) => {
   const colWidth = (pageWidth - 28) / 2;
   
   // Sold By
+  // Resolve vendor from the first order item's category
+  const primaryCategory = orderItems[0]?.category || orderItems[0]?.product_type || '';
+  const vendor = getVendorForCategory(primaryCategory);
+
   doc.setFillColor(245, 245, 245);
   doc.rect(14, 68, colWidth, 40, 'F');
   doc.setFont('helvetica', 'bold');
@@ -60,10 +64,10 @@ export const generateInvoicePDF = (order: InvoiceOrder) => {
   doc.setTextColor(0, 0, 0);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.text('Agrizin Marketplace Pvt Ltd', 18, 83);
-  doc.text('Hyderabad, Telangana - 500001', 18, 89);
-  doc.text('GSTIN: 36AXXXX1234X1ZX', 18, 95);
-  doc.text('PAN: AXXXX1234X', 18, 101);
+  doc.text(vendor.vendorName, 18, 83);
+  doc.text(vendor.address, 18, 89);
+  doc.text(`License No: ${vendor.licenseNumber}`, 18, 95);
+  doc.text(`Category: ${vendor.category}`, 18, 101);
 
   // Ship To
   doc.setFillColor(245, 245, 245);
