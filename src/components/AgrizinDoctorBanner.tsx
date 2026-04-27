@@ -33,23 +33,6 @@ const AgrizinDoctorBanner = () => {
                   Get Expert Support
                 </Button>
               </Link>
-              <a href="tel:+919999999999">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-green-600 text-green-700 hover:bg-green-50 rounded-md px-2 py-2"
-                >
-                  <Phone className="h-4 w-4" />
-                </Button>
-              </a>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border-green-600 text-green-700 hover:bg-green-50 rounded-md px-2 py-2"
-                onClick={() => setShowScanner(true)}
-              >
-                <ScanLine className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 
