@@ -287,18 +287,20 @@ const Products = () => {
           </div>
         )}
 
+        <FarmCropsSection />
+
         {filteredAndSortedProducts.length > 0 ? (
           <div className="grid grid-cols-2 gap-3 px-4 mb-6">
             {filteredAndSortedProducts.map(product => (
               <ProductCard key={product.id} product={product} variant="grid" />
             ))}
           </div>
-        ) : (
+        ) : !hasFarmResults ? (
           <div className="text-center py-12 px-4">
-            <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
+            <p className="text-muted-foreground text-lg">No results found matching your criteria.</p>
             <Button className="mt-4" onClick={clearFilters}>Clear Filters</Button>
           </div>
-        )}
+        ) : null}
 
         <Sheet open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
           <SheetContent side="bottom" className="rounded-t-2xl max-h-[70vh]">
