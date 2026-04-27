@@ -500,8 +500,8 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
                 {cropPreviews.map((preview, idx) => (
                   <div key={idx} className="relative">
                     <img src={preview} alt="Crop" className="w-32 h-32 object-cover rounded-lg border" />
-                    <button type="button" onClick={() => removeCropImage(idx)} className="absolute -top-2 -right-2 bg-foreground text-background rounded-full p-1 shadow-md hover:bg-foreground/90">
-                      <X className="h-3.5 w-3.5" strokeWidth={2.5} />
+                    <button type="button" onClick={() => removeCropImage(idx)} className="absolute -top-2 -right-2 bg-white text-foreground rounded-full p-0.5 shadow-md border border-border hover:bg-gray-50">
+                      <X className="h-4 w-4" strokeWidth={2.5} />
                     </button>
                   </div>
                 ))}
