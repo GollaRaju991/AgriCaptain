@@ -268,8 +268,6 @@ const Cart = () => {
                 </Link>
               </CardContent>
             </Card>
-
-            <CouponSection />
           </div>
         </div>
       </div>
