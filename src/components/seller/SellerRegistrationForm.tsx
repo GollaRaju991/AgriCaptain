@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { states, districts, divisions, mandals, villages } from '@/data/locationData';
+import { usePincodeLookup } from '@/hooks/usePincodeLookup';
+import { Loader2 } from 'lucide-react';
 
 const allIndianStates = states.IN || [];
 
