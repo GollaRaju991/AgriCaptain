@@ -166,6 +166,14 @@ const AddCropPage: React.FC = () => {
   };
 
   const startCreateNew = () => {
+    if (sellerProfiles.length >= 1) {
+      toast({
+        title: label('Only one farmer profile allowed', 'ఒక రైతు ప్రొఫైల్ మాత్రమే అనుమతించబడుతుంది'),
+        description: label('You can add multiple crops inside your existing profile.', 'మీ ప్రస్తుత ప్రొఫైల్‌లో మీరు అనేక పంటలను జోడించవచ్చు.'),
+        variant: 'destructive',
+      });
+      return;
+    }
     resetForm();
     setStep('profile-form');
   };
