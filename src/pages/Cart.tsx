@@ -169,9 +169,6 @@ const Cart = () => {
               </div>
             </CardContent>
           </Card>
-
-          {/* Coupon Section */}
-          <CouponSection mobile />
         </div>
 
         {/* Sticky Bottom Bar */}
