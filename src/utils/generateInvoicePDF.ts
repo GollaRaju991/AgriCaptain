@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { getVendorForCategory } from './categoryVendors';
 
 interface InvoiceOrder {
   id: string;
