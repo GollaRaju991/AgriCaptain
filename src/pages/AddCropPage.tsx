@@ -116,6 +116,24 @@ const AddCropPage: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // PIN code auto-fill
+  const { data: pinData, loading: pinLoading, error: pinError } = usePincodeLookup(formData.pincode);
+  useEffect(() => {
+    if (!pinData) return;
+    setFormData((prev) => {
+      const matchedState = allIndianStates.find(s => s.name.toLowerCase() === pinData.state.toLowerCase());
+      const stateName = matchedState ? matchedState.name : prev.state || pinData.state;
+      let districtName = prev.district;
+      if (matchedState) {
+        const distList = (districts as any)[matchedState.code] || [];
+        const matched = distList.find((d: any) => d.name.toLowerCase() === pinData.district.toLowerCase());
+        if (matched) districtName = matched.name;
+        else if (!districtName) districtName = pinData.district;
+      }
+      return { ...prev, state: stateName, district: districtName };
+    });
+  }, [pinData]);
+
   const handleSelectChange = (field: string, value: string) => {
     const resets: Record<string, string[]> = {
       state: ['district', 'mandal', 'village'],
