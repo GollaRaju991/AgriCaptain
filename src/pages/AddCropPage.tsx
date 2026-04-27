@@ -166,6 +166,14 @@ const AddCropPage: React.FC = () => {
   };
 
   const startCreateNew = () => {
+    if (sellerProfiles.length >= 1) {
+      toast({
+        title: label('Only one farmer profile allowed', 'ఒక రైతు ప్రొఫైల్ మాత్రమే అనుమతించబడుతుంది'),
+        description: label('You can add multiple crops inside your existing profile.', 'మీ ప్రస్తుత ప్రొఫైల్‌లో మీరు అనేక పంటలను జోడించవచ్చు.'),
+        variant: 'destructive',
+      });
+      return;
+    }
     resetForm();
     setStep('profile-form');
   };
@@ -243,6 +251,24 @@ const AddCropPage: React.FC = () => {
         setSelectedSeller(updatedSeller);
         toast({ title: label('Profile updated', 'ప్రొఫైల్ అప్‌డేట్ చేయబడింది') });
       } else {
+        // Enforce one farmer profile per user
+        const { data: existing } = await supabase
+          .from('sellers')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('seller_type', 'farmers_market')
+          .limit(1);
+        if (existing && existing.length > 0) {
+          toast({
+            title: label('Only one farmer profile allowed', 'ఒక రైతు ప్రొఫైల్ మాత్రమే అనుమతించబడుతుంది'),
+            description: label('Use your existing profile to add more crops.', 'మరిన్ని పంటలు జోడించడానికి మీ ప్రస్తుత ప్రొఫైల్‌ను ఉపయోగించండి.'),
+            variant: 'destructive',
+          });
+          setSubmitting(false);
+          setSellerProfiles(prev => prev);
+          setStep('profile-selection');
+          return;
+        }
         const { data, error } = await supabase.from('sellers').insert(sellerData).select().single();
         if (error) throw error;
         const newSeller = data as unknown as SellerData;
@@ -334,7 +360,9 @@ const AddCropPage: React.FC = () => {
         {step === 'profile-selection' && (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {label('Select an existing farmer profile or create a new one', 'ఇప్పటికే ఉన్న రైతు ప్రొఫైల్ ఎంచుకోండి లేదా కొత్తది సృష్టించండి')}
+              {sellerProfiles.length > 0
+                ? label('Use your farmer profile to add or manage crops', 'పంటలను జోడించడానికి లేదా నిర్వహించడానికి మీ రైతు ప్రొఫైల్‌ను ఉపయోగించండి')
+                : label('Create your farmer profile to get started', 'ప్రారంభించడానికి మీ రైతు ప్రొఫైల్‌ను సృష్టించండి')}
             </p>
 
             {sellerProfiles.map((seller) => (
@@ -388,9 +416,11 @@ const AddCropPage: React.FC = () => {
               </Card>
             ))}
 
-            <Button variant="outline" className="w-full py-3" onClick={startCreateNew}>
-              <Plus className="h-4 w-4 mr-2" /> {label('Create New Farmer Profile', 'కొత్త రైతు ప్రొఫైల్ సృష్టించండి')}
-            </Button>
+            {sellerProfiles.length === 0 && (
+              <Button variant="outline" className="w-full py-3" onClick={startCreateNew}>
+                <Plus className="h-4 w-4 mr-2" /> {label('Create Farmer Profile', 'రైతు ప్రొఫైల్ సృష్టించండి')}
+              </Button>
+            )}
           </div>
         )}
 
