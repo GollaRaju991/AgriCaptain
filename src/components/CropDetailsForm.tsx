@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store, Navigation } from 'lucide-react';
+import { Upload, X, Sprout, Scale, IndianRupee, CalendarDays, Star, Warehouse, MapPin, Loader2, Check, Store, Navigation, Home } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
