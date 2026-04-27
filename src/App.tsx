@@ -26,6 +26,8 @@ import Wishlist from "./pages/Wishlist";
 import SellCrop from "./pages/SellCrop";
 import CropDetail from "./pages/CropDetail";
 import AddCropPage from "./pages/AddCropPage";
+import MyCrops from "./pages/MyCrops";
+import MyCropDetail from "./pages/MyCropDetail";
 import GiftCards from "./pages/GiftCards";
 import MarketDetails from "./pages/MarketDetails";
 import Scanner from "./pages/Scanner";
@@ -93,6 +95,8 @@ const App = () => (
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/sell-crop" element={<SellCrop />} />
                     <Route path="/sell-crop/add" element={<AddCropPage />} />
+                    <Route path="/sell-crop/my-crops/:sellerId" element={<MyCrops />} />
+                    <Route path="/sell-crop/my-crops/:sellerId/:cropId" element={<MyCropDetail />} />
                     <Route path="/sell-crop/:id" element={<CropDetail />} />
                     <Route path="/gift-cards" element={<GiftCards />} />
                     <Route path="/market-details" element={<MarketDetails />} />
