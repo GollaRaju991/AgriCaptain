@@ -481,9 +481,9 @@ const AddCropPage: React.FC = () => {
                   </Label>
                   {photoPreview ? (
                     <div className="relative inline-block">
-                      <img src={photoPreview} alt="Preview" className="w-28 h-28 object-cover rounded-lg border" />
-                      <button type="button" onClick={() => { setPhotoFile(null); setPhotoPreview(null); }} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1">
-                        <X className="h-3 w-3" />
+                      <img src={photoPreview} alt="Preview" className="w-36 h-36 object-cover rounded-lg border" />
+                      <button type="button" onClick={() => { setPhotoFile(null); setPhotoPreview(null); }} className="absolute -top-2 -right-2 bg-foreground text-background rounded-full p-1 shadow-md hover:bg-foreground/90">
+                        <X className="h-3.5 w-3.5" strokeWidth={2.5} />
                       </button>
                     </div>
                   ) : (

@@ -499,9 +499,9 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
               <div className="flex flex-wrap gap-3 mb-3">
                 {cropPreviews.map((preview, idx) => (
                   <div key={idx} className="relative">
-                    <img src={preview} alt="Crop" className="w-24 h-24 object-cover rounded-lg border" />
-                    <button type="button" onClick={() => removeCropImage(idx)} className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1">
-                      <X className="h-3 w-3" />
+                    <img src={preview} alt="Crop" className="w-32 h-32 object-cover rounded-lg border" />
+                    <button type="button" onClick={() => removeCropImage(idx)} className="absolute -top-2 -right-2 bg-foreground text-background rounded-full p-1 shadow-md hover:bg-foreground/90">
+                      <X className="h-3.5 w-3.5" strokeWidth={2.5} />
                     </button>
                   </div>
                 ))}
