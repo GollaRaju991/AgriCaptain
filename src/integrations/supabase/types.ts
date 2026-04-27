@@ -59,6 +59,36 @@ export type Database = {
         }
         Relationships: []
       }
+      category_vendors: {
+        Row: {
+          address: string
+          category: string
+          created_at: string
+          id: string
+          license_number: string
+          updated_at: string
+          vendor_name: string
+        }
+        Insert: {
+          address: string
+          category: string
+          created_at?: string
+          id?: string
+          license_number: string
+          updated_at?: string
+          vendor_name: string
+        }
+        Update: {
+          address?: string
+          category?: string
+          created_at?: string
+          id?: string
+          license_number?: string
+          updated_at?: string
+          vendor_name?: string
+        }
+        Relationships: []
+      }
       delivery_tracking: {
         Row: {
           courier_name: string | null

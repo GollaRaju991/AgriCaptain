@@ -22,6 +22,7 @@ import ImageZoomModal from '@/components/ImageZoomModal';
 import ProductReviewForm from '@/components/ProductReviewForm';
 import SearchSuggestions from '@/components/SearchSuggestions';
 import { addToSearchHistory } from '@/hooks/useSearchHistory';
+import { getVendorForCategory } from '@/utils/categoryVendors';
 
 // Collapsible Product Section Component
 interface ProductSectionProps {
@@ -799,29 +800,34 @@ const ProductDetails = () => {
             </div>
           </ProductSection>
 
-          {/* 2. Vendor Details - Collapsed by default */}
-          <ProductSection title={language === 'te' ? 'విక్రేత వివరాలు' : 'Vendor Details'} defaultOpen={false}>
-            <div className="space-y-3">
-              <div className="border-b border-green-200 dark:border-green-700 pb-3">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">
-                  {language === 'te' ? 'విక్రేత పేరు:' : 'Vendor Name:'}
-                </span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.brand || 'Agrizin Verified Seller'}</p>
-              </div>
-              <div className="border-b border-green-200 dark:border-green-700 pb-3">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">
-                  {language === 'te' ? 'దుకాణ చిరునామా:' : 'Vendor Address:'}
-                </span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.shop_address || (language === 'te' ? 'చిరునామా కోసం విక్రేతను సంప్రదించండి' : 'Contact seller for address details')}</p>
-              </div>
-              <div className="pb-1">
-                <span className="font-medium text-sm text-green-900 dark:text-green-100">
-                  {language === 'te' ? 'లైసెన్స్ నంబర్:' : 'License Number:'}
-                </span>
-                <p className="text-muted-foreground text-sm mt-1">{sellerProduct?.license_number || (language === 'te' ? 'కీటకనాశిని చట్టం 1968 ప్రకారం' : 'As per Insecticides Act 1968')}</p>
-              </div>
-            </div>
-          </ProductSection>
+          {/* 2. Vendor Details - Collapsed by default (category-based vendor) */}
+          {(() => {
+            const categoryVendor = getVendorForCategory(product.category || sellerProduct?.category);
+            return (
+              <ProductSection title={language === 'te' ? 'విక్రేత వివరాలు' : 'Vendor Details'} defaultOpen={false}>
+                <div className="space-y-3">
+                  <div className="border-b border-green-200 dark:border-green-700 pb-3">
+                    <span className="font-medium text-sm text-green-900 dark:text-green-100">
+                      {language === 'te' ? 'విక్రేత పేరు:' : 'Vendor Name:'}
+                    </span>
+                    <p className="text-muted-foreground text-sm mt-1">{categoryVendor.vendorName}</p>
+                  </div>
+                  <div className="border-b border-green-200 dark:border-green-700 pb-3">
+                    <span className="font-medium text-sm text-green-900 dark:text-green-100">
+                      {language === 'te' ? 'దుకాణ చిరునామా:' : 'Vendor Address:'}
+                    </span>
+                    <p className="text-muted-foreground text-sm mt-1">{categoryVendor.address}</p>
+                  </div>
+                  <div className="pb-1">
+                    <span className="font-medium text-sm text-green-900 dark:text-green-100">
+                      {language === 'te' ? 'లైసెన్స్ నంబర్:' : 'License Number:'}
+                    </span>
+                    <p className="text-muted-foreground text-sm mt-1">{categoryVendor.licenseNumber}</p>
+                  </div>
+                </div>
+              </ProductSection>
+            );
+          })()}
 
           {/* 3. Reviews - Collapsed by default */}
           <ProductSection title={language === 'te' ? `సమీక్షలు (${allReviews.length})` : `Reviews (${allReviews.length})`} defaultOpen={false}>
