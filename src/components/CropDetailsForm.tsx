@@ -139,15 +139,32 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
 
     setSubmitting(true);
     try {
-      // Upload new images
+      // Upload new images with retry logic for flaky mobile networks
+      const uploadWithRetry = async (file: File, attempts = 3): Promise<string> => {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const filePath = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        let lastErr: any = null;
+        for (let i = 0; i < attempts; i++) {
+          try {
+            const { error: uploadError } = await supabase.storage
+              .from('crop-images')
+              .upload(filePath, file, { contentType: file.type || 'image/jpeg', upsert: false });
+            if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = supabase.storage.from('crop-images').getPublicUrl(filePath);
+            return publicUrl;
+          } catch (err: any) {
+            lastErr = err;
+            // Wait briefly before retrying (network blip)
+            await new Promise(r => setTimeout(r, 800 * (i + 1)));
+          }
+        }
+        throw new Error(`Image upload failed (${file.name}): ${lastErr?.message || 'network error'}. Please check your internet and try again.`);
+      };
+
       const newImageUrls: string[] = [];
       for (const file of cropImages) {
-        const ext = file.name.split('.').pop();
-        const filePath = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-        const { error: uploadError } = await supabase.storage.from('crop-images').upload(filePath, file);
-        if (uploadError) throw uploadError;
-        const { data: { publicUrl } } = supabase.storage.from('crop-images').getPublicUrl(filePath);
-        newImageUrls.push(publicUrl);
+        const url = await uploadWithRetry(file);
+        newImageUrls.push(url);
       }
 
       const allImageUrls = [...existingImageUrls, ...newImageUrls];
