@@ -48,6 +48,7 @@ const Products = () => {
   const [priceRange, setPriceRange] = useState('all');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sellerProducts, setSellerProducts] = useState<any[]>([]);
+  const [farmCrops, setFarmCrops] = useState<any[]>([]);
 
   const searchQuery = searchParams.get('search') || '';
   const selectedCategory = searchParams.get('category') || '';
