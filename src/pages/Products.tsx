@@ -80,6 +80,22 @@ const Products = () => {
     fetchSellerProducts();
   }, []);
 
+  // Search Direct From Farm + Sell Crop listings whenever user types a search query
+  useEffect(() => {
+    const fetchFarmCrops = async () => {
+      if (!searchQuery.trim()) {
+        setFarmCrops([]);
+        return;
+      }
+      const q = searchQuery.trim();
+      const { data } = await (supabase.from('farmer_crops') as any)
+        .select('id, crop_name, price, quantity, crop_images, availability_location, location_address, sell_type')
+        .ilike('crop_name', `%${q}%`)
+        .limit(40);
+      setFarmCrops(data || []);
+    };
+    fetchFarmCrops();
+  }, [searchQuery]);
   const filteredAndSortedProducts = useMemo(() => {
     // Use category-based loader if a category is selected
     let baseProducts = selectedCategory
