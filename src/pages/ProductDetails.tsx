@@ -484,30 +484,6 @@ const ProductDetails = () => {
               ))}
             </div>
 
-            {/* Mobile thumbnail strip */}
-            {product.images.length > 1 && (
-              <div className="flex lg:hidden gap-2 overflow-x-auto px-3 pb-3 -mt-1 scrollbar-hide">
-                {product.images.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-14 h-14 rounded-md border-2 overflow-hidden transition-all bg-white ${
-                      selectedImage === index
-                        ? 'border-green-600 ring-1 ring-green-600/30'
-                        : 'border-border'
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.name} thumbnail ${index + 1}`}
-                      className="w-full h-full object-contain p-0.5"
-                      draggable={false}
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
-
             <div className="hidden lg:flex gap-3 overflow-x-auto pb-2 mt-4">
               {product.images.map((image, index) => (
                 <button
