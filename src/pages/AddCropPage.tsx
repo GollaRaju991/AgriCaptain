@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check, ChevronRight, Sprout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,6 +51,7 @@ const AddCropPage: React.FC = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [deletingSeller, setDeletingSeller] = useState(false);
   const [step, setStep] = useState<PageStep>('profile-selection');
+  const [existingCropCount, setExistingCropCount] = useState(0);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '',
