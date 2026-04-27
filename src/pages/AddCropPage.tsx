@@ -251,6 +251,24 @@ const AddCropPage: React.FC = () => {
         setSelectedSeller(updatedSeller);
         toast({ title: label('Profile updated', 'ప్రొఫైల్ అప్‌డేట్ చేయబడింది') });
       } else {
+        // Enforce one farmer profile per user
+        const { data: existing } = await supabase
+          .from('sellers')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('seller_type', 'farmers_market')
+          .limit(1);
+        if (existing && existing.length > 0) {
+          toast({
+            title: label('Only one farmer profile allowed', 'ఒక రైతు ప్రొఫైల్ మాత్రమే అనుమతించబడుతుంది'),
+            description: label('Use your existing profile to add more crops.', 'మరిన్ని పంటలు జోడించడానికి మీ ప్రస్తుత ప్రొఫైల్‌ను ఉపయోగించండి.'),
+            variant: 'destructive',
+          });
+          setSubmitting(false);
+          setSellerProfiles(prev => prev);
+          setStep('profile-selection');
+          return;
+        }
         const { data, error } = await supabase.from('sellers').insert(sellerData).select().single();
         if (error) throw error;
         const newSeller = data as unknown as SellerData;
