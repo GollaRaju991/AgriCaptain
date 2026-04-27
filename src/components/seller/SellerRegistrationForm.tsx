@@ -281,7 +281,23 @@ const SellerRegistrationForm = () => {
           <Label className="flex items-center gap-1.5 text-sm mb-1">
             <Hash className="h-3.5 w-3.5 text-primary" /> Pincode <span className="text-destructive">*</span>
           </Label>
-          <Input name="pincode" value={formData.pincode} onChange={handleChange} required placeholder="Enter pincode" maxLength={6} />
+          <div className="relative">
+            <Input
+              name="pincode"
+              value={formData.pincode}
+              onChange={(e) => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
+              required
+              placeholder="Enter 6-digit pincode"
+              maxLength={6}
+              inputMode="numeric"
+              className="pr-9"
+            />
+            {pinLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary animate-spin" />}
+          </div>
+          {pinError && <p className="text-xs text-destructive mt-1">{pinError}</p>}
+          {pinData && !pinError && (
+            <p className="text-xs text-primary mt-1">✓ {pinData.district}, {pinData.state}</p>
+          )}
         </div>
       </div>
 
