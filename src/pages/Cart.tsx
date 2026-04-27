@@ -83,57 +83,6 @@ const Cart = () => {
     );
   }
 
-  // Shared coupon UI
-  const CouponSection = ({ mobile = false }: { mobile?: boolean }) => (
-    <Card className={mobile ? "border border-gray-200 rounded-xl shadow-sm" : "mt-4"}>
-      <CardContent className={mobile ? "p-4" : "p-6"}>
-        <h4 className="font-semibold mb-3 text-foreground">{translations.have_coupon}</h4>
-
-        {appliedCoupon ? (
-          <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
-              <div>
-                <span className="font-bold text-green-700 text-sm">{appliedCoupon}</span>
-                <p className="text-xs text-green-600">You save ₹{couponDiscount}</p>
-              </div>
-            </div>
-            <button onClick={handleRemoveCoupon} className="text-red-500 hover:text-red-700">
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              placeholder={translations.enter_coupon}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-            />
-            <Button variant="outline" className="border-green-600 text-green-700 font-semibold" onClick={handleApplyCoupon}>
-              {translations.apply}
-            </Button>
-          </div>
-        )}
-
-        <div className="mt-3 space-y-1.5 text-sm text-muted-foreground">
-          <p className="font-medium text-foreground">{translations.available_coupons}</p>
-          {Object.entries(COUPONS).map(([code, c]) => (
-            <button
-              key={code}
-              onClick={() => { setCouponCode(code); }}
-              className={`flex items-center gap-1.5 w-full text-left text-green-600 hover:text-green-800 transition-colors ${appliedCoupon === code ? 'font-bold' : ''}`}
-            >
-              <Tag className="h-3 w-3" />
-              <span>{code} - {c.label}</span>
-            </button>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  );
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Desktop header */}
