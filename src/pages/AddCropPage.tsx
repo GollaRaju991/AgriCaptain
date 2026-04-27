@@ -360,7 +360,9 @@ const AddCropPage: React.FC = () => {
         {step === 'profile-selection' && (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {label('Select an existing farmer profile or create a new one', 'ఇప్పటికే ఉన్న రైతు ప్రొఫైల్ ఎంచుకోండి లేదా కొత్తది సృష్టించండి')}
+              {sellerProfiles.length > 0
+                ? label('Use your farmer profile to add or manage crops', 'పంటలను జోడించడానికి లేదా నిర్వహించడానికి మీ రైతు ప్రొఫైల్‌ను ఉపయోగించండి')
+                : label('Create your farmer profile to get started', 'ప్రారంభించడానికి మీ రైతు ప్రొఫైల్‌ను సృష్టించండి')}
             </p>
 
             {sellerProfiles.map((seller) => (
