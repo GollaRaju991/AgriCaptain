@@ -197,7 +197,14 @@ const CropDetailsForm: React.FC<CropDetailsFormProps> = ({ sellerId, userId, edi
 
       onComplete();
     } catch (error: any) {
-      toast({ title: 'Submission Failed', description: error.message, variant: 'destructive' });
+      const msg = error?.message || 'Unknown error';
+      const friendly = msg === 'Failed to fetch'
+        ? label(
+            'Network error. Please check your internet connection and try again.',
+            'నెట్‌వర్క్ లోపం. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేసి మళ్ళీ ప్రయత్నించండి.'
+          )
+        : msg;
+      toast({ title: label('Submission Failed', 'సమర్పణ విఫలమైంది'), description: friendly, variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
