@@ -610,7 +610,14 @@ const AddCropPage: React.FC = () => {
               sellerId={selectedSeller.id}
               userId={userId!}
               editCropId={editCropId || undefined}
-              onComplete={() => navigate('/sell-crop')}
+              onComplete={() => {
+                if (editCropId) {
+                  // After editing, return to My Crops list so updates reflect immediately
+                  navigate(`/sell-crop/my-crops/${selectedSeller.id}`, { replace: true });
+                } else {
+                  navigate('/sell-crop');
+                }
+              }}
             />
           </>
         )}
