@@ -47,6 +47,7 @@ const CropDetailPage: React.FC = () => {
   
   const { items, addToCart, updateQuantity } = useCart();
   const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
+  const [selectedKg, setSelectedKg] = useState<number>(1);
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
 
   useEffect(() => {
