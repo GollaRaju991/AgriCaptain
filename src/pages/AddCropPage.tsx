@@ -264,6 +264,20 @@ const AddCropPage: React.FC = () => {
     setStep('crop-form');
   };
 
+  // Fetch existing crop count for the selected seller
+  useEffect(() => {
+    if (!selectedSeller) { setExistingCropCount(0); return; }
+    let cancelled = false;
+    (async () => {
+      const { count } = await supabase
+        .from('farmer_crops')
+        .select('*', { count: 'exact', head: true })
+        .eq('seller_id', selectedSeller.id);
+      if (!cancelled) setExistingCropCount(count || 0);
+    })();
+    return () => { cancelled = true; };
+  }, [selectedSeller, step]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
