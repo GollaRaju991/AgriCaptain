@@ -307,32 +307,29 @@ const DirectFromFarm: React.FC = () => {
                 {isOrganic ? 'Organic' : 'Premium'}
               </Badge>
             )}
-          </div>
-
-          <div className="p-2 sm:p-3 pr-12 sm:pr-14">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
-                <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
-                  <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
+            {/* Farmer details - top right corner overlay on image */}
+            {crop.seller && (
+              <div className="absolute top-2 right-2 flex items-center gap-1 bg-white/95 backdrop-blur-sm rounded-full pl-0.5 pr-1.5 py-0.5 shadow-sm border border-border/50 max-w-[60%]">
+                {crop.seller.photo_url ? (
+                  <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover flex-shrink-0" />
+                ) : (
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[9px] sm:text-[10px] flex-shrink-0">
+                    {crop.seller.name.charAt(0)}
+                  </div>
+                )}
+                <div className="leading-tight min-w-0">
+                  <p className="text-[9px] sm:text-[10px] font-semibold text-foreground truncate">{crop.seller.name}</p>
+                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-none">{t('Farmer', 'రైతు', 'किसान')}</p>
                 </div>
               </div>
-              {crop.seller && (
-                <div className="flex items-center gap-1.5 flex-shrink-0">
-                  {crop.seller.photo_url ? (
-                    <img src={crop.seller.photo_url} alt={crop.seller.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover border border-border" />
-                  ) : (
-                    <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-[10px] sm:text-xs border border-border">
-                      {crop.seller.name.charAt(0)}
-                    </div>
-                  )}
-                  <div className="leading-tight">
-                    <p className="text-[10px] sm:text-xs font-semibold text-foreground truncate max-w-[60px]">{crop.seller.name}</p>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground">{t('Farmer', 'రైతు', 'किसान')}</p>
-                  </div>
-                </div>
-              )}
+            )}
+          </div>
+
+          <div className="p-2 sm:p-3 pr-10 sm:pr-11">
+            <h3 className="font-semibold text-xs sm:text-sm text-foreground line-clamp-1">{crop.crop_name}</h3>
+            <div className="flex items-baseline gap-1 mt-0.5 sm:mt-1">
+              <span className="text-sm sm:text-lg font-bold text-foreground">₹{crop.price}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground">• {crop.quantity}</span>
             </div>
 
             <div className="flex items-center gap-2 mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground">
