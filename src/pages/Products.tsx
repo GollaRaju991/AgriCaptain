@@ -169,6 +169,52 @@ const Products = () => {
   };
 
   const activeFilterCount = [searchQuery, selectedCategory, selectedBrand, priceRange !== 'all' ? priceRange : ''].filter(Boolean).length;
+  const hasFarmResults = farmCrops.length > 0;
+  const hasAnyResults = filteredAndSortedProducts.length > 0 || hasFarmResults;
+
+  const FarmCropsSection = () => {
+    if (!hasFarmResults) return null;
+    return (
+      <div className="mb-6">
+        <div className="flex items-center gap-2 px-4 mb-3">
+          <Sprout className="h-4 w-4 text-green-600" />
+          <h2 className="text-base md:text-lg font-bold text-foreground">From Farms ({farmCrops.length})</h2>
+          <span className="text-xs text-muted-foreground">Direct From Farm / Sell Crop</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
+          {farmCrops.map((c) => {
+            const img = c.crop_images?.[0] || '/placeholder.svg';
+            const isDirect = c.sell_type === 'direct_from_farm';
+            return (
+              <Link
+                key={c.id}
+                to={`/crop/${c.id}`}
+                state={{ from: isDirect ? '/direct-from-farm' : '/sell-crop' }}
+                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="relative aspect-square bg-muted">
+                  <img src={img} alt={c.crop_name} className="w-full h-full object-cover" loading="lazy" />
+                  <span className={`absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white ${isDirect ? 'bg-green-600' : 'bg-orange-500'}`}>
+                    {isDirect ? 'Farm' : 'Market'}
+                  </span>
+                </div>
+                <div className="p-2">
+                  <h3 className="text-sm font-semibold text-foreground line-clamp-1">{c.crop_name}</h3>
+                  <p className="text-base font-bold text-green-700 mt-0.5">₹{c.price}<span className="text-xs text-muted-foreground font-normal"> / {c.quantity?.split(' ')[1] || 'unit'}</span></p>
+                  {c.location_address && (
+                    <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1 line-clamp-1">
+                      <MapPin className="h-3 w-3 shrink-0" />
+                      {c.location_address}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
