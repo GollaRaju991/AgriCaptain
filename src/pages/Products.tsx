@@ -443,7 +443,7 @@ const Products = () => {
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6 bg-card p-4 rounded-lg shadow-sm">
               <p className="text-muted-foreground">
-                Showing {filteredAndSortedProducts.length} products
+                Showing {filteredAndSortedProducts.length + farmCrops.length} results
               </p>
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-muted-foreground">Sort by:</span>
