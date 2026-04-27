@@ -462,18 +462,20 @@ const Products = () => {
               </div>
             </div>
 
+            <FarmCropsSection />
+
             {filteredAndSortedProducts.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                 {filteredAndSortedProducts.map(product => (
                   <ProductCard key={product.id} product={product} variant="grid" />
                 ))}
               </div>
-            ) : (
+            ) : !hasFarmResults ? (
               <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">No products found matching your criteria.</p>
+                <p className="text-muted-foreground text-lg">No results found matching your criteria.</p>
                 <Button className="mt-4" onClick={clearFilters}>Clear Filters</Button>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
