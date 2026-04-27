@@ -329,12 +329,6 @@ const SellCrop: React.FC = () => {
               </span>
             )}
           </Button>
-          <Button
-            className="flex-1"
-            onClick={() => navigate('/sell-crop/add')}
-          >
-            <Plus className="h-4 w-4 mr-2" /> {t('Add Crop', 'పంట జోడించు', 'फसल जोड़ें')}
-          </Button>
         </div>
 
         {loading ? (
