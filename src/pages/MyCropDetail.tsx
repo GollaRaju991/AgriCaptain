@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Star, Eye, Heart, ShoppingCart, Pencil, Trash2, Loader2, Calendar, Award, Sprout } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Eye, Heart, ShoppingCart, Pencil, Trash2, Loader2, Calendar, Award, Sprout, Check, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
@@ -33,6 +34,41 @@ const MyCropDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [deleting, setDeleting] = useState(false);
+  const [editingPrice, setEditingPrice] = useState(false);
+  const [priceInput, setPriceInput] = useState('');
+  const [savingPrice, setSavingPrice] = useState(false);
+
+  const startEditPrice = () => {
+    if (!crop) return;
+    setPriceInput(String(crop.price ?? ''));
+    setEditingPrice(true);
+  };
+
+  const cancelEditPrice = () => {
+    setEditingPrice(false);
+    setPriceInput('');
+  };
+
+  const savePrice = async () => {
+    if (!crop || !cropId) return;
+    const trimmed = priceInput.trim();
+    if (!trimmed || isNaN(Number(trimmed)) || Number(trimmed) <= 0) {
+      toast({ title: t('Enter a valid price', 'సరైన ధరను నమోదు చేయండి', 'मान्य कीमत दर्ज करें'), variant: 'destructive' });
+      return;
+    }
+    setSavingPrice(true);
+    try {
+      const { error } = await supabase.from('farmer_crops').update({ price: trimmed }).eq('id', cropId);
+      if (error) throw error;
+      setCrop({ ...crop, price: trimmed });
+      setEditingPrice(false);
+      toast({ title: t('Price updated', 'ధర నవీకరించబడింది', 'कीमत अपडेट हुई') });
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSavingPrice(false);
+    }
+  };
 
   const t = (en: string, te: string, hi?: string) => {
     if (language === 'te') return te;
