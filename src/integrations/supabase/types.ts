@@ -89,6 +89,36 @@ export type Database = {
         }
         Relationships: []
       }
+      crop_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          crop_id: string
+          id: string
+          updated_at: string
+          user_id: string
+          user_name: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          crop_id: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          user_name?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          crop_id?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          user_name?: string
+        }
+        Relationships: []
+      }
       crop_likes: {
         Row: {
           created_at: string

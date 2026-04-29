@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import MobilePageHeader from '@/components/MobilePageHeader';
+import CropComments from '@/components/CropComments';
 
 interface CropDetail {
   id: string;
@@ -538,6 +539,9 @@ const CropDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Comments section */}
+        {id && <CropComments cropId={id} />}
       </main>
 
       <div className="hidden lg:block"><Footer /></div>
