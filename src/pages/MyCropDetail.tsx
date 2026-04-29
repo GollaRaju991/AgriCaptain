@@ -37,6 +37,8 @@ const MyCropDetail: React.FC = () => {
   const [editingPrice, setEditingPrice] = useState(false);
   const [priceInput, setPriceInput] = useState('');
   const [savingPrice, setSavingPrice] = useState(false);
+  const [viewsCount, setViewsCount] = useState(0);
+  const [likesCount, setLikesCount] = useState(0);
 
   const startEditPrice = () => {
     if (!crop) return;
@@ -82,6 +84,12 @@ const MyCropDetail: React.FC = () => {
       setLoading(true);
       const { data } = await supabase.from('farmer_crops').select('*').eq('id', cropId).maybeSingle();
       if (data) setCrop(data as any);
+      const [{ count: vc }, { count: lc }] = await Promise.all([
+        supabase.from('crop_views').select('*', { count: 'exact', head: true }).eq('crop_id', cropId),
+        supabase.from('crop_likes').select('*', { count: 'exact', head: true }).eq('crop_id', cropId),
+      ]);
+      setViewsCount(vc || 0);
+      setLikesCount(lc || 0);
       setLoading(false);
     };
     load();
@@ -252,12 +260,12 @@ const MyCropDetail: React.FC = () => {
           <CardContent className="p-3 grid grid-cols-3 divide-x divide-border">
             <div className="text-center px-2">
               <Eye className="h-4 w-4 mx-auto text-green-600 mb-1" />
-              <p className="text-sm font-bold text-foreground">0</p>
+              <p className="text-sm font-bold text-foreground">{viewsCount}</p>
               <p className="text-[10px] text-muted-foreground uppercase">{t('Views', 'వీక్షణలు', 'दृश्य')}</p>
             </div>
             <div className="text-center px-2">
               <Heart className="h-4 w-4 mx-auto text-red-500 mb-1" />
-              <p className="text-sm font-bold text-foreground">0</p>
+              <p className="text-sm font-bold text-foreground">{likesCount}</p>
               <p className="text-[10px] text-muted-foreground uppercase">{t('Likes', 'లైకులు', 'पसंद')}</p>
             </div>
             <div className="text-center px-2">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart, Search } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart, Search, Heart, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -51,6 +51,55 @@ const CropDetailPage: React.FC = () => {
   const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
   const [selectedKg, setSelectedKg] = useState<number>(1);
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
+  const [viewsCount, setViewsCount] = useState<number>(0);
+  const [likesCount, setLikesCount] = useState<number>(0);
+  const [liked, setLiked] = useState<boolean>(false);
+  const [likeBusy, setLikeBusy] = useState<boolean>(false);
+
+  // Track view + load counts + liked state
+  useEffect(() => {
+    if (!id) return;
+    const run = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      // Record view (deduped by unique constraint)
+      if (user) {
+        await supabase.from('crop_views').insert({ crop_id: id, user_id: user.id }).select().maybeSingle().then(() => {}, () => {});
+        const { data: myLike } = await supabase.from('crop_likes').select('id').eq('crop_id', id).eq('user_id', user.id).maybeSingle();
+        setLiked(!!myLike);
+      }
+      const [{ count: vc }, { count: lc }] = await Promise.all([
+        supabase.from('crop_views').select('*', { count: 'exact', head: true }).eq('crop_id', id),
+        supabase.from('crop_likes').select('*', { count: 'exact', head: true }).eq('crop_id', id),
+      ]);
+      setViewsCount(vc || 0);
+      setLikesCount(lc || 0);
+    };
+    run();
+  }, [id]);
+
+  const toggleLike = async () => {
+    if (!id || likeBusy) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: language === 'te' ? 'దయచేసి లాగిన్ అవ్వండి' : 'Please login to like' });
+      navigate('/auth');
+      return;
+    }
+    setLikeBusy(true);
+    try {
+      if (liked) {
+        await supabase.from('crop_likes').delete().eq('crop_id', id).eq('user_id', user.id);
+        setLiked(false);
+        setLikesCount((c) => Math.max(0, c - 1));
+      } else {
+        await supabase.from('crop_likes').insert({ crop_id: id, user_id: user.id });
+        setLiked(true);
+        setLikesCount((c) => c + 1);
+      }
+    } finally {
+      setLikeBusy(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCrop = async () => {
@@ -294,12 +343,29 @@ const CropDetailPage: React.FC = () => {
                         {label('Organic', 'ఆర్గానిక్')}
                       </span>
                     )}
-                    <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
+                    <div className="flex items-start justify-between gap-2">
+                      <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
+                      <button
+                        type="button"
+                        onClick={toggleLike}
+                        disabled={likeBusy}
+                        aria-label="Like"
+                        className={`flex items-center gap-1 rounded-full px-3 py-1.5 border transition-colors ${liked ? 'bg-red-50 border-red-200 text-red-600' : 'bg-background border-border text-muted-foreground hover:text-red-600'}`}
+                      >
+                        <Heart className={`h-4 w-4 ${liked ? 'fill-red-500 text-red-500' : ''}`} />
+                        <span className="text-xs font-semibold">{likesCount}</span>
+                      </button>
+                    </div>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="text-2xl font-bold text-foreground">₹{crop.price}</span>
                       <span className="text-sm text-muted-foreground">{isDirectFromFarm ? '/ kg' : `• ${crop.quantity}`}</span>
                     </div>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {viewsCount} {label('views', 'వీక్షణలు')}</span>
+                      <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" /> {likesCount} {label('likes', 'లైకులు')}</span>
+                    </div>
                   </div>
+
 
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
