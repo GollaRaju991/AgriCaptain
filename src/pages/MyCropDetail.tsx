@@ -37,6 +37,8 @@ const MyCropDetail: React.FC = () => {
   const [editingPrice, setEditingPrice] = useState(false);
   const [priceInput, setPriceInput] = useState('');
   const [savingPrice, setSavingPrice] = useState(false);
+  const [viewsCount, setViewsCount] = useState(0);
+  const [likesCount, setLikesCount] = useState(0);
 
   const startEditPrice = () => {
     if (!crop) return;
