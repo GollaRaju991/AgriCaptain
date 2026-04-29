@@ -51,6 +51,55 @@ const CropDetailPage: React.FC = () => {
   const cartItem = crop ? items.find(i => i.id === crop.id) : undefined;
   const [selectedKg, setSelectedKg] = useState<number>(1);
   const [related, setRelated] = useState<Array<{ id: string; crop_name: string; price: string; quantity: string; crop_images: string[] | null; availability_location: string }>>([]);
+  const [viewsCount, setViewsCount] = useState<number>(0);
+  const [likesCount, setLikesCount] = useState<number>(0);
+  const [liked, setLiked] = useState<boolean>(false);
+  const [likeBusy, setLikeBusy] = useState<boolean>(false);
+
+  // Track view + load counts + liked state
+  useEffect(() => {
+    if (!id) return;
+    const run = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      // Record view (deduped by unique constraint)
+      if (user) {
+        await supabase.from('crop_views').insert({ crop_id: id, user_id: user.id }).select().maybeSingle().then(() => {}, () => {});
+        const { data: myLike } = await supabase.from('crop_likes').select('id').eq('crop_id', id).eq('user_id', user.id).maybeSingle();
+        setLiked(!!myLike);
+      }
+      const [{ count: vc }, { count: lc }] = await Promise.all([
+        supabase.from('crop_views').select('*', { count: 'exact', head: true }).eq('crop_id', id),
+        supabase.from('crop_likes').select('*', { count: 'exact', head: true }).eq('crop_id', id),
+      ]);
+      setViewsCount(vc || 0);
+      setLikesCount(lc || 0);
+    };
+    run();
+  }, [id]);
+
+  const toggleLike = async () => {
+    if (!id || likeBusy) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({ title: language === 'te' ? 'దయచేసి లాగిన్ అవ్వండి' : 'Please login to like' });
+      navigate('/auth');
+      return;
+    }
+    setLikeBusy(true);
+    try {
+      if (liked) {
+        await supabase.from('crop_likes').delete().eq('crop_id', id).eq('user_id', user.id);
+        setLiked(false);
+        setLikesCount((c) => Math.max(0, c - 1));
+      } else {
+        await supabase.from('crop_likes').insert({ crop_id: id, user_id: user.id });
+        setLiked(true);
+        setLikesCount((c) => c + 1);
+      }
+    } finally {
+      setLikeBusy(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCrop = async () => {
