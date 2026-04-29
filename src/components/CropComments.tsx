@@ -122,7 +122,7 @@ const CropComments: React.FC<CropCommentsProps> = ({ cropId, defaultCollapsed = 
 
   return (
     <Card className="mb-4 rounded-xl">
-      <CardContent className={open ? "p-4" : "p-0"}>
+      <CardContent className="p-0">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -139,66 +139,66 @@ const CropComments: React.FC<CropCommentsProps> = ({ cropId, defaultCollapsed = 
         </button>
 
         {open && (
-          <div className={open ? "px-0 pb-0" : ""}>
-            <div className="mb-3" />
-
-        {/* Composer */}
-        <div className="mb-4">
-          <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value.slice(0, MAX_COMMENT_LENGTH))}
-            placeholder={t('Ask a question or share your thoughts...', 'ప్రశ్న అడగండి లేదా మీ ఆలోచనలను పంచుకోండి...', 'प्रश्न पूछें या अपने विचार साझा करें...')}
-            className="min-h-[72px] resize-none text-sm"
-            maxLength={MAX_COMMENT_LENGTH}
-          />
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-[11px] text-muted-foreground">{text.length}/{MAX_COMMENT_LENGTH}</span>
-            <Button
-              size="sm"
-              className="bg-green-600 hover:bg-green-700"
-              onClick={handlePost}
-              disabled={posting || !text.trim()}
-            >
-              {posting ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Send className="h-4 w-4 mr-1" />}
-              {t('Post', 'పోస్ట్', 'पोस्ट')}
-            </Button>
-          </div>
-        </div>
-
-        {/* List */}
-        {loading ? (
-          <div className="flex justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
-        ) : comments.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground py-4">
-            {t('No comments yet. Be the first to comment!', 'ఇంకా వ్యాఖ్యలు లేవు. మొదట వ్యాఖ్యానించండి!', 'अभी तक कोई टिप्पणी नहीं। पहले टिप्पणी करें!')}
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {comments.map((c) => (
-              <div key={c.id} className="flex gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
-                <div className="h-8 w-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 font-bold text-sm">
-                  {c.user_name?.[0]?.toUpperCase() || <UserIcon className="h-4 w-4" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <p className="text-sm font-semibold text-foreground truncate">{c.user_name}</p>
-                      <span className="text-[11px] text-muted-foreground">{formatTime(c.created_at)}</span>
-                    </div>
-                    {currentUserId === c.user_id && (
-                      <button
-                        onClick={() => handleDelete(c.id)}
-                        className="text-muted-foreground hover:text-destructive p-1"
-                        aria-label="Delete comment"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    )}
-                  </div>
-                  <p className="text-sm text-foreground mt-0.5 whitespace-pre-wrap break-words">{c.comment}</p>
-                </div>
+          <div className="px-4 pb-4 border-t border-border pt-4">
+            {/* Composer */}
+            <div className="mb-4">
+              <Textarea
+                value={text}
+                onChange={(e) => setText(e.target.value.slice(0, MAX_COMMENT_LENGTH))}
+                placeholder={t('Ask a question or share your thoughts...', 'ప్రశ్న అడగండి లేదా మీ ఆలోచనలను పంచుకోండి...', 'प्रश्न पूछें या अपने विचार साझा करें...')}
+                className="min-h-[72px] resize-none text-sm"
+                maxLength={MAX_COMMENT_LENGTH}
+              />
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-[11px] text-muted-foreground">{text.length}/{MAX_COMMENT_LENGTH}</span>
+                <Button
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={handlePost}
+                  disabled={posting || !text.trim()}
+                >
+                  {posting ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Send className="h-4 w-4 mr-1" />}
+                  {t('Post', 'పోస్ట్', 'पोस्ट')}
+                </Button>
               </div>
-            ))}
+            </div>
+
+            {/* List */}
+            {loading ? (
+              <div className="flex justify-center py-4"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>
+            ) : comments.length === 0 ? (
+              <p className="text-center text-sm text-muted-foreground py-4">
+                {t('No comments yet. Be the first to comment!', 'ఇంకా వ్యాఖ్యలు లేవు. మొదట వ్యాఖ్యానించండి!', 'अभी तक कोई टिप्पणी नहीं। पहले टिप्पणी करें!')}
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {comments.map((c) => (
+                  <div key={c.id} className="flex gap-3 pb-3 border-b border-border last:border-0 last:pb-0">
+                    <div className="h-8 w-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center flex-shrink-0 font-bold text-sm">
+                      {c.user_name?.[0]?.toUpperCase() || <UserIcon className="h-4 w-4" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <p className="text-sm font-semibold text-foreground truncate">{c.user_name}</p>
+                          <span className="text-[11px] text-muted-foreground">{formatTime(c.created_at)}</span>
+                        </div>
+                        {currentUserId === c.user_id && (
+                          <button
+                            onClick={() => handleDelete(c.id)}
+                            className="text-muted-foreground hover:text-destructive p-1"
+                            aria-label="Delete comment"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-sm text-foreground mt-0.5 whitespace-pre-wrap break-words">{c.comment}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </CardContent>
