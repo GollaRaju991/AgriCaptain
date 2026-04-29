@@ -323,7 +323,7 @@ const MyCropDetail: React.FC = () => {
           <Button
             variant="outline"
             className="flex-1 border-green-600 text-green-700 hover:bg-green-50 hover:text-green-700"
-            onClick={() => navigate(`/sell-crop/add?editCrop=${crop.id}`)}
+            onClick={startEditPrice}
           >
             <Pencil className="h-4 w-4 mr-2" /> {t('Edit Crop', 'పంట మార్చండి', 'फसल संपादित करें')}
           </Button>
