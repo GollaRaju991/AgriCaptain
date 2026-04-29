@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, MapPin, Star, Eye, Heart, ShoppingCart, Pencil, Trash2, Loader2, Calendar, Award, Sprout } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Eye, Heart, ShoppingCart, Pencil, Trash2, Loader2, Calendar, Award, Sprout, Check, X } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
@@ -33,6 +34,41 @@ const MyCropDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [deleting, setDeleting] = useState(false);
+  const [editingPrice, setEditingPrice] = useState(false);
+  const [priceInput, setPriceInput] = useState('');
+  const [savingPrice, setSavingPrice] = useState(false);
+
+  const startEditPrice = () => {
+    if (!crop) return;
+    setPriceInput(String(crop.price ?? ''));
+    setEditingPrice(true);
+  };
+
+  const cancelEditPrice = () => {
+    setEditingPrice(false);
+    setPriceInput('');
+  };
+
+  const savePrice = async () => {
+    if (!crop || !cropId) return;
+    const trimmed = priceInput.trim();
+    if (!trimmed || isNaN(Number(trimmed)) || Number(trimmed) <= 0) {
+      toast({ title: t('Enter a valid price', 'సరైన ధరను నమోదు చేయండి', 'मान्य कीमत दर्ज करें'), variant: 'destructive' });
+      return;
+    }
+    setSavingPrice(true);
+    try {
+      const { error } = await supabase.from('farmer_crops').update({ price: trimmed }).eq('id', cropId);
+      if (error) throw error;
+      setCrop({ ...crop, price: trimmed });
+      setEditingPrice(false);
+      toast({ title: t('Price updated', 'ధర నవీకరించబడింది', 'कीमत अपडेट हुई') });
+    } catch (e: any) {
+      toast({ title: 'Error', description: e.message, variant: 'destructive' });
+    } finally {
+      setSavingPrice(false);
+    }
+  };
 
   const t = (en: string, te: string, hi?: string) => {
     if (language === 'te') return te;
@@ -146,15 +182,15 @@ const MyCropDetail: React.FC = () => {
 
             {images.length > 1 && (
               <>
-                {/* Bar indicators */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {/* Dot indicators (matches main hero slider) */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                   {images.map((_, i) => (
                     <button
                       key={i}
                       type="button"
                       aria-label={`Go to image ${i + 1}`}
                       onClick={() => setActiveImage(i)}
-                      className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-white' : 'w-1.5 bg-white/60'}`}
+                      className={"block rounded-sm transition-all duration-300 " + (i === activeImage ? "w-5 h-1 bg-white shadow-md" : "w-3 h-1 bg-white/50 hover:bg-white/70")}
                     />
                   ))}
                 </div>
@@ -178,9 +214,30 @@ const MyCropDetail: React.FC = () => {
                 {t('Active', 'యాక్టివ్', 'सक्रिय')}
               </span>
             </div>
-            <p className="text-2xl font-bold text-foreground mt-1">
-              ₹{crop.price} <span className="text-sm text-muted-foreground font-normal">/ kg</span>
-            </p>
+            {editingPrice ? (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-2xl font-bold text-foreground">₹</span>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  value={priceInput}
+                  onChange={(e) => setPriceInput(e.target.value)}
+                  className="h-10 w-28 text-lg font-bold"
+                  autoFocus
+                />
+                <span className="text-sm text-muted-foreground">/ kg</span>
+                <Button size="icon" className="h-9 w-9 bg-green-600 hover:bg-green-700" onClick={savePrice} disabled={savingPrice}>
+                  {savingPrice ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" strokeWidth={2.5} />}
+                </Button>
+                <Button size="icon" variant="outline" className="h-9 w-9" onClick={cancelEditPrice} disabled={savingPrice}>
+                  <X className="h-4 w-4" strokeWidth={2.5} />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-2xl font-bold text-foreground mt-1">
+                ₹{crop.price} <span className="text-sm text-muted-foreground font-normal">/ kg</span>
+              </p>
+            )}
             {crop.location_address && (
               <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                 <MapPin className="h-4 w-4" /> {crop.location_address}
@@ -266,7 +323,7 @@ const MyCropDetail: React.FC = () => {
           <Button
             variant="outline"
             className="flex-1 border-green-600 text-green-700 hover:bg-green-50 hover:text-green-700"
-            onClick={() => navigate(`/sell-crop/add?editCrop=${crop.id}`)}
+            onClick={startEditPrice}
           >
             <Pencil className="h-4 w-4 mr-2" /> {t('Edit Crop', 'పంట మార్చండి', 'फसल संपादित करें')}
           </Button>
