@@ -89,6 +89,48 @@ export type Database = {
         }
         Relationships: []
       }
+      crop_likes: {
+        Row: {
+          created_at: string
+          crop_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          crop_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          crop_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      crop_views: {
+        Row: {
+          created_at: string
+          crop_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          crop_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          crop_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       delivery_tracking: {
         Row: {
           courier_name: string | null
