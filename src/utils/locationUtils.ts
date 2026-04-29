@@ -25,16 +25,54 @@ export interface UserLocation {
   address?: string;
 }
 
+// IP-based geolocation fallback (works when GPS is denied/blocked, e.g. inside iframes)
+const detectLocationByIP = async (): Promise<UserLocation> => {
+  // Try multiple providers for resilience
+  const providers = [
+    async () => {
+      const res = await fetch('https://ipapi.co/json/');
+      const d = await res.json();
+      if (!d.latitude || !d.longitude) throw new Error('ipapi: no coords');
+      return {
+        latitude: Number(d.latitude),
+        longitude: Number(d.longitude),
+        address: [d.city, d.region, d.country_name].filter(Boolean).join(', '),
+      };
+    },
+    async () => {
+      const res = await fetch('https://ipwho.is/');
+      const d = await res.json();
+      if (!d.success || !d.latitude || !d.longitude) throw new Error('ipwho: failed');
+      return {
+        latitude: Number(d.latitude),
+        longitude: Number(d.longitude),
+        address: [d.city, d.region, d.country].filter(Boolean).join(', '),
+      };
+    },
+  ];
+  let lastErr: any;
+  for (const p of providers) {
+    try { return await p(); } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('IP geolocation failed');
+};
+
 export const detectUserLocation = (): Promise<UserLocation> => {
   return new Promise((resolve, reject) => {
+    const tryIPFallback = (gpsErrorMsg: string) => {
+      detectLocationByIP()
+        .then(resolve)
+        .catch(() => reject(new Error(gpsErrorMsg)));
+    };
+
     if (!navigator.geolocation) {
-      reject(new Error('Geolocation not supported'));
+      tryIPFallback('Geolocation not supported on this device. Please add your location manually.');
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const { latitude, longitude } = position.coords;
-        // Reverse geocode for address - done inside the callback to stay in gesture context
         fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1&accept-language=en`,
           { headers: { 'User-Agent': 'AgriCaptainApp/1.0' } }
@@ -51,13 +89,13 @@ export const detectUserLocation = (): Promise<UserLocation> => {
           });
       },
       (error) => {
-        console.error('Geolocation error:', error.code, error.message);
-        reject(new Error(
-          error.code === 1 ? 'Location permission denied. Please enable location access in your browser/device settings.' :
-          error.code === 2 ? 'Location unavailable. Please check your GPS/network settings.' :
-          error.code === 3 ? 'Location request timed out. Please try again.' :
-          'Could not detect location'
-        ));
+        console.warn('Geolocation error, falling back to IP:', error.code, error.message);
+        const msg =
+          error.code === 1 ? 'Location permission denied. Please enable location access in your browser settings, or add your location manually.' :
+          error.code === 2 ? 'GPS unavailable. Please check your network/GPS, or add your location manually.' :
+          error.code === 3 ? 'Location request timed out. Please try again or add your location manually.' :
+          'Could not detect location. Please add it manually.';
+        tryIPFallback(msg);
       },
       { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
     );
