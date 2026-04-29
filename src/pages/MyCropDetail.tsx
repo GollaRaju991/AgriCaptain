@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import MobileBottomNav from '@/components/MobileBottomNav';
+import CropComments from '@/components/CropComments';
 
 interface Crop {
   id: string;
