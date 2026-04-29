@@ -214,9 +214,30 @@ const MyCropDetail: React.FC = () => {
                 {t('Active', 'యాక్టివ్', 'सक्रिय')}
               </span>
             </div>
-            <p className="text-2xl font-bold text-foreground mt-1">
-              ₹{crop.price} <span className="text-sm text-muted-foreground font-normal">/ kg</span>
-            </p>
+            {editingPrice ? (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-2xl font-bold text-foreground">₹</span>
+                <Input
+                  type="number"
+                  inputMode="decimal"
+                  value={priceInput}
+                  onChange={(e) => setPriceInput(e.target.value)}
+                  className="h-10 w-28 text-lg font-bold"
+                  autoFocus
+                />
+                <span className="text-sm text-muted-foreground">/ kg</span>
+                <Button size="icon" className="h-9 w-9 bg-green-600 hover:bg-green-700" onClick={savePrice} disabled={savingPrice}>
+                  {savingPrice ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" strokeWidth={2.5} />}
+                </Button>
+                <Button size="icon" variant="outline" className="h-9 w-9" onClick={cancelEditPrice} disabled={savingPrice}>
+                  <X className="h-4 w-4" strokeWidth={2.5} />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-2xl font-bold text-foreground mt-1">
+                ₹{crop.price} <span className="text-sm text-muted-foreground font-normal">/ kg</span>
+              </p>
+            )}
             {crop.location_address && (
               <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
                 <MapPin className="h-4 w-4" /> {crop.location_address}
