@@ -181,27 +181,25 @@ const MyCropDetail: React.FC = () => {
             </div>
 
             {images.length > 1 && (
-              <>
-                {/* Dot indicators (matches main hero slider) */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-                  {images.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      aria-label={`Go to image ${i + 1}`}
-                      onClick={() => setActiveImage(i)}
-                      className={"block rounded-sm transition-all duration-300 " + (i === activeImage ? "w-5 h-1 bg-white shadow-md" : "w-3 h-1 bg-white/50 hover:bg-white/70")}
-                    />
-                  ))}
-                </div>
-
-                {/* Image count */}
-                <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
-                  {activeImage + 1} / {images.length}
-                </div>
-              </>
+              <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                {activeImage + 1} / {images.length}
+              </div>
             )}
           </div>
+
+          {images.length > 1 && (
+            <div className="flex items-center justify-center gap-2 py-3 bg-white">
+              {images.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  aria-label={`Go to image ${i + 1}`}
+                  onClick={() => setActiveImage(i)}
+                  className={"rounded-full transition-all duration-300 " + (i === activeImage ? "w-2.5 h-2.5 bg-blue-600" : "w-2 h-2 bg-gray-300 hover:bg-gray-400")}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Title + status */}
