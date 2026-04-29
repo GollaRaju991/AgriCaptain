@@ -19,14 +19,16 @@ interface CropComment {
 
 interface CropCommentsProps {
   cropId: string;
+  defaultCollapsed?: boolean;
 }
 
 const MAX_COMMENT_LENGTH = 500;
 
-const CropComments: React.FC<CropCommentsProps> = ({ cropId }) => {
+const CropComments: React.FC<CropCommentsProps> = ({ cropId, defaultCollapsed = true }) => {
   const { language } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(!defaultCollapsed);
   const [comments, setComments] = useState<CropComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState('');
