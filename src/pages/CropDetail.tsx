@@ -343,12 +343,29 @@ const CropDetailPage: React.FC = () => {
                         {label('Organic', 'ఆర్గానిక్')}
                       </span>
                     )}
-                    <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
+                    <div className="flex items-start justify-between gap-2">
+                      <h2 className="text-2xl font-bold text-foreground">{crop.crop_name}</h2>
+                      <button
+                        type="button"
+                        onClick={toggleLike}
+                        disabled={likeBusy}
+                        aria-label="Like"
+                        className={`flex items-center gap-1 rounded-full px-3 py-1.5 border transition-colors ${liked ? 'bg-red-50 border-red-200 text-red-600' : 'bg-background border-border text-muted-foreground hover:text-red-600'}`}
+                      >
+                        <Heart className={`h-4 w-4 ${liked ? 'fill-red-500 text-red-500' : ''}`} />
+                        <span className="text-xs font-semibold">{likesCount}</span>
+                      </button>
+                    </div>
                     <div className="flex items-baseline gap-2 mt-1">
                       <span className="text-2xl font-bold text-foreground">₹{crop.price}</span>
                       <span className="text-sm text-muted-foreground">{isDirectFromFarm ? '/ kg' : `• ${crop.quantity}`}</span>
                     </div>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                      <span className="inline-flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {viewsCount} {label('views', 'వీక్షణలు')}</span>
+                      <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" /> {likesCount} {label('likes', 'లైకులు')}</span>
+                    </div>
                   </div>
+
 
                   <div className="grid grid-cols-2 gap-3 pt-1">
                     <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-3">
