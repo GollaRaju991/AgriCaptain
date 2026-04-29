@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MessageCircle, Send, Trash2, Loader2, User as UserIcon } from 'lucide-react';
+import { MessageCircle, Send, Trash2, Loader2, User as UserIcon, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
