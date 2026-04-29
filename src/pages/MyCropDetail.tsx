@@ -182,15 +182,15 @@ const MyCropDetail: React.FC = () => {
 
             {images.length > 1 && (
               <>
-                {/* Bar indicators */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                {/* Dot indicators (matches main hero slider) */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                   {images.map((_, i) => (
                     <button
                       key={i}
                       type="button"
                       aria-label={`Go to image ${i + 1}`}
                       onClick={() => setActiveImage(i)}
-                      className={`h-1.5 rounded-full transition-all ${i === activeImage ? 'w-5 bg-white' : 'w-1.5 bg-white/60'}`}
+                      className={"block rounded-sm transition-all duration-300 " + (i === activeImage ? "w-5 h-1 bg-white shadow-md" : "w-3 h-1 bg-white/50 hover:bg-white/70")}
                     />
                   ))}
                 </div>
