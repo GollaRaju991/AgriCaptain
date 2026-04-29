@@ -504,6 +504,13 @@ const CropDetailPage: React.FC = () => {
           );
         })()}
 
+        {/* Comments section (collapsible) - directly after Add to Cart / Buy Now */}
+        {id && (
+          <div className="mt-4">
+            <CropComments cropId={id} defaultCollapsed />
+          </div>
+        )}
+
         {/* Related Farm Products */}
         {related.length > 0 && (
           <div className="mt-6">
@@ -539,9 +546,6 @@ const CropDetailPage: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Comments section */}
-        {id && <CropComments cropId={id} />}
       </main>
 
       <div className="hidden lg:block"><Footer /></div>
