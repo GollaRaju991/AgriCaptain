@@ -84,6 +84,12 @@ const MyCropDetail: React.FC = () => {
       setLoading(true);
       const { data } = await supabase.from('farmer_crops').select('*').eq('id', cropId).maybeSingle();
       if (data) setCrop(data as any);
+      const [{ count: vc }, { count: lc }] = await Promise.all([
+        supabase.from('crop_views').select('*', { count: 'exact', head: true }).eq('crop_id', cropId),
+        supabase.from('crop_likes').select('*', { count: 'exact', head: true }).eq('crop_id', cropId),
+      ]);
+      setViewsCount(vc || 0);
+      setLikesCount(lc || 0);
       setLoading(false);
     };
     load();
