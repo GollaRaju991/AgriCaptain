@@ -322,6 +322,9 @@ const MyCropDetail: React.FC = () => {
             </p>
           </CardContent>
         </Card>
+
+        {/* Comments */}
+        {cropId && <CropComments cropId={cropId} />}
       </main>
 
       {/* Bottom action bar */}
