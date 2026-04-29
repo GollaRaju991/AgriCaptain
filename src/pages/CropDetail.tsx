@@ -539,6 +539,9 @@ const CropDetailPage: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Comments section */}
+        {id && <CropComments cropId={id} />}
       </main>
 
       <div className="hidden lg:block"><Footer /></div>
