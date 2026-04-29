@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart, Search } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Calendar, Award, Warehouse, Loader2, ShoppingCart, Search, Heart, Eye } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
