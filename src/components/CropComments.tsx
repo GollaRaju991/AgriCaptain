@@ -122,13 +122,25 @@ const CropComments: React.FC<CropCommentsProps> = ({ cropId, defaultCollapsed = 
 
   return (
     <Card className="mb-4 rounded-xl">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <MessageCircle className="h-5 w-5 text-green-600" />
-          <p className="text-sm font-bold text-foreground">
-            {t('Comments', 'వ్యాఖ్యలు', 'टिप्पणियाँ')} ({comments.length})
-          </p>
-        </div>
+      <CardContent className={open ? "p-4" : "p-0"}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="w-full flex items-center justify-between gap-2 p-4"
+          aria-expanded={open}
+        >
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-green-600" />
+            <p className="text-sm font-bold text-foreground">
+              {t('Comments', 'వ్యాఖ్యలు', 'टिप्पणियाँ')} ({comments.length})
+            </p>
+          </div>
+          <ChevronDown className={"h-5 w-5 text-muted-foreground transition-transform " + (open ? "rotate-180" : "")} strokeWidth={2.5} />
+        </button>
+
+        {open && (
+          <div className={open ? "px-0 pb-0" : ""}>
+            <div className="mb-3" />
 
         {/* Composer */}
         <div className="mb-4">
