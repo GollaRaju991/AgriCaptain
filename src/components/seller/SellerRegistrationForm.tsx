@@ -12,9 +12,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { states, districts, divisions, mandals, villages } from '@/data/locationData';
 import { usePincodeLookup } from '@/hooks/usePincodeLookup';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const allIndianStates = states.IN || [];
+
+interface SellerRegistrationFormProps {
+  existingSeller?: any | null;
+}
 
 const sellerSubTypes = [
   { value: 'farmer', label: 'Farmer' },
