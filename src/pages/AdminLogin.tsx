@@ -60,7 +60,7 @@ const AdminLogin = () => {
       }
 
       toast({ title: 'Welcome, Admin', description: 'Login successful' });
-      navigate('/admin', { replace: true });
+      navigate(adminPath(''), { replace: true });
     } catch (err: any) {
       toast({ title: 'Login failed', description: err.message, variant: 'destructive' });
     } finally {
