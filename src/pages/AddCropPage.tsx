@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check, ChevronRight, Sprout } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check, ChevronRight, Sprout, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,6 +31,7 @@ interface SellerData {
   pincode: string;
   photo_url: string | null;
   status?: string;
+  rejection_reason?: string | null;
 }
 
 type PageStep = 'profile-selection' | 'profile-form' | 'crop-form';
@@ -53,6 +55,7 @@ const AddCropPage: React.FC = () => {
   const [deletingSeller, setDeletingSeller] = useState(false);
   const [step, setStep] = useState<PageStep>('profile-selection');
   const [existingCropCount, setExistingCropCount] = useState(0);
+  const [successOpen, setSuccessOpen] = useState<false | 'submitted' | 'resubmitted'>(false);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '',
@@ -180,6 +183,29 @@ const AddCropPage: React.FC = () => {
   };
 
   const startEditProfile = (seller: SellerData) => {
+    // Block editing for pending/approved profiles — only rejected can be edited & resubmitted
+    if (seller.status === 'pending') {
+      toast({
+        title: label('⏳ Pending Approval', '⏳ ఆమోదం పెండింగ్‌లో ఉంది'),
+        description: label(
+          'Your profile is under review. You cannot edit it while it is pending.',
+          'మీ ప్రొఫైల్ సమీక్షలో ఉంది. ఇది పెండింగ్‌లో ఉన్నప్పుడు మీరు దీన్ని సవరించలేరు.'
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (seller.status === 'approved') {
+      toast({
+        title: label('✅ Already Approved', '✅ ఇప్పటికే ఆమోదించబడింది'),
+        description: label(
+          'Approved profiles cannot be edited. Contact support if changes are needed.',
+          'ఆమోదించిన ప్రొఫైల్‌లను సవరించలేరు. మార్పులు అవసరమైతే సపోర్ట్‌ను సంప్రదించండి.'
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
     setEditingSeller(seller);
     setFormData({
       name: seller.name,
@@ -245,12 +271,22 @@ const AddCropPage: React.FC = () => {
       };
 
       if (editingSeller) {
-        const { error } = await supabase.from('sellers').update(sellerData).eq('id', editingSeller.id);
+        // Resubmitting a (rejected) profile — reset to pending and clear rejection reason
+        const updatePayload: any = { ...sellerData };
+        if (editingSeller.status === 'rejected') {
+          updatePayload.status = 'pending';
+          updatePayload.rejection_reason = null;
+        }
+        const { error } = await supabase.from('sellers').update(updatePayload).eq('id', editingSeller.id);
         if (error) throw error;
-        const updatedSeller = { ...editingSeller, ...sellerData, id: editingSeller.id } as SellerData;
+        const updatedSeller = { ...editingSeller, ...updatePayload, id: editingSeller.id } as SellerData;
         setSellerProfiles(prev => prev.map(s => s.id === editingSeller.id ? updatedSeller : s));
-        setSelectedSeller(updatedSeller);
-        toast({ title: label('Profile updated', 'ప్రొఫైల్ అప్‌డేట్ చేయబడింది') });
+        setSelectedSeller(null);
+        resetForm();
+        setStep('profile-selection');
+        setSuccessOpen('resubmitted');
+        setSubmitting(false);
+        return;
       } else {
         // Enforce one farmer profile per user
         const { data: existing } = await supabase
@@ -274,21 +310,13 @@ const AddCropPage: React.FC = () => {
         if (error) throw error;
         const newSeller = data as unknown as SellerData;
         setSellerProfiles(prev => [newSeller, ...prev]);
-        setSelectedSeller(newSeller);
-        toast({
-          title: label('✅ Registration Completed', '✅ నమోదు పూర్తయింది'),
-          description: label(
-            'Please wait for admin approval. You can add crops once your profile is approved.',
-            'దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
-          ),
-        });
+        setSelectedSeller(null);
         resetForm();
         setStep('profile-selection');
+        setSuccessOpen('submitted');
         setSubmitting(false);
         return;
       }
-      resetForm();
-      setStep('crop-form');
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
@@ -462,12 +490,31 @@ const AddCropPage: React.FC = () => {
                   <User className="h-8 w-8 text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  {editingSeller ? label('Edit Farmer Profile', 'రైతు ప్రొఫైల్ మార్చండి') : label('Farmer Details', 'రైతు వివరాలు')}
+                  {editingSeller
+                    ? (editingSeller.status === 'rejected'
+                        ? label('Edit & Resubmit', 'సవరించి మళ్లీ సమర్పించండి')
+                        : label('Edit Farmer Profile', 'రైతు ప్రొఫైల్ మార్చండి'))
+                    : label('Farmer Details', 'రైతు వివరాలు')}
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {label('Fill your details to start listing crops', 'పంటలు జాబితా చేయడానికి మీ వివరాలు నమోదు చేయండి')}
                 </p>
               </div>
+
+              {/* Rejection reason banner — shown only when editing a rejected profile */}
+              {editingSeller?.status === 'rejected' && editingSeller?.rejection_reason && (
+                <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm">
+                  <p className="font-bold text-destructive flex items-center gap-1.5">
+                    <XCircle className="h-4 w-4" /> {label('Your previous registration was rejected', 'మీ మునుపటి నమోదు తిరస్కరించబడింది')}
+                  </p>
+                  <p className="text-foreground mt-1">
+                    <strong>{label('Reason:', 'కారణం:')}</strong> {editingSeller.rejection_reason}
+                  </p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    {label('Please update the details below and resubmit for approval.', 'దయచేసి దిగువ వివరాలను అప్‌డేట్ చేసి, ఆమోదం కోసం మళ్లీ సమర్పించండి.')}
+                  </p>
+                </div>
+              )}
 
               <form onSubmit={handleProfileSubmit} className="space-y-4">
                 <div>
@@ -606,7 +653,11 @@ const AddCropPage: React.FC = () => {
                 </div>
 
                 <Button type="submit" disabled={submitting} className="w-full py-3">
-                  {submitting ? label('Saving...', 'సేవ్ అవుతోంది...') : label('Save & Continue', 'సేవ్ & కొనసాగించు')}
+                  {submitting
+                    ? label('Saving...', 'సేవ్ అవుతోంది...')
+                    : (editingSeller?.status === 'rejected'
+                        ? label('Resubmit for Approval', 'ఆమోదం కోసం మళ్లీ సమర్పించండి')
+                        : label('Save & Continue', 'సేవ్ & కొనసాగించు'))}
                 </Button>
               </form>
             </CardContent>
@@ -681,6 +732,36 @@ const AddCropPage: React.FC = () => {
           </>
         )}
       </main>
+
+      {/* Success popup — registration submitted / resubmitted */}
+      <Dialog open={!!successOpen} onOpenChange={(o) => { if (!o) setSuccessOpen(false); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mx-auto mb-2">
+              <CheckCircle2 className="h-16 w-16 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-xl">
+              {label('Registration Completed', 'నమోదు పూర్తయింది')}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {successOpen === 'resubmitted'
+                ? label(
+                    'Your updated farmer details have been resubmitted. Please wait for admin approval. You can add crops once your profile is approved.',
+                    'మీ అప్‌డేట్ చేసిన రైతు వివరాలు మళ్లీ సమర్పించబడ్డాయి. దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+                  )
+                : label(
+                    'Your farmer profile has been submitted. Please wait for admin approval. You can add crops once your profile is approved.',
+                    'మీ రైతు ప్రొఫైల్ సమర్పించబడింది. దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+                  )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button className="w-full" onClick={() => { setSuccessOpen(false); navigate('/'); }}>
+              {label('Back to Home', 'హోమ్‌కు తిరిగి వెళ్ళు')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <MobileBottomNav />
     </div>
