@@ -76,10 +76,19 @@ const AddProduct = () => {
     if (!user) { navigate('/auth'); return; }
 
     // Check seller registration
-    const { data: sellers } = await (supabase.from('sellers') as any).select('id').eq('user_id', user.id).eq('seller_type', 'agriculture_products').limit(1);
+    const { data: sellers } = await (supabase.from('sellers') as any).select('id,status').eq('user_id', user.id).eq('seller_type', 'agriculture_products').limit(1);
     if (!sellers?.length) {
       toast({ title: 'Register as seller first', variant: 'destructive' });
       navigate('/become-seller');
+      return;
+    }
+    if (sellers[0].status !== 'approved') {
+      toast({
+        title: 'Pending Approval',
+        description: 'Your seller registration is awaiting admin approval. You can add products once approved.',
+        variant: 'destructive',
+      });
+      navigate('/');
       return;
     }
 
