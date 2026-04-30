@@ -153,7 +153,9 @@ const AdminSellers: React.FC<{ mode?: 'sellers' | 'farmers' }> = ({ mode = 'sell
 
   const fetchSellers = async () => {
     const { data, error } = await (supabase.from('sellers') as any)
-      .select('*').order('created_at', { ascending: false });
+      .select('*')
+      .eq('seller_type', sellerTypeFilter)
+      .order('created_at', { ascending: false });
     if (error) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
     setSellers((data || []) as Seller[]);
   };
