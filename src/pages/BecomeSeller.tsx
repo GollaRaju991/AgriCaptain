@@ -81,7 +81,55 @@ const BecomeSeller = () => {
       {/* Desktop header */}
       <div className="hidden lg:block"><Header /></div>
 
-      {!selectedType ? (
+      {checking ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : existingSeller && existingSeller.status === 'pending' ? (
+        <div className="container mx-auto px-4 py-8 max-w-lg">
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="p-6 text-center space-y-3">
+              <div className="mx-auto w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
+                <Clock className="h-8 w-8 text-amber-600" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Application Under Review</h2>
+              <p className="text-sm text-muted-foreground">
+                Hi <strong>{existingSeller.name}</strong>, thanks for registering as a seller. Our team is verifying your details. You'll be notified once approved (usually within 24 hours).
+              </p>
+              <p className="text-xs text-muted-foreground">Submitted on {new Date(existingSeller.created_at).toLocaleDateString()}</p>
+              <Button variant="outline" onClick={() => navigate('/')} className="mt-2">Back to Home</Button>
+            </CardContent>
+          </Card>
+        </div>
+      ) : existingSeller && existingSeller.status === 'rejected' ? (
+        <div className="container mx-auto px-4 py-8 max-w-lg">
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                  <XCircle className="h-7 w-7 text-red-600" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-foreground">Application Rejected</h2>
+                  <p className="text-xs text-muted-foreground">Please update the details below and resubmit.</p>
+                </div>
+              </div>
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-sm">
+                <div className="flex items-center gap-1.5 text-red-700 font-semibold mb-1">
+                  <AlertTriangle className="h-4 w-4" /> What you need to fix:
+                </div>
+                <div className="whitespace-pre-line text-foreground text-sm">
+                  {existingSeller.rejection_reason || 'Please contact support for details.'}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={deleteAndReapply} className="flex-1">Edit & Resubmit</Button>
+                <Button variant="outline" onClick={() => navigate('/')} className="flex-1">Home</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : !selectedType ? (
         /* Selection Screen */
         <div className="container mx-auto px-4 py-6 max-w-lg">
           <div className="text-center mb-4">
