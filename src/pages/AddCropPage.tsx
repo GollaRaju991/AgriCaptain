@@ -183,6 +183,29 @@ const AddCropPage: React.FC = () => {
   };
 
   const startEditProfile = (seller: SellerData) => {
+    // Block editing for pending/approved profiles — only rejected can be edited & resubmitted
+    if (seller.status === 'pending') {
+      toast({
+        title: label('⏳ Pending Approval', '⏳ ఆమోదం పెండింగ్‌లో ఉంది'),
+        description: label(
+          'Your profile is under review. You cannot edit it while it is pending.',
+          'మీ ప్రొఫైల్ సమీక్షలో ఉంది. ఇది పెండింగ్‌లో ఉన్నప్పుడు మీరు దీన్ని సవరించలేరు.'
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (seller.status === 'approved') {
+      toast({
+        title: label('✅ Already Approved', '✅ ఇప్పటికే ఆమోదించబడింది'),
+        description: label(
+          'Approved profiles cannot be edited. Contact support if changes are needed.',
+          'ఆమోదించిన ప్రొఫైల్‌లను సవరించలేరు. మార్పులు అవసరమైతే సపోర్ట్‌ను సంప్రదించండి.'
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
     setEditingSeller(seller);
     setFormData({
       name: seller.name,
