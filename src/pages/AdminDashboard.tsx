@@ -64,7 +64,7 @@ const AdminDashboard = () => {
       desc: 'Manage customer orders & delivery',
       icon: Package,
       count: counts.pendingOrders,
-      route: '/admin/orders',
+      route: adminPath('orders'),
       color: 'bg-blue-600',
     },
   ];
