@@ -61,9 +61,32 @@ import SupportChat from "./pages/SupportChat";
 import DeleteAccount from "./pages/DeleteAccount";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
+import { Navigate } from "react-router-dom";
+import { isAdminSubdomain } from "./utils/subdomain";
 
 // ⭐ ADD THIS
 import MobileBottomNav from "@/components/MobileBottomNav";
+
+const ADMIN_MODE = isAdminSubdomain();
+
+const AdminOnlyRoutes = () => (
+  <Routes>
+    <Route path="/login" element={<AdminLogin />} />
+    <Route path="/" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+    <Route path="/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+    <Route path="/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
+    <Route path="/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
+    <Route path="/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
+    {/* Back-compat: support old /admin/* URLs by redirecting */}
+    <Route path="/admin" element={<Navigate to="/" replace />} />
+    <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+    <Route path="/admin/orders" element={<Navigate to="/orders" replace />} />
+    <Route path="/admin/sellers" element={<Navigate to="/sellers" replace />} />
+    <Route path="/admin/products" element={<Navigate to="/products" replace />} />
+    <Route path="/admin/crops" element={<Navigate to="/crops" replace />} />
+    <Route path="*" element={<Navigate to="/login" replace />} />
+  </Routes>
+);
 
 const queryClient = new QueryClient();
 
