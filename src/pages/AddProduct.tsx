@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, X, Package, Tag, Layers, BadgeCheck, DollarSign, Truck, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Upload, X, Package, Tag, Layers, BadgeCheck, DollarSign, Truck, Image as ImageIcon, IndianRupee, LayoutGrid, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -157,72 +157,84 @@ const AddProduct = () => {
         <Card className="rounded-2xl border-0 shadow-lg">
           <CardContent className="p-4 sm:p-6">
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Basic Product Info */}
-              <div className="grid grid-cols-2 gap-3">
+              {/* Basic Product Info — stacked single column with icon badges */}
+              <div className="space-y-4">
                 <div>
-                  <Label className="flex items-center gap-1.5 text-sm mb-1">
-                    <Package className="h-3.5 w-3.5 text-primary" /> Product Name <span className="text-destructive">*</span>
+                  <Label className="flex items-center gap-2 text-sm font-bold mb-2">
+                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Package className="h-4 w-4 text-primary" />
+                    </span>
+                    Product Name
                   </Label>
-                  <Input name="productName" value={form.productName} onChange={handleChange} required placeholder="Enter Product Name..." />
+                  <Input name="productName" value={form.productName} onChange={handleChange} required placeholder="Enter product name" />
                 </div>
+
                 <div>
-                  <Label className="flex items-center gap-1.5 text-sm mb-1">
-                    <Layers className="h-3.5 w-3.5 text-primary" /> Category <span className="text-destructive">*</span>
+                  <Label className="flex items-center gap-2 text-sm font-bold mb-2">
+                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Tag className="h-4 w-4 text-primary" />
+                    </span>
+                    Brand Name
+                  </Label>
+                  <Input name="brand" value={form.brand} onChange={handleChange} placeholder="Enter brand name" />
+                </div>
+
+                <div>
+                  <Label className="flex items-center gap-2 text-sm font-bold mb-2">
+                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Layers className="h-4 w-4 text-primary" />
+                    </span>
+                    Category
                   </Label>
                   <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v, subCategory: '' })}>
-                    <SelectTrigger><SelectValue placeholder="Select Category" /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
                     <SelectContent>
                       {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
+
                 <div>
-                  <Label className="flex items-center gap-1.5 text-sm mb-1">
-                    <Tag className="h-3.5 w-3.5 text-primary" /> Brand <span className="text-destructive">*</span>
-                  </Label>
-                  <Input name="brand" value={form.brand} onChange={handleChange} placeholder="Enter brand" />
-                </div>
-                <div>
-                  <Label className="flex items-center gap-1.5 text-sm mb-1">
-                    <Layers className="h-3.5 w-3.5 text-primary" /> Sub Category
+                  <Label className="flex items-center gap-2 text-sm font-bold mb-2">
+                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                      <LayoutGrid className="h-4 w-4 text-primary" />
+                    </span>
+                    Sub Category
                   </Label>
                   <Select value={form.subCategory} onValueChange={(v) => setForm({ ...form, subCategory: v })} disabled={!form.category}>
-                    <SelectTrigger><SelectValue placeholder="Select Sub Category" /></SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder="Select sub category" /></SelectTrigger>
                     <SelectContent>
                       {availableSubs.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
-                <div>
-                  <Label className="text-sm mb-1">Product Type</Label>
-                  <Input name="productType" value={form.productType} onChange={handleChange} placeholder="Enter shop or farm name" />
-                </div>
-                <div>
-                  <Label className="text-sm mb-1">Product Type</Label>
-                  <Input value="" disabled placeholder="" />
-                </div>
               </div>
 
               {/* Pricing */}
               <div>
-                <h3 className="text-sm font-bold text-foreground mb-2">Pricing</h3>
+                <h3 className="flex items-center gap-2 text-sm font-bold text-primary mb-3">
+                  <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <IndianRupee className="h-4 w-4 text-primary" />
+                  </span>
+                  Pricing
+                </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs font-semibold">MRP Price <span className="text-destructive">*</span></Label>
+                    <Label className="text-xs font-semibold">MRP Price (₹)</Label>
                     <Input name="mrpPrice" type="number" value={form.mrpPrice} onChange={handleChange} required placeholder="Enter MRP price" className="mt-1" />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold">Selling Price <span className="text-destructive">*</span></Label>
+                    <Label className="text-xs font-semibold">Selling Price (₹)</Label>
                     <Input name="sellingPrice" type="number" value={form.sellingPrice} onChange={handleChange} required placeholder="Enter selling price" className="mt-1" />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold">Discount %</Label>
-                    <Input name="discount" type="number" value={form.discount} onChange={handleChange} placeholder="Enter discount (optional)" className="mt-1" />
+                    <Label className="text-xs font-semibold">Discount % <span className="text-muted-foreground font-normal">(Optional)</span></Label>
+                    <Input name="discount" type="number" value={form.discount} onChange={handleChange} placeholder="Enter discount %" className="mt-1" />
                   </div>
                   <div>
-                    <Label className="text-xs font-semibold">Stock & Quantity <span className="text-destructive">*</span></Label>
+                    <Label className="text-xs font-semibold">Stock & Quantity</Label>
                     <div className="flex gap-2 mt-1">
-                      <Input name="stockQuantity" type="number" value={form.stockQuantity} onChange={handleChange} required placeholder="Enter stock quantity" className="flex-1" />
+                      <Input name="stockQuantity" type="number" value={form.stockQuantity} onChange={handleChange} required placeholder="Enter stock" className="flex-1" />
                       <Select value={form.unitType} onValueChange={(v) => setForm({ ...form, unitType: v })}>
                         <SelectTrigger className="w-24"><SelectValue /></SelectTrigger>
                         <SelectContent>
@@ -236,7 +248,12 @@ const AddProduct = () => {
 
               {/* Description */}
               <div>
-                <h3 className="text-sm font-bold text-foreground mb-2">Product Description</h3>
+                <h3 className="flex items-center gap-2 text-sm font-bold text-foreground mb-2">
+                  <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FileText className="h-4 w-4 text-primary" />
+                  </span>
+                  Product Description
+                </h3>
                 <Textarea name="description" value={form.description} onChange={handleChange} placeholder="Enter product description..." rows={3} />
               </div>
 
