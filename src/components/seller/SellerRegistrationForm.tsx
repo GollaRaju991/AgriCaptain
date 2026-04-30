@@ -197,40 +197,40 @@ const SellerRegistrationForm = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Details */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <User className="h-3.5 w-3.5 text-primary" /> Full Name <span className="text-destructive">*</span>
+            <User className="h-4 w-4 text-primary stroke-[2.5]" /> Full Name <span className="text-destructive">*</span>
           </Label>
           <Input name="name" value={formData.name} onChange={handleChange} required placeholder="Enter your full name" />
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <Phone className="h-3.5 w-3.5 text-primary" /> Phone Number <span className="text-destructive">*</span>
+            <Phone className="h-4 w-4 text-primary stroke-[2.5]" /> Phone Number <span className="text-destructive">*</span>
           </Label>
           <Input name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="Enter phone number" />
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <Mail className="h-3.5 w-3.5 text-primary" /> Email ID
+            <Mail className="h-4 w-4 text-primary stroke-[2.5]" /> Email ID
           </Label>
           <Input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Enter email address" />
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <CreditCard className="h-3.5 w-3.5 text-primary" /> Aadhaar Number <span className="text-destructive">*</span>
+            <CreditCard className="h-4 w-4 text-primary stroke-[2.5]" /> Aadhaar Number <span className="text-destructive">*</span>
           </Label>
           <Input name="aadhaarNumber" value={formData.aadhaarNumber} onChange={handleChange} required placeholder="XXXX XXXX XXXX" maxLength={14} />
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <Store className="h-3.5 w-3.5 text-primary" /> Shop / Farm Name <span className="text-destructive">*</span>
+            <Store className="h-4 w-4 text-primary stroke-[2.5]" /> Shop / Farm Name <span className="text-destructive">*</span>
           </Label>
           <Input name="shopFarmName" value={formData.shopFarmName} onChange={handleChange} required placeholder="Enter shop or farm name" />
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <BadgeCheck className="h-3.5 w-3.5 text-primary" /> Seller Type <span className="text-destructive">*</span>
+            <BadgeCheck className="h-4 w-4 text-primary stroke-[2.5]" /> Seller Type <span className="text-destructive">*</span>
           </Label>
           <Select value={formData.sellerSubType} onValueChange={(v) => handleSelectChange('sellerSubType', v)}>
             <SelectTrigger><SelectValue placeholder="Select Type" /></SelectTrigger>
@@ -244,10 +244,10 @@ const SellerRegistrationForm = () => {
       </div>
 
       {/* Location */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3">
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <Map className="h-3.5 w-3.5 text-primary" /> State <span className="text-destructive">*</span>
+            <Map className="h-4 w-4 text-primary stroke-[2.5]" /> State <span className="text-destructive">*</span>
           </Label>
           <Select value={formData.state} onValueChange={(v) => handleSelectChange('state', v)}>
             <SelectTrigger><SelectValue placeholder="Select State" /></SelectTrigger>
@@ -260,7 +260,7 @@ const SellerRegistrationForm = () => {
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <Building2 className="h-3.5 w-3.5 text-primary" /> District <span className="text-destructive">*</span>
+            <Building2 className="h-4 w-4 text-primary stroke-[2.5]" /> District <span className="text-destructive">*</span>
           </Label>
           <Select value={formData.district} onValueChange={(v) => handleSelectChange('district', v)} disabled={!formData.state}>
             <SelectTrigger><SelectValue placeholder="Select District" /></SelectTrigger>
@@ -273,13 +273,13 @@ const SellerRegistrationForm = () => {
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <MapPin className="h-3.5 w-3.5 text-primary" /> Address <span className="text-destructive">*</span>
+            <MapPin className="h-4 w-4 text-primary stroke-[2.5]" /> Address <span className="text-destructive">*</span>
           </Label>
           <Input name="address" value={formData.address} onChange={handleChange} required placeholder="Enter full address" />
         </div>
         <div>
           <Label className="flex items-center gap-1.5 text-sm mb-1">
-            <Hash className="h-3.5 w-3.5 text-primary" /> Pincode <span className="text-destructive">*</span>
+            <Hash className="h-4 w-4 text-primary stroke-[2.5]" /> Pincode <span className="text-destructive">*</span>
           </Label>
           <div className="relative">
             <Input
