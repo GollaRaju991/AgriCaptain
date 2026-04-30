@@ -31,6 +31,7 @@ interface SellerData {
   pincode: string;
   photo_url: string | null;
   status?: string;
+  rejection_reason?: string | null;
 }
 
 type PageStep = 'profile-selection' | 'profile-form' | 'crop-form';
