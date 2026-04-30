@@ -1,21 +1,15 @@
 project_id = "vxbzggftzldttlhtvcej"
 
-[functions.send-otp]
-verify_jwt = false
-
-[functions.verify-otp]
-verify_jwt = false
-
-[functions.crop-diagnosis]
+[functions.wallet-recharge]
 verify_jwt = false
 
 [functions.process-referral]
 verify_jwt = false
 
-[functions.simulate-delivery]
+[functions.crop-diagnosis]
 verify_jwt = false
 
-[functions.wallet-recharge]
+[functions.simulate-delivery]
 verify_jwt = false
 
 [functions.seed-admin]
