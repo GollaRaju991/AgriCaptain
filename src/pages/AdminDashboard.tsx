@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat } from 'lucide-react';
+import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat, Tractor } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { adminPath } from '@/utils/subdomain';
 
