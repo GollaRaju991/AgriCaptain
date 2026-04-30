@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.simulate-delivery]
 verify_jwt = false
+
+[functions.seed-admin]
+verify_jwt = false
