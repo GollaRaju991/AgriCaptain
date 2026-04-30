@@ -127,11 +127,29 @@ const FarmWorker = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('farm_workers' as any)
-        .select('*')
-        .eq('is_active', true)
-        .overlaps('worker_types', selectedWorkerTypes);
+      let data: any[] | null = null;
+      let error: any = null;
+
+      if (locationMode === 'nearby' && userCoords) {
+        // Use RPC with user's GPS for nearby search
+        const skill = selectedWorkerTypes[0] || null;
+        const res = await supabase.rpc('search_farm_workers' as any, {
+          _skill: skill,
+          _lat: userCoords.lat,
+          _lng: userCoords.lon,
+          _radius_km: 500,
+        });
+        data = res.data as any[] | null;
+        error = res.error;
+      } else {
+        const res = await supabase
+          .from('farm_workers' as any)
+          .select('*')
+          .eq('is_active', true)
+          .overlaps('worker_types', selectedWorkerTypes);
+        data = res.data as any[] | null;
+        error = res.error;
+      }
 
       if (error) throw error;
 
