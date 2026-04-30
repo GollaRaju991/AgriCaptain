@@ -275,7 +275,17 @@ const AddCropPage: React.FC = () => {
         const newSeller = data as unknown as SellerData;
         setSellerProfiles(prev => [newSeller, ...prev]);
         setSelectedSeller(newSeller);
-        toast({ title: label('Profile saved', 'ప్రొఫైల్ సేవ్ చేయబడింది') });
+        toast({
+          title: label('✅ Registration Completed', '✅ నమోదు పూర్తయింది'),
+          description: label(
+            'Please wait for admin approval. You can add crops once your profile is approved.',
+            'దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+          ),
+        });
+        resetForm();
+        setStep('profile-selection');
+        setSubmitting(false);
+        return;
       }
       resetForm();
       setStep('crop-form');
