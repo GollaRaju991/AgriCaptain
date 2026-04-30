@@ -145,7 +145,19 @@ const SellerDashboard = () => {
                     )}
                   </div>
                   <div className="flex-1 p-3">
-                    <h3 className="font-semibold text-sm line-clamp-1">{product.product_name}</h3>
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-sm line-clamp-1">{product.product_name}</h3>
+                      {(() => {
+                        const rs = (product.review_status || 'pending').toLowerCase();
+                        const map: Record<string, string> = {
+                          pending: 'bg-amber-100 text-amber-700 border-amber-300',
+                          approved: 'bg-green-100 text-green-700 border-green-300',
+                          rejected: 'bg-red-100 text-red-700 border-red-300',
+                        };
+                        const label = rs === 'approved' ? '✅ Approved' : rs === 'rejected' ? '❌ Rejected' : '⏳ Pending';
+                        return <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${map[rs] || map.pending}`}>{label}</span>;
+                      })()}
+                    </div>
                     <p className="text-xs text-muted-foreground">{product.category} • {product.brand}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="font-bold text-sm">₹{product.selling_price}</span>
@@ -154,6 +166,11 @@ const SellerDashboard = () => {
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground">Stock: {product.stock_quantity} {product.unit_type}</p>
+                    {(product.review_status || '').toLowerCase() === 'rejected' && product.rejection_reason && (
+                      <div className="mt-2 text-[11px] bg-red-50 border border-red-200 text-red-800 rounded p-1.5">
+                        <strong>Rejected:</strong> {product.rejection_reason} — please edit and resubmit.
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-col justify-center gap-2 p-2">
                     <button onClick={() => navigate(`/seller/edit-product/${product.id}`)} className="text-primary hover:bg-primary/10 p-1.5 rounded">
