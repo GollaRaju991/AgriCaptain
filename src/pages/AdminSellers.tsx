@@ -8,7 +8,82 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle2, XCircle, Clock, Phone, Mail, MapPin, FileText, Loader2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Clock, Phone, Mail, MapPin, FileText, Loader2, Eye } from 'lucide-react';
+
+// Convert a stored public-style URL for the private `seller-documents` bucket into a signed URL
+const getViewableDocUrl = async (url: string | null): Promise<string | null> => {
+  if (!url) return null;
+  // If not in the private bucket, return as-is
+  const marker = '/storage/v1/object/public/seller-documents/';
+  if (!url.includes(marker)) {
+    // Sometimes URL may use /sign/ or already be a path — try direct
+    return url;
+  }
+  const path = url.split(marker)[1];
+  const { data, error } = await supabase.storage.from('seller-documents').createSignedUrl(path, 60 * 60);
+  if (error || !data?.signedUrl) {
+    console.error('Failed to sign doc url', error);
+    return null;
+  }
+  return data.signedUrl;
+};
+
+const DocLink: React.FC<{ url: string | null; label: string }> = ({ url, label }) => {
+  const [loading, setLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleView = async () => {
+    if (!url) return;
+    setLoading(true);
+    const signed = await getViewableDocUrl(url);
+    setLoading(false);
+    if (!signed) {
+      toast({ title: 'Unable to load document', description: 'File may be missing or access denied.', variant: 'destructive' });
+      return;
+    }
+    setPreviewUrl(signed);
+    setOpen(true);
+  };
+
+  if (!url) return null;
+  const isPdf = url.toLowerCase().includes('.pdf');
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleView}
+        className="flex items-center gap-1 text-primary underline hover:text-primary/80 disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
+        {label}
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader><DialogTitle>{label}</DialogTitle></DialogHeader>
+          {previewUrl && (
+            isPdf ? (
+              <iframe src={previewUrl} className="w-full h-[70vh] rounded border" />
+            ) : (
+              <img src={previewUrl} alt={label} className="w-full max-h-[70vh] object-contain rounded border" />
+            )
+          )}
+          <DialogFooter>
+            {previewUrl && (
+              <a href={previewUrl} target="_blank" rel="noreferrer" className="text-sm text-primary underline">
+                Open in new tab
+              </a>
+            )}
+            <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 type Seller = {
   id: string;
