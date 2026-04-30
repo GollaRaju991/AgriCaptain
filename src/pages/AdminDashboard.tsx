@@ -40,7 +40,7 @@ const AdminDashboard = () => {
       desc: 'Review and approve seller registrations',
       icon: Users,
       count: counts.pendingSellers,
-      route: '/admin/sellers',
+      route: adminPath('sellers'),
       color: 'bg-green-600',
     },
     {
