@@ -29,6 +29,7 @@ interface SellerData {
   state: string | null;
   pincode: string;
   photo_url: string | null;
+  status?: string;
 }
 
 type PageStep = 'profile-selection' | 'profile-form' | 'crop-form';
