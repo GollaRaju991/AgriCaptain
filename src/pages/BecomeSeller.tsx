@@ -103,18 +103,30 @@ const BecomeSeller = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {sellerOptions.map((option) => (
+            {sellerOptions.map((option) => {
+              const isAgri = option.type === 'agriculture_products';
+              const status = isAgri ? existingSeller?.status : null;
+              const statusMeta: Record<string, { label: string; cls: string }> = {
+                pending: { label: '⏳ Pending Approval', cls: 'bg-amber-100 text-amber-700 border-amber-300' },
+                approved: { label: '✅ Approved', cls: 'bg-green-100 text-green-700 border-green-300' },
+                rejected: { label: '❌ Rejected', cls: 'bg-red-100 text-red-700 border-red-300' },
+              };
+              return (
               <Card
                 key={option.type}
-                className="cursor-pointer group hover:shadow-lg transition-all duration-300 border hover:border-primary overflow-hidden rounded-xl"
+                className="cursor-pointer group hover:shadow-lg transition-all duration-300 border hover:border-primary overflow-hidden rounded-xl relative"
                 onClick={() => {
                   if (option.type === 'farmers_market') {
                     navigate('/sell-crop/add');
                     return;
                   }
-                  // Block duplicate registration if pending/approved
-                  if (existingSeller && (existingSeller.status === 'pending' || existingSeller.status === 'approved')) {
-                    setStatusDialogOpen(true);
+                  // If approved → go straight to dashboard
+                  if (existingSeller?.status === 'approved') {
+                    navigate('/seller/dashboard');
+                    return;
+                  }
+                  // If pending → silent block (badge already visible)
+                  if (existingSeller?.status === 'pending') {
                     return;
                   }
                   setSelectedType(option.type);
@@ -129,10 +141,15 @@ const BecomeSeller = () => {
                       {t[option.titleKey]}
                     </h3>
                     <p className="text-xs text-muted-foreground line-clamp-2">{t[option.descKey]}</p>
+                    {status && statusMeta[status] && (
+                      <span className={`inline-block mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${statusMeta[status].cls}`}>
+                        {statusMeta[status].label}
+                      </span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            );})}
           </div>
           {loadingSeller && (
             <p className="text-center text-xs text-muted-foreground mt-3 flex items-center justify-center gap-1">
