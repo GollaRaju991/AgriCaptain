@@ -52,6 +52,7 @@ import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
 import AdminSellers from "./pages/AdminSellers";
+import AdminFarmers from "./pages/AdminFarmers";
 import AdminProducts from "./pages/AdminProducts";
 import AdminCrops from "./pages/AdminCrops";
 import AdminLogin from "./pages/AdminLogin";
