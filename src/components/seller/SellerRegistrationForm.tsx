@@ -167,8 +167,8 @@ const SellerRegistrationForm = () => {
 
       if (error) throw error;
 
-      toast({ title: 'Registration Successful!', description: 'Now add your products.' });
-      navigate('/seller/add-product');
+      toast({ title: '✅ Submitted for Review', description: 'Our team will verify your details within 24 hours.' });
+      navigate('/become-seller');
     } catch (error: any) {
       toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
     } finally {
