@@ -490,12 +490,31 @@ const AddCropPage: React.FC = () => {
                   <User className="h-8 w-8 text-primary" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  {editingSeller ? label('Edit Farmer Profile', 'రైతు ప్రొఫైల్ మార్చండి') : label('Farmer Details', 'రైతు వివరాలు')}
+                  {editingSeller
+                    ? (editingSeller.status === 'rejected'
+                        ? label('Edit & Resubmit', 'సవరించి మళ్లీ సమర్పించండి')
+                        : label('Edit Farmer Profile', 'రైతు ప్రొఫైల్ మార్చండి'))
+                    : label('Farmer Details', 'రైతు వివరాలు')}
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">
                   {label('Fill your details to start listing crops', 'పంటలు జాబితా చేయడానికి మీ వివరాలు నమోదు చేయండి')}
                 </p>
               </div>
+
+              {/* Rejection reason banner — shown only when editing a rejected profile */}
+              {editingSeller?.status === 'rejected' && editingSeller?.rejection_reason && (
+                <div className="mb-4 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-sm">
+                  <p className="font-bold text-destructive flex items-center gap-1.5">
+                    <XCircle className="h-4 w-4" /> {label('Your previous registration was rejected', 'మీ మునుపటి నమోదు తిరస్కరించబడింది')}
+                  </p>
+                  <p className="text-foreground mt-1">
+                    <strong>{label('Reason:', 'కారణం:')}</strong> {editingSeller.rejection_reason}
+                  </p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    {label('Please update the details below and resubmit for approval.', 'దయచేసి దిగువ వివరాలను అప్‌డేట్ చేసి, ఆమోదం కోసం మళ్లీ సమర్పించండి.')}
+                  </p>
+                </div>
+              )}
 
               <form onSubmit={handleProfileSubmit} className="space-y-4">
                 <div>
@@ -634,7 +653,11 @@ const AddCropPage: React.FC = () => {
                 </div>
 
                 <Button type="submit" disabled={submitting} className="w-full py-3">
-                  {submitting ? label('Saving...', 'సేవ్ అవుతోంది...') : label('Save & Continue', 'సేవ్ & కొనసాగించు')}
+                  {submitting
+                    ? label('Saving...', 'సేవ్ అవుతోంది...')
+                    : (editingSeller?.status === 'rejected'
+                        ? label('Resubmit for Approval', 'ఆమోదం కోసం మళ్లీ సమర్పించండి')
+                        : label('Save & Continue', 'సేవ్ & కొనసాగించు'))}
                 </Button>
               </form>
             </CardContent>
@@ -709,6 +732,36 @@ const AddCropPage: React.FC = () => {
           </>
         )}
       </main>
+
+      {/* Success popup — registration submitted / resubmitted */}
+      <Dialog open={!!successOpen} onOpenChange={(o) => { if (!o) setSuccessOpen(false); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mx-auto mb-2">
+              <CheckCircle2 className="h-16 w-16 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-xl">
+              {label('Registration Completed', 'నమోదు పూర్తయింది')}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {successOpen === 'resubmitted'
+                ? label(
+                    'Your updated farmer details have been resubmitted. Please wait for admin approval. You can add crops once your profile is approved.',
+                    'మీ అప్‌డేట్ చేసిన రైతు వివరాలు మళ్లీ సమర్పించబడ్డాయి. దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+                  )
+                : label(
+                    'Your farmer profile has been submitted. Please wait for admin approval. You can add crops once your profile is approved.',
+                    'మీ రైతు ప్రొఫైల్ సమర్పించబడింది. దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+                  )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button className="w-full" onClick={() => { setSuccessOpen(false); navigate('/'); }}>
+              {label('Back to Home', 'హోమ్‌కు తిరిగి వెళ్ళు')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <MobileBottomNav />
     </div>
