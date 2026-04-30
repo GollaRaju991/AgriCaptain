@@ -76,6 +76,7 @@ const AdminOnlyRoutes = () => (
     <Route path="/" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
     <Route path="/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
     <Route path="/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
+    <Route path="/farmers" element={<AdminGuard><AdminFarmers /></AdminGuard>} />
     <Route path="/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
     <Route path="/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
     {/* Back-compat: support old /admin/* URLs by redirecting */}
