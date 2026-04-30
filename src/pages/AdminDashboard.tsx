@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat } from 'lucide-react';
+import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat, Tractor } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { adminPath } from '@/utils/subdomain';
 
@@ -11,20 +11,21 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState<string>('');
-  const [counts, setCounts] = useState({ pendingSellers: 0, pendingOrders: 0, pendingProducts: 0, pendingCrops: 0 });
+  const [counts, setCounts] = useState({ pendingSellers: 0, pendingFarmers: 0, pendingOrders: 0, pendingProducts: 0, pendingCrops: 0 });
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setEmail(user?.email ?? '');
 
-      const [{ count: ps }, { count: po }, { count: pp }, { count: pc }] = await Promise.all([
-        supabase.from('sellers').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      const [{ count: ps }, { count: pf }, { count: po }, { count: pp }, { count: pc }] = await Promise.all([
+        supabase.from('sellers').select('*', { count: 'exact', head: true }).eq('status', 'pending').eq('seller_type', 'agriculture_products'),
+        supabase.from('sellers').select('*', { count: 'exact', head: true }).eq('status', 'pending').eq('seller_type', 'farmers_market'),
         supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('seller_products').select('*', { count: 'exact', head: true }).eq('review_status', 'pending'),
         supabase.from('farmer_crops').select('*', { count: 'exact', head: true }).eq('review_status', 'pending'),
       ]);
-      setCounts({ pendingSellers: ps ?? 0, pendingOrders: po ?? 0, pendingProducts: pp ?? 0, pendingCrops: pc ?? 0 });
+      setCounts({ pendingSellers: ps ?? 0, pendingFarmers: pf ?? 0, pendingOrders: po ?? 0, pendingProducts: pp ?? 0, pendingCrops: pc ?? 0 });
     })();
   }, []);
 
@@ -42,6 +43,14 @@ const AdminDashboard = () => {
       count: counts.pendingSellers,
       route: adminPath('sellers'),
       color: 'bg-green-600',
+    },
+    {
+      title: 'Farmer Approvals',
+      desc: 'Review and approve farmer registrations',
+      icon: Tractor,
+      count: counts.pendingFarmers,
+      route: adminPath('farmers'),
+      color: 'bg-emerald-600',
     },
     {
       title: 'Product Approvals',

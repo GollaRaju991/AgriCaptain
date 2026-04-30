@@ -24,7 +24,7 @@ export const isAdminSubdomain = (): boolean => {
  *  - On admin subdomain:  adminPath('login')   → '/login'
  *  - On main domain:      adminPath('login')   → '/admin/login'
  */
-export const adminPath = (sub: '' | 'login' | 'orders' | 'sellers' | 'products' | 'crops'): string => {
+export const adminPath = (sub: '' | 'login' | 'orders' | 'sellers' | 'farmers' | 'products' | 'crops'): string => {
   const onAdmin = isAdminSubdomain();
   if (onAdmin) return sub ? `/${sub}` : '/';
   return sub ? `/admin/${sub}` : '/admin';

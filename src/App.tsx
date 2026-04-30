@@ -52,6 +52,7 @@ import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
 import AdminSellers from "./pages/AdminSellers";
+import AdminFarmers from "./pages/AdminFarmers";
 import AdminProducts from "./pages/AdminProducts";
 import AdminCrops from "./pages/AdminCrops";
 import AdminLogin from "./pages/AdminLogin";
@@ -75,6 +76,7 @@ const AdminOnlyRoutes = () => (
     <Route path="/" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
     <Route path="/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
     <Route path="/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
+    <Route path="/farmers" element={<AdminGuard><AdminFarmers /></AdminGuard>} />
     <Route path="/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
     <Route path="/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
     {/* Back-compat: support old /admin/* URLs by redirecting */}
@@ -176,6 +178,7 @@ const App = () => {
                       <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
                       <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                       <Route path="/admin/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
+                      <Route path="/admin/farmers" element={<AdminGuard><AdminFarmers /></AdminGuard>} />
                       <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
                       <Route path="/admin/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
                       <Route path="/support-chat" element={<SupportChat />} />

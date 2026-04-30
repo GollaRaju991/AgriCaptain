@@ -121,7 +121,10 @@ const COMMON_REASONS = [
   'Profile photo is missing or unclear',
 ];
 
-const AdminSellers = () => {
+const AdminSellers: React.FC<{ mode?: 'sellers' | 'farmers' }> = ({ mode = 'sellers' }) => {
+  const sellerTypeFilter = mode === 'farmers' ? 'farmers_market' : 'agriculture_products';
+  const pageTitle = mode === 'farmers' ? 'Admin · Farmer Approvals' : 'Admin · Seller Approvals';
+  const entityLabel = mode === 'farmers' ? 'farmer' : 'seller';
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -146,11 +149,13 @@ const AdminSellers = () => {
       await fetchSellers();
       setLoading(false);
     })();
-  }, []);
+  }, [sellerTypeFilter]);
 
   const fetchSellers = async () => {
     const { data, error } = await (supabase.from('sellers') as any)
-      .select('*').order('created_at', { ascending: false });
+      .select('*')
+      .eq('seller_type', sellerTypeFilter)
+      .order('created_at', { ascending: false });
     if (error) { toast({ title: 'Error', description: error.message, variant: 'destructive' }); return; }
     setSellers((data || []) as Seller[]);
   };
@@ -254,7 +259,7 @@ const AdminSellers = () => {
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
         <button onClick={() => navigate('/')}><ArrowLeft className="h-6 w-6" /></button>
-        <h1 className="text-lg font-bold">Admin · Seller Approvals</h1>
+        <h1 className="text-lg font-bold">{pageTitle}</h1>
       </div>
 
       <div className="max-w-4xl mx-auto p-4">
@@ -267,7 +272,7 @@ const AdminSellers = () => {
           {(['pending', 'approved', 'rejected'] as const).map(s => (
             <TabsContent key={s} value={s} className="space-y-3 mt-4">
               {filterByStatus(s).length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No {s} sellers</p>
+                <p className="text-center text-muted-foreground py-8">No {s} {entityLabel}s</p>
               ) : (
                 filterByStatus(s).map(seller => <SellerCard key={seller.id} seller={seller} />)
               )}
