@@ -1516,6 +1516,7 @@ export type Database = {
           price: string | null
           quality_grade: string | null
           quantity: string | null
+          review_status: string | null
           sell_type: string | null
           seller_id: string | null
         }
@@ -1532,6 +1533,7 @@ export type Database = {
           price?: string | null
           quality_grade?: string | null
           quantity?: string | null
+          review_status?: string | null
           sell_type?: string | null
           seller_id?: string | null
         }
@@ -1548,6 +1550,7 @@ export type Database = {
           price?: string | null
           quality_grade?: string | null
           quantity?: string | null
+          review_status?: string | null
           sell_type?: string | null
           seller_id?: string | null
         }
