@@ -12,9 +12,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { states, districts, divisions, mandals, villages } from '@/data/locationData';
 import { usePincodeLookup } from '@/hooks/usePincodeLookup';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const allIndianStates = states.IN || [];
+
+interface SellerRegistrationFormProps {
+  existingSeller?: any | null;
+}
 
 const sellerSubTypes = [
   { value: 'farmer', label: 'Farmer' },
@@ -23,7 +28,7 @@ const sellerSubTypes = [
   { value: 'brand', label: 'Brand' },
 ];
 
-const SellerRegistrationForm = () => {
+const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existingSeller = null }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { translations: t } = useLanguage();
@@ -39,23 +44,26 @@ const SellerRegistrationForm = () => {
   const [aadhaarDocFile, setAadhaarDocFile] = useState<File | null>(null);
   const [panDocFile, setPanDocFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const isEditMode = !!existingSeller;
 
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    aadhaarNumber: '',
-    shopFarmName: '',
-    sellerSubType: '',
-    address: '',
-    state: '',
-    district: '',
-    pincode: '',
-    bankAccountHolder: '',
-    bankAccountNumber: '',
-    bankIfsc: '',
-    farmLocation: '',
-    googleMapLocation: '',
+    name: existingSeller?.name || '',
+    phone: existingSeller?.phone || '',
+    email: existingSeller?.email || '',
+    aadhaarNumber: existingSeller?.aadhaar_number || '',
+    shopFarmName: existingSeller?.shop_farm_name || '',
+    sellerSubType: existingSeller?.seller_sub_type || '',
+    address: existingSeller?.address || '',
+    state: existingSeller?.state || '',
+    district: existingSeller?.district || '',
+    pincode: existingSeller?.pincode || '',
+    bankAccountHolder: existingSeller?.bank_account_holder || '',
+    bankAccountNumber: existingSeller?.bank_account_number || '',
+    bankIfsc: existingSeller?.bank_ifsc || '',
+    farmLocation: existingSeller?.farm_location || '',
+    googleMapLocation: existingSeller?.google_map_location || '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -131,17 +139,35 @@ const SellerRegistrationForm = () => {
 
     setSubmitting(true);
     try {
-      let photoUrl: string | null = null;
-      let aadhaarDocUrl: string | null = null;
-      let panDocUrl: string | null = null;
-      let bannerUrl: string | null = null;
+      // Re-check for duplicate registration (defensive — UI also blocks)
+      if (!isEditMode) {
+        const { data: existing } = await (supabase.from('sellers') as any)
+          .select('id, status')
+          .eq('user_id', user.id)
+          .eq('seller_type', 'agriculture_products')
+          .maybeSingle();
+        if (existing && existing.status !== 'rejected') {
+          toast({
+            title: 'Already Registered',
+            description: 'You already have a seller registration. Duplicate registrations are not allowed.',
+            variant: 'destructive',
+          });
+          setSubmitting(false);
+          return;
+        }
+      }
+
+      let photoUrl: string | null = existingSeller?.photo_url || null;
+      let aadhaarDocUrl: string | null = existingSeller?.aadhaar_document_url || null;
+      let panDocUrl: string | null = existingSeller?.pan_card_url || null;
+      let bannerUrl: string | null = existingSeller?.shop_banner_url || null;
 
       if (photoFile) photoUrl = await uploadFile(photoFile, 'seller-photos', user.id);
       if (aadhaarDocFile) aadhaarDocUrl = await uploadFile(aadhaarDocFile, 'seller-documents', user.id);
       if (panDocFile) panDocUrl = await uploadFile(panDocFile, 'seller-documents', user.id);
       if (bannerFile) bannerUrl = await uploadFile(bannerFile, 'seller-photos', user.id);
 
-      const { error } = await (supabase.from('sellers') as any).insert({
+      const payload: any = {
         user_id: user.id,
         seller_type: 'agriculture_products',
         name: formData.name,
@@ -163,15 +189,25 @@ const SellerRegistrationForm = () => {
         aadhaar_document_url: aadhaarDocUrl,
         pan_card_url: panDocUrl,
         shop_banner_url: bannerUrl,
-      });
+      };
+
+      let error: any = null;
+      if (isEditMode) {
+        // Resubmit a rejected registration — reset to pending, clear rejection reason
+        payload.status = 'pending';
+        payload.rejection_reason = null;
+        const res = await (supabase.from('sellers') as any)
+          .update(payload)
+          .eq('id', existingSeller.id);
+        error = res.error;
+      } else {
+        const res = await (supabase.from('sellers') as any).insert(payload);
+        error = res.error;
+      }
 
       if (error) throw error;
 
-      toast({
-        title: '✅ Registration Completed',
-        description: 'Please wait for admin approval. You can add products once your account is approved.',
-      });
-      navigate('/');
+      setSuccessOpen(true);
     } catch (error: any) {
       toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
     } finally {
@@ -362,12 +398,34 @@ const SellerRegistrationForm = () => {
       </div>
 
       <Button type="submit" disabled={submitting || !agreeTerms} className="w-full py-3 text-base font-bold rounded-xl">
-        {submitting ? 'Submitting...' : 'Register as Seller →'}
+        {submitting ? 'Submitting...' : isEditMode ? 'Resubmit for Approval →' : 'Register as Seller →'}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         Already registered? <span className="text-primary font-bold cursor-pointer" onClick={() => navigate('/auth')}>Login</span>
       </p>
+
+      {/* Success Popup */}
+      <Dialog open={successOpen} onOpenChange={(o) => { if (!o) { setSuccessOpen(false); navigate('/'); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mx-auto mb-2">
+              <CheckCircle2 className="h-16 w-16 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-xl">Registration Completed</DialogTitle>
+            <DialogDescription className="text-center">
+              {isEditMode
+                ? 'Your updated details have been resubmitted. Please wait for admin approval.'
+                : 'Thank you for registering as a seller. Please wait for admin approval. You can add product details once your account is approved.'}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button className="w-full" onClick={() => { setSuccessOpen(false); navigate('/'); }}>
+              Back to Home
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
   );
 };
