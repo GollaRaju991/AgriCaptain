@@ -217,9 +217,12 @@ const AdminSellers = () => {
           {seller.bank_account_number && <div className="text-xs text-muted-foreground">Bank: {seller.bank_ifsc} / {seller.bank_account_number}</div>}
         </div>
 
-        <div className="flex flex-wrap gap-2 text-xs">
-          {seller.aadhaar_document_url && <a href={seller.aadhaar_document_url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary underline"><FileText className="h-3 w-3" />Aadhaar Doc</a>}
-          {seller.pan_card_url && <a href={seller.pan_card_url} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-primary underline"><FileText className="h-3 w-3" />PAN Doc</a>}
+        <div className="flex flex-wrap gap-3 text-xs">
+          <DocLink url={seller.aadhaar_document_url} label="Aadhaar Doc" />
+          <DocLink url={seller.pan_card_url} label="PAN Doc" />
+          {!seller.aadhaar_document_url && !seller.pan_card_url && (
+            <span className="text-muted-foreground italic">No documents uploaded</span>
+          )}
         </div>
 
         {seller.status === 'rejected' && seller.rejection_reason && (
