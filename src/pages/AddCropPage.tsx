@@ -56,6 +56,7 @@ const AddCropPage: React.FC = () => {
   const [step, setStep] = useState<PageStep>('profile-selection');
   const [existingCropCount, setExistingCropCount] = useState(0);
   const [successOpen, setSuccessOpen] = useState<false | 'submitted' | 'resubmitted'>(false);
+  const [statusDialog, setStatusDialog] = useState<null | 'pending' | 'approved'>(null);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '',
@@ -109,6 +110,10 @@ const AddCropPage: React.FC = () => {
       if (sellers && sellers.length > 0) {
         setSellerProfiles(sellers as unknown as SellerData[]);
         setStep('profile-selection');
+        // Auto-show status popup for the (single) existing profile
+        const existing = sellers[0] as any;
+        if (existing.status === 'pending') setStatusDialog('pending');
+        else if (existing.status === 'approved') setStatusDialog('approved');
       } else {
         setStep('profile-form');
       }
@@ -326,14 +331,7 @@ const AddCropPage: React.FC = () => {
 
   const selectProfileAndContinue = (seller: SellerData) => {
     if (seller.status && seller.status !== 'approved') {
-      toast({
-        title: label('⏳ Pending Approval', '⏳ ఆమోదం పెండింగ్‌లో ఉంది'),
-        description: label(
-          'Your farmer profile is awaiting admin approval. You can add crops once approved.',
-          'మీ రైతు ప్రొఫైల్ అడ్మిన్ ఆమోదం కోసం వేచి ఉంది. ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
-        ),
-        variant: 'destructive',
-      });
+      setStatusDialog('pending');
       return;
     }
     setSelectedSeller(seller);
@@ -732,6 +730,42 @@ const AddCropPage: React.FC = () => {
           </>
         )}
       </main>
+
+      {/* Existing-registration status popup (auto-shown if user already has a farmer profile) */}
+      <Dialog open={!!statusDialog} onOpenChange={(o) => { if (!o) setStatusDialog(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mx-auto mb-2">
+              {statusDialog === 'approved' ? (
+                <CheckCircle2 className="h-14 w-14 text-primary" />
+              ) : (
+                <Clock className="h-14 w-14 text-amber-500" />
+              )}
+            </div>
+            <DialogTitle className="text-center">
+              {statusDialog === 'approved'
+                ? label('You are already approved', 'మీరు ఇప్పటికే ఆమోదించబడ్డారు')
+                : label('Registration under review', 'నమోదు సమీక్షలో ఉంది')}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {statusDialog === 'approved'
+                ? label(
+                    'Your farmer profile is approved. You can start adding crop details now.',
+                    'మీ రైతు ప్రొఫైల్ ఆమోదించబడింది. మీరు ఇప్పుడు పంట వివరాలను జోడించడం ప్రారంభించవచ్చు.'
+                  )
+                : label(
+                    'Your farmer details have been submitted and are awaiting admin approval. You cannot register again. You will be able to add crops once approved.',
+                    'మీ రైతు వివరాలు సమర్పించబడ్డాయి మరియు అడ్మిన్ ఆమోదం కోసం వేచి ఉన్నాయి. మీరు మళ్లీ నమోదు చేయలేరు. ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించగలరు.'
+                  )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button variant="outline" className="w-full" onClick={() => { setStatusDialog(null); navigate('/'); }}>
+              {label('Back to Home', 'హోమ్‌కు తిరిగి వెళ్ళు')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Success popup — registration submitted / resubmitted */}
       <Dialog open={!!successOpen} onOpenChange={(o) => { if (!o) setSuccessOpen(false); }}>
