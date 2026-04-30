@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { adminPath } from '@/utils/subdomain';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
