@@ -398,13 +398,37 @@ const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existin
       </div>
 
       <Button type="submit" disabled={submitting || !agreeTerms} className="w-full py-3 text-base font-bold rounded-xl">
-        {submitting ? 'Submitting...' : 'Register as Seller →'}
+        {submitting ? 'Submitting...' : isEditMode ? 'Resubmit for Approval →' : 'Register as Seller →'}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
         Already registered? <span className="text-primary font-bold cursor-pointer" onClick={() => navigate('/auth')}>Login</span>
       </p>
+
+      {/* Success Popup */}
+      <Dialog open={successOpen} onOpenChange={(o) => { if (!o) { setSuccessOpen(false); navigate('/'); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <div className="mx-auto mb-2">
+              <CheckCircle2 className="h-16 w-16 text-primary" />
+            </div>
+            <DialogTitle className="text-center text-xl">Registration Completed</DialogTitle>
+            <DialogDescription className="text-center">
+              {isEditMode
+                ? 'Your updated details have been resubmitted. Please wait for admin approval.'
+                : 'Thank you for registering as a seller. Please wait for admin approval. You can add product details once your account is approved.'}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button className="w-full" onClick={() => { setSuccessOpen(false); navigate('/'); }}>
+              Back to Home
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </form>
+  );
+};
   );
 };
 
