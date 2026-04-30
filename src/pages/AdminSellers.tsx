@@ -172,19 +172,14 @@ const AdminSellers = () => {
     </Card>
   );
 
-  const nested = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin/');
-
   return (
-    <div className={nested ? '' : 'min-h-screen bg-background'}>
-      {!nested && (
-        <div className="sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
-          <button onClick={() => navigate('/')}><ArrowLeft className="h-6 w-6" /></button>
-          <h1 className="text-lg font-bold">Admin · Seller Approvals</h1>
-        </div>
-      )}
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
+        <button onClick={() => navigate('/')}><ArrowLeft className="h-6 w-6" /></button>
+        <h1 className="text-lg font-bold">Admin · Seller Approvals</h1>
+      </div>
 
-      <div className={nested ? '' : 'max-w-4xl mx-auto p-4'}>
-        {nested && <h1 className="text-2xl font-bold mb-4">Seller Approvals</h1>}
+      <div className="max-w-4xl mx-auto p-4">
         <Tabs defaultValue="pending">
           <TabsList className="grid grid-cols-3 w-full">
             <TabsTrigger value="pending">Pending ({filterByStatus('pending').length})</TabsTrigger>

@@ -52,11 +52,6 @@ import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
 import AdminSellers from "./pages/AdminSellers";
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/AdminProducts";
-import { AdminCropPerson, AdminDirectFromFarm, AdminSellCrop } from "./pages/admin/AdminCrops";
 import SupportChat from "./pages/SupportChat";
 import DeleteAccount from "./pages/DeleteAccount";
 import NotFound from "./pages/NotFound";
@@ -127,15 +122,7 @@ const App = () => (
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="/scanner" element={<Scanner />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
-                    <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin" element={<AdminLayout />}>
-                      <Route index element={<AdminDashboard />} />
-                      <Route path="sellers" element={<AdminSellers />} />
-                      <Route path="products" element={<AdminProducts />} />
-                      <Route path="crop-person" element={<AdminCropPerson />} />
-                      <Route path="direct-from-farm" element={<AdminDirectFromFarm />} />
-                      <Route path="sell-crop" element={<AdminSellCrop />} />
-                    </Route>
+                    <Route path="/admin/sellers" element={<AdminSellers />} />
                     <Route path="/support-chat" element={<SupportChat />} />
                     <Route path="/delete-account" element={<DeleteAccount />} />
                     <Route path="*" element={<NotFound />} />
