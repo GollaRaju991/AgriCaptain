@@ -1103,6 +1103,8 @@ export type Database = {
           phone: string
           photo_url: string | null
           pincode: string
+          rejection_reason: string | null
+          reviewed_at: string | null
           seller_sub_type: string | null
           seller_type: string
           shop_banner_url: string | null
@@ -1131,6 +1133,8 @@ export type Database = {
           phone: string
           photo_url?: string | null
           pincode: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
           seller_sub_type?: string | null
           seller_type: string
           shop_banner_url?: string | null
@@ -1159,6 +1163,8 @@ export type Database = {
           phone?: string
           photo_url?: string | null
           pincode?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
           seller_sub_type?: string | null
           seller_type?: string
           shop_banner_url?: string | null
@@ -1168,6 +1174,27 @@ export type Database = {
           updated_at?: string
           user_id?: string
           village?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -1579,6 +1606,13 @@ export type Database = {
           photo_url: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       search_drivers: {
         Args: {
           _district?: string
@@ -1709,7 +1743,7 @@ export type Database = {
       validate_referral_code: { Args: { code: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1836,6 +1870,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
