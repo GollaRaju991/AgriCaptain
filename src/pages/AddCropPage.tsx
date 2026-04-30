@@ -297,6 +297,17 @@ const AddCropPage: React.FC = () => {
   };
 
   const selectProfileAndContinue = (seller: SellerData) => {
+    if (seller.status && seller.status !== 'approved') {
+      toast({
+        title: label('⏳ Pending Approval', '⏳ ఆమోదం పెండింగ్‌లో ఉంది'),
+        description: label(
+          'Your farmer profile is awaiting admin approval. You can add crops once approved.',
+          'మీ రైతు ప్రొఫైల్ అడ్మిన్ ఆమోదం కోసం వేచి ఉంది. ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
     setSelectedSeller(seller);
     setStep('crop-form');
   };
