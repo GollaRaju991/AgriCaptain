@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({ title: 'Signed out' });
-    navigate('/admin/login', { replace: true });
+    navigate(adminPath('login'), { replace: true });
   };
 
   const tiles = [
