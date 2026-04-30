@@ -17,7 +17,7 @@ const AdminGuard: React.FC<Props> = ({ children }) => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        navigate('/admin/login', { replace: true });
+        navigate(adminPath('login'), { replace: true });
         return;
       }
       const { data: role } = await supabase
