@@ -19,9 +19,11 @@ interface CropRow {
   availability_location: string;
   sell_type: string;
   created_at: string;
+  review_status?: string | null;
+  rejection_reason?: string | null;
 }
 
-type TabKey = 'all' | 'active' | 'sold_out' | 'draft';
+type TabKey = 'all' | 'pending' | 'approved' | 'rejected';
 
 const MyCrops: React.FC = () => {
   const { sellerId } = useParams<{ sellerId: string }>();
