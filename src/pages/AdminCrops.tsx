@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Sprout, MapPin, IndianRupee, User } from 'lucide-react';
+import ValidationSummary, { validateCrop } from '@/components/admin/ValidationSummary';
 
 type Crop = {
   id: string;
@@ -133,6 +134,8 @@ const AdminCrops = () => {
             ))}
           </div>
         )}
+
+        <ValidationSummary images={c.crop_images} issues={validateCrop(c)} />
 
         {c.review_status === 'rejected' && c.rejection_reason && (
           <div className="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-800 whitespace-pre-line">

@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Package2, Tag, IndianRupee, User } from 'lucide-react';
+import ValidationSummary, { validateProduct } from '@/components/admin/ValidationSummary';
 
 type SellerProduct = {
   id: string;
@@ -138,6 +139,8 @@ const AdminProducts = () => {
             ))}
           </div>
         )}
+
+        <ValidationSummary images={p.product_images} issues={validateProduct(p)} />
 
         {p.review_status === 'rejected' && p.rejection_reason && (
           <div className="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-800 whitespace-pre-line">
