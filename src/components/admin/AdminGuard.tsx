@@ -44,7 +44,7 @@ const AdminGuard: React.FC<Props> = ({ children }) => {
         <ShieldAlert className="w-12 h-12 text-red-500" />
         <h1 className="text-xl font-semibold">Access Denied</h1>
         <p className="text-muted-foreground text-sm">You are not authorized to view this area.</p>
-        <Button onClick={() => navigate('/admin/login')} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={() => navigate(adminPath('login'))} className="bg-green-600 hover:bg-green-700">
           Go to Admin Login
         </Button>
       </div>
