@@ -110,6 +110,10 @@ const AddCropPage: React.FC = () => {
       if (sellers && sellers.length > 0) {
         setSellerProfiles(sellers as unknown as SellerData[]);
         setStep('profile-selection');
+        // Auto-show status popup for the (single) existing profile
+        const existing = sellers[0] as any;
+        if (existing.status === 'pending') setStatusDialog('pending');
+        else if (existing.status === 'approved') setStatusDialog('approved');
       } else {
         setStep('profile-form');
       }
