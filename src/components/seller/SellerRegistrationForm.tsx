@@ -429,7 +429,5 @@ const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existin
     </form>
   );
 };
-  );
-};
 
 export default SellerRegistrationForm;
