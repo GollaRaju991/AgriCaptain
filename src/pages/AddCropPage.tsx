@@ -55,6 +55,7 @@ const AddCropPage: React.FC = () => {
   const [deletingSeller, setDeletingSeller] = useState(false);
   const [step, setStep] = useState<PageStep>('profile-selection');
   const [existingCropCount, setExistingCropCount] = useState(0);
+  const [successOpen, setSuccessOpen] = useState<false | 'submitted' | 'resubmitted'>(false);
 
   const [formData, setFormData] = useState({
     name: '', phone: '', address: '', village: '', district: '', state: '', mandal: '', pincode: '',
