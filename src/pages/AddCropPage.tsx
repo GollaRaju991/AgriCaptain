@@ -29,6 +29,7 @@ interface SellerData {
   state: string | null;
   pincode: string;
   photo_url: string | null;
+  status?: string;
 }
 
 type PageStep = 'profile-selection' | 'profile-form' | 'crop-form';
@@ -274,7 +275,17 @@ const AddCropPage: React.FC = () => {
         const newSeller = data as unknown as SellerData;
         setSellerProfiles(prev => [newSeller, ...prev]);
         setSelectedSeller(newSeller);
-        toast({ title: label('Profile saved', 'ప్రొఫైల్ సేవ్ చేయబడింది') });
+        toast({
+          title: label('✅ Registration Completed', '✅ నమోదు పూర్తయింది'),
+          description: label(
+            'Please wait for admin approval. You can add crops once your profile is approved.',
+            'దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+          ),
+        });
+        resetForm();
+        setStep('profile-selection');
+        setSubmitting(false);
+        return;
       }
       resetForm();
       setStep('crop-form');
@@ -286,6 +297,17 @@ const AddCropPage: React.FC = () => {
   };
 
   const selectProfileAndContinue = (seller: SellerData) => {
+    if (seller.status && seller.status !== 'approved') {
+      toast({
+        title: label('⏳ Pending Approval', '⏳ ఆమోదం పెండింగ్‌లో ఉంది'),
+        description: label(
+          'Your farmer profile is awaiting admin approval. You can add crops once approved.',
+          'మీ రైతు ప్రొఫైల్ అడ్మిన్ ఆమోదం కోసం వేచి ఉంది. ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
+        ),
+        variant: 'destructive',
+      });
+      return;
+    }
     setSelectedSeller(seller);
     setStep('crop-form');
   };
@@ -377,7 +399,14 @@ const AddCropPage: React.FC = () => {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-foreground">{seller.name}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-bold text-foreground">{seller.name}</p>
+                        {seller.status && seller.status !== 'approved' && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                            {label('Pending Approval', 'ఆమోదం పెండింగ్')}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">+91 {seller.phone}</p>
                       <p className="text-xs text-muted-foreground truncate">
                         {[seller.village, seller.district, seller.state].filter(Boolean).join(', ')}
