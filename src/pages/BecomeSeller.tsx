@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, BadgeCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, BadgeCheck, Clock, XCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import SellerRegistrationForm from '@/components/seller/SellerRegistrationForm';
 import agricultureImg from '@/assets/agriculture-products.png';
@@ -32,23 +33,33 @@ const BecomeSeller = () => {
   const navigate = useNavigate();
   const { translations: t } = useLanguage();
   const [selectedType, setSelectedType] = useState<SellerType | null>(null);
-  const [checkingSeller, setCheckingSeller] = useState(false);
+  const [checking, setChecking] = useState(true);
+  const [existingSeller, setExistingSeller] = useState<any>(null);
 
-  // Check if user is already registered as agriculture seller
-  const checkExistingSeller = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    setCheckingSeller(true);
-    const { data } = await (supabase.from('sellers') as any)
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('seller_type', 'agriculture_products')
-      .limit(1);
-    if (data?.length) {
-      navigate('/seller/dashboard');
-      return;
-    }
-    setCheckingSeller(false);
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setChecking(false); return; }
+      const { data } = await (supabase.from('sellers') as any)
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('seller_type', 'agriculture_products')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        if (data.status === 'approved') { navigate('/seller/dashboard'); return; }
+        setExistingSeller(data);
+      }
+      setChecking(false);
+    })();
+  }, [navigate]);
+
+  const deleteAndReapply = async () => {
+    if (!existingSeller) return;
+    await (supabase.from('sellers') as any).delete().eq('id', existingSeller.id);
+    setExistingSeller(null);
+    setSelectedType('agriculture_products');
   };
 
   return (
