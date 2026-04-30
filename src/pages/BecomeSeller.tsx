@@ -57,15 +57,17 @@ const BecomeSeller = () => {
     fetchSeller();
   }, []);
 
-  // When agriculture seller flow opens — decide what to show
+  // Show approval popup ONLY the first time after admin approves.
+  // After dismissal, subsequent visits just show inline status badge.
   useEffect(() => {
-    if (selectedType === 'agriculture_products' && existingSeller) {
-      if (existingSeller.status === 'pending' || existingSeller.status === 'approved') {
+    if (existingSeller?.status === 'approved' && existingSeller?.id) {
+      const key = `seller_approved_seen_${existingSeller.id}`;
+      if (!localStorage.getItem(key)) {
         setStatusDialogOpen(true);
+        localStorage.setItem(key, '1');
       }
-      // if rejected — allow editing (form will prefill via prop)
     }
-  }, [selectedType, existingSeller]);
+  }, [existingSeller]);
 
   const isRejected = existingSeller?.status === 'rejected';
   const showForm = selectedType === 'agriculture_products' && (!existingSeller || isRejected);
