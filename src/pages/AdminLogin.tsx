@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ShieldCheck, KeyRound } from 'lucide-react';
+import { adminPath } from '@/utils/subdomain';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
