@@ -3,25 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Package, LogOut, ShieldCheck, Sprout } from 'lucide-react';
+import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [email, setEmail] = useState<string>('');
-  const [counts, setCounts] = useState({ pendingSellers: 0, pendingOrders: 0 });
+  const [counts, setCounts] = useState({ pendingSellers: 0, pendingOrders: 0, pendingProducts: 0, pendingCrops: 0 });
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setEmail(user?.email ?? '');
 
-      const [{ count: ps }, { count: po }] = await Promise.all([
+      const [{ count: ps }, { count: po }, { count: pp }, { count: pc }] = await Promise.all([
         supabase.from('sellers').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('orders').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('seller_products').select('*', { count: 'exact', head: true }).eq('review_status', 'pending'),
+        supabase.from('farmer_crops').select('*', { count: 'exact', head: true }).eq('review_status', 'pending'),
       ]);
-      setCounts({ pendingSellers: ps ?? 0, pendingOrders: po ?? 0 });
+      setCounts({ pendingSellers: ps ?? 0, pendingOrders: po ?? 0, pendingProducts: pp ?? 0, pendingCrops: pc ?? 0 });
     })();
   }, []);
 
@@ -39,6 +41,22 @@ const AdminDashboard = () => {
       count: counts.pendingSellers,
       route: '/admin/sellers',
       color: 'bg-green-600',
+    },
+    {
+      title: 'Product Approvals',
+      desc: 'Review seller product listings',
+      icon: Package2,
+      count: counts.pendingProducts,
+      route: '/admin/products',
+      color: 'bg-purple-600',
+    },
+    {
+      title: 'Crop Approvals',
+      desc: 'Sell Crop & Direct From Farm submissions',
+      icon: Wheat,
+      count: counts.pendingCrops,
+      route: '/admin/crops',
+      color: 'bg-amber-600',
     },
     {
       title: 'Orders',

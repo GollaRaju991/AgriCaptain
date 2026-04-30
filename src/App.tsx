@@ -52,6 +52,8 @@ import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
 import AdminSellers from "./pages/AdminSellers";
+import AdminProducts from "./pages/AdminProducts";
+import AdminCrops from "./pages/AdminCrops";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminGuard from "./components/admin/AdminGuard";
@@ -128,6 +130,8 @@ const App = () => (
                     <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
                     <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
                     <Route path="/admin/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
+                    <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
+                    <Route path="/admin/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
                     <Route path="/support-chat" element={<SupportChat />} />
                     <Route path="/delete-account" element={<DeleteAccount />} />
                     <Route path="*" element={<NotFound />} />
