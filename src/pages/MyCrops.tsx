@@ -196,6 +196,11 @@ const MyCrops: React.FC = () => {
                             <span className="inline-flex items-center gap-1"><Heart className="h-3.5 w-3.5" /> 0</span>
                             <span className="inline-flex items-center gap-1"><ShoppingCart className="h-3.5 w-3.5" /> {crop.quantity}</span>
                           </div>
+                          {status === 'rejected' && crop.rejection_reason && (
+                            <div className="mt-2 text-[11px] bg-red-50 border border-red-200 text-red-800 rounded p-1.5">
+                              <strong>{t('Rejected:', 'తిరస్కరించబడింది:', 'अस्वीकृत:')}</strong> {crop.rejection_reason}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>
