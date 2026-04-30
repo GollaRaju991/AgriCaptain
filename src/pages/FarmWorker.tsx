@@ -131,10 +131,10 @@ const FarmWorker = () => {
       let error: any = null;
 
       if (locationMode === 'nearby' && userCoords) {
-        // Use RPC with user's GPS for nearby search
-        const skill = selectedWorkerTypes[0] || null;
+        // Use RPC with user's GPS for nearby search.
+        // Pass _skill: null and filter skills client-side to support multi-select.
         const res = await supabase.rpc('search_farm_workers' as any, {
-          _skill: skill,
+          _skill: null,
           _lat: userCoords.lat,
           _lng: userCoords.lon,
           _radius_km: 500,
@@ -153,25 +153,37 @@ const FarmWorker = () => {
 
       if (error) throw error;
 
-      let results = ((data as any[]) || []).map((w: any) => ({
-        id: w.id,
-        name: w.name,
-        type: (w.worker_types as string[]).filter((t: string) => selectedWorkerTypes.includes(t)).join(', '),
-        experience: w.experience || 'N/A',
-        rating: w.rating || 0,
-        rate: `₹${w.daily_rate || 0}/day`,
-        location: `${w.district || ''}, ${w.state || ''}`,
-        availability: w.availability || 'Available',
-        category: w.category || 'Single',
-        avatar: w.photo_url || '',
-        phone: w.phone || '',
-        latitude: w.latitude,
-        longitude: w.longitude,
-        distance: undefined as number | undefined,
-      }));
+      const isNearby = locationMode === 'nearby' && !!userCoords;
 
-      // Calculate distance if nearby mode
-      if (locationMode === 'nearby' && userCoords) {
+      let results = ((data as any[]) || [])
+        .filter((w: any) => {
+          // Nearby mode → farm_worker_listings (skills). Manual → farm_workers (worker_types).
+          const skillArr: string[] = (w.skills || w.worker_types || []) as string[];
+          return skillArr.some((t) => selectedWorkerTypes.includes(t));
+        })
+        .map((w: any) => {
+          const skillArr: string[] = (w.skills || w.worker_types || []) as string[];
+          const rate = w.expected_wage ?? w.daily_rate ?? 0;
+          return {
+            id: w.id,
+            name: w.worker_name || w.name || 'Worker',
+            type: skillArr.filter((t) => selectedWorkerTypes.includes(t)).join(', '),
+            experience: w.experience_years ? `${w.experience_years} yrs` : (w.experience || 'N/A'),
+            rating: w.rating || 0,
+            rate: `₹${rate}/${w.wage_type === 'hourly' ? 'hr' : 'day'}`,
+            location: `${w.district || ''}, ${w.state || ''}`,
+            availability: w.availability || 'Available',
+            category: w.category || 'Single',
+            avatar: w.profile_photo_url || w.photo_url || '',
+            phone: w.phone || '',
+            latitude: w.latitude,
+            longitude: w.longitude,
+            distance: undefined as number | undefined,
+          };
+        });
+
+      // Distance calc for nearby (RPC already enforced radius; rows without GPS are kept)
+      if (isNearby && userCoords) {
         results = results.map(w => ({
           ...w,
           distance: w.latitude && w.longitude
@@ -179,7 +191,6 @@ const FarmWorker = () => {
             : undefined,
         }));
         results.sort((a, b) => (a.distance ?? 9999) - (b.distance ?? 9999));
-        results = results.filter(w => w.distance !== undefined && w.distance <= 500);
       }
 
       setSearchResults(results);
