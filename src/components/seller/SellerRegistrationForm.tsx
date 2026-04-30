@@ -28,7 +28,7 @@ const sellerSubTypes = [
   { value: 'brand', label: 'Brand' },
 ];
 
-const SellerRegistrationForm = () => {
+const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existingSeller = null }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { translations: t } = useLanguage();
