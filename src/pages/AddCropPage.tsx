@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check, ChevronRight, Sprout } from 'lucide-react';
+import { ArrowLeft, Upload, X, User, Phone, MapPin, Hash, Home, Building2, Map, Loader2, Pencil, Trash2, Plus, Check, ChevronRight, Sprout, CheckCircle2, XCircle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
