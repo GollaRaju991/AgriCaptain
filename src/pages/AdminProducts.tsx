@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Package2, Tag, IndianRupee, User, Inbox, Layers } from 'lucide-react';
 import ValidationSummary, { validateProduct } from '@/components/admin/ValidationSummary';
+import { adminPath } from '@/utils/subdomain';
 
 type SellerProduct = {
   id: string;
