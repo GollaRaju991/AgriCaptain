@@ -139,17 +139,35 @@ const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existin
 
     setSubmitting(true);
     try {
-      let photoUrl: string | null = null;
-      let aadhaarDocUrl: string | null = null;
-      let panDocUrl: string | null = null;
-      let bannerUrl: string | null = null;
+      // Re-check for duplicate registration (defensive — UI also blocks)
+      if (!isEditMode) {
+        const { data: existing } = await (supabase.from('sellers') as any)
+          .select('id, status')
+          .eq('user_id', user.id)
+          .eq('seller_type', 'agriculture_products')
+          .maybeSingle();
+        if (existing && existing.status !== 'rejected') {
+          toast({
+            title: 'Already Registered',
+            description: 'You already have a seller registration. Duplicate registrations are not allowed.',
+            variant: 'destructive',
+          });
+          setSubmitting(false);
+          return;
+        }
+      }
+
+      let photoUrl: string | null = existingSeller?.photo_url || null;
+      let aadhaarDocUrl: string | null = existingSeller?.aadhaar_document_url || null;
+      let panDocUrl: string | null = existingSeller?.pan_card_url || null;
+      let bannerUrl: string | null = existingSeller?.shop_banner_url || null;
 
       if (photoFile) photoUrl = await uploadFile(photoFile, 'seller-photos', user.id);
       if (aadhaarDocFile) aadhaarDocUrl = await uploadFile(aadhaarDocFile, 'seller-documents', user.id);
       if (panDocFile) panDocUrl = await uploadFile(panDocFile, 'seller-documents', user.id);
       if (bannerFile) bannerUrl = await uploadFile(bannerFile, 'seller-photos', user.id);
 
-      const { error } = await (supabase.from('sellers') as any).insert({
+      const payload: any = {
         user_id: user.id,
         seller_type: 'agriculture_products',
         name: formData.name,
@@ -171,15 +189,25 @@ const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existin
         aadhaar_document_url: aadhaarDocUrl,
         pan_card_url: panDocUrl,
         shop_banner_url: bannerUrl,
-      });
+      };
+
+      let error: any = null;
+      if (isEditMode) {
+        // Resubmit a rejected registration — reset to pending, clear rejection reason
+        payload.status = 'pending';
+        payload.rejection_reason = null;
+        const res = await (supabase.from('sellers') as any)
+          .update(payload)
+          .eq('id', existingSeller.id);
+        error = res.error;
+      } else {
+        const res = await (supabase.from('sellers') as any).insert(payload);
+        error = res.error;
+      }
 
       if (error) throw error;
 
-      toast({
-        title: '✅ Registration Completed',
-        description: 'Please wait for admin approval. You can add products once your account is approved.',
-      });
-      navigate('/');
+      setSuccessOpen(true);
     } catch (error: any) {
       toast({ title: 'Registration Failed', description: error.message, variant: 'destructive' });
     } finally {
