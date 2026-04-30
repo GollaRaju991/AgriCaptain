@@ -149,7 +149,7 @@ const AdminSellers: React.FC<{ mode?: 'sellers' | 'farmers' }> = ({ mode = 'sell
       await fetchSellers();
       setLoading(false);
     })();
-  }, []);
+  }, [sellerTypeFilter]);
 
   const fetchSellers = async () => {
     const { data, error } = await (supabase.from('sellers') as any)
