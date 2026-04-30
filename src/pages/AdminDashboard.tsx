@@ -45,6 +45,14 @@ const AdminDashboard = () => {
       color: 'bg-green-600',
     },
     {
+      title: 'Farmer Approvals',
+      desc: 'Review and approve farmer registrations',
+      icon: Tractor,
+      count: counts.pendingFarmers,
+      route: adminPath('farmers'),
+      color: 'bg-emerald-600',
+    },
+    {
       title: 'Product Approvals',
       desc: 'Review seller product listings',
       icon: Package2,
