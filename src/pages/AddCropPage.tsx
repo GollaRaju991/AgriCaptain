@@ -271,12 +271,22 @@ const AddCropPage: React.FC = () => {
       };
 
       if (editingSeller) {
-        const { error } = await supabase.from('sellers').update(sellerData).eq('id', editingSeller.id);
+        // Resubmitting a (rejected) profile — reset to pending and clear rejection reason
+        const updatePayload: any = { ...sellerData };
+        if (editingSeller.status === 'rejected') {
+          updatePayload.status = 'pending';
+          updatePayload.rejection_reason = null;
+        }
+        const { error } = await supabase.from('sellers').update(updatePayload).eq('id', editingSeller.id);
         if (error) throw error;
-        const updatedSeller = { ...editingSeller, ...sellerData, id: editingSeller.id } as SellerData;
+        const updatedSeller = { ...editingSeller, ...updatePayload, id: editingSeller.id } as SellerData;
         setSellerProfiles(prev => prev.map(s => s.id === editingSeller.id ? updatedSeller : s));
-        setSelectedSeller(updatedSeller);
-        toast({ title: label('Profile updated', 'ప్రొఫైల్ అప్‌డేట్ చేయబడింది') });
+        setSelectedSeller(null);
+        resetForm();
+        setStep('profile-selection');
+        setSuccessOpen('resubmitted');
+        setSubmitting(false);
+        return;
       } else {
         // Enforce one farmer profile per user
         const { data: existing } = await supabase
@@ -300,21 +310,13 @@ const AddCropPage: React.FC = () => {
         if (error) throw error;
         const newSeller = data as unknown as SellerData;
         setSellerProfiles(prev => [newSeller, ...prev]);
-        setSelectedSeller(newSeller);
-        toast({
-          title: label('✅ Registration Completed', '✅ నమోదు పూర్తయింది'),
-          description: label(
-            'Please wait for admin approval. You can add crops once your profile is approved.',
-            'దయచేసి అడ్మిన్ ఆమోదం కోసం వేచి ఉండండి. మీ ప్రొఫైల్ ఆమోదించబడిన తర్వాత మీరు పంటలను జోడించవచ్చు.'
-          ),
-        });
+        setSelectedSeller(null);
         resetForm();
         setStep('profile-selection');
+        setSuccessOpen('submitted');
         setSubmitting(false);
         return;
       }
-      resetForm();
-      setStep('crop-form');
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
