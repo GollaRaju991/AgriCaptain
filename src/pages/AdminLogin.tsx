@@ -28,7 +28,7 @@ const AdminLogin = () => {
         .eq('user_id', user.id)
         .eq('role', 'admin')
         .maybeSingle();
-      if (roles) navigate('/admin', { replace: true });
+      if (roles) navigate(adminPath(''), { replace: true });
     })();
   }, [navigate]);
 
