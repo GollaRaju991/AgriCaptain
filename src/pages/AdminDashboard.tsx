@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       desc: 'Review seller product listings',
       icon: Package2,
       count: counts.pendingProducts,
-      route: '/admin/products',
+      route: adminPath('products'),
       color: 'bg-purple-600',
     },
     {
