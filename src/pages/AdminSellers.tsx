@@ -272,7 +272,7 @@ const AdminSellers: React.FC<{ mode?: 'sellers' | 'farmers' }> = ({ mode = 'sell
           {(['pending', 'approved', 'rejected'] as const).map(s => (
             <TabsContent key={s} value={s} className="space-y-3 mt-4">
               {filterByStatus(s).length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No {s} sellers</p>
+                <p className="text-center text-muted-foreground py-8">No {s} {entityLabel}s</p>
               ) : (
                 filterByStatus(s).map(seller => <SellerCard key={seller.id} seller={seller} />)
               )}
