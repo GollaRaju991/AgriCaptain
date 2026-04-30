@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Sprout, MapPin, IndianRupee, User, Wheat, Calendar, Filter, Inbox } from 'lucide-react';
 import ValidationSummary, { validateCrop } from '@/components/admin/ValidationSummary';
+import { adminPath } from '@/utils/subdomain';
 
 type Crop = {
   id: string;
