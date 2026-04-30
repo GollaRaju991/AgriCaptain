@@ -56,7 +56,7 @@ const AdminDashboard = () => {
       desc: 'Sell Crop & Direct From Farm submissions',
       icon: Wheat,
       count: counts.pendingCrops,
-      route: '/admin/crops',
+      route: adminPath('crops'),
       color: 'bg-amber-600',
     },
     {
