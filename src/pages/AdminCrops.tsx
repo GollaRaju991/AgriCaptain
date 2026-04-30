@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Sprout, MapPin, IndianRupee, User } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Sprout, MapPin, IndianRupee, User, Wheat, Calendar, Filter, Inbox } from 'lucide-react';
 import ValidationSummary, { validateCrop } from '@/components/admin/ValidationSummary';
 
 type Crop = {
