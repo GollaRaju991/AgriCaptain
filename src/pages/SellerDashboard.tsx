@@ -15,6 +15,7 @@ const SellerDashboard = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ totalProducts: 0, totalSales: 0 });
+  const [sellerStatus, setSellerStatus] = useState<string | null>(null);
 
   useEffect(() => {
     loadProducts();
@@ -23,6 +24,15 @@ const SellerDashboard = () => {
   const loadProducts = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate('/auth'); return; }
+
+    // Fetch seller status (agriculture_products)
+    const { data: sellerRow } = await (supabase.from('sellers') as any)
+      .select('status')
+      .eq('user_id', user.id)
+      .eq('seller_type', 'agriculture_products')
+      .limit(1)
+      .maybeSingle();
+    setSellerStatus(sellerRow?.status ?? null);
 
     const { data, error } = await (supabase.from('seller_products') as any)
       .select('*')
@@ -34,6 +44,18 @@ const SellerDashboard = () => {
       setStats({ totalProducts: data.length, totalSales: 0 });
     }
     setLoading(false);
+  };
+
+  const handleAddProductClick = () => {
+    if (sellerStatus && sellerStatus !== 'approved') {
+      toast({
+        title: 'Pending Approval',
+        description: 'Your seller registration is awaiting admin approval. You can add products once approved.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    navigate('/seller/add-product');
   };
 
   const deleteProduct = async (id: string) => {
