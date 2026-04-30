@@ -427,9 +427,19 @@ const AddCropPage: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-bold text-foreground">{seller.name}</p>
-                        {seller.status && seller.status !== 'approved' && (
+                        {seller.status === 'pending' && (
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
                             {label('Pending Approval', 'ఆమోదం పెండింగ్')}
+                          </span>
+                        )}
+                        {seller.status === 'rejected' && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-800 border border-red-300">
+                            {label('Rejected', 'తిరస్కరించబడింది')}
+                          </span>
+                        )}
+                        {seller.status === 'approved' && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-300">
+                            {label('Approved', 'ఆమోదించబడింది')}
                           </span>
                         )}
                       </div>
@@ -439,6 +449,24 @@ const AddCropPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
+
+                  {seller.status === 'rejected' && (
+                    <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3">
+                      <p className="text-xs font-semibold text-red-800">
+                        {label('Your farmer profile was rejected by admin', 'మీ రైతు ప్రొఫైల్ అడ్మిన్ ద్వారా తిరస్కరించబడింది')}
+                      </p>
+                      <p className="text-xs text-red-700 mt-1">
+                        <strong>{label('Reason:', 'కారణం:')}</strong>{' '}
+                        {seller.rejection_reason?.trim()
+                          ? seller.rejection_reason
+                          : label('No reason provided. Please review your details and resubmit.', 'కారణం ఇవ్వలేదు. దయచేసి మీ వివరాలను సమీక్షించి మళ్లీ సమర్పించండి.')}
+                      </p>
+                      <Button size="sm" variant="outline" className="mt-2 h-7 text-xs border-red-300 text-red-700 hover:bg-red-100" onClick={() => startEditProfile(seller)}>
+                        <Pencil className="h-3 w-3 mr-1" />
+                        {label('Edit & Resubmit', 'సవరించి మళ్లీ సమర్పించండి')}
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="flex gap-2 mt-3">
                     <Button size="sm" className="flex-1" onClick={() => selectProfileAndContinue(seller)}>
