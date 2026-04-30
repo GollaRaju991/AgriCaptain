@@ -259,7 +259,7 @@ const AdminSellers: React.FC<{ mode?: 'sellers' | 'farmers' }> = ({ mode = 'sell
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-50 bg-primary text-primary-foreground flex items-center gap-3 px-4 py-3">
         <button onClick={() => navigate('/')}><ArrowLeft className="h-6 w-6" /></button>
-        <h1 className="text-lg font-bold">Admin · Seller Approvals</h1>
+        <h1 className="text-lg font-bold">{pageTitle}</h1>
       </div>
 
       <div className="max-w-4xl mx-auto p-4">
