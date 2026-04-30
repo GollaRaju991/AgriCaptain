@@ -44,23 +44,26 @@ const SellerRegistrationForm: React.FC<SellerRegistrationFormProps> = ({ existin
   const [aadhaarDocFile, setAadhaarDocFile] = useState<File | null>(null);
   const [panDocFile, setPanDocFile] = useState<File | null>(null);
   const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const isEditMode = !!existingSeller;
 
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    aadhaarNumber: '',
-    shopFarmName: '',
-    sellerSubType: '',
-    address: '',
-    state: '',
-    district: '',
-    pincode: '',
-    bankAccountHolder: '',
-    bankAccountNumber: '',
-    bankIfsc: '',
-    farmLocation: '',
-    googleMapLocation: '',
+    name: existingSeller?.name || '',
+    phone: existingSeller?.phone || '',
+    email: existingSeller?.email || '',
+    aadhaarNumber: existingSeller?.aadhaar_number || '',
+    shopFarmName: existingSeller?.shop_farm_name || '',
+    sellerSubType: existingSeller?.seller_sub_type || '',
+    address: existingSeller?.address || '',
+    state: existingSeller?.state || '',
+    district: existingSeller?.district || '',
+    pincode: existingSeller?.pincode || '',
+    bankAccountHolder: existingSeller?.bank_account_holder || '',
+    bankAccountNumber: existingSeller?.bank_account_number || '',
+    bankIfsc: existingSeller?.bank_ifsc || '',
+    farmLocation: existingSeller?.farm_location || '',
+    googleMapLocation: existingSeller?.google_map_location || '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
