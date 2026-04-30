@@ -121,7 +121,10 @@ const COMMON_REASONS = [
   'Profile photo is missing or unclear',
 ];
 
-const AdminSellers = () => {
+const AdminSellers: React.FC<{ mode?: 'sellers' | 'farmers' }> = ({ mode = 'sellers' }) => {
+  const sellerTypeFilter = mode === 'farmers' ? 'farmers_market' : 'agriculture_products';
+  const pageTitle = mode === 'farmers' ? 'Admin · Farmer Approvals' : 'Admin · Seller Approvals';
+  const entityLabel = mode === 'farmers' ? 'farmer' : 'seller';
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
