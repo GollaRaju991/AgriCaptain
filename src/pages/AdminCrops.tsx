@@ -135,6 +135,8 @@ const AdminCrops = () => {
           </div>
         )}
 
+        <ValidationSummary images={c.crop_images} issues={validateCrop(c)} />
+
         {c.review_status === 'rejected' && c.rejection_reason && (
           <div className="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-800 whitespace-pre-line">
             <strong>Rejection reason:</strong> {c.rejection_reason}

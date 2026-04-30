@@ -140,6 +140,8 @@ const AdminProducts = () => {
           </div>
         )}
 
+        <ValidationSummary images={p.product_images} issues={validateProduct(p)} />
+
         {p.review_status === 'rejected' && p.rejection_reason && (
           <div className="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-800 whitespace-pre-line">
             <strong>Rejection reason:</strong> {p.rejection_reason}
