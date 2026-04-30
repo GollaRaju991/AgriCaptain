@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, X, Package, Tag, Layers, BadgeCheck, DollarSign, Truck, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, Upload, X, Package, Tag, Layers, BadgeCheck, DollarSign, Truck, Image as ImageIcon, IndianRupee, LayoutGrid, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
