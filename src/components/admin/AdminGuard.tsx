@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { adminPath } from '@/utils/subdomain';
 
 interface Props {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ const AdminGuard: React.FC<Props> = ({ children }) => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        navigate('/admin/login', { replace: true });
+        navigate(adminPath('login'), { replace: true });
         return;
       }
       const { data: role } = await supabase
@@ -43,7 +44,7 @@ const AdminGuard: React.FC<Props> = ({ children }) => {
         <ShieldAlert className="w-12 h-12 text-red-500" />
         <h1 className="text-xl font-semibold">Access Denied</h1>
         <p className="text-muted-foreground text-sm">You are not authorized to view this area.</p>
-        <Button onClick={() => navigate('/admin/login')} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={() => navigate(adminPath('login'))} className="bg-green-600 hover:bg-green-700">
           Go to Admin Login
         </Button>
       </div>

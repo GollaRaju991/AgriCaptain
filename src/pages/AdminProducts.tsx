@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, CheckCircle2, XCircle, Clock, Loader2, Package2, Tag, IndianRupee, User, Inbox, Layers } from 'lucide-react';
 import ValidationSummary, { validateProduct } from '@/components/admin/ValidationSummary';
+import { adminPath } from '@/utils/subdomain';
 
 type SellerProduct = {
   id: string;
@@ -241,7 +242,7 @@ const AdminProducts = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50/40 via-background to-blue-50/40">
       <div className="sticky top-0 z-50 bg-gradient-to-r from-purple-700 via-purple-600 to-indigo-600 text-white shadow-lg">
         <div className="max-w-5xl mx-auto flex items-center gap-3 px-4 py-4">
-          <button onClick={() => navigate('/admin')} className="hover:bg-white/10 rounded-full p-1.5 transition-colors">
+          <button onClick={() => navigate(adminPath(''))} className="hover:bg-white/10 rounded-full p-1.5 transition-colors">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2.5 flex-1">

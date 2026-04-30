@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ShieldCheck, KeyRound } from 'lucide-react';
+import { adminPath } from '@/utils/subdomain';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const AdminLogin = () => {
         .eq('user_id', user.id)
         .eq('role', 'admin')
         .maybeSingle();
-      if (roles) navigate('/admin', { replace: true });
+      if (roles) navigate(adminPath(''), { replace: true });
     })();
   }, [navigate]);
 
@@ -59,7 +60,7 @@ const AdminLogin = () => {
       }
 
       toast({ title: 'Welcome, Admin', description: 'Login successful' });
-      navigate('/admin', { replace: true });
+      navigate(adminPath(''), { replace: true });
     } catch (err: any) {
       toast({ title: 'Login failed', description: err.message, variant: 'destructive' });
     } finally {

@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Package, LogOut, ShieldCheck, Sprout, Package2, Wheat } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { adminPath } from '@/utils/subdomain';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({ title: 'Signed out' });
-    navigate('/admin/login', { replace: true });
+    navigate(adminPath('login'), { replace: true });
   };
 
   const tiles = [
@@ -39,7 +40,7 @@ const AdminDashboard = () => {
       desc: 'Review and approve seller registrations',
       icon: Users,
       count: counts.pendingSellers,
-      route: '/admin/sellers',
+      route: adminPath('sellers'),
       color: 'bg-green-600',
     },
     {
@@ -47,7 +48,7 @@ const AdminDashboard = () => {
       desc: 'Review seller product listings',
       icon: Package2,
       count: counts.pendingProducts,
-      route: '/admin/products',
+      route: adminPath('products'),
       color: 'bg-purple-600',
     },
     {
@@ -55,7 +56,7 @@ const AdminDashboard = () => {
       desc: 'Sell Crop & Direct From Farm submissions',
       icon: Wheat,
       count: counts.pendingCrops,
-      route: '/admin/crops',
+      route: adminPath('crops'),
       color: 'bg-amber-600',
     },
     {
@@ -63,7 +64,7 @@ const AdminDashboard = () => {
       desc: 'Manage customer orders & delivery',
       icon: Package,
       count: counts.pendingOrders,
-      route: '/admin/orders',
+      route: adminPath('orders'),
       color: 'bg-blue-600',
     },
   ];
