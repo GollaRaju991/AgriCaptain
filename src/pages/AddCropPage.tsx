@@ -399,7 +399,14 @@ const AddCropPage: React.FC = () => {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-foreground">{seller.name}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-bold text-foreground">{seller.name}</p>
+                        {seller.status && seller.status !== 'approved' && (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
+                            {label('Pending Approval', 'ఆమోదం పెండింగ్')}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">+91 {seller.phone}</p>
                       <p className="text-xs text-muted-foreground truncate">
                         {[seller.village, seller.district, seller.state].filter(Boolean).join(', ')}
