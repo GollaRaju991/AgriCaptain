@@ -161,8 +161,8 @@ const AddProduct = () => {
               <div className="space-y-4">
                 <div>
                   <Label className="flex items-center gap-2 text-sm font-bold mb-2">
-                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Package className="h-4 w-4 text-primary" />
+                    <span className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                      <Package className="h-4 w-4 text-primary stroke-[2.5]" />
                     </span>
                     Product Name
                   </Label>
@@ -171,8 +171,8 @@ const AddProduct = () => {
 
                 <div>
                   <Label className="flex items-center gap-2 text-sm font-bold mb-2">
-                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Tag className="h-4 w-4 text-primary" />
+                    <span className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                      <Tag className="h-4 w-4 text-primary stroke-[2.5]" />
                     </span>
                     Brand Name
                   </Label>
@@ -181,8 +181,8 @@ const AddProduct = () => {
 
                 <div>
                   <Label className="flex items-center gap-2 text-sm font-bold mb-2">
-                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Layers className="h-4 w-4 text-primary" />
+                    <span className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                      <Layers className="h-4 w-4 text-primary stroke-[2.5]" />
                     </span>
                     Category
                   </Label>
@@ -196,8 +196,8 @@ const AddProduct = () => {
 
                 <div>
                   <Label className="flex items-center gap-2 text-sm font-bold mb-2">
-                    <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                      <LayoutGrid className="h-4 w-4 text-primary" />
+                    <span className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                      <LayoutGrid className="h-4 w-4 text-primary stroke-[2.5]" />
                     </span>
                     Sub Category
                   </Label>
@@ -213,8 +213,8 @@ const AddProduct = () => {
               {/* Pricing */}
               <div>
                 <h3 className="flex items-center gap-2 text-sm font-bold text-primary mb-3">
-                  <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                    <IndianRupee className="h-4 w-4 text-primary" />
+                  <span className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                    <IndianRupee className="h-4 w-4 text-primary stroke-[2.5]" />
                   </span>
                   Pricing
                 </h3>
@@ -249,8 +249,8 @@ const AddProduct = () => {
               {/* Description */}
               <div>
                 <h3 className="flex items-center gap-2 text-sm font-bold text-foreground mb-2">
-                  <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                    <FileText className="h-4 w-4 text-primary" />
+                  <span className="h-7 w-7 rounded-full bg-primary/15 flex items-center justify-center">
+                    <FileText className="h-4 w-4 text-primary stroke-[2.5]" />
                   </span>
                   Product Description
                 </h3>
@@ -289,7 +289,7 @@ const AddProduct = () => {
               <div className="flex items-center gap-2 mb-2">
                 <Checkbox checked={deliveryAvailable} onCheckedChange={(v) => setDeliveryAvailable(!!v)} id="delivery" />
                 <label htmlFor="delivery" className="text-sm font-bold flex items-center gap-1">
-                  <Truck className="h-4 w-4 text-primary" /> Delivery
+                  <Truck className="h-4 w-4 text-primary stroke-[2.5]" /> Delivery
                 </label>
               </div>
 
