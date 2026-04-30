@@ -90,87 +90,111 @@ const AdminOnlyRoutes = () => (
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              {/* ⭐ Add bottom padding so content is not hidden */}
-              <div className="w-full min-h-screen overflow-x-hidden pb-16 lg:pb-0">
-                
-                <Toaster />
-                <Sonner />
+const App = () => {
+  // ── ADMIN SUBDOMAIN: render isolated admin app only ──
+  if (ADMIN_MODE) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <AuthProvider>
+            <div className="w-full min-h-screen overflow-x-hidden bg-background">
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <ScrollToTop />
+                <AdminOnlyRoutes />
+              </BrowserRouter>
+            </div>
+          </AuthProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
 
-                <BrowserRouter>
-                  <ScrollToTop />
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/products" element={<Products />} />
-                    <Route path="/product/:id" element={<ProductDetails />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/orders" element={<Orders />} />
-                    <Route path="/orders/:id" element={<OrderDetails />} />
-                    <Route path="/coupons" element={<Coupons />} />
-                    <Route path="/notifications" element={<Notifications />} />
-                    <Route path="/farm-worker" element={<FarmWorker />} />
-                    <Route path="/vehicle-rent" element={<VehicleRent />} />
-                    <Route path="/become-seller" element={<BecomeSeller />} />
-                    <Route path="/order-confirmation" element={<OrderConfirmation />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="/sell-crop" element={<SellCrop />} />
-                    <Route path="/sell-crop/add" element={<AddCropPage />} />
-                    <Route path="/sell-crop/my-crops/:sellerId" element={<MyCrops />} />
-                    <Route path="/sell-crop/my-crops/:sellerId/:cropId" element={<MyCropDetail />} />
-                    <Route path="/sell-crop/:id" element={<CropDetail />} />
-                    <Route path="/gift-cards" element={<GiftCards />} />
-                    <Route path="/market-details" element={<MarketDetails />} />
-                    <Route path="/direct-from-farm" element={<DirectFromFarm />} />
-                    <Route path="/loans" element={<Loans />} />
-                    <Route path="/categories" element={<Categories />} />
-                    <Route path="/help-center" element={<HelpCenter />} />
-                    <Route path="/terms-policies" element={<TermsPolicies />} />
-                    <Route path="/faqs" element={<FAQs />} />
-                    <Route path="/profile/saved-upi" element={<SavedUPI />} />
-                    <Route path="/profile/saved-cards" element={<SavedCards />} />
-                    <Route path="/profile/saved-addresses" element={<SavedAddresses />} />
-                    <Route path="/profile/edit" element={<EditProfilePage />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                    <Route path="/refund-policy" element={<RefundPolicy />} />
-                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="/shipping-policy" element={<ShippingPolicy />} />
-                    <Route path="/agrizin-money" element={<AgrizinMoney />} />
-                    <Route path="/seller/add-product" element={<AddProduct />} />
-                    <Route path="/seller/edit-product/:id" element={<EditProduct />} />
-                    <Route path="/seller/dashboard" element={<SellerDashboard />} />
-                    <Route path="/scanner" element={<Scanner />} />
-                    <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
-                    <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
-                    <Route path="/admin/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
-                    <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
-                    <Route path="/admin/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
-                    <Route path="/support-chat" element={<SupportChat />} />
-                    <Route path="/delete-account" element={<DeleteAccount />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+  // ── MAIN CUSTOMER APP ──
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                {/* ⭐ Add bottom padding so content is not hidden */}
+                <div className="w-full min-h-screen overflow-x-hidden pb-16 lg:pb-0">
 
-                  {/* ⭐ ALWAYS visible on mobile */}
-                  <MobileBottomNav />
+                  <Toaster />
+                  <Sonner />
 
-                </BrowserRouter>
-              </div>
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
-      </LanguageProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+                  <BrowserRouter>
+                    <ScrollToTop />
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/products" element={<Products />} />
+                      <Route path="/product/:id" element={<ProductDetails />} />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/checkout" element={<Checkout />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/orders" element={<Orders />} />
+                      <Route path="/orders/:id" element={<OrderDetails />} />
+                      <Route path="/coupons" element={<Coupons />} />
+                      <Route path="/notifications" element={<Notifications />} />
+                      <Route path="/farm-worker" element={<FarmWorker />} />
+                      <Route path="/vehicle-rent" element={<VehicleRent />} />
+                      <Route path="/become-seller" element={<BecomeSeller />} />
+                      <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                      <Route path="/wishlist" element={<Wishlist />} />
+                      <Route path="/sell-crop" element={<SellCrop />} />
+                      <Route path="/sell-crop/add" element={<AddCropPage />} />
+                      <Route path="/sell-crop/my-crops/:sellerId" element={<MyCrops />} />
+                      <Route path="/sell-crop/my-crops/:sellerId/:cropId" element={<MyCropDetail />} />
+                      <Route path="/sell-crop/:id" element={<CropDetail />} />
+                      <Route path="/gift-cards" element={<GiftCards />} />
+                      <Route path="/market-details" element={<MarketDetails />} />
+                      <Route path="/direct-from-farm" element={<DirectFromFarm />} />
+                      <Route path="/loans" element={<Loans />} />
+                      <Route path="/categories" element={<Categories />} />
+                      <Route path="/help-center" element={<HelpCenter />} />
+                      <Route path="/terms-policies" element={<TermsPolicies />} />
+                      <Route path="/faqs" element={<FAQs />} />
+                      <Route path="/profile/saved-upi" element={<SavedUPI />} />
+                      <Route path="/profile/saved-cards" element={<SavedCards />} />
+                      <Route path="/profile/saved-addresses" element={<SavedAddresses />} />
+                      <Route path="/profile/edit" element={<EditProfilePage />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                      <Route path="/refund-policy" element={<RefundPolicy />} />
+                      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                      <Route path="/agrizin-money" element={<AgrizinMoney />} />
+                      <Route path="/seller/add-product" element={<AddProduct />} />
+                      <Route path="/seller/edit-product/:id" element={<EditProduct />} />
+                      <Route path="/seller/dashboard" element={<SellerDashboard />} />
+                      <Route path="/scanner" element={<Scanner />} />
+                      {/* Admin routes still available on main domain for preview/dev access */}
+                      <Route path="/admin/login" element={<AdminLogin />} />
+                      <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
+                      <Route path="/admin/orders" element={<AdminGuard><AdminOrders /></AdminGuard>} />
+                      <Route path="/admin/sellers" element={<AdminGuard><AdminSellers /></AdminGuard>} />
+                      <Route path="/admin/products" element={<AdminGuard><AdminProducts /></AdminGuard>} />
+                      <Route path="/admin/crops" element={<AdminGuard><AdminCrops /></AdminGuard>} />
+                      <Route path="/support-chat" element={<SupportChat />} />
+                      <Route path="/delete-account" element={<DeleteAccount />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+
+                    {/* ⭐ ALWAYS visible on mobile */}
+                    <MobileBottomNav />
+
+                  </BrowserRouter>
+                </div>
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
