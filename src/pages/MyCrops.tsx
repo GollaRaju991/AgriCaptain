@@ -55,41 +55,45 @@ const MyCrops: React.FC = () => {
     load();
   }, [sellerId]);
 
-  // Derive a simple status: Active by default. We don't track sold-out/draft yet,
-  // so all crops show under "Active" + "All".
-  const getStatus = (_c: CropRow): 'Active' | 'Sold Out' | 'Draft' => 'Active';
+  type StatusKey = 'pending' | 'approved' | 'rejected';
+  const getStatus = (c: CropRow): StatusKey => {
+    const s = (c.review_status || 'pending').toLowerCase();
+    if (s === 'approved') return 'approved';
+    if (s === 'rejected') return 'rejected';
+    return 'pending';
+  };
 
   const filtered = useMemo(() => {
     if (tab === 'all') return crops;
-    if (tab === 'active') return crops.filter(c => getStatus(c) === 'Active');
-    if (tab === 'sold_out') return crops.filter(c => getStatus(c) === 'Sold Out');
-    return crops.filter(c => getStatus(c) === 'Draft');
+    return crops.filter(c => getStatus(c) === tab);
   }, [crops, tab]);
 
   const tabs: { key: TabKey; label: string }[] = [
-    { key: 'all', label: t('All Crops', 'అన్ని పంటలు', 'सभी फसलें') },
-    { key: 'active', label: t('Active', 'యాక్టివ్', 'सक्रिय') },
-    { key: 'sold_out', label: t('Sold Out', 'అమ్మకం పూర్తయింది', 'बिक गई') },
-    { key: 'draft', label: t('Draft', 'డ్రాఫ్ట్', 'मसौदा') },
+    { key: 'all', label: t('All', 'అన్ని', 'सभी') },
+    { key: 'pending', label: t('Pending', 'పెండింగ్', 'लंबित') },
+    { key: 'approved', label: t('Approved', 'ఆమోదించబడింది', 'स्वीकृत') },
+    { key: 'rejected', label: t('Rejected', 'తిరస్కరించబడింది', 'अस्वीकृत') },
   ];
 
-  const statusBadge = (status: 'Active' | 'Sold Out' | 'Draft') => {
-    const styles: Record<string, string> = {
-      'Active': 'bg-green-100 text-green-700',
-      'Sold Out': 'bg-orange-100 text-orange-700',
-      'Draft': 'bg-gray-100 text-gray-700',
+  const statusBadge = (status: StatusKey) => {
+    const styles: Record<StatusKey, string> = {
+      pending: 'bg-amber-100 text-amber-700',
+      approved: 'bg-green-100 text-green-700',
+      rejected: 'bg-red-100 text-red-700',
     };
-    const dot: Record<string, string> = {
-      'Active': 'bg-green-500',
-      'Sold Out': 'bg-orange-500',
-      'Draft': 'bg-gray-500',
+    const dot: Record<StatusKey, string> = {
+      pending: 'bg-amber-500',
+      approved: 'bg-green-500',
+      rejected: 'bg-red-500',
     };
+    const label =
+      status === 'approved' ? t('Approved', 'ఆమోదించబడింది', 'स्वीकृत')
+      : status === 'rejected' ? t('Rejected', 'తిరస్కరించబడింది', 'अस्वीकृत')
+      : t('Pending Approval', 'ఆమోదం కోసం వేచి', 'अनुमोदन प्रतीक्षित');
     return (
       <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full ${styles[status]}`}>
         <span className={`h-1.5 w-1.5 rounded-full ${dot[status]}`} />
-        {status === 'Active' ? t('Active', 'యాక్టివ్', 'सक्रिय')
-          : status === 'Sold Out' ? t('Sold Out', 'అమ్మకం పూర్తయింది', 'बिक गई')
-          : t('Draft', 'డ్రాఫ్ట్', 'मसौदा')}
+        {label}
       </span>
     );
   };
