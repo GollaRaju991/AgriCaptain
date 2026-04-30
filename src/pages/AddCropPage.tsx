@@ -110,10 +110,16 @@ const AddCropPage: React.FC = () => {
       if (sellers && sellers.length > 0) {
         setSellerProfiles(sellers as unknown as SellerData[]);
         setStep('profile-selection');
-        // Auto-show status popup for the (single) existing profile
+        // Show approval popup ONLY the first time after admin approves.
+        // Pending → silent (status badge already visible on the card).
         const existing = sellers[0] as any;
-        if (existing.status === 'pending') setStatusDialog('pending');
-        else if (existing.status === 'approved') setStatusDialog('approved');
+        if (existing.status === 'approved' && existing.id) {
+          const key = `farmer_approved_seen_${existing.id}`;
+          if (!localStorage.getItem(key)) {
+            setStatusDialog('approved');
+            localStorage.setItem(key, '1');
+          }
+        }
       } else {
         setStep('profile-form');
       }
