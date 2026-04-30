@@ -62,8 +62,8 @@ const AdminCrops = () => {
     if (sellerIds.length) {
       const { data: sellers } = await (supabase.from('sellers') as any)
         .select('id,name,phone').in('id', sellerIds);
-      const map = new Map((sellers || []).map((s: any) => [s.id, s]));
-      list.forEach(c => { c.seller = map.get(c.seller_id) || null; });
+      const map = new Map<string, any>((sellers || []).map((s: any) => [s.id, s]));
+      list.forEach(c => { c.seller = (map.get(c.seller_id) as any) || null; });
     }
     setCrops(list);
   };

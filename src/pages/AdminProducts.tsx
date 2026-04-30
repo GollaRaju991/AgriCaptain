@@ -67,8 +67,8 @@ const AdminProducts = () => {
     if (sellerIds.length) {
       const { data: sellers } = await (supabase.from('sellers') as any)
         .select('id,name,phone,shop_farm_name').in('id', sellerIds);
-      const map = new Map((sellers || []).map((s: any) => [s.id, s]));
-      list.forEach(p => { p.seller = map.get(p.seller_id) || null; });
+      const map = new Map<string, any>((sellers || []).map((s: any) => [s.id, s]));
+      list.forEach(p => { p.seller = (map.get(p.seller_id) as any) || null; });
     }
     setProducts(list);
   };
