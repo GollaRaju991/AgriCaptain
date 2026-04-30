@@ -442,11 +442,16 @@ export type Database = {
           harvest_date: string | null
           id: string
           latitude: number | null
+          listing_type: string
           location_address: string | null
           longitude: number | null
           price: string
           quality_grade: string
           quantity: string
+          rejection_reason: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           sell_type: string
           seller_id: string
           updated_at: string
@@ -460,11 +465,16 @@ export type Database = {
           harvest_date?: string | null
           id?: string
           latitude?: number | null
+          listing_type?: string
           location_address?: string | null
           longitude?: number | null
           price: string
           quality_grade?: string
           quantity: string
+          rejection_reason?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           sell_type?: string
           seller_id: string
           updated_at?: string
@@ -478,11 +488,16 @@ export type Database = {
           harvest_date?: string | null
           id?: string
           latitude?: number | null
+          listing_type?: string
           location_address?: string | null
           longitude?: number | null
           price?: string
           quality_grade?: string
           quantity?: string
+          rejection_reason?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           sell_type?: string
           seller_id?: string
           updated_at?: string
@@ -1001,6 +1016,10 @@ export type Database = {
           product_images: string[] | null
           product_name: string
           product_type: string | null
+          rejection_reason: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           season: string | null
           seller_id: string
           selling_price: number
@@ -1028,6 +1047,10 @@ export type Database = {
           product_images?: string[] | null
           product_name: string
           product_type?: string | null
+          rejection_reason?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           season?: string | null
           seller_id: string
           selling_price: number
@@ -1055,6 +1078,10 @@ export type Database = {
           product_images?: string[] | null
           product_name?: string
           product_type?: string | null
+          rejection_reason?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           season?: string | null
           seller_id?: string
           selling_price?: number
