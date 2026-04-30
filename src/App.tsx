@@ -51,6 +51,7 @@ import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminOrders from "./pages/AdminOrders";
+import AdminSellers from "./pages/AdminSellers";
 import SupportChat from "./pages/SupportChat";
 import DeleteAccount from "./pages/DeleteAccount";
 import NotFound from "./pages/NotFound";
@@ -121,6 +122,7 @@ const App = () => (
                     <Route path="/seller/dashboard" element={<SellerDashboard />} />
                     <Route path="/scanner" element={<Scanner />} />
                     <Route path="/admin/orders" element={<AdminOrders />} />
+                    <Route path="/admin/sellers" element={<AdminSellers />} />
                     <Route path="/support-chat" element={<SupportChat />} />
                     <Route path="/delete-account" element={<DeleteAccount />} />
                     <Route path="*" element={<NotFound />} />
