@@ -500,7 +500,13 @@ const FarmWorker = () => {
                     <p><strong>{label('Phone:', 'ఫోన్:')}</strong> {worker.phone}</p>
                     <p><strong>{label('Status:', 'స్థితి:')}</strong> <span className="text-green-600">{worker.availability}</span></p>
                   </div>
-                  <Button className="w-full" size="sm">{label('Contact Worker', 'కార్మికుడిని సంప్రదించండి')}</Button>
+                  <Button
+                    className="w-full bg-[#16A34A] hover:bg-[#15803d] text-white"
+                    size="sm"
+                    onClick={() => handleContactWorker(worker)}
+                  >
+                    📞 {label('Contact Worker', 'కార్మికుడిని సంప్రదించండి')}
+                  </Button>
                 </div>
               ))}
             </div>
