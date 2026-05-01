@@ -207,6 +207,26 @@ const FarmWorker = () => {
     }
   };
 
+  const handleContactWorker = async (worker: any) => {
+    let phone: string | undefined = worker.phone && worker.phone !== 'HIDDEN' ? worker.phone : undefined;
+    if (!phone) {
+      try {
+        const { data, error } = await supabase.rpc('get_farm_worker_contact' as any, { _listing_id: worker.id });
+        if (error) throw error;
+        const row = Array.isArray(data) ? data[0] : data;
+        phone = row?.phone;
+      } catch (err) {
+        console.error('Failed to fetch worker contact:', err);
+      }
+    }
+    if (!phone) {
+      toast.error(label('Phone number not available', 'ఫోన్ నంబర్ అందుబాటులో లేదు'));
+      return;
+    }
+    const telHref = `tel:${phone.replace(/\s+/g, '')}`;
+    window.location.href = telHref;
+  };
+
   const resetForm = () => {
     setSelectedCountry(''); setSelectedState(''); setSelectedDistrict(''); setSelectedDivision(''); setSelectedMandal(''); setSelectedVillage('');
     setSelectedWorkerTypes([]); setWorkerCategory(''); setNumberOfWorkers('');
