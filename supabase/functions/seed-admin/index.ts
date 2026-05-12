@@ -11,6 +11,16 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // Auth guard: require shared secret to prevent admin takeover
+    const seedSecret = Deno.env.get("SEED_ADMIN_SECRET");
+    const provided = req.headers.get("x-seed-secret");
+    if (!seedSecret || provided !== seedSecret) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const email = Deno.env.get("FIRST_ADMIN_EMAIL");
     const password = Deno.env.get("FIRST_ADMIN_PASSWORD");
 
