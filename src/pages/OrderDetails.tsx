@@ -89,21 +89,22 @@ const OrderDetails = () => {
       fetchOrder();
       fetchReturnRequest();
       const interval = setInterval(() => { fetchOrder(); fetchReturnRequest(); }, 5000);
-      const channel = supabase
-        .channel(`order-${id}`)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
-          const next = payload.new as Order;
-          setOrder((prev) => {
-            if (prev && prev.status !== next.status) {
-              toast.success(`Order status changed to ${formatStatusLabel(next.status)}`);
-            }
-            return next;
-          });
-        })
-        .subscribe();
+      // Realtime subscription disabled — crashes inside Android WebView (Capacitor).
+      // 5s polling above keeps order details live.
+      // const channel = supabase
+      //   .channel(`order-${id}`)
+      //   .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, (payload) => {
+      //     const next = payload.new as Order;
+      //     setOrder((prev) => {
+      //       if (prev && prev.status !== next.status) {
+      //         toast.success(`Order status changed to ${formatStatusLabel(next.status)}`);
+      //       }
+      //       return next;
+      //     });
+      //   })
+      //   .subscribe();
       return () => {
         clearInterval(interval);
-        supabase.removeChannel(channel);
       };
     }
   }, [user, id]);

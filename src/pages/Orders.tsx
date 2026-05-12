@@ -87,15 +87,16 @@ const Orders = () => {
   useEffect(() => {
     if (!user) return;
     const interval = setInterval(fetchOrders, 5000);
-    const channel = supabase
-      .channel('orders-list')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` }, () => {
-        fetchOrders();
-      })
-      .subscribe();
+    // Realtime subscription disabled — crashes inside Android WebView (Capacitor).
+    // 5s polling above keeps the list live.
+    // const channel = supabase
+    //   .channel('orders-list')
+    //   .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: `user_id=eq.${user.id}` }, () => {
+    //     fetchOrders();
+    //   })
+    //   .subscribe();
     return () => {
       clearInterval(interval);
-      supabase.removeChannel(channel);
     };
   }, [user]);
 

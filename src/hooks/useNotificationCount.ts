@@ -34,22 +34,22 @@ export const useNotificationCount = () => {
     // Register for manual refresh
     listeners.add(fetchCount);
 
-    // Subscribe to realtime changes
-    const channel = supabase
-      .channel('notifications-count')
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'notifications',
-        filter: `user_id=eq.${user.id}`,
-      }, () => {
-        fetchCount();
-      })
-      .subscribe();
+    // Realtime subscription disabled — crashes inside Android WebView (Capacitor).
+    // Manual refresh via refreshNotificationCount() + initial fetch is used instead.
+    // const channel = supabase
+    //   .channel('notifications-count')
+    //   .on('postgres_changes', {
+    //     event: '*',
+    //     schema: 'public',
+    //     table: 'notifications',
+    //     filter: `user_id=eq.${user.id}`,
+    //   }, () => {
+    //     fetchCount();
+    //   })
+    //   .subscribe();
 
     return () => {
       listeners.delete(fetchCount);
-      supabase.removeChannel(channel);
     };
   }, [user]);
 
